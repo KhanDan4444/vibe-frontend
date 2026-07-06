@@ -1,0 +1,255 @@
+// src/components/PaymentModal.jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { useModalFormDraft } from '../utils/useModalFormDraft';
+import { X, DollarSign } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { todayString, formatDisplayDate } from '../utils/date';
+import { validateStandalonePayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
+import FieldError from './FieldError';
+import { DateField } from './DateField';
+import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
+import ResponsiveModal from './ResponsiveModal';
+import { modalBody } from '../utils/modalLayout';
+
+/**
+ * Modal for recording a missed payment for the current membership term.
+ */
+export default function PaymentModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  members,
+  plans,
+  payment = null,
+  defaultMemberId = null,
+  saving = false,
+  error,
+  fieldErrors: externalFieldErrors = {},
+}) {
+  const { t } = useTranslation();
+  const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [amount, setAmount] = useState('');
+  const [method, setMethod] = useState('Cash');
+  const [date, setDate] = useState('');
+  const [validationError, setValidationError] = useState('');
+  const [localFieldErrors, setLocalFieldErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const fieldErrors = { ...externalFieldErrors, ...localFieldErrors };
+  const fc = (field) => inputClass(FORM_INPUT_CLASS, fieldErrors, field);
+
+  const initDefaults = useCallback(() => {
+    if (payment) {
+      setSelectedMemberId(String(payment.memberId));
+      setAmount(String(payment.amount));
+      setMethod(payment.method || 'Cash');
+      setDate(payment.date);
+    } else {
+      const preselect = defaultMemberId ? String(defaultMemberId) : '';
+      setSelectedMemberId(preselect);
+      setAmount('');
+      setMethod('Cash');
+      setDate(todayString());
+      if (preselect) {
+        const selectedMember = members.find((m) => m.id === parseInt(preselect, 10));
+        const matchingPlan = selectedMember
+          ? plans.find((p) => p.id === selectedMember.planId)
+          : null;
+        if (matchingPlan) setAmount(matchingPlan.price.toString());
+      }
+    }
+    setValidationError('');
+    clearAllFieldErrors(setLocalFieldErrors);
+  }, [payment, defaultMemberId, members, plans]);
+
+  const { markTouched } = useModalFormDraft({
+    isOpen,
+    scopeKey: payment?.id ?? `new:${defaultMemberId ?? ''}`,
+    initialize: initDefaults,
+    saving: saving || submitting,
+  });
+
+  if (!isOpen) return null;
+
+  const selectedMember = members.find((m) => m.id === parseInt(selectedMemberId, 10));
+  const minPaymentDate =
+    selectedMember?.startDate && selectedMember.startDate !== '—'
+      ? selectedMember.startDate
+      : undefined;
+  const today = todayString();
+
+  const handleMemberChange = (memberIdValue) => {
+    setSelectedMemberId(memberIdValue);
+    if (!memberIdValue) return;
+    const member = members.find((m) => m.id === parseInt(memberIdValue, 10));
+    if (member) {
+      const matchingPlan = plans.find((p) => p.id === member.planId);
+      if (matchingPlan) setAmount(matchingPlan.price.toString());
+      if (member.startDate && member.startDate !== '—' && date < member.startDate) {
+        setDate(member.startDate);
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submitting || saving) return;
+    setValidationError('');
+    clearAllFieldErrors(setLocalFieldErrors);
+    const paymentResult = validateStandalonePayment({
+      amount,
+      date,
+      minStartDate: minPaymentDate,
+      memberId: selectedMemberId,
+    });
+    if (!showValidationError(paymentResult, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
+    const parsedAmount = parseFloat(amount);
+    setValidationError('');
+    setSubmitting(true);
+    try {
+      await onSubmit({
+        memberId: parseInt(selectedMemberId, 10),
+        amount: parsedAmount,
+        date,
+        method,
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const isBusy = saving || submitting;
+  const displayError = validationError || error;
+
+  return (
+    <ResponsiveModal open={isOpen} onClose={onClose} size="md">
+      <div className={`${modalBody} relative`} onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-app-text"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong mb-1 pr-8">
+          {payment ? t('modals.payment.editTitle') : t('modals.payment.collectTitle')}
+        </h2>
+        {!payment && selectedMember && (
+          <p className="text-xs text-slate-500 mb-5">
+            {t('modals.payment.collectSubtitle', { name: selectedMember.name })}
+          </p>
+        )}
+        {payment && (
+          <p className="text-xs text-slate-500 mb-5">{t('modals.payment.editSubtitle')}</p>
+        )}
+        {!payment && !selectedMember && <div className="mb-5" />}
+
+        {displayError && (
+          <div className="mb-4 rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700">
+            {displayError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
+          <div>
+            <label className="form-label">{t('table.member')}</label>
+            <select
+              required
+              disabled={!!payment || !!defaultMemberId}
+              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
+              value={selectedMemberId}
+              onChange={(e) => handleMemberChange(e.target.value)}
+            >
+              <option value="" disabled>-- Select Member --</option>
+              {members.map((m) => (
+                <option key={m.id} value={m.id}>{m.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {selectedMember?.startDate && selectedMember.startDate !== '—' && (
+            <p className="text-xs text-slate-500 -mt-2">
+              Current term started {formatDisplayDate(selectedMember.startDate)}. Payment date must be on or after that date.
+            </p>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="form-label">{t('modals.payment.amount')}</label>
+              <div className="relative mt-1">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                  <DollarSign className="h-4 w-4" />
+                </span>
+                <input
+                  type="number"
+                  required
+                  min="0.01"
+                  step="0.01"
+                  className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle pl-8 pr-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-indigo-500 focus:outline-none', fieldErrors, 'amount')}
+                  placeholder="0.00"
+                  value={amount}
+                  onChange={(e) => {
+                    setAmount(e.target.value);
+                    clearFieldError(setLocalFieldErrors, 'amount');
+                  }}
+                />
+              </div>
+              <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
+            </div>
+
+            <div>
+              <label className="form-label">{t('modals.payment.method')}</label>
+              <select
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer"
+                value={method}
+                onChange={(e) => setMethod(e.target.value)}
+              >
+                {PAYMENT_METHOD_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {t(opt.labelKey)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="form-label">{t('modals.payment.date')}</label>
+            <DateField
+              required
+              min={minPaymentDate}
+              max={today}
+              className={fc('date')}
+              value={date}
+              onChange={(v) => {
+                setDate(v);
+                clearFieldError(setLocalFieldErrors, 'date');
+              }}
+            />
+            <FieldError message={fieldErrorMessage(fieldErrors, 'date')} />
+          </div>
+
+          <div className="pt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:w-auto"
+            >
+              {t('common.cancel')}
+            </button>
+            <button
+              type="submit"
+              disabled={isBusy}
+              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+            >
+              {isBusy
+                ? t('common.processing')
+                : payment
+                ? t('common.save')
+                : t('modals.payment.save')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </ResponsiveModal>
+  );
+}

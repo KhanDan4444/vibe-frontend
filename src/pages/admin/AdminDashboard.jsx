@@ -1,0 +1,1365 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import {
+  Building2,
+  TrendingUp,
+  AlertTriangle,
+  Plus,
+  X,
+  ShieldCheck,
+  Menu,
+  Users,
+  CreditCard,
+  LayoutDashboard,
+  Search,
+  AlertCircle,
+  DollarSign,
+  FileBarChart,
+  RefreshCw,
+  Edit,
+  Trash2,
+  ArrowLeftRight,
+  MessageSquare,
+} from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { parseApiResponse } from '../../utils/api';
+import AdminSaasPlans from './AdminSaasPlans';
+import AdminPayments from './AdminPayments';
+import InitialsAvatar from '../../components/InitialsAvatar';
+import AdminReports from './AdminReports';
+import AdminGymMessages from './AdminGymMessages';
+import RegisterGymModal from '../../components/RegisterGymModal';
+import GymDetailsModal from '../../components/GymDetailsModal';
+import GymEditModal from '../../components/GymEditModal';
+import RenewGymModal from '../../components/RenewGymModal';
+import ChangeSaasPlanModal from '../../components/ChangeSaasPlanModal';
+import AdminPaymentModal from '../../components/AdminPaymentModal';
+import UnpaidBadge from '../../components/UnpaidBadge';
+import StatusBadge from '../../components/StatusBadge';
+import { FilterChip, FilterChipBar } from '../../components/FilterChip';
+import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
+import { AdminTableRowsSkeleton, AdminListSkeleton, ChartPanelSkeleton } from '../../components/LoadingSkeletons';
+import FlashBanner from '../../components/FlashBanner';
+import ConfirmDialog from '../../components/ConfirmDialog';
+import UserProfileMenu from '../../components/UserProfileMenu';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
+import PaginationControls from '../../components/PaginationControls';
+import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
+import { formatDisplayDate } from '../../utils/date';
+import { getGyms, getGymDetail, updateGym, deleteGym, enrollGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
+import { getSaasPlans } from '../../services/saasPlanService';
+import { gymNeedsCatchUpPayment } from '../../utils/saasPaymentReport';
+import { canRenewGym, canChangeSaasPlan, mapGymDetailForBilling } from '../../utils/saasRenew';
+import { mapGymFromApi } from '../../utils/apiMappers';
+import { DEFAULT_GYM_SORT, ADMIN_GYM_SORT_OPTIONS, sortGymsList } from '../../utils/listSort';
+import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes';
+import { useLatestRequestGuard } from '../../utils/requestGuard';
+import { useTranslation } from 'react-i18next';
+import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop, cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { useChartTheme } from '../../utils/chartTheme';
+
+const UNPAID = 'Unpaid';
+const DUE_SOON = 'Due Soon';
+const EXPIRED = 'Expired';
+const GYM_PAGE_SIZE = DEFAULT_PAGE_SIZE;
+
+function gymFilterToQuery(statusFilter) {
+  if (statusFilter === UNPAID) return { filter: 'unpaid' };
+  if (statusFilter === DUE_SOON) return { filter: 'due_soon' };
+  if (statusFilter === EXPIRED) return { filter: 'expired' };
+  if (statusFilter === 'All') return {};
+  return { status: statusFilter };
+}
+
+export default function AdminDashboard() {
+  const { t } = useTranslation();
+  const chartTheme = useChartTheme();
+  const { apiFetch } = useAuth();
+  const gymsRequestGuard = useLatestRequestGuard();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const adminSection = useMemo(() => adminPathToSection(location.pathname), [location.pathname]);
+
+  const setAdminSection = useCallback(
+    (section) => {
+      navigate(ADMIN_SECTION_PATH[section] || ADMIN_SECTION_PATH.dashboard);
+    },
+    [navigate]
+  );
+
+  const [gyms, setGyms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [saasPlans, setSaasPlans] = useState([]);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [gymSort, setGymSort] = useState(DEFAULT_GYM_SORT);
+  const [gymPage, setGymPage] = useState(1);
+  const [gymTotal, setGymTotal] = useState(0);
+  const [gymTotalPages, setGymTotalPages] = useState(1);
+  const [gymCounts, setGymCounts] = useState({
+    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0,
+  });
+
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [registerError, setRegisterError] = useState('');
+  const [saasPayments, setSaasPayments] = useState([]);
+  const [renewState, setRenewState] = useState({ isOpen: false, gym: null, error: '' });
+  const [changePlanState, setChangePlanState] = useState({ isOpen: false, gym: null, error: '' });
+  const [collectState, setCollectState] = useState({ isOpen: false, gym: null, error: '' });
+  const [saving, setSaving] = useState(false);
+  const [platformMetrics, setPlatformMetrics] = useState(null);
+  const [flash, setFlash] = useState('');
+  const [childBooting, setChildBooting] = useState(false);
+
+  useEffect(() => {
+    setChildBooting(false);
+  }, [adminSection]);
+
+  const [selectedGymId, setSelectedGymId] = useState(null);
+  const [gymEditState, setGymEditState] = useState({ isOpen: false, gym: null, error: '' });
+  const [gymToDelete, setGymToDelete] = useState(null);
+  const [gymDetail, setGymDetail] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState('');
+  const [detailRefreshKey, setDetailRefreshKey] = useState(0);
+
+  const loadSaasPlansForForms = useCallback(async () => {
+    try {
+      const res = await getSaasPlans(apiFetch);
+      const data = await parseApiResponse(res);
+      if (res.ok && Array.isArray(data)) {
+        setSaasPlans(data.filter((p) => p.is_active !== false));
+      }
+    } catch {
+      /* optional for forms */
+    }
+  }, [apiFetch]);
+
+  const fetchSaasPayments = useCallback(async () => {
+    try {
+      const res = await getSaasPayments(apiFetch);
+      const data = await parseApiResponse(res);
+      if (res.ok && Array.isArray(data)) setSaasPayments(data);
+    } catch {
+      /* optional */
+    }
+  }, [apiFetch]);
+
+  const fetchPlatformMetrics = useCallback(async () => {
+    try {
+      const res = await getAdminDashboard(apiFetch);
+      const data = await parseApiResponse(res);
+      if (res.ok) setPlatformMetrics(data);
+    } catch {
+      /* optional */
+    }
+  }, [apiFetch]);
+
+  useEffect(() => {
+    loadSaasPlansForForms();
+    fetchSaasPayments();
+    fetchPlatformMetrics();
+  }, [loadSaasPlansForForms, fetchSaasPayments, fetchPlatformMetrics]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setGymPage(1);
+  }, [debouncedSearch, statusFilter]);
+
+  const displayedGyms = useMemo(() => sortGymsList(gyms, gymSort), [gyms, gymSort]);
+
+  const fetchGyms = useCallback(async () => {
+    const requestId = gymsRequestGuard.start();
+    try {
+      setLoading(true);
+      setError('');
+      const params = {
+        page: gymPage,
+        limit: GYM_PAGE_SIZE,
+        search: debouncedSearch,
+        sort: gymSort,
+        ...gymFilterToQuery(statusFilter),
+      };
+      const res = await getGyms(apiFetch, params);
+      const data = await parseApiResponse(res);
+      if (!gymsRequestGuard.isLatest(requestId)) return;
+      if (!res.ok) {
+        throw new Error(
+          data.error ||
+          (res.status === 403
+            ? 'Access denied. Log in as admin@saas.com and restart the backend (npm start).'
+            : 'Failed to load gyms')
+        );
+      }
+      setGyms((data.items || []).map(mapGymFromApi).filter(Boolean));
+      setGymTotal(data.total ?? 0);
+      setGymTotalPages(data.totalPages ?? 1);
+      if (data.counts) setGymCounts(data.counts);
+    } catch (err) {
+      if (!gymsRequestGuard.isLatest(requestId)) return;
+      setError(err.message);
+    } finally {
+      if (gymsRequestGuard.isLatest(requestId)) setLoading(false);
+    }
+  }, [apiFetch, gymPage, debouncedSearch, statusFilter, gymSort, gymsRequestGuard]);
+
+  const fetchGymDetail = useCallback(
+    async (gymId) => {
+      try {
+        setDetailLoading(true);
+        setDetailError('');
+        const res = await getGymDetail(apiFetch, gymId);
+        const data = await parseApiResponse(res);
+        if (!res.ok) throw new Error(data.error || 'Failed to load gym details');
+        setGymDetail(data);
+      } catch (err) {
+        setDetailError(err.message);
+        setGymDetail(null);
+      } finally {
+        setDetailLoading(false);
+      }
+    },
+    [apiFetch]
+  );
+
+  useEffect(() => {
+    fetchGyms();
+  }, [fetchGyms]);
+
+  useEffect(() => {
+    if (selectedGymId) {
+      fetchGymDetail(selectedGymId);
+    } else {
+      setGymDetail(null);
+    }
+  }, [selectedGymId, fetchGymDetail, detailRefreshKey]);
+
+  const fetchGymForBilling = useCallback(
+    async (gymId) => {
+      const res = await getGymDetail(apiFetch, gymId);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || 'Failed to load gym');
+      return mapGymDetailForBilling(data);
+    },
+    [apiFetch]
+  );
+
+  const openRenewGymModal = useCallback(
+    async (gym) => {
+      try {
+        const fresh = await fetchGymForBilling(gym.id);
+        setRenewState({ isOpen: true, gym: fresh, error: '' });
+      } catch {
+        setRenewState({ isOpen: true, gym, error: '' });
+      }
+    },
+    [fetchGymForBilling]
+  );
+
+  const openChangePlanModal = useCallback(
+    async (gym) => {
+      try {
+        const fresh = await fetchGymForBilling(gym.id);
+        setChangePlanState({ isOpen: true, gym: fresh, error: '' });
+      } catch {
+        setChangePlanState({ isOpen: true, gym, error: '' });
+      }
+    },
+    [fetchGymForBilling]
+  );
+
+  const openGymDetail = (gymId) => {
+    setSelectedGymId(gymId);
+  };
+
+  const closeGymDetail = () => {
+    setSelectedGymId(null);
+    setGymDetail(null);
+    setDetailError('');
+  };
+
+  const refreshAfterChange = async (gymId) => {
+    await fetchGyms();
+    await fetchSaasPayments();
+    await fetchPlatformMetrics();
+    if (gymId) {
+      setDetailRefreshKey((k) => k + 1);
+    }
+  };
+
+  const showFlash = (message) => setFlash(message);
+
+  const handleUpdateGym = async (gymId, formData) => {
+    const payload = { ...formData };
+    delete payload.saas_plan_id;
+    const res = await updateGym(apiFetch, gymId, payload);
+    const data = await parseApiResponse(res);
+    if (!res.ok) throw new Error(data.error || 'Failed to update gym');
+    await refreshAfterChange(gymId);
+    showFlash(t('admin.gymUpdated'));
+  };
+
+  const handleResetOwnerPassword = async (gymId, password) => {
+    const res = await resetOwnerPassword(apiFetch, gymId, { password });
+    const data = await parseApiResponse(res);
+    if (!res.ok) throw new Error(data.error || 'Failed to reset owner password');
+    const ownerName = data.owner?.name || gymDetail?.owner_name || t('account.role.owner');
+    await refreshAfterChange(gymId);
+    showFlash(t('admin.ownerPasswordReset', { name: ownerName }));
+  };
+
+  const handleGymEditSubmit = async (formData) => {
+    if (!gymEditState.gym) return;
+    setGymEditState((s) => ({ ...s, error: '' }));
+    setSaving(true);
+    try {
+      await handleUpdateGym(gymEditState.gym.id, formData);
+      setGymEditState({ isOpen: false, gym: null, error: '' });
+    } catch (err) {
+      setGymEditState((s) => ({ ...s, error: err.message }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteGym = async (gymId) => {
+    const deletedGym = gyms.find((g) => g.id === gymId);
+    const res = await deleteGym(apiFetch, gymId);
+    if (!res.ok) {
+      const data = await parseApiResponse(res);
+      throw new Error(data.error || 'Failed to delete gym');
+    }
+    closeGymDetail();
+    await fetchGyms();
+    await fetchPlatformMetrics();
+    showFlash(t('admin.gymRemoved', { name: deletedGym?.name || 'Gym' }));
+  };
+
+  const handleConfirmDeleteGym = async () => {
+    if (!gymToDelete) return;
+    const gym = gymToDelete;
+    setGymToDelete(null);
+    try {
+      await handleDeleteGym(gym.id);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleCreateGymSubmit = async (data) => {
+    setRegisterError('');
+    setSaving(true);
+    try {
+      const payload = {
+        gym_name: data.gymName,
+        owner_name: data.ownerName,
+        username: data.username,
+        password: data.password,
+        phone: data.phone,
+        saas_plan_id: data.saasPlanId,
+        skip_payment: data.skipPayment,
+      };
+      if (data.email) payload.email = data.email;
+      if (!data.skipPayment) {
+        payload.amount = data.amount;
+        payload.date = data.date;
+        payload.method = data.method;
+        payload.start_date = data.start_date || data.date;
+      } else {
+        payload.start_date = data.start_date;
+      }
+      const res = await enrollGym(apiFetch, payload);
+      const resData = await parseApiResponse(res);
+      if (!res.ok) throw new Error(resData.error || 'Failed to register gym');
+
+      setIsRegisterOpen(false);
+      await refreshAfterChange(null);
+      showFlash(
+        data.skipPayment
+          ? t('admin.gymRegistered', { name: data.gymName })
+          : t('admin.gymRegisteredWithPayment', { name: data.gymName })
+      );
+    } catch (err) {
+      setRegisterError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRenewSubmit = async (formData) => {
+    if (!renewState.gym) return;
+    setSaving(true);
+    setRenewState((s) => ({ ...s, error: '' }));
+    try {
+      const res = await renewGym(apiFetch, renewState.gym.id, formData);
+      const resData = await parseApiResponse(res);
+      if (!res.ok) throw new Error(resData.error || 'Failed to renew gym');
+      const gymId = renewState.gym.id;
+      const name = renewState.gym.name;
+      setRenewState({ isOpen: false, gym: null, error: '' });
+      await refreshAfterChange(gymId);
+      showFlash(t('admin.gymRenewed', { name }));
+    } catch (err) {
+      setRenewState((s) => ({ ...s, error: err.message }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleChangePlanSubmit = async (formData) => {
+    if (!changePlanState.gym) return;
+    setSaving(true);
+    setChangePlanState((s) => ({ ...s, error: '' }));
+    try {
+      const res = await changeGymPlan(apiFetch, changePlanState.gym.id, formData);
+      const resData = await parseApiResponse(res);
+      if (!res.ok) throw new Error(resData.error || 'Failed to change plan');
+      const gymId = changePlanState.gym.id;
+      const name = changePlanState.gym.name;
+      setChangePlanState({ isOpen: false, gym: null, error: '' });
+      await refreshAfterChange(gymId);
+      showFlash(
+        formData.amount > 0
+          ? t('admin.gymPlanChangedWithPayment', { name })
+          : t('admin.gymPlanChanged', { name })
+      );
+    } catch (err) {
+      setChangePlanState((s) => ({ ...s, error: err.message }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCollectSubmit = async (formData) => {
+    const gym = collectState.gym || gyms.find((g) => g.id === formData.gym_id);
+    if (gym && canRenewGym(gym)) {
+      setCollectState((s) => ({
+        ...s,
+        error: t('admin.useRenewForLicense'),
+      }));
+      return;
+    }
+    if (gym && !gym.isUnpaid && !gymNeedsCatchUpPayment(gym, saasPayments)) {
+      setCollectState((s) => ({
+        ...s,
+        error: t('admin.collectPaymentActiveOnly'),
+      }));
+      return;
+    }
+    setSaving(true);
+    setCollectState((s) => ({ ...s, error: '' }));
+    try {
+      const res = await collectGymPayment(apiFetch, formData);
+      const resData = await parseApiResponse(res);
+      if (!res.ok) throw new Error(resData.error || 'Failed to collect payment');
+      const gymId = collectState.gym?.id;
+      const name = collectState.gym?.name || 'Gym';
+      setCollectState({ isOpen: false, gym: null, error: '' });
+      await refreshAfterChange(gymId);
+      showFlash(t('admin.paymentRecorded', { name }));
+    } catch (err) {
+      setCollectState((s) => ({ ...s, error: err.message }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const totalGyms = platformMetrics?.totalGyms ?? gyms.length;
+  const activeGyms = platformMetrics?.activeGyms ?? gyms.filter((g) => g.subscription_status?.toLowerCase() === 'active').length;
+  const suspendedGyms = platformMetrics?.unpaidExpiredGyms ?? gyms.filter(
+    (g) =>
+      g.subscription_status?.toLowerCase() === 'suspended' ||
+      g.subscription_status?.toLowerCase() === 'expired'
+  ).length;
+
+  const dueSoonGymsList = gyms.filter((g) => {
+    if (g.subscription_status?.toLowerCase() !== 'active') return false;
+    if (!g.saas_end_date) return false;
+    const endDate = new Date(g.saas_end_date);
+    const today = new Date();
+    const diffTime = endDate - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= 7;
+  });
+
+  const dueSoonGyms = platformMetrics?.dueSoonGyms ?? dueSoonGymsList.length;
+
+  const alertGyms = gyms.filter((g) => {
+    const isSuspendedOrExpired = g.subscription_status?.toLowerCase() === 'suspended' || g.subscription_status?.toLowerCase() === 'expired';
+    return isSuspendedOrExpired || dueSoonGymsList.includes(g);
+  }).slice(0, 5);
+
+  const estimatedMrc = platformMetrics?.estimatedMonthlyRevenue ?? gyms.reduce((sum, g) => {
+    if (g.subscription_status?.toLowerCase() !== 'active' || !g.saas_plan_price) return sum;
+    const dur = Number(g.saas_plan_duration) || 1;
+    return sum + Number(g.saas_plan_price) / dur;
+  }, 0);
+
+  const unpaidCount = gymCounts.unpaid ?? platformMetrics?.unpaidCatchUpGyms ?? 0;
+  const totalGymsCount = gymCounts.all ?? platformMetrics?.totalGyms ?? gymTotal;
+  const dueSoonFilterCount = gymCounts.dueSoon ?? platformMetrics?.dueSoonGyms ?? 0;
+  const expiredLicenseCount = (gymCounts.expired ?? 0) + (gymCounts.suspended ?? 0);
+  const dashboardBooting = platformMetrics === null;
+  const gymsBooting = loading && gyms.length === 0;
+  const adminBooting =
+    (adminSection === 'dashboard' && dashboardBooting) ||
+    (adminSection === 'gyms' && gymsBooting);
+  const shellBooting = adminBooting || childBooting;
+
+  const retryAdminLoad = useCallback(() => {
+    fetchPlatformMetrics();
+    if (adminSection === 'gyms' || adminSection === 'dashboard') {
+      fetchGyms();
+    }
+  }, [fetchPlatformMetrics, fetchGyms, adminSection]);
+
+  const chartData = platformMetrics?.topGymsByMembers?.length
+    ? platformMetrics.topGymsByMembers
+    : gyms
+        .map((g) => ({ name: g.name, members: Number(g.active_member_count || 0) }))
+        .sort((a, b) => b.members - a.members)
+        .slice(0, 5);
+
+  const adminNavItems = useMemo(
+    () => [
+      { section: 'dashboard', to: ADMIN_SECTION_PATH.dashboard, icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+      { section: 'gyms', to: ADMIN_SECTION_PATH.gyms, icon: Building2, labelKey: 'nav.gyms' },
+      { section: 'plans', to: ADMIN_SECTION_PATH.plans, icon: CreditCard, labelKey: 'nav.saasPlans' },
+      { section: 'payments', to: ADMIN_SECTION_PATH.payments, icon: DollarSign, labelKey: 'nav.payments', badge: unpaidCount > 0 ? { count: unpaidCount, tone: 'amber' } : null },
+      { section: 'messages', to: ADMIN_SECTION_PATH.messages, icon: MessageSquare, labelKey: 'nav.smsLog' },
+      { section: 'reports', to: ADMIN_SECTION_PATH.reports, icon: FileBarChart, labelKey: 'nav.reports' },
+    ],
+    [unpaidCount]
+  );
+
+  return (
+    <div className={shellPage}>
+      <header className={`safe-top sticky top-0 z-40 flex h-14 min-h-[3.5rem] items-center justify-between px-4 lg:hidden ${shellHeader}`}>
+        <button
+          type="button"
+          onClick={() => setSidebarOpen(true)}
+          className="-ml-1 rounded-lg p-2.5 text-slate-600 dark:text-app-text active:bg-slate-100 dark:text-app-text dark:active:bg-app-raised"
+          aria-label={t('common.openMenu')}
+        >
+          <Menu className="h-6 w-6" />
+        </button>
+        <span className="truncate text-base font-bold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.platformCore')}</span>
+        <div className="flex items-center gap-0.5">
+          <LanguageSwitcher compact />
+          <UserProfileMenu compact />
+        </div>
+      </header>
+
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div className={`fixed inset-0 ${overlayBackdrop}`} onClick={() => setSidebarOpen(false)} />
+          <div className={`relative flex w-full max-w-xs flex-col p-6 ${sidebarSurface}`}>
+            <button onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
+              <X className="h-6 w-6" />
+            </button>
+            <div className="mb-8 mt-2 text-2xl font-bold text-indigo-400">{t('admin.platformCore')}</div>
+            <nav className="mb-auto space-y-1">
+              {adminNavItems.map((item) => (
+                <SidebarLink
+                  key={item.section}
+                  active={adminSection === item.section}
+                  to={item.to}
+                  onClick={() => setSidebarOpen(false)}
+                  icon={item.icon}
+                  label={t(item.labelKey)}
+                  badge={item.badge}
+                />
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
+        <div className="mb-8 text-2xl font-bold text-indigo-400">{t('admin.platformCore')}</div>
+        <nav className="space-y-1">
+          {adminNavItems.map((item) => (
+            <SidebarLink
+              key={item.section}
+              active={adminSection === item.section}
+              to={item.to}
+              icon={item.icon}
+              label={t(item.labelKey)}
+              badge={item.badge}
+            />
+          ))}
+        </nav>
+      </aside>
+
+      <div className="lg:pl-64">
+        {shellBooting && (
+          <div className="sticky top-0 z-20 h-0.5 overflow-hidden bg-slate-200 dark:bg-app-border-subtle">
+            <div className="app-boot-bar h-full w-1/3 bg-indigo-500" />
+          </div>
+        )}
+        <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
+          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-300">
+            <ShieldCheck className="h-3.5 w-3.5" /> {t('admin.platformAdmin')}
+          </div>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <UserProfileMenu />
+          </div>
+        </div>
+
+        <main className="safe-bottom app-page p-4 sm:p-6 lg:p-8 space-y-8">
+          {adminSection === 'plans' ? (
+            <AdminSaasPlans onPlansChange={(list) => setSaasPlans(list.filter((p) => p.is_active !== false))} onBootingChange={setChildBooting} />
+          ) : adminSection === 'payments' ? (
+            <AdminPayments
+              gyms={gyms}
+              saasPlans={saasPlans}
+              onCollectPayment={(gym) => setCollectState({ isOpen: true, gym, error: '' })}
+              onBootingChange={setChildBooting}
+            />
+          ) : adminSection === 'reports' ? (
+            <AdminReports onBootingChange={setChildBooting} />
+          ) : adminSection === 'messages' ? (
+            <AdminGymMessages
+              gyms={gyms}
+              onGymClick={openGymDetail}
+              onBootingChange={setChildBooting}
+            />
+          ) : adminSection === 'dashboard' ? (
+            <>
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{t('nav.dashboard')}</h1>
+                <p className="text-sm text-slate-500">{t('admin.dashboardSubtitle')}</p>
+              </div>
+
+              {saasPlans.length === 0 && (
+                <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
+                  {t('admin.noSaasPlansWarning')}{' '}
+                  <button type="button" className="font-semibold underline" onClick={() => setAdminSection('plans')}>
+                    {t('admin.goToSaasPlans')}
+                  </button>
+                </div>
+              )}
+
+              {error && (
+                <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
+                  <p>{error}</p>
+                  <button
+                    type="button"
+                    onClick={retryAdminLoad}
+                    className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+                  >
+                    {t('common.retry')}
+                  </button>
+                </div>
+              )}
+
+              <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-8">
+                {adminBooting ? (
+                  Array.from({ length: 6 }).map((_, i) => <MetricCardSkeleton key={i} />)
+                ) : (
+                <>
+                <MetricCard 
+                  label={t('admin.activeGyms')} 
+                  value={activeGyms} 
+                  subValue={`/${totalGyms}`}
+                  hint={`${totalGyms > 0 ? ((activeGyms / totalGyms) * 100).toFixed(0) : 0}%`}
+                  icon={Building2} 
+                  color="emerald" 
+                  showProgressBar
+                  progress={totalGyms > 0 ? (activeGyms / totalGyms) * 100 : 0}
+                />
+                <MetricCard 
+                  label={t('metrics.dueSoon')} 
+                  value={dueSoonGyms} 
+                  hint={dueSoonGyms > 0 ? t('metrics.critical') : t('admin.noImmediateRenewals')} 
+                  hintColor={dueSoonGyms > 0 ? 'text-rose-500' : undefined}
+                  icon={AlertTriangle} 
+                  color="rose" 
+                  badge={dueSoonGyms > 0 ? t('metrics.critical') : null}
+                />
+                <MetricCard 
+                  label={t('admin.suspendedExpired')} 
+                  value={suspendedGyms} 
+                  hint={suspendedGyms > 0 ? t('admin.requiresAttention') : t('admin.healthy')} 
+                  icon={X} 
+                  color="rose" 
+                  badge={suspendedGyms > 0 ? t('metrics.actionRequired') : null}
+                />
+                <MetricCard 
+                  label={t('admin.newGyms')} 
+                  value={platformMetrics?.newGymsThisMonth ?? 0}
+                  icon={Building2}
+                  color="violet"
+                  trend={platformMetrics?.newGymsTrendPercent ?? null}
+                  trendCaption={platformMetrics?.newGymsDeltaLabel || t('metrics.vsLastMonth')}
+                />
+                <MetricCard 
+                  label={t('admin.saasRevenue')} 
+                  value={`$${(platformMetrics?.saasIncomeThisMonth ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                  icon={DollarSign}
+                  color="indigo"
+                  trend={platformMetrics?.saasRevenueTrendPercent ?? null}
+                  trendCaption={t('metrics.vsLastMonth')}
+                />
+                <MetricCard 
+                  label={t('admin.estMrr')} 
+                  value={`$${estimatedMrc.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} 
+                  hint={t('admin.fromActivePlans')} 
+                  icon={TrendingUp} 
+                  color="indigo" 
+                  showHintBelow
+                />
+                </>
+                )}
+              </section>
+
+              {adminBooting ? (
+              <div className="grid gap-6 lg:grid-cols-5">
+                <div className="lg:col-span-3">
+                  <ChartPanelSkeleton tall />
+                </div>
+                <div className="lg:col-span-2">
+                  <ChartPanelSkeleton tall />
+                </div>
+              </div>
+              ) : (
+              <div className="grid gap-6 lg:grid-cols-5">
+                <div className={`lg:col-span-3 overflow-hidden ${cardSurface}`}>
+                  <div className="admin-panel-header">
+                    <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.recentExpiringGyms')}</h2>
+                    <button
+                      onClick={() => {
+                        setGymPage(1);
+                        setStatusFilter(DUE_SOON);
+                        setAdminSection('gyms');
+                      }}
+                      className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-indigo-600 dark:text-app-muted dark:hover:text-indigo-400 cursor-pointer"
+                    >
+                      {t('admin.viewAll')}
+                    </button>
+                  </div>
+
+                  <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                    {alertGyms.length > 0 ? (
+                      alertGyms.map((gym) => (
+                        <button
+                          key={gym.id}
+                          type="button"
+                          onClick={() => openGymDetail(gym.id)}
+                          className="flex w-full items-start justify-between gap-3 p-4 text-left active:bg-slate-50 dark:active:bg-app-surface/60"
+                        >
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-3">
+                              <InitialsAvatar name={gym.name} size="sm" />
+                              <span className="font-semibold text-slate-900 dark:text-app-text-strong truncate">{gym.name}</span>
+                            </div>
+                            <p className="mt-1 text-sm text-slate-500">{gym.saas_plan_name || '—'}</p>
+                            <p className="mt-0.5 text-xs text-slate-500">
+                              {t('admin.expiresOn', { date: formatDisplayDate(gym.saas_end_date) })}
+                            </p>
+                            <div className="mt-2">
+                              <StatusBadge status={gym.subscription_status} />
+                            </div>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="admin-panel-empty px-4">
+                        {t('admin.noGymsExpiring')}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="hidden lg:block overflow-x-auto">
+                    <table className="admin-data-table admin-dashboard-alert-table">
+                      <thead>
+                        <tr>
+                          <th>{t('admin.gymNameCol')}</th>
+                          <th>{t('table.plan')}</th>
+                          <th>{t('admin.expiryDateCol')}</th>
+                          <th className="text-right">{t('table.status')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {alertGyms.length > 0 ? (
+                          alertGyms.map((gym) => (
+                            <tr
+                              key={gym.id}
+                              className={`cursor-pointer transition-colors ${tableRowHover}`}
+                              onClick={() => openGymDetail(gym.id)}
+                            >
+                              <td>
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <InitialsAvatar name={gym.name} size="sm" />
+                                  <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                                </div>
+                              </td>
+                              <td className="truncate text-slate-500 dark:text-app-muted">
+                                {gym.saas_plan_name || '—'}
+                              </td>
+                              <td className="whitespace-nowrap text-slate-600 dark:text-app-text">
+                                {formatDisplayDate(gym.saas_end_date)}
+                              </td>
+                              <td>
+                                <div className="flex justify-end">
+                                  <StatusBadge status={gym.subscription_status} />
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="4" className="admin-panel-empty">
+                              {t('admin.noGymsExpiring')}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className={`lg:col-span-2 flex flex-col p-6 ${cardSurface}`}>
+                  <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong mb-5">{t('admin.topGymsByMembers')}</h2>
+                  <div className="flex-1 min-h-[250px]">
+                    {chartData.length > 0 && chartData.some((c) => c.members > 0) ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.55 : 1} />
+                          <XAxis
+                            dataKey="name"
+                            axisLine={false}
+                            tickLine={false}
+                            tick={{ fontSize: 12, fill: chartTheme.tick }}
+                            dy={10}
+                            tickFormatter={(val) => (val.length > 10 ? `${val.substring(0, 8)}...` : val)}
+                          />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} />
+                          <Tooltip
+                            contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                            itemStyle={{ color: '#4f46e5', fontWeight: 600 }}
+                            cursor={{ fill: chartTheme.isDark ? 'rgba(245, 158, 11, 0.06)' : '#f8fafc' }}
+                          />
+                          <Bar dataKey="members" fill="#6366f1" radius={[4, 4, 0, 0]} name={t('admin.activeMembers')} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <p className="flex h-full items-center justify-center text-sm text-slate-400">
+                        No member data yet — register gyms to see the chart.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              )}
+
+              {/* Floating Action Button */}
+              <button
+                onClick={() => {
+                  loadSaasPlansForForms();
+                  setIsRegisterOpen(true);
+                }}
+                className="safe-bottom fixed bottom-4 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg hover:bg-slate-800 hover:shadow-xl transition-all cursor-pointer sm:bottom-6 sm:right-6"
+                title={t('admin.registerGym')}
+              >
+                <Plus className="h-6 w-6" />
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900 dark:text-app-text-strong">{t('admin.gymsTitle')}</h1>
+                  <p className="text-sm text-slate-500">{t('admin.gymsSubtitle')}</p>
+                </div>
+                <button
+                  onClick={() => {
+                    loadSaasPlansForForms();
+                    setIsRegisterOpen(true);
+                  }}
+                  disabled={saasPlans.length === 0}
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  <Plus className="h-4 w-4" /> {t('admin.registerGym')}
+                </button>
+              </div>
+
+              {error && (
+                <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
+                  <p>{error}</p>
+                  <button
+                    type="button"
+                    onClick={retryAdminLoad}
+                    className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+                  >
+                    {t('common.retry')}
+                  </button>
+                </div>
+              )}
+
+              <FilterChipBar>
+                <FilterChip
+                  variant="all"
+                  label={t('filters.all')}
+                  count={totalGymsCount}
+                  active={statusFilter === 'All'}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter('All');
+                  }}
+                />
+                <FilterChip
+                  variant="active"
+                  label={t('filters.active')}
+                  count={gymCounts.active ?? 0}
+                  active={statusFilter === 'active'}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter('active');
+                  }}
+                />
+                <FilterChip
+                  variant="unpaid"
+                  label={t('filters.unpaid')}
+                  count={unpaidCount}
+                  active={statusFilter === UNPAID}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter(UNPAID);
+                  }}
+                />
+                <FilterChip
+                  variant="due_soon"
+                  label={t('filters.dueSoon')}
+                  count={dueSoonFilterCount}
+                  active={statusFilter === DUE_SOON}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter(DUE_SOON);
+                  }}
+                />
+                <FilterChip
+                  variant="expired"
+                  label={t('filters.expired')}
+                  count={expiredLicenseCount}
+                  active={statusFilter === EXPIRED}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter(EXPIRED);
+                  }}
+                />
+              </FilterChipBar>
+
+              {/* Filters and Search */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm mb-6">
+                <div className="relative w-full sm:max-w-md">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                    <Search className="h-5 w-5" />
+                  </span>
+                  <input
+                    type="text"
+                    className="admin-field block w-full pl-10 pr-4 placeholder-slate-400"
+                    placeholder={t('admin.searchGymsPlaceholder')}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                  <select
+                    className="admin-field min-w-[10rem] cursor-pointer"
+                    value={gymSort}
+                    onChange={(e) => {
+                      setGymPage(1);
+                      setGymSort(e.target.value);
+                    }}
+                    aria-label={t('admin.sortGymsAria')}
+                  >
+                    {ADMIN_GYM_SORT_OPTIONS.map((opt) => (
+                      <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
+                    ))}
+                  </select>
+                  <select
+                    className="admin-field min-w-[10rem] cursor-pointer"
+                    value={statusFilter}
+                    onChange={(e) => {
+                      setGymPage(1);
+                      setStatusFilter(e.target.value);
+                    }}
+                  >
+                    <option value="All">{t('admin.allStatuses')}</option>
+                    <option value={UNPAID}>{t('admin.unpaidStatusHint')}</option>
+                    <option value={DUE_SOON}>{t('admin.dueSoonStatusHint')}</option>
+                    <option value={EXPIRED}>{t('admin.expiredStatusHint')}</option>
+                    <option value="active">{t('admin.activeOnly')}</option>
+                    <option value="suspended">{t('admin.suspendedOnly')}</option>
+                    <option value="expired">{t('admin.expiredOnly')}</option>
+                  </select>
+                </div>
+              </div>
+
+              <section className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
+                <div className="border-b border-slate-100 bg-slate-50/50 dark:border-app-border-subtle dark:bg-app-surface/80 px-4 py-4 flex items-center justify-between sm:px-6">
+                  <h2 className="text-base font-bold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.gymsSection')}</h2>
+                  <button onClick={fetchGyms} className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-slate-600 dark:text-app-text sm:hover:bg-slate-100 sm:hover:text-slate-600 dark:text-app-text">
+                    <RefreshCw className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                  {loading && gyms.length === 0 ? (
+                    <AdminListSkeleton rows={5} />
+                  ) : displayedGyms.length > 0 ? (
+                    displayedGyms.map((gym) => {
+                      const isUnpaid = gym.isUnpaid;
+                      return (
+                        <div
+                          key={gym.id}
+                          className={`p-4 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-indigo-200 dark:ring-indigo-500/30' : ''}`}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => openGymDetail(gym.id)}
+                            className="w-full text-left"
+                          >
+                            <div className="flex items-start gap-3">
+                              <InitialsAvatar name={gym.name} size="md" />
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="font-bold text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                                  {isUnpaid && <UnpaidBadge compact />}
+                                  <StatusBadge status={gym.subscription_status} />
+                                </div>
+                                <p className="mt-1 text-sm text-slate-600 dark:text-app-text">{gym.owner_name}</p>
+                                <p className="mt-0.5 text-sm text-indigo-600">{gym.saas_plan_name || '—'}</p>
+                                <p className="mt-1 text-xs text-slate-500">
+                                  {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
+                                </p>
+                              </div>
+                            </div>
+                          </button>
+                          <div className="mt-3 flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
+                            {isUnpaid && gym.subscription_status?.toLowerCase() === 'active' && !canRenewGym(gym) && (
+                              <button
+                                type="button"
+                                onClick={() => setCollectState({ isOpen: true, gym, error: '' })}
+                                className="inline-flex items-center gap-1 rounded-lg bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-800 active:bg-amber-200"
+                              >
+                                <DollarSign className="h-3.5 w-3.5" /> {t('actions.collect')}
+                              </button>
+                            )}
+                            {canChangeSaasPlan(gym) &&
+                              saasPlans.filter((p) => p.id !== gym.saas_plan_id).length > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => openChangePlanModal(gym)}
+                                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                              >
+                                <ArrowLeftRight className="h-3.5 w-3.5" /> {t('admin.changePlanShort')}
+                              </button>
+                            )}
+                            {canRenewGym(gym) && (
+                              <button
+                                type="button"
+                                onClick={() => openRenewGymModal(gym)}
+                                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                              >
+                                <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setGymEditState({ isOpen: true, gym, error: '' })}
+                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                            >
+                              <Edit className="h-3.5 w-3.5" /> {t('common.edit')}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setGymToDelete(gym)}
+                              className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" /> {t('common.delete')}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="py-16 text-center text-slate-400">
+                      <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+                      <p className="text-sm font-medium">{t('admin.noGymsMatch')}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="hidden lg:block overflow-x-auto">
+                  <table className="admin-data-table admin-gyms-table min-w-[920px]">
+                    <thead>
+                      <tr>
+                        <th>{t('table.gym')}</th>
+                        <th>{t('table.owner')}</th>
+                        <th>{t('table.saasPlan')}</th>
+                        <th>{t('table.members')}</th>
+                        <th>{t('table.status')}</th>
+                        <th className="text-right">{t('table.actions')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loading && gyms.length === 0 ? (
+                        <AdminTableRowsSkeleton rows={8} cols={6} />
+                      ) : displayedGyms.length > 0 ? (
+                        displayedGyms.map((gym) => {
+                          const isUnpaid = gym.isUnpaid;
+                          return (
+                          <tr
+                            key={gym.id}
+                            onClick={() => openGymDetail(gym.id)}
+                            className={`cursor-pointer transition-colors ${
+                              selectedGymId === gym.id ? 'bg-indigo-50 dark:bg-indigo-500/10' : ''
+                            } ${isUnpaid ? 'admin-row-unpaid' : 'hover:bg-indigo-50/60 dark:hover:bg-indigo-500/10'}`}
+                          >
+                            <td>
+                              <div className="flex items-center gap-3 min-w-0">
+                                <InitialsAvatar name={gym.name} size="md" />
+                                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                  <span className="truncate font-bold text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                                  {isUnpaid && <UnpaidBadge compact />}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="truncate text-slate-700 dark:text-app-text">{gym.owner_name}</td>
+                            <td className="truncate text-slate-600 dark:text-app-text">
+                              {gym.saas_plan_name || '—'}
+                            </td>
+                            <td>
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-sm font-bold text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+                                <Users className="h-3.5 w-3.5 shrink-0" />
+                                {Number(gym.active_member_count ?? 0)}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="flex flex-wrap items-center gap-1.5">
+                                <StatusBadge status={gym.subscription_status} />
+                                {isUnpaid && <UnpaidBadge />}
+                              </div>
+                            </td>
+                            <td>
+                              <div className="admin-row-actions">
+                              {isUnpaid && gym.subscription_status?.toLowerCase() === 'active' && !canRenewGym(gym) && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setCollectState({ isOpen: true, gym, error: '' });
+                                  }}
+                                  className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
+                                  title={t('actions.collectPayment')}
+                                >
+                                  <DollarSign className="h-4 w-4" />
+                                </button>
+                              )}
+                              {canChangeSaasPlan(gym) &&
+                                saasPlans.filter((p) => p.id !== gym.saas_plan_id).length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openChangePlanModal(gym);
+                                  }}
+                                  className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                                  title={t('admin.changeSaasPlanTitle')}
+                                >
+                                  <ArrowLeftRight className="h-4 w-4" />
+                                </button>
+                              )}
+                              {canRenewGym(gym) && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openRenewGymModal(gym);
+                                  }}
+                                  className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface cursor-pointer"
+                                  title={t('admin.renewLicenseTitle')}
+                                >
+                                  <RefreshCw className="h-4 w-4" />
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setGymEditState({ isOpen: true, gym, error: '' });
+                                }}
+                                className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                                title={t('admin.editGymDetailsTitle')}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setGymToDelete(gym);
+                                }}
+                                className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                                title={t('admin.deleteGymActionTitle')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                              </div>
+                            </td>
+                          </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={6} className="text-center py-16 text-slate-400 font-medium">
+                            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-slate-300" />
+                            {t('admin.noGymsMatch')}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <PaginationControls
+                  page={gymPage}
+                  totalPages={gymTotalPages}
+                  total={gymTotal}
+                  limit={GYM_PAGE_SIZE}
+                  onPageChange={setGymPage}
+                  disabled={loading}
+                />
+                <p className="px-6 py-3 text-xs text-slate-400 border-t border-slate-100 dark:border-app-border-subtle">
+                  {t('admin.rowActionsHint')}
+                </p>
+              </section>
+            </>
+          )}
+        </main>
+      </div>
+
+      <GymDetailsModal
+        selectedGymId={selectedGymId}
+        onClose={closeGymDetail}
+        gymDetail={gymDetail}
+        saasPlans={saasPlans}
+        detailLoading={detailLoading}
+        detailError={detailError}
+        onUpdate={handleUpdateGym}
+        onDelete={handleDeleteGym}
+        onRenew={openRenewGymModal}
+        onChangePlan={openChangePlanModal}
+        onCollectPayment={(gym) => setCollectState({ isOpen: true, gym, error: '' })}
+        onResetOwnerPassword={handleResetOwnerPassword}
+      />
+
+      <RenewGymModal
+        isOpen={renewState.isOpen}
+        onClose={() => setRenewState({ isOpen: false, gym: null, error: '' })}
+        onSubmit={handleRenewSubmit}
+        gym={renewState.gym}
+        saasPlans={saasPlans}
+        saving={saving}
+        error={renewState.error}
+      />
+
+      <ChangeSaasPlanModal
+        isOpen={changePlanState.isOpen}
+        onClose={() => setChangePlanState({ isOpen: false, gym: null, error: '' })}
+        onSubmit={handleChangePlanSubmit}
+        gym={changePlanState.gym}
+        saasPlans={saasPlans}
+        saving={saving}
+        error={changePlanState.error}
+      />
+
+      <AdminPaymentModal
+        isOpen={collectState.isOpen}
+        onClose={() => setCollectState({ isOpen: false, gym: null, error: '' })}
+        onSubmit={handleCollectSubmit}
+        gym={collectState.gym}
+        saasPlans={saasPlans}
+        saving={saving}
+        error={collectState.error}
+      />
+
+      <RegisterGymModal
+        isOpen={isRegisterOpen}
+        onClose={() => {
+          setIsRegisterOpen(false);
+          setRegisterError('');
+        }}
+        onSubmit={handleCreateGymSubmit}
+        saasPlans={saasPlans}
+        saving={saving}
+        error={registerError}
+      />
+
+      <GymEditModal
+        isOpen={gymEditState.isOpen}
+        onClose={() => setGymEditState({ isOpen: false, gym: null, error: '' })}
+        onSubmit={handleGymEditSubmit}
+        gym={gymEditState.gym || gymDetail}
+        saasPlans={saasPlans}
+        saving={saving}
+        error={gymEditState.error}
+      />
+
+      <ConfirmDialog
+        isOpen={!!gymToDelete}
+        title={t('admin.deleteGymTitle')}
+        message={t('admin.deleteGymMessage', { name: gymToDelete?.name })}
+        confirmText={t('admin.deleteGymConfirm')}
+        onConfirm={handleConfirmDeleteGym}
+        onCancel={() => setGymToDelete(null)}
+      />
+
+      <FlashBanner message={flash} onDismiss={() => setFlash('')} />
+    </div>
+  );
+}
+
+function SidebarLink({ active, to, onClick, icon: Icon, label, badge }) {
+  const className = `flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
+    active ? sidebarNavActive : sidebarNavIdle
+  }`;
+  const inner = (
+    <>
+      <Icon className="h-5 w-5" /> {label}
+      {badge && (
+        <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
+          active ? 'bg-white/20 text-white' : badge.tone === 'amber' ? 'bg-amber-500 text-white' : 'bg-rose-500 text-white'
+        }`}>
+          {badge.count}
+        </span>
+      )}
+    </>
+  );
+
+  if (to) {
+    return (
+      <Link to={to} onClick={onClick} className={className}>
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={className}>
+      {inner}
+    </button>
+  );
+}
