@@ -18,6 +18,7 @@ import { PERIOD_PRESETS } from '../../utils/saasPaymentReport';
 import { useRevenuePeriodParams } from '../../hooks/useRevenuePeriodParams';
 import { DateField } from '../../components/DateField';
 import { ChartPanelSkeleton } from '../../components/LoadingSkeletons';
+import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import ChartCard from '../../components/reports/ChartCard';
 import ReportDonut from '../../components/reports/ReportDonut';
 import RevenueBarChart from '../../components/reports/RevenueBarChart';
