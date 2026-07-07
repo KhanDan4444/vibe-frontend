@@ -17,6 +17,7 @@ import { getGymReport, getRevenueReport } from '../../services/reportService';
 import { PERIOD_PRESETS } from '../../utils/saasPaymentReport';
 import { useRevenuePeriodParams } from '../../hooks/useRevenuePeriodParams';
 import { DateField } from '../../components/DateField';
+import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { ChartPanelSkeleton } from '../../components/LoadingSkeletons';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import ChartCard from '../../components/reports/ChartCard';
@@ -357,11 +358,22 @@ export default function AdminReports({ onBootingChange }) {
               <>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.from')}</label>
-                  <DateField value={customStart} onChange={setCustomStart} className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
+                  <DateField
+                    value={customStart}
+                    onChange={setCustomStart}
+                    max={boundsForCustomRangeFrom(customEnd).max}
+                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                  />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.to')}</label>
-                  <DateField value={customEnd} onChange={setCustomEnd} className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none" />
+                  <DateField
+                    value={customEnd}
+                    onChange={setCustomEnd}
+                    min={boundsForCustomRangeTo(customStart).min}
+                    max={boundsForCustomRangeTo(customStart).max}
+                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                  />
                 </div>
               </>
             )}

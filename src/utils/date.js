@@ -74,3 +74,42 @@ export function parseLocalDate(dateStr) {
 export function todayString() {
   return formatLocalDate(new Date());
 }
+
+/** Normalize to YYYY-MM-DD for bounds; returns undefined for empty or display placeholder. */
+export function normalizeCalendarIso(date) {
+  if (!date || date === '—') return undefined;
+  const iso = String(date).split('T')[0];
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso : undefined;
+}
+
+/** @param {string|undefined} min @param {string|undefined} max */
+export function isDateRangeValid(min, max) {
+  const a = normalizeCalendarIso(min);
+  const b = normalizeCalendarIso(max);
+  if (!a || !b) return true;
+  const da = parseLocalDate(a);
+  const db = parseLocalDate(b);
+  if (!da || !db) return true;
+  return da.getTime() <= db.getTime();
+}
+
+/**
+ * Keep an ISO date inside optional min/max (local calendar days).
+ * @param {string} iso
+ * @param {string|undefined} min
+ * @param {string|undefined} max
+ */
+export function clampIsoDate(iso, min, max) {
+  const normalized = normalizeCalendarIso(iso);
+  if (!normalized) return todayString();
+  if (!isDateRangeValid(min, max)) {
+    return normalizeCalendarIso(max) || normalizeCalendarIso(min) || normalized;
+  }
+  let result = normalized;
+  const d = parseLocalDate(result);
+  const dMin = min ? parseLocalDate(min) : null;
+  const dMax = max ? parseLocalDate(max) : null;
+  if (dMin && d && d < dMin) result = min;
+  if (dMax && d && parseLocalDate(result) > dMax) result = max;
+  return result;
+}

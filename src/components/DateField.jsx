@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString } from '../utils/date';
+import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString, clampIsoDate, isDateRangeValid } from '../utils/date';
 
 const DEFAULT_CLASS =
   'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text';
@@ -185,7 +185,20 @@ export function DateField({
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
   const { t, i18n } = useTranslation();
-  const display = value ? formatDisplayDate(value) : t('common.pickDate');
+  const rangeValid = isDateRangeValid(min, max);
+  const pickerDisabled = disabled || !rangeValid;
+  const clampedValue = useMemo(() => {
+    if (!value) return '';
+    if (!rangeValid) return value;
+    return clampIsoDate(value, min, max);
+  }, [value, min, max, rangeValid]);
+  const display = clampedValue ? formatDisplayDate(clampedValue) : t('common.pickDate');
+
+  useEffect(() => {
+    if (!value || !rangeValid || !onChange) return;
+    const next = clampIsoDate(value, min, max);
+    if (next !== value) onChange(next);
+  }, [value, min, max, rangeValid, onChange]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -197,7 +210,8 @@ export function DateField({
   }, [open]);
 
   const handleSelect = (iso) => {
-    onChange(iso);
+    if (!rangeValid) return;
+    onChange(clampIsoDate(iso, min, max));
     setOpen(false);
   };
 
@@ -206,28 +220,32 @@ export function DateField({
       <button
         type="button"
         id={id}
-        disabled={disabled}
+        disabled={pickerDisabled}
         aria-required={required || undefined}
         aria-expanded={open}
         aria-haspopup="dialog"
         onClick={() => {
-          if (!disabled) setOpen((current) => !current);
+          if (!pickerDisabled) setOpen((current) => !current);
         }}
         className={`flex w-full min-h-[42px] items-center justify-between gap-2 text-left ${
-          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+          pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
         } ${className}`}
       >
-        <span className={!value ? 'text-slate-400 dark:text-app-muted' : ''}>{display}</span>
+        <span className={!clampedValue ? 'text-slate-400 dark:text-app-muted' : ''}>{display}</span>
         <Calendar className="h-4 w-4 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />
       </button>
 
-      {name ? <input type="hidden" name={name} value={value} /> : null}
+      {!rangeValid ? (
+        <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-300">{t('validation.dateRangeInvalid')}</p>
+      ) : null}
+
+      {name ? <input type="hidden" name={name} value={clampedValue} /> : null}
 
       <DatePickerPopover
-        open={open}
+        open={open && rangeValid}
         anchorRef={anchorRef}
         onClose={() => setOpen(false)}
-        value={value}
+        value={clampedValue}
         min={min}
         max={max}
         onSelect={handleSelect}

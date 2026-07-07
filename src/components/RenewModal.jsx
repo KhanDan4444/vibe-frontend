@@ -4,6 +4,11 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
+import {
+  boundsForPaymentOnTerm,
+  boundsForRenewStart,
+  clampPaymentToTerm,
+} from '../utils/datePickerBounds';
 import { validateRenewPayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -93,7 +98,8 @@ export default function RenewModal({
 
   const isBusy = saving || submitting;
   const displayError = validationError || error;
-  const minStartDate = defaultRenewStartDate(member);
+  const renewStartBounds = boundsForRenewStart(member);
+  const paymentBounds = boundsForPaymentOnTerm(startDate);
   const showEarlyRenewNote =
     canRenewMember(member) && member.status === DISPLAY_STATUS.DUE_SOON;
   const newEndDate = selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : null;
@@ -159,18 +165,21 @@ export default function RenewModal({
               <label className="form-label">{t('modals.renew.startDate')}</label>
               <DateField
                 required
-                min={minStartDate}
+                min={renewStartBounds.min}
                 className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none cursor-pointer"
                 value={startDate}
-                onChange={setStartDate}
+                onChange={(v) => {
+                  setStartDate(v);
+                  setPaymentDate(clampPaymentToTerm(v, paymentDate));
+                }}
               />
             </div>
             <div>
               <label className="form-label">{t('modals.member.paymentDate')}</label>
               <DateField
                 required
-                min={startDate || undefined}
-                max={today}
+                min={paymentBounds.min}
+                max={paymentBounds.max}
                 className={fc('paymentDate')}
                 value={paymentDate}
                 onChange={(v) => {

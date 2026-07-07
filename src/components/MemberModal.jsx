@@ -4,6 +4,11 @@ import { X, Upload, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import {
+  boundsForEnrollStart,
+  boundsForPaymentOnTerm,
+  clampPaymentToTerm,
+} from '../utils/datePickerBounds';
+import {
   formatPhoneForInput,
   validateMemberForm,
   validateMemberEnrollPayment,
@@ -469,8 +474,10 @@ export default function MemberModal({
                 required
                 className={`${fc('startDate')} cursor-pointer`}
                 value={startDate}
+                max={boundsForEnrollStart(skipPayment).max}
                 onChange={(v) => {
                   setStartDate(v);
+                  if (!skipPayment) setPaymentDate(clampPaymentToTerm(v, paymentDate));
                   clearFieldError(setLocalFieldErrors, 'startDate');
                   markEnrollTouched();
                 }}
@@ -550,8 +557,8 @@ export default function MemberModal({
                       <label className={modalFieldLabel}>{t('modals.member.paymentDate')}</label>
                       <DateField
                         required
-                        min={startDate || undefined}
-                        max={todayString()}
+                        min={boundsForPaymentOnTerm(startDate).min}
+                        max={boundsForPaymentOnTerm(startDate).max}
                         className={`${fc('paymentDate')} cursor-pointer`}
                         value={paymentDate}
                         onChange={(v) => {

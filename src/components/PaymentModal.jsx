@@ -4,6 +4,7 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
+import { boundsForPaymentOnTerm } from '../utils/datePickerBounds';
 import { validateStandalonePayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -75,7 +76,7 @@ export default function PaymentModal({
     selectedMember?.startDate && selectedMember.startDate !== '—'
       ? selectedMember.startDate
       : undefined;
-  const today = todayString();
+  const paymentBounds = boundsForPaymentOnTerm(minPaymentDate);
 
   const handleMemberChange = (memberIdValue) => {
     setSelectedMemberId(memberIdValue);
@@ -216,8 +217,8 @@ export default function PaymentModal({
             <label className="form-label">{t('modals.payment.date')}</label>
             <DateField
               required
-              min={minPaymentDate}
-              max={today}
+              min={paymentBounds.min}
+              max={paymentBounds.max}
               className={fc('date')}
               value={date}
               onChange={(v) => {

@@ -19,6 +19,7 @@ import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } fro
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
 import { toDateString, formatDisplayDate } from '../../utils/date';
+import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../../utils/surfaceClasses';
@@ -238,12 +239,15 @@ export default function Revenue() {
               className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
               value={customStart}
               onChange={setCustomStart}
+              max={boundsForCustomRangeFrom(customEnd).max}
             />
             <span className="text-slate-400">{t('common.to')}</span>
             <DateField
               className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
               value={customEnd}
               onChange={setCustomEnd}
+              min={boundsForCustomRangeTo(customStart).min}
+              max={boundsForCustomRangeTo(customStart).max}
             />
           </div>
         )}

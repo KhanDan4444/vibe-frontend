@@ -986,6 +986,7 @@
     "paymentForTermStart": "Enter the payment collected for this new term start date.",
     "paymentForLicenseStart": "Enter the payment collected for this new license start date.",
     "paymentDateBeforeTermStart": "Payment date cannot be before the term start date.",
+    "dateRangeInvalid": "No valid dates for this field right now. Adjust the term start or come back when payment can be recorded.",
     "paymentDateBeforeLicenseStart": "Payment date cannot be before the license start date.",
     "changePlanDuplicate": "A plan-change payment is already recorded on this date. Edit it in Revenue or pick another date.",
     "selectPlanAndAmount": "Select a plan and enter a valid payment amount and dates.",

@@ -4,6 +4,11 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, ArrowLeftRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
+import {
+  boundsForPaymentOnTerm,
+  boundsForTermStartWithPayment,
+  paymentDateForTermStart,
+} from '../utils/datePickerBounds';
 import { validateChangePlanPayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -57,6 +62,8 @@ export default function ChangeSaasPlanModal({
     startDate,
   });
   const today = todayString();
+  const termStartBounds = boundsForTermStartWithPayment();
+  const paymentBounds = boundsForPaymentOnTerm(effectiveStartDate);
 
   const initDefaults = useCallback(() => {
     if (!gym) return;
@@ -258,12 +265,12 @@ export default function ChangeSaasPlanModal({
               <label className="form-label">{t('modals.changeSaasPlan.newLicenseStarts')}</label>
               <DateField
                 required
-                max={today}
+                max={termStartBounds.max}
                 className={fc('startDate')}
                 value={startDate}
                 onChange={(v) => {
                   setStartDate(v);
-                  setPaymentDate(v);
+                  setPaymentDate(paymentDateForTermStart(v));
                   clearFieldError(setLocalFieldErrors, 'startDate');
                 }}
               />
@@ -278,8 +285,8 @@ export default function ChangeSaasPlanModal({
             <label className="form-label">{t('modals.changeSaasPlan.paymentDateReceived')}</label>
             <DateField
               required
-              min={effectiveStartDate || undefined}
-              max={today}
+              min={paymentBounds.min}
+              max={paymentBounds.max}
               className={fc('paymentDate')}
               value={paymentDate}
               onChange={(v) => {

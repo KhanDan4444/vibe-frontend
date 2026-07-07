@@ -18,6 +18,7 @@ import {
 import { parseApiResponse } from '../../utils/api';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { DateField } from '../../components/DateField';
+import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import InitialsAvatar from '../../components/InitialsAvatar';
@@ -272,9 +273,20 @@ export default function AdminPayments({ gyms = [], onCollectPayment, onBootingCh
         </div>
         {periodPreset === 'custom' && (
           <div className="flex flex-wrap items-center gap-2">
-            <DateField className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm" value={customStart} onChange={setCustomStart} />
+            <DateField
+              className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
+              value={customStart}
+              onChange={setCustomStart}
+              max={boundsForCustomRangeFrom(customEnd).max}
+            />
             <span className="text-slate-400">{t('common.to')}</span>
-            <DateField className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm" value={customEnd} onChange={setCustomEnd} />
+            <DateField
+              className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
+              value={customEnd}
+              onChange={setCustomEnd}
+              min={boundsForCustomRangeTo(customStart).min}
+              max={boundsForCustomRangeTo(customStart).max}
+            />
           </div>
         )}
       </div>

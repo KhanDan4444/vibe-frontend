@@ -4,6 +4,7 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, Calendar, DollarSign, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, toDateString, formatDisplayDate } from '../utils/date';
+import { boundsForPaymentOnTerm } from '../utils/datePickerBounds';
 import { validateStandalonePayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -42,6 +43,7 @@ export default function AdminPaymentModal({
       ? String(gym.saas_subscription.start_date).split('T')[0]
       : null) ||
     (gym?.saas_start_date ? String(gym.saas_start_date).split('T')[0] : null);
+  const paymentBounds = boundsForPaymentOnTerm(termStart);
   const today = todayString();
   const planId = gym?.saas_subscription?.saas_plan_id || gym?.saas_plan_id;
 
@@ -183,8 +185,8 @@ export default function AdminPaymentModal({
                 <Calendar className="pointer-events-none absolute left-3 top-2.5 z-10 h-5 w-5 text-slate-400" />
                 <DateField
                   required
-                  min={termStart || undefined}
-                  max={today}
+                  min={paymentBounds.min}
+                  max={paymentBounds.max}
                   className={fc('date', 'pl-10 pr-4')}
                   value={date}
                   onChange={(v) => {

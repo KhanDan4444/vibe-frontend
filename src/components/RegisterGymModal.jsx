@@ -4,6 +4,7 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString } from '../utils/date';
+import { boundsForLicensePayment } from '../utils/datePickerBounds';
 import {
   validateAdminGymRegister,
   showValidationError,
@@ -313,7 +314,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                   <label className="form-label">{t('modals.member.paymentDate')}</label>
                   <DateField
                     required
-                    max={todayString()}
+                    min={boundsForLicensePayment().min}
+                    max={boundsForLicensePayment().max}
                     className={fc('paymentDate')}
                     value={paymentDate}
                     onChange={(v) => {

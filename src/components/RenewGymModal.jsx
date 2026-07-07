@@ -4,6 +4,11 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
+import {
+  boundsForLicenseRenewStart,
+  boundsForPaymentOnTerm,
+  clampPaymentToTerm,
+} from '../utils/datePickerBounds';
 import { validateGymRenewPayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -92,6 +97,8 @@ export default function RenewGymModal({
   const minStartDate = defaultGymRenewStartDate(gym);
   const selectedPlan = saasPlans.find((p) => p.id === parseInt(planId, 10));
   const newEndDate = selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : null;
+  const renewStartBounds = boundsForLicenseRenewStart(minStartDate);
+  const paymentBounds = boundsForPaymentOnTerm(startDate);
   const today = todayString();
   const endDisplay = gym.saasEndDate || (gym.saas_end_date ? String(gym.saas_end_date).split('T')[0] : null);
   const showEarlyRenewNote = !gym.isUnpaid && endDisplay && endDisplay !== '—';
@@ -160,11 +167,12 @@ export default function RenewGymModal({
               <label className="form-label">{t('modals.renewGym.licenseStartDate')}</label>
               <DateField
                 required
-                min={minStartDate}
+                min={renewStartBounds.min}
                 className={fc('startDate')}
                 value={startDate}
                 onChange={(v) => {
                   setStartDate(v);
+                  setPaymentDate(clampPaymentToTerm(v, paymentDate));
                   clearFieldError(setLocalFieldErrors, 'startDate');
                 }}
               />
@@ -174,7 +182,8 @@ export default function RenewGymModal({
               <label className="form-label">{t('modals.renewGym.paymentDate')}</label>
               <DateField
                 required
-                max={today}
+                min={paymentBounds.min}
+                max={paymentBounds.max}
                 className={fc('paymentDate')}
                 value={paymentDate}
                 onChange={(v) => {
