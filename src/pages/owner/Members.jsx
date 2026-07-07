@@ -819,8 +819,9 @@ export default function Members() {
         member={modalState.member}
         branches={branches}
         defaultBranchId={enrollDefaultBranchId}
-        showBranchPicker={showBranchPicker && !modalState.member}
-        showPhotoUpload={!modalState.member}
+        showBranchPicker={showBranchPicker}
+        showPhotoUpload
+        apiFetch={apiFetch}
         saving={saving}
         error={modalState.error}
         fieldErrors={modalState.fieldErrors}
@@ -862,6 +863,10 @@ export default function Members() {
         member={selectedMember}
         plans={plans}
         apiFetch={apiFetch}
+        branches={branches}
+        defaultBranchId={enrollDefaultBranchId}
+        showBranchPicker={showBranchPicker}
+        showPhotoUpload
         paymentsRefreshKey={paymentsRefreshKey}
         onClose={() => setSelectedMember(null)}
         onUpdate={handleUpdateFromDrawer}

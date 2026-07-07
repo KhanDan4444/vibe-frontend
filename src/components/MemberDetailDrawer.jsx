@@ -44,6 +44,10 @@ export default function MemberDetailDrawer({
   member,
   plans = [],
   apiFetch,
+  branches = [],
+  defaultBranchId,
+  showBranchPicker = false,
+  showPhotoUpload = false,
   paymentsRefreshKey = 0,
   onClose,
   onUpdate,
@@ -381,6 +385,11 @@ export default function MemberDetailDrawer({
         onSubmit={handleEditSubmit}
         plans={plans}
         member={isEditOpen ? member : null}
+        branches={branches}
+        defaultBranchId={defaultBranchId}
+        showBranchPicker={showBranchPicker}
+        showPhotoUpload={showPhotoUpload}
+        apiFetch={apiFetch}
         saving={saving}
         error={error}
       />

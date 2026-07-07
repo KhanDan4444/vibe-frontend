@@ -320,6 +320,12 @@ export const GymProvider = ({ children }) => {
       name: memberData.name,
       phone: memberData.phone,
     };
+    if (memberData.branchId !== undefined) {
+      payload.branch_id = memberData.branchId;
+    }
+    if (memberData.photo !== undefined) {
+      payload.photo = memberData.photo;
+    }
 
     return runMutation(() => updateMemberReq(apiFetch, id, payload));
   };

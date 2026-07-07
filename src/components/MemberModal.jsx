@@ -37,6 +37,7 @@ export default function MemberModal({
   defaultBranchId,
   showBranchPicker = false,
   showPhotoUpload = false,
+  apiFetch,
   saving = false,
   error,
   fieldErrors: externalFieldErrors = {},
@@ -57,6 +58,8 @@ export default function MemberModal({
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [photoProcessing, setPhotoProcessing] = useState(false);
+  const [photoRemoved, setPhotoRemoved] = useState(false);
+  const [hadExistingPhoto, setHadExistingPhoto] = useState(false);
   const lastModalModeRef = useRef(null);
 
   const isEdit = !!member;
@@ -95,12 +98,20 @@ export default function MemberModal({
       setPhone(formatPhoneForInput(member.phone));
       setPlanId(member.planId || '');
       setStartDate(member.startDate || '');
+      setBranchId(member.branchId ? String(member.branchId) : resolvedDefaultBranch);
+      setPhotoFile(null);
+      setPhotoRemoved(false);
+      setHadExistingPhoto(Boolean(member.hasPhoto));
+      setPhotoPreview((prev) => {
+        if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+        return '';
+      });
       return;
     }
 
     lastModalModeRef.current = 'enroll';
     initEnrollDefaults();
-  }, [member, initEnrollDefaults]);
+  }, [member, initEnrollDefaults, resolvedDefaultBranch]);
 
   const { markTouched, resetDraft } = useModalFormDraft({
     isOpen,
@@ -113,6 +124,28 @@ export default function MemberModal({
   const markEnrollTouched = () => {
     if (!isEdit) markTouched();
   };
+
+  useEffect(() => {
+    if (!isOpen || !isEdit || !member?.id || !apiFetch || !member.hasPhoto) return undefined;
+
+    let objectUrl;
+    (async () => {
+      try {
+        const res = await apiFetch(`/members/${member.id}/photo`);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        objectUrl = URL.createObjectURL(blob);
+        setPhotoPreview(objectUrl);
+        setHadExistingPhoto(true);
+      } catch {
+        // Keep fallback avatar when photo cannot be loaded.
+      }
+    })();
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [isOpen, isEdit, member?.id, member?.hasPhoto, apiFetch]);
 
   useEffect(() => {
     return () => {
@@ -140,6 +173,7 @@ export default function MemberModal({
         URL.revokeObjectURL(photoPreview);
       }
       setPhotoPreview('');
+      if (isEdit && hadExistingPhoto) setPhotoRemoved(true);
       return;
     }
     const photoResult = validateMemberPhotoFile(file);
@@ -151,6 +185,7 @@ export default function MemberModal({
       URL.revokeObjectURL(photoPreview);
     }
     setPhotoFile(file);
+    setPhotoRemoved(false);
     markEnrollTouched();
     setPhotoPreview(URL.createObjectURL(file));
   };
@@ -161,6 +196,7 @@ export default function MemberModal({
       URL.revokeObjectURL(photoPreview);
     }
     setPhotoPreview('');
+    if (isEdit && hadExistingPhoto) setPhotoRemoved(true);
   };
 
   const handleSubmit = async (e) => {
@@ -179,10 +215,30 @@ export default function MemberModal({
     if (isEdit) {
       setSubmitting(true);
       try {
-        await onSubmit({
+        const editPayload = {
           name: name.trim(),
           phone: trimmedPhone,
-        });
+        };
+        if (showBranchPicker && branchId) {
+          const parsedBranch = parseInt(branchId, 10);
+          if (!Number.isNaN(parsedBranch) && parsedBranch !== member.branchId) {
+            editPayload.branchId = parsedBranch;
+          }
+        }
+        if (photoFile) {
+          setPhotoProcessing(true);
+          try {
+            editPayload.photo = await compressMemberPhoto(photoFile);
+          } catch (err) {
+            setValidationError(err.message || t('validation.photoProcessFailed'));
+            return;
+          } finally {
+            setPhotoProcessing(false);
+          }
+        } else if (photoRemoved && hadExistingPhoto) {
+          editPayload.photo = null;
+        }
+        await onSubmit(editPayload);
       } finally {
         setSubmitting(false);
       }
@@ -324,11 +380,11 @@ export default function MemberModal({
             <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
             <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">{t('modals.member.phoneHint')}</p>
           </div>
-          {!isEdit && showBranchPicker && activeBranches.length > 0 && (
+          {showBranchPicker && activeBranches.length > 0 && (
             <div>
               <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
               <select
-                required
+                required={!isEdit}
                 className={`${fc('branchId')} cursor-pointer`}
                 value={branchId}
                 onChange={(e) => setBranchId(e.target.value)}
@@ -342,7 +398,15 @@ export default function MemberModal({
               </select>
             </div>
           )}
-          {!isEdit && showPhotoUpload && (
+          {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
+            <div>
+              <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
+              <p className="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 dark:border-app-border-subtle dark:bg-app-surface/70 dark:text-app-text">
+                {member.branchName || activeBranches.find((b) => b.id === member.branchId)?.name || '—'}
+              </p>
+            </div>
+          )}
+          {showPhotoUpload && (
             <div>
               <label className={modalFieldLabel}>{t('modals.member.photo')}</label>
               <div className="mt-2 flex items-center gap-4">
