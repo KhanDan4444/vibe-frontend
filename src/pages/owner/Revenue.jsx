@@ -12,7 +12,7 @@ import PaginationControls from '../../components/PaginationControls';
 import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
 import { parseApiResponse } from '../../utils/api';
 import { mapPaymentFromApi } from '../../utils/apiMappers';
-import { paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
+import { paymentMethodStyle, paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
 import { exportColumn, translatePaymentMethod } from '../../i18n/helpers';
 import { getPayments } from '../../services/paymentService';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } from '../../utils/listSort';
@@ -438,13 +438,7 @@ export default function Revenue() {
                         {paymentSourceLabel(payment.source)}
                       </span>
                       <span
-                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold border ${
-                          payment.method === 'Card'
-                            ? 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-600/10 dark:text-teal-400 dark:border-teal-600/20'
-                            : payment.method === 'Bank Transfer'
-                            ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/20'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-app-surface dark:text-app-text dark:border-app-border-subtle'
-                        }`}
+                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold border ${paymentMethodStyle(payment.method)}`}
                       >
                         {paymentMethodLabel(payment.method, t)}
                       </span>
@@ -524,13 +518,9 @@ export default function Revenue() {
                       </span>
                     </td>
                     <td>
-                      <span className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold border ${
-                        payment.method === 'Card'
-                          ? 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-600/10 dark:text-teal-400 dark:border-teal-600/20'
-                          : payment.method === 'Bank Transfer'
-                          ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-sky-500/10 dark:text-sky-400 dark:border-sky-500/20'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-app-surface dark:text-app-text dark:border-app-border-subtle'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold border ${paymentMethodStyle(payment.method)}`}
+                      >
                         {paymentMethodLabel(payment.method, t)}
                       </span>
                     </td>
