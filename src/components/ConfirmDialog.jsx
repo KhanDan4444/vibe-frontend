@@ -31,7 +31,7 @@ export default function ConfirmDialog({
 
   const typeStyles = {
     danger: 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500',
-    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500',
+    primary: 'bg-teal-700 hover:bg-teal-700 text-white focus:ring-teal-600',
   };
 
   return (

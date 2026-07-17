@@ -123,7 +123,7 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
           <button
             type="submit"
             disabled={saving || !name.trim()}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+            className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
           >
             {saving ? t('common.processing') : isEdit ? t('modals.staff.saveUpdate') : t('pages.branches.formAdd')}
           </button>
@@ -295,7 +295,7 @@ export default function Branches() {
               setModalError('');
               setModal({ open: true, branch: null });
             }}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700"
           >
             <Plus className="h-4 w-4" />
             {t('pages.branches.add')}
@@ -365,7 +365,7 @@ export default function Branches() {
                           setModalError('');
                           setModal({ open: true, branch });
                         }}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-indigo-600 active:bg-indigo-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-teal-700 active:bg-teal-50"
                       >
                         <Edit className="h-3.5 w-3.5" />
                         {t('common.edit')}
@@ -447,7 +447,7 @@ export default function Branches() {
                             setModalError('');
                             setModal({ open: true, branch });
                           }}
-                          className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-indigo-600 hover:bg-indigo-50"
+                          className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-teal-700 hover:bg-teal-50"
                         >
                           <Edit className="h-4 w-4" />
                           {t('common.edit')}

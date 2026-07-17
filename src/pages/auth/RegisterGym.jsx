@@ -40,7 +40,7 @@ export default function RegisterGym() {
   const [message, setMessage] = useState('');
 
   const inputClass =
-    'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+    'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-white focus:border-teal-600 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
 
@@ -127,7 +127,7 @@ export default function RegisterGym() {
   if (plansLoading) {
     return (
       <div className="flex min-h-[100dvh] items-center justify-center bg-slate-900 dark:bg-app-bg">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent" />
       </div>
     );
   }
@@ -137,7 +137,7 @@ export default function RegisterGym() {
       <div className="safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-slate-900 px-4 dark:bg-app-bg">
         <div className="max-w-md rounded-2xl border border-slate-700 bg-slate-800 p-8 text-center dark:border-app-border-subtle dark:bg-app-raised">
           <p className="text-slate-300 dark:text-app-text">{t('auth.signupUnavailable')}</p>
-          <Link to="/login" className="mt-4 inline-block text-indigo-400 hover:text-indigo-300">
+          <Link to="/login" className="mt-4 inline-block text-teal-400 hover:text-teal-300">
             {t('auth.backToSignIn')}
           </Link>
         </div>
@@ -190,7 +190,7 @@ export default function RegisterGym() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
             >
               {loading ? t('auth.sending') : t('auth.sendOtp')}
             </button>
@@ -295,7 +295,7 @@ export default function RegisterGym() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
             >
               {loading ? t('auth.processing') : t('auth.createGymAccount')}
             </button>
@@ -303,7 +303,7 @@ export default function RegisterGym() {
         )}
 
         <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300">
+          <Link to="/login" className="text-teal-400 hover:text-teal-300">
             {t('auth.backToSignIn')}
           </Link>
         </p>

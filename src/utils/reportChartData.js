@@ -7,7 +7,7 @@ import { formatDisplayDate } from './date';
 
 /** Distinct slice colors for payment method donut charts. */
 export const PAYMENT_METHOD_COLORS = {
-  Card: '#4f46e5',
+  Card: '#0f766e',
   'Bank Transfer': '#0891b2',
   Cash: '#059669',
   Other: '#d97706',

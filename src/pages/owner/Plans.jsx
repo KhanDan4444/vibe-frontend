@@ -103,7 +103,7 @@ export default function Plans() {
               setError('');
               setIsAddModalOpen(true);
             }}
-            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors cursor-pointer self-start sm:self-auto"
+            className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 transition-colors cursor-pointer self-start sm:self-auto"
           >
             <Plus className="h-4 w-4" /> {t('pages.plans.add')}
           </button>
@@ -133,7 +133,7 @@ export default function Plans() {
                   <button
                     type="button"
                     onClick={() => handleEditClick(plan)}
-                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-indigo-600 sm:p-1.5 sm:hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:hover:text-indigo-600"
+                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-teal-700 sm:p-1.5 sm:hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:hover:text-teal-700"
                     title={t('pages.plans.editPlanTitle')}
                     aria-label={t('pages.plans.editPlanTitle')}
                   >
@@ -153,7 +153,7 @@ export default function Plans() {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-indigo-50 p-2.5 text-indigo-600">
+                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700">
                     <Dumbbell className="h-6 w-6" />
                   </span>
                   <h3 className="font-bold text-slate-900 dark:text-app-text-strong text-lg pr-16 truncate" title={plan.name}>

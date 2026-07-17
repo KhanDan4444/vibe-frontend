@@ -90,7 +90,7 @@ export default function ReassignStaffModal({
                   required
                   value={targetBranchId}
                   onChange={(e) => setTargetBranchId(e.target.value)}
-                  className="block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised py-2.5 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised py-2.5 pl-9 pr-3 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
                 >
                   {targetOptions.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -114,7 +114,7 @@ export default function ReassignStaffModal({
           <button
             type="submit"
             disabled={saving || targetOptions.length === 0}
-            className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+            className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
           >
             {saving ? t('common.processing') : t('modals.reassignStaff.save')}
           </button>

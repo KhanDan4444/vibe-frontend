@@ -314,7 +314,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="text-sm font-medium text-slate-700 dark:text-app-text">{t('period.reportPeriod')}</label>
           <select
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm cursor-pointer focus:border-indigo-500 focus:outline-none"
+            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm cursor-pointer focus:border-teal-600 focus:outline-none"
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value)}
           >
@@ -497,7 +497,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       </span>
                     </div>
                     {payment.planName && (
-                      <p className="mt-1 text-sm font-semibold text-indigo-600">{payment.planName}</p>
+                      <p className="mt-1 text-sm font-semibold text-teal-700">{payment.planName}</p>
                     )}
                     {payment.notes && <p className="mt-0.5 text-xs text-slate-500">{payment.notes}</p>}
                   </div>
@@ -571,7 +571,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                     </td>
                     <td className="truncate text-slate-600 dark:text-app-text">{translatePaymentMethod(payment.method)}</td>
                     <td>
-                      {payment.planName && <div className="truncate font-semibold text-indigo-600">{payment.planName}</div>}
+                      {payment.planName && <div className="truncate font-semibold text-teal-700">{payment.planName}</div>}
                       {payment.notes && <div className="truncate text-xs text-slate-500">{payment.notes}</div>}
                     </td>
                     <td className="font-bold whitespace-nowrap">${Number(payment.amount).toFixed(2)}</td>
@@ -580,7 +580,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       <button
                         type="button"
                         onClick={() => setEditState({ isOpen: true, payment, error: '' })}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
                         title={t('admin.editPaymentTitle')}
                       >
                         <Edit className="h-4 w-4" />

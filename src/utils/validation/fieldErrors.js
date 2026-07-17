@@ -4,7 +4,7 @@ export const FIELD_INPUT_ERROR_CLASS =
 
 /** Default text input styling used in modals and auth forms. */
 export const FORM_INPUT_CLASS =
-  'mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-500 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text';
+  'mt-1 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-teal-600 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text';
 
 /** @param {string} base @param {Record<string, string>} fieldErrors @param {string} field */
 export function inputClass(base, fieldErrors, field) {

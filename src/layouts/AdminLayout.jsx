@@ -142,7 +142,7 @@ export default function AdminLayout() {
             <button type="button" onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
               <X className="h-6 w-6" />
             </button>
-            <div className="mb-8 mt-2 text-2xl font-bold text-indigo-400">{t('admin.platformCore')}</div>
+            <div className="mb-8 mt-2 text-2xl font-bold text-teal-400">{t('admin.platformCore')}</div>
             <nav className="mb-auto space-y-1">
               {adminNavItems.map((item) => (
                 <SidebarLink
@@ -161,7 +161,7 @@ export default function AdminLayout() {
       )}
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-8 text-2xl font-bold text-indigo-400">{t('admin.platformCore')}</div>
+        <div className="mb-8 text-2xl font-bold text-teal-400">{t('admin.platformCore')}</div>
         <nav className="space-y-1">
           {adminNavItems.map((item) => (
             <SidebarLink
@@ -178,7 +178,7 @@ export default function AdminLayout() {
 
       <div className="lg:pl-64">
         <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-teal-600/20 bg-teal-600/10 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-300">
             <ShieldCheck className="h-3.5 w-3.5" /> {t('admin.platformAdmin')}
           </div>
           <div className="flex items-center gap-3">

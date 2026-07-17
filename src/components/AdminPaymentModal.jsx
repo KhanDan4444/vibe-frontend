@@ -31,7 +31,7 @@ export default function AdminPaymentModal({
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const fieldErrors = localFieldErrors;
-  const inputBase = 'w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none';
+  const inputBase = 'w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none';
   const fc = (field, extra = '') => inputClass(`${inputBase} ${extra}`, fieldErrors, field);
 
   const isEdit = !!payment;
@@ -202,7 +202,7 @@ export default function AdminPaymentModal({
           <div>
             <label className="form-label">{t('modals.payment.method')}</label>
             <select
-              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 px-4 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer"
+              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 px-4 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={method}
               onChange={(e) => setMethod(e.target.value)}
             >
@@ -218,7 +218,7 @@ export default function AdminPaymentModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <textarea
               rows="2"
-              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 px-4 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 px-4 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
@@ -235,7 +235,7 @@ export default function AdminPaymentModal({
           <button
             type="submit"
             disabled={isBusy}
-            className="w-full rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+            className="w-full rounded-lg bg-teal-700 px-6 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
           >
             {isBusy ? t('common.processing') : isEdit ? t('common.save') : t('modals.adminPayment.save')}
           </button>

@@ -12,10 +12,19 @@ export const sidebarSurface =
 export const sidebarNavIdle =
   'text-slate-200 hover:bg-slate-800 hover:text-white dark:text-app-text dark:hover:bg-app-raised dark:hover:text-app-text-strong';
 
-export const sidebarNavActive = 'bg-indigo-600 text-white';
+/** Active nav: soft brand fill + left accent bar (less “pill clone”). */
+export const sidebarNavActive =
+  'relative bg-teal-700/90 text-white before:absolute before:inset-y-1 before:left-0 before:w-1 before:rounded-full before:bg-teal-300';
 
 export const cardSurface =
   'rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised';
+
+/** Quieter panel — lighter chrome for dashboards / drawers. */
+export const panelQuiet =
+  'rounded-lg border border-slate-200/80 bg-white dark:border-app-border-subtle dark:bg-app-raised/80';
+
+export const sectionDivider =
+  'border-t border-slate-100 dark:border-app-border-subtle';
 
 export const cardHeader =
   'border-b border-slate-100 bg-slate-50/50 dark:border-app-border-subtle dark:bg-app-surface/80';

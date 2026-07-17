@@ -117,7 +117,7 @@ export default function RenewModal({
         </button>
 
         <div className="flex items-center gap-2 mb-1 pr-8">
-          <RefreshCw className="h-5 w-5 text-indigo-600" />
+          <RefreshCw className="h-5 w-5 text-teal-700" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('modals.renew.title')}</h2>
         </div>
         <p className="text-sm text-slate-500 mb-6">
@@ -147,7 +147,7 @@ export default function RenewModal({
             <label className="form-label">{t('modals.member.plan')}</label>
             <select
               required
-              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer"
+              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={planId}
               onChange={(e) => setPlanId(e.target.value)}
             >
@@ -166,7 +166,7 @@ export default function RenewModal({
               <DateField
                 required
                 min={renewStartBounds.min}
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={startDate}
                 onChange={(v) => {
                   setStartDate(v);
@@ -226,7 +226,7 @@ export default function RenewModal({
             <div>
               <label className="form-label">{t('modals.member.method')}</label>
               <select
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -250,7 +250,7 @@ export default function RenewModal({
             <button
               type="submit"
               disabled={isBusy || member.isUnpaid || plans.length === 0}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
             >
               {isBusy ? t('common.processing') : t('modals.renew.save')}
             </button>

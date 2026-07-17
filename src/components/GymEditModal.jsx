@@ -151,7 +151,7 @@ export default function GymEditModal({
           <div>
             <label className="form-label">{t('modals.gymEdit.subscriptionStatus')}</label>
             <select
-              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer"
+              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={subscriptionStatus}
               onChange={(e) => setSubscriptionStatus(e.target.value)}
             >
@@ -175,7 +175,7 @@ export default function GymEditModal({
             <button
               type="submit"
               disabled={saving}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : t('common.save')}
             </button>

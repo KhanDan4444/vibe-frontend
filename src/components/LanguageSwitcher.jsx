@@ -77,7 +77,7 @@ export default function LanguageSwitcher({ compact = false }) {
                 className={`flex w-full items-center justify-between gap-2 px-4 py-2.5 text-sm ${menuItem}`}
               >
                 <span>{t(opt.labelKey)}</span>
-                {selected && <Check className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" aria-hidden />}
+                {selected && <Check className="h-4 w-4 shrink-0 text-teal-700 dark:text-teal-400" aria-hidden />}
               </button>
             );
           })}

@@ -293,7 +293,7 @@ export default function MemberDetailDrawer({
                 icon={Dumbbell}
                 label={t('table.plan')}
                 value={matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
-                valueClassName="text-sm font-bold text-indigo-600"
+                valueClassName="text-sm font-bold text-teal-700"
               />
               <SlidePanelRow
                 icon={Calendar}
@@ -319,7 +319,7 @@ export default function MemberDetailDrawer({
                 <button
                   type="button"
                   onClick={loadPayments}
-                  className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                  className="text-sm font-medium text-teal-700 hover:text-teal-800"
                 >
                   {t('drawer.retry')}
                 </button>

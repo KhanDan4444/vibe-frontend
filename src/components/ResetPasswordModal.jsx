@@ -93,7 +93,7 @@ export default function ResetPasswordModal({
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2.5 pr-10 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20', fieldErrors, 'password')}
+                className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
               />
               <button
                 type="button"
@@ -121,7 +121,7 @@ export default function ResetPasswordModal({
           <button
             type="submit"
             disabled={saving || !passwordValid}
-            className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
           >
             {saving ? t('common.saving') : t('modals.resetPassword.submit')}
           </button>

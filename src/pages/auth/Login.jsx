@@ -30,7 +30,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-white placeholder-slate-500 caret-white focus:border-indigo-500 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong dark:placeholder-app-muted';
+    'auth-login-input mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-white placeholder-slate-500 caret-white focus:border-teal-600 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong dark:placeholder-app-muted';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -62,10 +62,10 @@ export default function Login() {
     <div className="safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-slate-900 px-4 py-8 dark:bg-app-bg sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200 dark:border-app-border-subtle dark:bg-app-raised sm:p-8">
         <div>
-          <p className="text-center text-2xl font-bold tracking-tight text-indigo-400 sm:text-3xl">
+          <p className="text-center text-3xl font-bold tracking-tight text-teal-300 sm:text-4xl">
             {t('app.name')}
           </p>
-          <h2 className="mt-3 text-center text-xl font-semibold tracking-tight text-white dark:text-app-text-strong sm:text-2xl">
+          <h2 className="mt-4 text-center text-lg font-medium tracking-tight text-slate-200 dark:text-app-text sm:text-xl">
             {t('auth.signInTitle')}
           </h2>
           <p className="mt-2 text-center text-sm text-slate-400 dark:text-app-muted">
@@ -128,11 +128,11 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-600 bg-slate-900/40 text-indigo-600 focus:ring-indigo-500 dark:border-app-border dark:bg-app-input"
+                  className="h-4 w-4 rounded border-slate-600 bg-slate-900/40 text-teal-700 focus:ring-teal-600 dark:border-app-border dark:bg-app-input"
                 />
                 {t('auth.rememberMe')}
               </label>
-              <Link to="/forgot-password" className="text-sm text-indigo-400 hover:text-indigo-300">
+              <Link to="/forgot-password" className="text-sm text-teal-400 hover:text-teal-300">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
@@ -141,7 +141,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50 dark:focus:ring-offset-app-raised"
+            className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-teal-700 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50 dark:focus:ring-offset-app-raised"
           >
             {loading ? (
               <span className="flex items-center gap-2">
@@ -159,7 +159,7 @@ export default function Login() {
 
         <p className="text-center text-sm text-slate-400 dark:text-app-muted">
           {t('auth.noAccount')}{' '}
-          <Link to="/register-gym" className="font-medium text-indigo-400 hover:text-indigo-300">
+          <Link to="/register-gym" className="font-medium text-teal-400 hover:text-teal-300">
             {t('auth.registerGymLink')}
           </Link>
         </p>
@@ -169,9 +169,9 @@ export default function Login() {
             <p className="flex items-center gap-1 font-semibold text-slate-300">
               💡 Developer Quick-Access (Sandbox Active):
             </p>
-            <p>• Gym Owner portal: Use <code className="font-mono text-indigo-400">owner@gym.com</code> with password <code className="font-mono text-indigo-400">password</code></p>
-            <p>• Help Desk portal: Use <code className="font-mono text-indigo-400">helpdesk@gym.com</code> with password <code className="font-mono text-indigo-400">password</code></p>
-            <p>• SaaS Admin portal: Use <code className="font-mono text-indigo-400">admin@saas.com</code> with password <code className="font-mono text-indigo-400">password</code></p>
+            <p>• Gym Owner portal: Use <code className="font-mono text-teal-400">owner@gym.com</code> with password <code className="font-mono text-teal-400">password</code></p>
+            <p>• Help Desk portal: Use <code className="font-mono text-teal-400">helpdesk@gym.com</code> with password <code className="font-mono text-teal-400">password</code></p>
+            <p>• SaaS Admin portal: Use <code className="font-mono text-teal-400">admin@saas.com</code> with password <code className="font-mono text-teal-400">password</code></p>
           </div>
         )}
       </div>

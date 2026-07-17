@@ -183,7 +183,7 @@ export default function OwnerLayout() {
             <button onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400 hover:text-slate-200 dark:text-app-muted dark:hover:text-app-text-strong">
               <X className="h-6 w-6" />
             </button>
-            <div className="mb-8 mt-2 text-2xl font-bold text-indigo-400">{t('app.name')}</div>
+            <div className="mb-8 mt-2 text-2xl font-bold text-teal-400">{t('app.name')}</div>
             <nav className="flex-1 space-y-1">
               {menuItems.map((item) => renderNavLink(item, () => setSidebarOpen(false)))}
             </nav>
@@ -192,7 +192,7 @@ export default function OwnerLayout() {
       )}
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-8 text-2xl font-bold text-indigo-400">{t('app.name')}</div>
+        <div className="mb-8 text-2xl font-bold text-teal-400">{t('app.name')}</div>
         <nav className="flex-1 space-y-1">
           {menuItems.map((item) => renderNavLink(item, undefined))}
         </nav>
@@ -201,7 +201,7 @@ export default function OwnerLayout() {
       <div className="lg:pl-64">
         {gymBooting && (
           <div className="sticky top-0 z-20 h-0.5 overflow-hidden bg-slate-200 dark:bg-app-border-subtle">
-            <div className="app-boot-bar h-full w-1/3 bg-indigo-500" />
+            <div className="app-boot-bar h-full w-1/3 bg-teal-600" />
           </div>
         )}
         <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
@@ -290,7 +290,7 @@ export default function OwnerLayout() {
             <button
               type="button"
               onClick={markAllAsRead}
-              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+              className="text-xs font-semibold text-teal-700 hover:text-teal-800"
             >
               {t('notifications.markAllRead')}
             </button>
@@ -309,7 +309,7 @@ export default function OwnerLayout() {
                   key={n.id}
                   onClick={() => markAsRead(n.id)}
                   className={`relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-all ${
-                    !isRead ? 'border-indigo-100 bg-indigo-50/30 dark:border-indigo-900 dark:bg-indigo-950/30' : 'border-slate-100 bg-white dark:border-app-border-subtle dark:bg-app-raised'
+                    !isRead ? 'border-teal-100 bg-teal-50/30 dark:border-teal-900 dark:bg-teal-950/30' : 'border-slate-100 bg-white dark:border-app-border-subtle dark:bg-app-raised'
                   }`}
                 >
                   <span
@@ -318,7 +318,7 @@ export default function OwnerLayout() {
                         ? 'border-amber-100 text-amber-500'
                         : n.type === 'danger'
                         ? 'border-rose-100 text-rose-500'
-                        : 'border-indigo-100 text-indigo-500'
+                        : 'border-teal-100 text-teal-600'
                     }`}
                   >
                     {n.type === 'warning' && <AlertTriangle className="h-4 w-4" />}
@@ -369,7 +369,7 @@ export default function OwnerLayout() {
                           e.stopPropagation();
                           openMemberFromNotification(n, 'view');
                         }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-indigo-600 hover:text-indigo-800"
+                        className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-teal-700 hover:text-teal-800"
                       >
                         {t('notifications.viewMember')}
                       </button>

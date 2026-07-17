@@ -35,7 +35,7 @@ const UNPAID = 'Unpaid';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 const LIST_AVATAR_CLASS = 'h-10 w-10 rounded-full object-cover';
 const LIST_AVATAR_FALLBACK_CLASS =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300';
+  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-100 text-sm font-bold text-teal-700 dark:bg-teal-600/20 dark:text-teal-300';
 
 function statusFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
@@ -408,7 +408,7 @@ export default function Members() {
             }}
             disabled={plans.length === 0}
             title={plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
-            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition-colors self-start sm:self-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 transition-colors self-start sm:self-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
           </button>
@@ -498,7 +498,7 @@ export default function Members() {
         />
       </FilterChipBar>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 dark:border-app-border-subtle pb-4">
         <div className="relative w-full sm:max-w-md">
           <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
             <Search className="h-5 w-5" />
@@ -570,7 +570,7 @@ export default function Members() {
                         <StatusBadge status={member.status} />
                       </div>
                       <p className="mt-1 font-mono text-sm text-slate-500">{member.phone}</p>
-                      <p className="mt-1 text-sm font-medium text-indigo-600">
+                      <p className="mt-1 text-sm font-medium text-teal-700">
                         {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                       </p>
                       {showBranchColumn && member.branchName && (
@@ -697,7 +697,7 @@ export default function Members() {
                         <td className="truncate text-slate-600 dark:text-app-text">{member.branchName || '—'}</td>
                       )}
                       <td className="truncate font-mono text-sm text-slate-500 dark:text-app-muted">{member.phone}</td>
-                      <td className="truncate font-semibold text-indigo-600">
+                      <td className="truncate font-semibold text-teal-700">
                         {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                       </td>
                       <td className="whitespace-nowrap text-slate-500">
@@ -732,7 +732,7 @@ export default function Members() {
                               e.stopPropagation();
                               openChangePlanModal(member);
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
                             title={t('actions.changePlan')}
                           >
                             <ArrowLeftRight className="h-4 w-4" />
@@ -759,7 +759,7 @@ export default function Members() {
                                 setError('');
                                 setModalState({ isOpen: true, member, error: '' });
                               }}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                              className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
                               title={t('common.edit')}
                             >
                               <Edit className="h-4 w-4" />

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString, clampIsoDate, isDateRangeValid } from '../utils/date';
 
 const DEFAULT_CLASS =
-  'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text';
+  'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text';
 
 const POPOVER_MIN_WIDTH = 288;
 const POPOVER_EST_HEIGHT = 320;

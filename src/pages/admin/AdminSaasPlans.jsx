@@ -145,7 +145,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
           onClick={() => {
             setIsAddOpen(true);
           }}
-          className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+          className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700"
         >
           <Plus className="h-4 w-4" /> {t('admin.createSaasPlan')}
         </button>
@@ -175,7 +175,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
                 <button
                   type="button"
                   onClick={() => handleEditClick(plan)}
-                  className="rounded-lg p-2.5 text-slate-400 hover:bg-slate-50 dark:hover:bg-app-surface/60 hover:text-indigo-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                  className="rounded-lg p-2.5 text-slate-400 hover:bg-slate-50 dark:hover:bg-app-surface/60 hover:text-teal-700 min-h-[44px] min-w-[44px] flex items-center justify-center"
                   aria-label={t('common.edit')}
                 >
                   <Edit className="h-4 w-4" />
@@ -191,7 +191,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-indigo-50 p-2.5 text-indigo-600">
+                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700">
                     <Dumbbell className="h-6 w-6" />
                   </span>
                   <h3 className="font-bold text-slate-900 dark:text-app-text-strong text-lg pr-16">{plan.name}</h3>

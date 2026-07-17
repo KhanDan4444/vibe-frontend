@@ -17,12 +17,12 @@ export const FILTER_CHIP_THEMES = {
     badgeInactive: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
   },
   unpaid: {
-    dot: 'bg-violet-400',
-    active: 'bg-violet-400/15 border-violet-400 text-violet-700 dark:text-violet-300',
+    dot: 'bg-orange-400',
+    active: 'bg-orange-400/15 border-orange-400 text-orange-700 dark:text-orange-300',
     inactive:
-      'bg-white border-violet-200 text-violet-700 hover:bg-violet-50 dark:bg-app-raised dark:border-violet-500/30 dark:text-violet-300 dark:hover:bg-violet-500/10',
-    badgeActive: 'bg-violet-400 text-white',
-    badgeInactive: 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300',
+      'bg-white border-orange-200 text-orange-700 hover:bg-orange-50 dark:bg-app-raised dark:border-orange-500/30 dark:text-orange-300 dark:hover:bg-orange-500/10',
+    badgeActive: 'bg-orange-400 text-white',
+    badgeInactive: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300',
   },
   due_soon: {
     dot: 'bg-amber-400',

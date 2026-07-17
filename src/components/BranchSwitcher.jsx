@@ -26,7 +26,7 @@ export default function BranchSwitcher({ branches, selectedBranchId, onChange, c
           const value = e.target.value;
           onChange(value === 'all' ? 'all' : parseInt(value, 10));
         }}
-        className="max-w-full flex-1 truncate rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-2.5 py-2 text-sm font-medium text-slate-700 dark:text-app-text shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 sm:max-w-xs sm:py-1.5"
+        className="max-w-full flex-1 truncate rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-2.5 py-2 text-sm font-medium text-slate-700 dark:text-app-text shadow-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 sm:max-w-xs sm:py-1.5"
       >
         <option value="all">{t('branch.allBranches')}</option>
         {activeBranches.map((branch) => (

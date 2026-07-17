@@ -96,7 +96,7 @@ export default function MemberMessages() {
           id="sms-type-filter"
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
         >
           {SMS_TYPE_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -124,7 +124,7 @@ export default function MemberMessages() {
                 onClick={() => openMember(row.member_id)}
                 className="flex w-full gap-3 p-4 text-left active:bg-slate-50 dark:active:bg-app-surface/60"
               >
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                   <MessageSquare className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -172,7 +172,7 @@ export default function MemberMessages() {
                     <td className="font-medium text-slate-900 dark:text-app-text-strong">{row.member_name}</td>
                     <td className="text-slate-600 dark:text-app-text">{row.recipient_phone || row.member_phone || '—'}</td>
                     <td>
-                      <span className="inline-flex rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300">
+                      <span className="inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                         {formatSmsMessageType(t, row.message_type)}
                       </span>
                     </td>

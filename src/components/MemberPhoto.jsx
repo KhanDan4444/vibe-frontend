@@ -13,7 +13,7 @@ export default function MemberPhoto({
   hasPhoto = true,
   expandable = true,
   className = 'h-14 w-14 rounded-2xl object-cover',
-  fallbackClassName = 'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-indigo-100 text-xl font-bold text-indigo-700',
+  fallbackClassName = 'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-100 text-xl font-bold text-teal-700',
 }) {
   const { t } = useTranslation();
   const [src, setSrc] = useState(null);
@@ -68,7 +68,7 @@ export default function MemberPhoto({
           type="button"
           onClick={canExpand ? () => setExpanded(true) : undefined}
           className={`shrink-0 overflow-hidden p-0 border-0 bg-transparent ${
-            canExpand ? 'cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-2xl' : ''
+            canExpand ? 'cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 rounded-2xl' : ''
           }`}
           aria-label={canExpand ? `View ${name || 'member'} photo` : undefined}
           disabled={!canExpand}

@@ -154,7 +154,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
             <div>
               <label className="form-label">{t('modals.plan.description')}</label>
               <textarea
-                className="mt-1 block w-full h-20 resize-none rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-indigo-500 focus:outline-none"
+                className="mt-1 block w-full h-20 resize-none rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-teal-600 focus:outline-none"
                 placeholder={t('modals.plan.descriptionPlaceholder')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -173,7 +173,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
             <button
               type="submit"
               disabled={saving}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : isEdit ? t('modals.plan.saveUpdate') : t('modals.plan.saveCreate')}
             </button>

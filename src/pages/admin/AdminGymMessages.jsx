@@ -75,7 +75,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
       <button
         type="button"
         onClick={(e) => handleGymClick(e, row.gym_id)}
-        className="font-medium text-indigo-600 hover:underline dark:text-indigo-300"
+        className="font-medium text-teal-700 hover:underline dark:text-teal-300"
       >
         {row.gym_name}
       </button>
@@ -113,7 +113,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             id="admin-sms-gym-filter"
             value={gymFilter}
             onChange={(e) => setGymFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
           >
             <option value="all">{t('filters.allGyms')}</option>
             {gyms.map((gym) => (
@@ -131,7 +131,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             id="admin-sms-type-filter"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
           >
             {ADMIN_SMS_TYPE_FILTER_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -155,7 +155,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
           ) : items.length > 0 ? (
             items.map((row) => (
               <div key={row.id} className="flex gap-3 p-4">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                   <MessageSquare className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -169,7 +169,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                     {formatAdminSmsMessageType(t, row.message_type)}
                   </p>
                   {row.otp_code && (
-                    <p className="mt-1 font-mono text-sm font-semibold text-indigo-600 dark:text-indigo-300">
+                    <p className="mt-1 font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
                       {t('smsLog.code')}: {row.otp_code}
                     </p>
                   )}
@@ -210,11 +210,11 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                     <td className="text-slate-600 dark:text-app-text">{row.owner_name || '—'}</td>
                     <td className="text-slate-600 dark:text-app-text">{row.recipient_phone || row.gym_phone || '—'}</td>
                     <td>
-                      <span className="inline-flex rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300">
+                      <span className="inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                         {formatAdminSmsMessageType(t, row.message_type)}
                       </span>
                     </td>
-                    <td className="font-mono text-sm font-semibold text-indigo-600 dark:text-indigo-300">
+                    <td className="font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
                       {row.otp_code || '—'}
                     </td>
                     <td className="whitespace-nowrap text-slate-600 dark:text-app-text">

@@ -287,7 +287,7 @@ export default function GymDetailsModal({
                         gymDetail.saas_subscription.plan
                       : '—'
                   }
-                  valueClassName="text-sm font-bold text-indigo-600"
+                  valueClassName="text-sm font-bold text-teal-700"
                 />
                 <SlidePanelRow
                   icon={Calendar}
@@ -327,7 +327,7 @@ export default function GymDetailsModal({
                     <p className="text-xs text-slate-500 dark:text-app-muted">{stat.label}</p>
                     <p
                       className={`text-xl font-bold ${
-                        stat.highlight ? 'text-violet-700 dark:text-violet-300' : 'text-slate-900 dark:text-app-text-strong'
+                        stat.highlight ? 'text-orange-700 dark:text-orange-300' : 'text-slate-900 dark:text-app-text-strong'
                       }`}
                     >
                       {stat.value}

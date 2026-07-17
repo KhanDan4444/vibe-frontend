@@ -95,13 +95,13 @@ export default function UserProfileMenu({ compact = false }) {
         <button
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
-          className={`flex items-center gap-2 rounded-full transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 dark:hover:bg-app-raised ${
+          className={`flex items-center gap-2 rounded-full transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:hover:bg-app-raised ${
             compact ? 'p-1' : 'py-1 pl-1 pr-2'
           }`}
           aria-expanded={menuOpen}
           aria-haspopup="menu"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-bold text-white">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-sm font-bold text-white">
             {initialsFrom(user?.name, user?.email, user?.username)}
           </div>
           {!compact && (

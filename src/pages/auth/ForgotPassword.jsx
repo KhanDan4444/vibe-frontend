@@ -31,7 +31,7 @@ export default function ForgotPassword() {
   const [showSupportOption, setShowSupportOption] = useState(false);
 
   const inputClass =
-    'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-white focus:border-indigo-500 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+    'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-white focus:border-teal-600 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
 
@@ -120,7 +120,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
             >
               {loading ? t('auth.sending') : t('auth.sendOtp')}
             </button>
@@ -182,7 +182,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading || !sessionId}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
             >
               {loading ? t('auth.saving') : t('auth.updatePassword')}
             </button>
@@ -207,7 +207,7 @@ export default function ForgotPassword() {
           <button
             type="button"
             onClick={() => setShowSupportOption((show) => !show)}
-            className="w-full text-left text-sm font-semibold text-indigo-300 hover:text-indigo-200"
+            className="w-full text-left text-sm font-semibold text-teal-300 hover:text-teal-200"
           >
             {t('auth.tryOtherOption')}
           </button>
@@ -221,7 +221,7 @@ export default function ForgotPassword() {
         </div>
 
         <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300">
+          <Link to="/login" className="text-teal-400 hover:text-teal-300">
             {t('auth.backToSignIn')}
           </Link>
         </p>

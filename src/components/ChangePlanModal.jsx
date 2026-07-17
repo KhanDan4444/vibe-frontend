@@ -189,7 +189,7 @@ export default function ChangePlanModal({
         </button>
 
         <div className="flex items-center gap-2 mb-1 pr-8">
-          <ArrowLeftRight className="h-5 w-5 text-indigo-600" />
+          <ArrowLeftRight className="h-5 w-5 text-teal-700" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('modals.changePlan.title')}</h2>
         </div>
         <p className="text-sm text-slate-500 dark:text-app-muted mb-4">
@@ -269,7 +269,7 @@ export default function ChangePlanModal({
               }
               setAmountEdited(false);
             }}
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300"
+            className="text-xs font-medium text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300"
           >
             {customTermStart
               ? t('modals.changePlan.switchMidTerm')
@@ -420,7 +420,7 @@ export default function ChangePlanModal({
                     setAmountEdited(false);
                     setAmount(String(upgradeHint.suggestedAmount));
                   }}
-                  className="mt-1 text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                  className="mt-1 text-xs font-medium text-teal-700 hover:text-teal-800"
                 >
                   {t('modals.billing.useSuggestedAmount', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
@@ -431,7 +431,7 @@ export default function ChangePlanModal({
             <div>
               <label className="form-label">{t('modals.member.method')}</label>
               <select
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -461,7 +461,7 @@ export default function ChangePlanModal({
             <button
               type="submit"
               disabled={isBusy || otherPlans.length === 0}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
             >
               {isBusy ? t('common.processing') : t('modals.changePlan.save')}
             </button>

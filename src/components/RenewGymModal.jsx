@@ -115,7 +115,7 @@ export default function RenewGymModal({
         </button>
 
         <div className="flex items-center gap-2 mb-1 pr-8">
-          <RefreshCw className="h-5 w-5 text-indigo-600" />
+          <RefreshCw className="h-5 w-5 text-teal-700" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('modals.renewGym.title')}</h2>
         </div>
         <p className="text-sm text-slate-500 dark:text-app-muted mb-6">
@@ -224,7 +224,7 @@ export default function RenewGymModal({
             <div>
               <label className="form-label">{t('modals.member.method')}</label>
               <select
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text cursor-pointer focus:border-indigo-500 focus:outline-none"
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -241,7 +241,7 @@ export default function RenewGymModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none"
+              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
               placeholder={t('modals.renewGym.referencePlaceholder')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

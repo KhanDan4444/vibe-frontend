@@ -580,7 +580,7 @@ export default function AdminDashboard() {
                   label={t('admin.saasRevenue')} 
                   value={`$${(platformMetrics?.saasIncomeThisMonth ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
                   icon={DollarSign}
-                  color="indigo"
+                  color="teal"
                   trend={platformMetrics?.saasRevenueTrendPercent ?? null}
                   trendCaption={t('metrics.vsLastMonth')}
                 />
@@ -589,7 +589,7 @@ export default function AdminDashboard() {
                   value={`$${estimatedMrc.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} 
                   hint={t('admin.fromActivePlans')} 
                   icon={TrendingUp} 
-                  color="indigo" 
+                  color="teal" 
                   showHintBelow
                 />
                 </>
@@ -616,7 +616,7 @@ export default function AdminDashboard() {
                         setStatusFilter(DUE_SOON);
                         navigate(ADMIN_SECTION_PATH.gyms);
                       }}
-                      className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-indigo-600 dark:text-app-muted dark:hover:text-indigo-400 cursor-pointer"
+                      className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-teal-700 dark:text-app-muted dark:hover:text-teal-400 cursor-pointer"
                     >
                       {t('admin.viewAll')}
                     </button>
@@ -720,7 +720,7 @@ export default function AdminDashboard() {
                           <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} />
                           <Tooltip
                             contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                            itemStyle={{ color: '#4f46e5', fontWeight: 600 }}
+                            itemStyle={{ color: '#0f766e', fontWeight: 600 }}
                             cursor={{ fill: chartTheme.isDark ? 'rgba(245, 158, 11, 0.06)' : '#f8fafc' }}
                           />
                           <Bar dataKey="members" fill="#6366f1" radius={[4, 4, 0, 0]} name={t('admin.activeMembers')} />
@@ -763,7 +763,7 @@ export default function AdminDashboard() {
                     setIsRegisterOpen(true);
                   }}
                   disabled={saasPlans.length === 0}
-                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
                 >
                   <Plus className="h-4 w-4" /> {t('admin.registerGym')}
                 </button>
@@ -884,7 +884,7 @@ export default function AdminDashboard() {
                       return (
                         <div
                           key={gym.id}
-                          className={`p-4 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-indigo-200 dark:ring-indigo-500/30' : ''}`}
+                          className={`p-4 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
                         >
                           <button
                             type="button"
@@ -900,7 +900,7 @@ export default function AdminDashboard() {
                                   <StatusBadge status={gym.subscription_status} />
                                 </div>
                                 <p className="mt-1 text-sm text-slate-600 dark:text-app-text">{gym.owner_name}</p>
-                                <p className="mt-0.5 text-sm text-indigo-600">{gym.saas_plan_name || '—'}</p>
+                                <p className="mt-0.5 text-sm text-teal-700">{gym.saas_plan_name || '—'}</p>
                                 <p className="mt-1 text-xs text-slate-500">
                                   {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
                                 </p>
@@ -985,8 +985,8 @@ export default function AdminDashboard() {
                             key={gym.id}
                             onClick={() => openGymDetail(gym.id)}
                             className={`cursor-pointer transition-colors ${
-                              selectedGymId === gym.id ? 'bg-indigo-50 dark:bg-indigo-500/10' : ''
-                            } ${isUnpaid ? 'admin-row-unpaid' : 'hover:bg-indigo-50/60 dark:hover:bg-indigo-500/10'}`}
+                              selectedGymId === gym.id ? 'bg-teal-50 dark:bg-teal-600/10' : ''
+                            } ${isUnpaid ? 'admin-row-unpaid' : 'hover:bg-teal-50/60 dark:hover:bg-teal-600/10'}`}
                           >
                             <td>
                               <div className="flex items-center gap-3 min-w-0">
@@ -1002,7 +1002,7 @@ export default function AdminDashboard() {
                               {gym.saas_plan_name || '—'}
                             </td>
                             <td>
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-sm font-bold text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-1 text-sm font-bold text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
                                 <Users className="h-3.5 w-3.5 shrink-0" />
                                 {Number(gym.active_member_count ?? 0)}
                               </span>
@@ -1036,7 +1036,7 @@ export default function AdminDashboard() {
                                     e.stopPropagation();
                                     openChangePlanModal(gym);
                                   }}
-                                  className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                                  className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
                                   title={t('admin.changeSaasPlanTitle')}
                                 >
                                   <ArrowLeftRight className="h-4 w-4" />
@@ -1061,7 +1061,7 @@ export default function AdminDashboard() {
                                   e.stopPropagation();
                                   setGymEditState({ isOpen: true, gym, error: '' });
                                 }}
-                                className="text-slate-400 hover:bg-slate-100 hover:text-indigo-600 dark:hover:bg-app-surface cursor-pointer"
+                                className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
                                 title={t('admin.editGymDetailsTitle')}
                               >
                                 <Edit className="h-4 w-4" />

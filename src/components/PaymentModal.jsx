@@ -157,7 +157,7 @@ export default function PaymentModal({
               id="payment-member"
               required
               disabled={!!payment || !!defaultMemberId}
-              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
+              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
               value={selectedMemberId}
               onChange={(e) => handleMemberChange(e.target.value)}
             >
@@ -189,7 +189,7 @@ export default function PaymentModal({
                   required
                   min="0.01"
                   step="0.01"
-                  className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle pl-8 pr-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-indigo-500 focus:outline-none', fieldErrors, 'amount')}
+                  className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle pl-8 pr-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-teal-600 focus:outline-none', fieldErrors, 'amount')}
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
@@ -205,7 +205,7 @@ export default function PaymentModal({
               <label htmlFor="payment-method" className="form-label">{t('modals.payment.method')}</label>
               <select
                 id="payment-method"
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -246,7 +246,7 @@ export default function PaymentModal({
             <button
               type="submit"
               disabled={isBusy}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
             >
               {isBusy
                 ? t('common.processing')

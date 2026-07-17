@@ -43,7 +43,7 @@ function FieldLabel({ htmlFor, icon: Icon, children, hint }) {
 }
 
 const inputClass =
-  'mt-1.5 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm text-slate-900 dark:text-app-text-strong shadow-sm transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50 disabled:text-slate-500';
+  'mt-1.5 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm text-slate-900 dark:text-app-text-strong shadow-sm transition-colors placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:bg-slate-50 disabled:text-slate-500';
 
 function PasswordField({ id, label, value, onChange, show, onToggleShow, autoComplete, fieldErrors, field, onClearError }) {
   const { t } = useTranslation();
@@ -384,7 +384,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={saving || !profileDirty}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? t('auth.saving') : t('common.save')}
             </button>
@@ -531,7 +531,7 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
           <button
             type="submit"
             disabled={loading || !passwordReady}
-            className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? t('account.updating') : t('auth.updatePassword')}
           </button>

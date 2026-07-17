@@ -211,7 +211,7 @@ export default function OwnerReports() {
             type="button"
             disabled={!canExport || exporting === 'full-pdf'}
             onClick={() => withExport('full-pdf', () => downloadFullOwnerReportPdf(members, payments, exportMeta))}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
           >
             <FileText className="h-4 w-4" />
             {t('common.exportPdf')}
@@ -239,7 +239,7 @@ export default function OwnerReports() {
       <section className="space-y-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-indigo-100 p-2 text-indigo-600">
+            <div className="rounded-lg bg-teal-100 p-2 text-teal-700">
               <Users className="h-5 w-5" />
             </div>
             <div>
@@ -251,7 +251,7 @@ export default function OwnerReports() {
             <select
               value={memberFilter}
               onChange={(e) => setMemberFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none"
+              className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
             >
               {MEMBER_STATUS_FILTERS.map((f) => (
                 <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
@@ -270,7 +270,7 @@ export default function OwnerReports() {
               type="button"
               disabled={!memberLoaded || members.length === 0 || exporting === 'member-pdf'}
               onClick={() => withExport('member-pdf', () => downloadMembersPdf(members, { filterLabel: t(memberFilterMeta.labelKey), ...exportMeta }))}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-100 disabled:opacity-50"
             >
               <FileText className="h-4 w-4" />
               {t('common.exportPdf')}
@@ -287,7 +287,7 @@ export default function OwnerReports() {
             trend={summary.newMembersTrendPercent ?? null}
             trendCaption={summary.newMembersDeltaLabel || t('metrics.vsLastMonth')}
           />
-          <MetricCard label={t('metrics.totalMembers')} value={memberStats.total} icon={Users} color="indigo" />
+          <MetricCard label={t('metrics.totalMembers')} value={memberStats.total} icon={Users} color="teal" />
           <MetricCard label={t('metrics.activeMembers')} value={memberStats.active} icon={Users} color="emerald" />
         </div>
 
@@ -327,7 +327,7 @@ export default function OwnerReports() {
               <select
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value)}
-                className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none"
+                className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
               >
                 {PERIOD_PRESETS.map((p) => (
                   <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
@@ -342,7 +342,7 @@ export default function OwnerReports() {
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -352,7 +352,7 @@ export default function OwnerReports() {
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
               </>
@@ -388,7 +388,7 @@ export default function OwnerReports() {
               color="emerald"
               showHintBelow
             />
-            <MetricCard label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="indigo" />
+            <MetricCard label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="teal" />
             <MetricCard label={t('metrics.averagePayment')} value={formatMoney(revenueSummary.average)} icon={DollarSign} color="violet" />
           </div>
         )}

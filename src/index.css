@@ -14,6 +14,11 @@
   --color-app-text-strong: #e4e7ee;
   --color-app-muted: #8b93a3;
   --color-app-input: #1e222b;
+  /* Athletic ink + teal brand */
+  --color-brand: #0f766e;
+  --color-brand-hover: #0d9488;
+  --color-brand-soft: #ccfbf1;
+  --color-brand-text: #115e59;
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
@@ -71,7 +76,7 @@
   }
 
   html.dark ::selection {
-    background-color: rgb(99 102 241 / 0.32);
+    background-color: rgb(45 212 191 / 0.28);
     color: var(--color-app-text-strong);
   }
 }
@@ -325,7 +330,7 @@
   }
 
   .admin-field {
-    @apply h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong;
+    @apply h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-teal-600 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong;
   }
 
   .form-label {
@@ -354,15 +359,15 @@
   }
 
   .date-picker-day {
-    @apply flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium text-slate-700 hover:bg-indigo-50 dark:text-app-text dark:hover:bg-indigo-500/10;
+    @apply flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium text-slate-700 hover:bg-teal-50 dark:text-app-text dark:hover:bg-teal-600/10;
   }
 
   .date-picker-day--selected {
-    @apply bg-indigo-600 text-white hover:bg-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-500;
+    @apply bg-teal-700 text-white hover:bg-teal-700 dark:bg-teal-600 dark:hover:bg-teal-600;
   }
 
   .date-picker-day--today {
-    @apply ring-1 ring-indigo-300 dark:ring-indigo-500/50;
+    @apply ring-1 ring-teal-300 dark:ring-teal-600/50;
   }
 
   .date-picker-day--disabled {
@@ -382,7 +387,7 @@
   }
 
   .ui-alert-indigo {
-    @apply rounded-lg border border-indigo-100 bg-indigo-50/50 px-3 py-2 text-sm text-indigo-800 dark:border-indigo-500/25 dark:bg-indigo-500/10 dark:text-indigo-300;
+    @apply rounded-lg border border-teal-100 bg-teal-50/50 px-3 py-2 text-sm text-teal-800 dark:border-teal-600/25 dark:bg-teal-600/10 dark:text-teal-300;
   }
 
   .ui-info-panel {
@@ -400,7 +405,7 @@
   }
 
   .ui-stat-card-highlight {
-    @apply rounded-lg border border-violet-200 bg-violet-50 p-3 dark:border-violet-500/25 dark:bg-violet-500/10;
+    @apply rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-500/25 dark:bg-orange-500/10;
   }
 
   .admin-row-actions {

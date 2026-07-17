@@ -209,7 +209,7 @@ export default function AdminReports({ onBootingChange }) {
             type="button"
             disabled={!canExport || exporting === 'full-pdf'}
             onClick={() => withExport('full-pdf', () => downloadFullReportPdf(gyms, payments, exportMeta))}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
           >
             <FileText className="h-4 w-4" />
             {t('admin.fullReportPdf')}
@@ -256,7 +256,7 @@ export default function AdminReports({ onBootingChange }) {
       <section className="space-y-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-indigo-100 p-2 text-indigo-600">
+            <div className="rounded-lg bg-teal-100 p-2 text-teal-700">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
@@ -268,7 +268,7 @@ export default function AdminReports({ onBootingChange }) {
             <select
               value={gymFilter}
               onChange={(e) => setGymFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none"
+              className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
             >
               {GYM_STATUS_FILTERS.map((f) => (
                 <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
@@ -287,7 +287,7 @@ export default function AdminReports({ onBootingChange }) {
               type="button"
               disabled={!gymLoaded || gyms.length === 0 || exporting === 'gym-pdf'}
               onClick={() => withExport('gym-pdf', () => downloadGymsPdf(gyms, { filterLabel: t(gymFilterMeta.labelKey) }))}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
+              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-100 disabled:opacity-50"
             >
               <FileText className="h-4 w-4" />
               {t('admin.gymsPdf')}
@@ -300,7 +300,7 @@ export default function AdminReports({ onBootingChange }) {
             Array.from({ length: 4 }).map((_, i) => <MetricCardSkeleton key={i} />)
           ) : (
           <>
-          <MetricCard label={t('admin.gymsInReport')} value={gymStats.total} icon={Building2} color="indigo" />
+          <MetricCard label={t('admin.gymsInReport')} value={gymStats.total} icon={Building2} color="teal" />
           <MetricCard label={t('admin.activeStatus')} value={gymStats.active} icon={Building2} color="emerald" />
           <MetricCard label={t('admin.unpaidLicenses')} value={gymStats.unpaid} icon={AlertCircle} color="amber" badge={gymStats.unpaid > 0 ? t('admin.actionBadge') : null} />
           <MetricCard label={t('admin.platformMembers')} value={gymStats.members} icon={Users} color="violet" hint={t('admin.platformMembersHint')} showHintBelow />
@@ -347,7 +347,7 @@ export default function AdminReports({ onBootingChange }) {
               <select
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value)}
-                className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none"
+                className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
               >
                 {PERIOD_PRESETS.map((p) => (
                   <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
@@ -362,7 +362,7 @@ export default function AdminReports({ onBootingChange }) {
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -372,7 +372,7 @@ export default function AdminReports({ onBootingChange }) {
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
               </>
@@ -423,7 +423,7 @@ export default function AdminReports({ onBootingChange }) {
               color="emerald"
               showHintBelow
             />
-            <MetricCard label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="indigo" />
+            <MetricCard label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="teal" />
             <MetricCard label={t('metrics.averagePayment')} value={formatMoney(revenueSummary.average)} icon={DollarSign} color="violet" />
           </div>
         )}

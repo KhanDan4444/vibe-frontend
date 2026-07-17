@@ -17,7 +17,7 @@ import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { useChartTheme } from '../../utils/chartTheme';
-import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
 
 export default function OwnerDashboard() {
   const { t } = useTranslation();
@@ -145,7 +145,7 @@ export default function OwnerDashboard() {
           label={t('pages.dashboard.newMembersThisMonth')}
           value={newMembersThisMonth}
           icon={UserPlus}
-          color="violet"
+          color="amber"
           trend={newMembersTrend}
           trendCaption={t('pages.dashboard.lastMonthCount', { count: summary.newMembersLastMonth ?? 0 })}
         />
@@ -153,7 +153,7 @@ export default function OwnerDashboard() {
           label={t('pages.dashboard.thisMonthRevenue')}
           value={`$${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
           icon={TrendingUp}
-          color="indigo"
+          color="teal"
           trend={revenueTrend}
           trendCaption={t('metrics.vsLastMonth')}
         />
@@ -168,7 +168,7 @@ export default function OwnerDashboard() {
       <div className="grid gap-6 lg:grid-cols-5">
         {gymBooting ? (
           <>
-            <div className={`lg:col-span-3 overflow-hidden p-6 ${cardSurface}`}>
+            <div className={`lg:col-span-3 overflow-hidden p-6 ${panelQuiet}`}>
               <div className="app-skeleton mb-6 h-5 w-48" />
               <div className="space-y-4">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -182,19 +182,19 @@ export default function OwnerDashboard() {
                 ))}
               </div>
             </div>
-            <div className={`lg:col-span-2 p-4 sm:p-6 ${cardSurface}`}>
+            <div className={`lg:col-span-2 p-4 sm:p-6 ${panelQuiet}`}>
               <div className="app-skeleton mb-4 h-5 w-40" />
               <div className="app-skeleton min-h-[200px] w-full sm:min-h-[250px]" />
             </div>
           </>
         ) : (
         <>
-        <div className={`lg:col-span-3 overflow-hidden ${cardSurface}`}>
+        <div className={`lg:col-span-3 overflow-hidden ${panelQuiet}`}>
           <div className="admin-panel-header">
             <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('pages.dashboard.expiringSection')}</h2>
             <button
               onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
-              className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-indigo-600 dark:text-app-muted dark:hover:text-indigo-400 cursor-pointer"
+              className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-teal-700 dark:text-app-muted dark:hover:text-teal-400 cursor-pointer"
             >
               {t('common.viewAll')}
             </button>
@@ -213,7 +213,7 @@ export default function OwnerDashboard() {
                         </div>
                         <span className="font-semibold text-slate-900 dark:text-app-text-strong truncate">{member.name}</span>
                       </div>
-                      <p className="mt-1 text-sm text-indigo-600">
+                      <p className="mt-1 text-sm text-teal-700">
                         {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                       </p>
                       <p className="mt-0.5 text-xs text-slate-500">{t('pages.dashboard.expires', { date: formatDisplayDate(member.endDate) })}</p>
@@ -265,7 +265,7 @@ export default function OwnerDashboard() {
                             <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
                           </div>
                         </td>
-                        <td className="truncate font-medium text-indigo-600">
+                        <td className="truncate font-medium text-teal-700">
                           {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                         </td>
                         <td className="whitespace-nowrap text-slate-600 dark:text-app-text">{formatDisplayDate(member.endDate)}</td>
@@ -299,7 +299,7 @@ export default function OwnerDashboard() {
           </div>
         </div>
 
-        <div className={`lg:col-span-2 flex flex-col p-4 sm:p-6 ${cardSurface}`}>
+        <div className={`lg:col-span-2 flex flex-col p-4 sm:p-6 ${panelQuiet}`}>
           <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong mb-4 sm:text-lg sm:mb-5">{t('pages.dashboard.revenueThisMonth')}</h2>
           <div className="flex-1 min-h-[200px] sm:min-h-[250px]">
             {chartData.length > 0 ? (
@@ -316,7 +316,7 @@ export default function OwnerDashboard() {
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} tickFormatter={(val) => `$${val}`} />
                   <Tooltip
                     contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                    itemStyle={{ color: '#4f46e5', fontWeight: 600 }}
+                    itemStyle={{ color: '#0f766e', fontWeight: 600 }}
                     formatter={(value) => [`$${value}`, t('pages.dashboard.chartRevenue')]}
                   />
                   <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />

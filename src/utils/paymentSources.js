@@ -17,7 +17,7 @@ export function paymentSourceLabel(source) {
 export function paymentSourceStyle(source) {
   switch (source) {
     case 'enroll':
-      return 'bg-violet-50 text-violet-700 border-violet-100 dark:bg-violet-500/12 dark:text-violet-300 dark:border-violet-500/25';
+      return 'bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-500/12 dark:text-orange-300 dark:border-orange-500/25';
     case 'renew':
       return 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-500/12 dark:text-sky-300 dark:border-sky-500/25';
     case 'change_plan':
@@ -30,7 +30,7 @@ export function paymentSourceStyle(source) {
 
 export function paymentMethodStyle(method) {
   if (method === 'Card') {
-    return 'bg-indigo-50 text-indigo-700 border-indigo-100 dark:bg-indigo-500/12 dark:text-indigo-300 dark:border-indigo-500/25';
+    return 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-600/12 dark:text-teal-300 dark:border-teal-600/25';
   }
   if (method === 'Bank Transfer') {
     return 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-500/12 dark:text-blue-300 dark:border-blue-500/25';

@@ -298,7 +298,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                   <div>
                     <label className="form-label">{t('modals.member.method')}</label>
                     <select
-                      className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text cursor-pointer focus:border-indigo-500 focus:outline-none"
+                      className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
                       value={method}
                       onChange={(e) => setMethod(e.target.value)}
                     >
@@ -348,7 +348,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
             <button
               type="submit"
               disabled={saving || saasPlans.length === 0}
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : t('modals.registerGym.save')}
             </button>
