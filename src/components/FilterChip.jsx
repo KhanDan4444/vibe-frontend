@@ -11,6 +11,7 @@ export function FilterChip({ variant = 'all', label, count, active = false, onCl
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`filter-chip border ${active ? theme.active : theme.inactive}`}
     >
       <span className={`filter-chip-dot ${theme.dot}`} aria-hidden />

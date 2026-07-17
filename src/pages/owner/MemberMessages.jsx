@@ -12,6 +12,7 @@ import { formatDisplayDateTime } from '../../utils/date';
 import { formatSmsMessageType, SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
 import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -114,7 +115,7 @@ export default function MemberMessages() {
       <div className={`overflow-hidden ${cardSurface}`}>
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {loading && items.length === 0 ? (
-            <p className="admin-panel-empty">{t('common.loading')}</p>
+            <AdminListSkeleton rows={5} />
           ) : items.length > 0 ? (
             items.map((row) => (
               <button
@@ -160,11 +161,7 @@ export default function MemberMessages() {
             </thead>
             <tbody>
               {loading && items.length === 0 ? (
-                <tr>
-                  <td colSpan={showBranchColumn ? 5 : 4} className="admin-panel-empty">
-                    {t('common.loading')}
-                  </td>
-                </tr>
+                <AdminTableRowsSkeleton rows={5} cols={showBranchColumn ? 5 : 4} />
               ) : items.length > 0 ? (
                 items.map((row) => (
                   <tr

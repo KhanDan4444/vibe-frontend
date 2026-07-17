@@ -713,6 +713,8 @@
       "amount": "Amount",
       "method": "Payment method",
       "date": "Payment date",
+      "selectMember": "Select member",
+      "termStartHint": "Current term started {{date}}. Payment date must be on or after that date.",
       "save": "Record payment"
     },
     "renew": {

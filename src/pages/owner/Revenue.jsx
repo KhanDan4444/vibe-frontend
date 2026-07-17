@@ -23,6 +23,7 @@ import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/da
 import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import { AdminListSkeleton, AdminTableRowsSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -217,7 +218,16 @@ export default function Revenue() {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-rose-50 border border-rose-200 p-4 text-sm text-rose-700">{error}</div>
+        <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
+          <p>{error}</p>
+          <button
+            type="button"
+            onClick={() => fetchPayments()}
+            className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+          >
+            {t('common.retry')}
+          </button>
+        </div>
       )}
 
       <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-4 shadow-sm flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -288,6 +298,10 @@ export default function Revenue() {
       )}
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {listLoading && payments.length === 0 ? (
+          Array.from({ length: 3 }).map((_, i) => <SummaryCardSkeleton key={i} />)
+        ) : (
+          <>
         <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">{t('pages.revenue.periodRevenue', { period: periodLabel })}</span>
@@ -333,6 +347,8 @@ export default function Revenue() {
             </span>
           </div>
         </div>
+          </>
+        )}
       </div>
 
       {Object.keys(byMethod).length > 0 && (
@@ -401,7 +417,7 @@ export default function Revenue() {
       <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {listLoading ? (
-            <p className="py-16 text-center text-sm text-slate-400">{t('pages.revenue.loading')}</p>
+            <AdminListSkeleton rows={5} />
           ) : displayedPayments.length > 0 ? (
             displayedPayments.map((payment) => (
               <div key={payment.id} className="p-4">
@@ -483,9 +499,10 @@ export default function Revenue() {
             </thead>
             <tbody>
               {listLoading ? (
-                <tr>
-                  <td colSpan={showBranchColumn ? (canManageRevenue ? 7 : 6) : (canManageRevenue ? 6 : 5)} className="admin-panel-empty">{t('pages.revenue.loading')}</td>
-                </tr>
+                <AdminTableRowsSkeleton
+                  rows={5}
+                  cols={showBranchColumn ? (canManageRevenue ? 7 : 6) : (canManageRevenue ? 6 : 5)}
+                />
               ) : displayedPayments.length > 0 ? (
                 displayedPayments.map((payment) => (
                   <tr key={payment.id} className={tableRowHover}>

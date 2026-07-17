@@ -145,22 +145,23 @@ export default function PaymentModal({
         {!payment && !selectedMember && <div className="mb-5" />}
 
         {displayError && (
-          <div className="mb-4 rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700">
+          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
             {displayError}
           </div>
         )}
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('table.member')}</label>
+            <label htmlFor="payment-member" className="form-label">{t('table.member')}</label>
             <select
+              id="payment-member"
               required
               disabled={!!payment || !!defaultMemberId}
               className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
               value={selectedMemberId}
               onChange={(e) => handleMemberChange(e.target.value)}
             >
-              <option value="" disabled>-- Select Member --</option>
+              <option value="" disabled>{t('modals.payment.selectMember')}</option>
               {members.map((m) => (
                 <option key={m.id} value={m.id}>{m.name}</option>
               ))}
@@ -168,19 +169,22 @@ export default function PaymentModal({
           </div>
 
           {selectedMember?.startDate && selectedMember.startDate !== '—' && (
-            <p className="text-xs text-slate-500 -mt-2">
-              Current term started {formatDisplayDate(selectedMember.startDate)}. Payment date must be on or after that date.
+            <p className="text-xs text-slate-500 -mt-2 dark:text-app-muted">
+              {t('modals.payment.termStartHint', {
+                date: formatDisplayDate(selectedMember.startDate),
+              })}
             </p>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.payment.amount')}</label>
+              <label htmlFor="payment-amount" className="form-label">{t('modals.payment.amount')}</label>
               <div className="relative mt-1">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                   <DollarSign className="h-4 w-4" />
                 </span>
                 <input
+                  id="payment-amount"
                   type="number"
                   required
                   min="0.01"
@@ -198,8 +202,9 @@ export default function PaymentModal({
             </div>
 
             <div>
-              <label className="form-label">{t('modals.payment.method')}</label>
+              <label htmlFor="payment-method" className="form-label">{t('modals.payment.method')}</label>
               <select
+                id="payment-method"
                 className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-indigo-500 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
@@ -214,8 +219,9 @@ export default function PaymentModal({
           </div>
 
           <div>
-            <label className="form-label">{t('modals.payment.date')}</label>
+            <label htmlFor="payment-date" className="form-label">{t('modals.payment.date')}</label>
             <DateField
+              id="payment-date"
               required
               min={paymentBounds.min}
               max={paymentBounds.max}

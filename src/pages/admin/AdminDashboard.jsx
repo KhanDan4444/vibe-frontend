@@ -864,22 +864,6 @@ export default function AdminDashboard() {
                       <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
                     ))}
                   </select>
-                  <select
-                    className="admin-field min-w-[10rem] cursor-pointer"
-                    value={statusFilter}
-                    onChange={(e) => {
-                      setGymPage(1);
-                      setStatusFilter(e.target.value);
-                    }}
-                  >
-                    <option value="All">{t('admin.allStatuses')}</option>
-                    <option value={UNPAID}>{t('admin.unpaidStatusHint')}</option>
-                    <option value={DUE_SOON}>{t('admin.dueSoonStatusHint')}</option>
-                    <option value={EXPIRED}>{t('admin.expiredStatusHint')}</option>
-                    <option value="active">{t('admin.activeOnly')}</option>
-                    <option value="suspended">{t('admin.suspendedOnly')}</option>
-                    <option value="expired">{t('admin.expiredOnly')}</option>
-                  </select>
                 </div>
               </div>
 

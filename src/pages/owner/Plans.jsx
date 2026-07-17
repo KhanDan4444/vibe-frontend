@@ -6,12 +6,14 @@ import { isGymOwner } from '../../utils/roles';
 import { Dumbbell, Plus, Trash2, Edit, HelpCircle } from 'lucide-react';
 import PlanModal from '../../components/PlanModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { useTranslation } from 'react-i18next';
+import { cardSurface } from '../../utils/surfaceClasses';
 
 export default function Plans() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { plans, addPlan, deletePlan, updatePlan, readOnly } = useGym();
+  const { plans, addPlan, deletePlan, updatePlan, readOnly, loading: gymLoading } = useGym();
   const canManagePlans = isGymOwner(user?.role) && !readOnly;
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -109,30 +111,40 @@ export default function Plans() {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-rose-50 border border-rose-200 p-4 text-sm text-rose-700">{error}</div>
+        <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">{error}</div>
       )}
 
       {/* Grid Layout or Empty State */}
-      {plans.length > 0 ? (
+      {gymLoading && plans.length === 0 ? (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <PlanCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : plans.length > 0 ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className="relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm hover:shadow-md transition-all duration-200 group"
+              className={`relative flex flex-col justify-between p-6 shadow-sm hover:shadow-md transition-all duration-200 group ${cardSurface}`}
             >
               {canManagePlans && (
                 <div className="absolute right-3 top-3 flex gap-1 sm:right-4 sm:top-4">
                   <button
+                    type="button"
                     onClick={() => handleEditClick(plan)}
                     className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-indigo-600 sm:p-1.5 sm:hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:hover:text-indigo-600"
                     title={t('pages.plans.editPlanTitle')}
+                    aria-label={t('pages.plans.editPlanTitle')}
                   >
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleDeletePlanClick(plan)}
                     className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-rose-600 sm:p-1.5 sm:hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:hover:text-rose-600"
                     title={t('pages.plans.deletePlanTitle')}
+                    aria-label={t('pages.plans.deletePlanTitle')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -167,10 +179,10 @@ export default function Plans() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 dark:border-app-border-subtle p-6 shadow-sm">
+        <div className={`text-center py-20 rounded-2xl border border-slate-200 dark:border-app-border-subtle p-6 shadow-sm ${cardSurface}`}>
           <HelpCircle className="h-12 w-12 mx-auto text-slate-300 mb-3" />
           <h3 className="text-base font-bold text-slate-900 dark:text-app-text-strong">{t('pages.plans.emptyTitle')}</h3>
-          <p className="text-sm text-slate-500 max-w-sm mx-auto mt-1">
+          <p className="text-sm text-slate-500 dark:text-app-muted max-w-sm mx-auto mt-1">
             {t('pages.plans.emptyBody')}
           </p>
           {canManagePlans && (

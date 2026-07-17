@@ -679,6 +679,8 @@
     "editSubtitle": "የክፍያ ዝርዝሮችን ያዘምኑ።",
     "editTitle": "ክፍያ አርትዕ",
     "method": "የክፍያ ዘዴ",
+    "selectMember": "አባል ይምረጡ",
+    "termStartHint": "የአሁኑ ዘመን በ{{date}} ተጀምሯል። የክፍያ ቀን በዚያ ወይም ከዚያ በኋላ መሆን አለበት።",
     "save": "ክፍያ ይመዝግቡ"
   },
   "plan": {

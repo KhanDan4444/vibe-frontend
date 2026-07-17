@@ -11,6 +11,7 @@ import { formatAuditAction, formatAuditDetails, formatActorRole } from '../../ut
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatDisplayDateTime } from '../../utils/date';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -112,7 +113,18 @@ export default function Activity() {
 
       <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
         {loading && items.length === 0 ? (
-          <div className="px-6 py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>
+          <>
+            <div className="lg:hidden">
+              <AdminListSkeleton rows={5} />
+            </div>
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="admin-data-table">
+                <tbody>
+                  <AdminTableRowsSkeleton rows={5} cols={4} />
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : items.length === 0 ? (
           <div className="flex flex-col items-center px-6 py-12 text-center">
             <ScrollText className="h-10 w-10 text-slate-300" />

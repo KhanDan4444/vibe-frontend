@@ -12,6 +12,7 @@ import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage,
 import FieldError from '../../components/FieldError';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
   const { t } = useTranslation();
@@ -310,7 +311,18 @@ export default function Branches() {
 
       <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
         {loading ? (
-          <div className="px-6 py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>
+          <>
+            <div className="lg:hidden">
+              <AdminListSkeleton rows={4} />
+            </div>
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="admin-data-table">
+                <tbody>
+                  <AdminTableRowsSkeleton rows={4} cols={5} />
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : branches.length === 0 ? (
           <div className="flex flex-col items-center px-6 py-12 text-center">
             <MapPin className="h-10 w-10 text-slate-300" />

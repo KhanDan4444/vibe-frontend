@@ -62,7 +62,10 @@ export default function Login() {
     <div className="safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-slate-900 px-4 py-8 dark:bg-app-bg sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8 rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200 dark:border-app-border-subtle dark:bg-app-raised sm:p-8">
         <div>
-          <h2 className="text-center text-3xl font-extrabold tracking-tight text-white dark:text-app-text-strong">
+          <p className="text-center text-2xl font-bold tracking-tight text-indigo-400 sm:text-3xl">
+            {t('app.name')}
+          </p>
+          <h2 className="mt-3 text-center text-xl font-semibold tracking-tight text-white dark:text-app-text-strong sm:text-2xl">
             {t('auth.signInTitle')}
           </h2>
           <p className="mt-2 text-center text-sm text-slate-400 dark:text-app-muted">
@@ -85,8 +88,9 @@ export default function Login() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4 rounded-md shadow-sm">
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.emailOrUsername')}</label>
+              <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.emailOrUsername')}</label>
               <input
+                id="login-email"
                 type="text"
                 required
                 autoComplete="username"
@@ -101,10 +105,12 @@ export default function Login() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.password')}</label>
+              <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.password')}</label>
               <input
+                id="login-password"
                 type="password"
                 required
+                autoComplete="current-password"
                 className={inputClass(inputBase, fieldErrors, 'password')}
                 placeholder="••••••••"
                 value={password}
@@ -116,8 +122,9 @@ export default function Login() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
             </div>
             <div className="flex items-center justify-between gap-3">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-300 dark:text-app-text">
+              <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-slate-300 dark:text-app-text">
                 <input
+                  id="login-remember"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}

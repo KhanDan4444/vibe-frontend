@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
-import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, RefreshCw, HelpCircle, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, RefreshCw, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
 import FlashBanner from '../components/FlashBanner';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -183,7 +183,7 @@ export default function OwnerLayout() {
             <button onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400 hover:text-slate-200 dark:text-app-muted dark:hover:text-app-text-strong">
               <X className="h-6 w-6" />
             </button>
-            <div className="mb-8 mt-2 text-2xl font-bold text-indigo-400">VibeSaaS</div>
+            <div className="mb-8 mt-2 text-2xl font-bold text-indigo-400">{t('app.name')}</div>
             <nav className="flex-1 space-y-1">
               {menuItems.map((item) => renderNavLink(item, () => setSidebarOpen(false)))}
             </nav>
@@ -192,7 +192,7 @@ export default function OwnerLayout() {
       )}
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-8 text-2xl font-bold text-indigo-400">VibeSaaS</div>
+        <div className="mb-8 text-2xl font-bold text-indigo-400">{t('app.name')}</div>
         <nav className="flex-1 space-y-1">
           {menuItems.map((item) => renderNavLink(item, undefined))}
         </nav>
@@ -220,16 +220,18 @@ export default function OwnerLayout() {
             )}
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setNotificationsOpen(true)} className="relative rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-app-text">
+            <button
+              type="button"
+              onClick={() => setNotificationsOpen(true)}
+              className="relative rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-app-text"
+              aria-label={t('common.notifications')}
+            >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
                 <span className="absolute top-0 right-0 inline-flex h-4.5 w-4.5 items-center justify-center rounded-full border-2 border-white bg-rose-500 text-[10px] font-bold text-white dark:border-slate-900">
                   {unreadCount}
                 </span>
               )}
-            </button>
-            <button className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-app-text">
-              <HelpCircle className="h-5 w-5" />
             </button>
             <LanguageSwitcher />
             <div className="h-8 w-px bg-slate-200 dark:bg-app-border-subtle" />

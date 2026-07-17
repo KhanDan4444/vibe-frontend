@@ -29,6 +29,7 @@ import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate } from '../../utils/date';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const UNPAID = 'Unpaid';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -415,7 +416,16 @@ export default function Members() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">{error}</div>
+        <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
+          <p>{error}</p>
+          <button
+            type="button"
+            onClick={() => fetchMembers()}
+            className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+          >
+            {t('common.retry')}
+          </button>
+        </div>
       )}
 
       {!readOnly && plans.length === 0 && (
@@ -516,21 +526,6 @@ export default function Members() {
             <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
           ))}
         </select>
-
-        <select
-          className="admin-field min-w-[10rem] cursor-pointer"
-          value={statusFilter}
-          onChange={(e) => {
-            setPage(1);
-            setStatusFilter(e.target.value);
-          }}
-        >
-          <option value="All">{t('pages.members.allStatuses')}</option>
-          <option value={DISPLAY_STATUS.ACTIVE}>{t('filters.activeOnly')}</option>
-          <option value={UNPAID}>{t('pages.members.unpaidRegistered')}</option>
-          <option value={DISPLAY_STATUS.DUE_SOON}>{t('filters.dueSoonOnly')}</option>
-          <option value={DISPLAY_STATUS.EXPIRED}>{t('filters.expiredOnly')}</option>
-        </select>
         </div>
       </div>
 
@@ -538,7 +533,7 @@ export default function Members() {
         {/* Mobile / tablet card list */}
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {listLoading ? (
-            <p className="py-16 text-center text-sm text-slate-400">{t('pages.members.loading')}</p>
+            <AdminListSkeleton rows={6} />
           ) : displayedMembers.length > 0 ? (
             displayedMembers.map((member) => {
               const matchingPlan = plans.find((p) => p.id === member.planId);
@@ -669,9 +664,7 @@ export default function Members() {
             </thead>
             <tbody>
               {listLoading ? (
-                <tr>
-                  <td colSpan={showBranchColumn ? 7 : 6} className="admin-panel-empty">{t('pages.members.loading')}</td>
-                </tr>
+                <AdminTableRowsSkeleton rows={6} cols={showBranchColumn ? 7 : 6} />
               ) : displayedMembers.length > 0 ? (
                 displayedMembers.map((member) => {
                   const matchingPlan = plans.find((p) => p.id === member.planId);

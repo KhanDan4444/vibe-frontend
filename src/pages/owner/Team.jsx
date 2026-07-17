@@ -9,6 +9,7 @@ import ResetPasswordModal from '../../components/ResetPasswordModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 export default function Team() {
   const { t } = useTranslation();
@@ -170,7 +171,18 @@ export default function Team() {
         </div>
 
         {loading ? (
-          <div className="px-6 py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>
+          <>
+            <div className="lg:hidden">
+              <AdminListSkeleton rows={5} />
+            </div>
+            <div className="hidden lg:block overflow-x-auto">
+              <table className="admin-data-table">
+                <tbody>
+                  <AdminTableRowsSkeleton rows={5} cols={5} />
+                </tbody>
+              </table>
+            </div>
+          </>
         ) : staff.length === 0 ? (
           <div className="flex flex-col items-center px-6 py-12 text-center">
             <Users className="h-10 w-10 text-slate-300" />
