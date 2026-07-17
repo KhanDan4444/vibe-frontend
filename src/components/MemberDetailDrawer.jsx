@@ -38,6 +38,7 @@ import {
   SlidePanelListItem,
   SlidePanelFooter,
   SlidePanelActionButton,
+  SlidePanelActionGrid,
 } from './SlidePanel';
 
 export default function MemberDetailDrawer({
@@ -161,76 +162,96 @@ export default function MemberDetailDrawer({
           !readOnly || showTransfer ? (
           <SlidePanelFooter alerts={footerAlerts}>
             {!readOnly && (
-            <div className="flex gap-2">
-              {canCollectMissedPayment && onRecordPayment && (
-                <SlidePanelActionButton
-                  variant="secondary"
-                  icon={CircleDollarSign}
-                  className="flex-1"
-                  onClick={() => onRecordPayment(member)}
-                >
-                  {t('actions.collectPayment')}
-                </SlidePanelActionButton>
-              )}
-              {canChangePlan(member) && onChangePlan && otherPlans.length > 0 && (
-                <SlidePanelActionButton
-                  variant="secondary"
-                  icon={ArrowLeftRight}
-                  className="flex-1"
-                  onClick={() => onChangePlan(member)}
-                >
-                  {t('actions.changePlan')}
-                </SlidePanelActionButton>
-              )}
-              {canRenewMember(member) && onRenew && (
+              <div className="space-y-2.5">
+                {canCollectMissedPayment && onRecordPayment ? (
                   <SlidePanelActionButton
-                    variant="success"
+                    variant="hero"
+                    icon={CircleDollarSign}
+                    onClick={() => onRecordPayment(member)}
+                  >
+                    {t('actions.collectPayment')}
+                  </SlidePanelActionButton>
+                ) : canRenewMember(member) && onRenew ? (
+                  <SlidePanelActionButton
+                    variant="successHero"
                     icon={RefreshCw}
-                    className="flex-1"
                     onClick={() => onRenew(member)}
                   >
                     {t('actions.renew')}
                   </SlidePanelActionButton>
+                ) : null}
+
+                {((canChangePlan(member) && onChangePlan && otherPlans.length > 0) ||
+                  (showTransfer && onTransfer)) && (
+                  <SlidePanelActionGrid
+                    columns={
+                      canChangePlan(member) && onChangePlan && otherPlans.length > 0 && showTransfer && onTransfer
+                        ? 2
+                        : 2
+                    }
+                  >
+                    {canChangePlan(member) && onChangePlan && otherPlans.length > 0 && (
+                      <SlidePanelActionButton
+                        variant="tile"
+                        icon={ArrowLeftRight}
+                        className={!(showTransfer && onTransfer) ? 'col-span-2' : ''}
+                        onClick={() => onChangePlan(member)}
+                      >
+                        {t('actions.changePlan')}
+                      </SlidePanelActionButton>
+                    )}
+                    {showTransfer && onTransfer && (
+                      <SlidePanelActionButton
+                        variant="tile"
+                        icon={ArrowRightLeft}
+                        className={
+                          !(canChangePlan(member) && onChangePlan && otherPlans.length > 0)
+                            ? 'col-span-2'
+                            : ''
+                        }
+                        onClick={() => onTransfer(member)}
+                      >
+                        {t('drawer.transferBranch')}
+                      </SlidePanelActionButton>
+                    )}
+                  </SlidePanelActionGrid>
                 )}
-            </div>
+              </div>
             )}
-            <div className="flex gap-2">
-              {showTransfer && onTransfer && (
+            {readOnly && showTransfer && onTransfer && (
+              <SlidePanelActionButton
+                variant="tile"
+                icon={ArrowRightLeft}
+                className="w-full"
+                onClick={() => onTransfer(member)}
+              >
+                {t('drawer.transferBranch')}
+              </SlidePanelActionButton>
+            )}
+            {!readOnly && (
+              <div className="flex items-stretch gap-2.5">
                 <SlidePanelActionButton
                   variant="secondary"
-                  icon={ArrowRightLeft}
-                  className={readOnly ? 'flex-1' : 'flex-1'}
-                  onClick={() => onTransfer(member)}
+                  icon={Pencil}
+                  className="flex-1"
+                  onClick={() => {
+                    setError('');
+                    setIsEditOpen(true);
+                  }}
                 >
-                  {t('drawer.transferBranch')}
+                  {t('drawer.editContact')}
                 </SlidePanelActionButton>
-              )}
-              {!readOnly && (
-              <>
-              <SlidePanelActionButton
-                variant="primary"
-                icon={Pencil}
-                className="flex-1"
-                onClick={() => {
-                  setError('');
-                  setIsEditOpen(true);
-                }}
-              >
-                {t('drawer.editContact')}
-              </SlidePanelActionButton>
-              {canDelete && (
-              <SlidePanelActionButton
-                variant="danger"
-                icon={Trash2}
-                className="px-4"
-                onClick={() => setIsDeleteOpen(true)}
-                title={t('common.delete')}
-                aria-label={t('common.delete')}
-              />
-              )}
-              </>
-              )}
-            </div>
+                {canDelete && (
+                  <SlidePanelActionButton
+                    variant="dangerIcon"
+                    icon={Trash2}
+                    onClick={() => setIsDeleteOpen(true)}
+                    title={t('common.delete')}
+                    aria-label={t('common.delete')}
+                  />
+                )}
+              </div>
+            )}
           </SlidePanelFooter>
           ) : footerAlerts.length > 0 ? (
             <SlidePanelFooter alerts={footerAlerts} />

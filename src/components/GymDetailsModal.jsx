@@ -38,6 +38,7 @@ import {
   SlidePanelListItem,
   SlidePanelFooter,
   SlidePanelActionButton,
+  SlidePanelActionGrid,
 } from './SlidePanel';
 
 /**
@@ -170,71 +171,78 @@ export default function GymDetailsModal({
         footer={
           !detailLoading && gymDetail ? (
             <SlidePanelFooter alerts={footerAlerts}>
-              <div className="flex gap-2">
-                {canCollect && onCollectPayment && (
+              <div className="space-y-2.5">
+                {canCollect && onCollectPayment ? (
                   <SlidePanelActionButton
-                    variant="secondary"
+                    variant="hero"
                     icon={CircleDollarSign}
-                    className="flex-1"
                     onClick={() => onCollectPayment(gymForActions || gymDetail)}
                   >
                     {t('modals.gymDetails.collectPayment')}
                   </SlidePanelActionButton>
-                )}
-                {gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0 && (
+                ) : gymForActions && canRenewGym(gymForActions) && onRenew ? (
                   <SlidePanelActionButton
-                    variant="secondary"
-                    icon={ArrowLeftRight}
-                    className="flex-1"
-                    onClick={() => onChangePlan(gymForActions)}
-                  >
-                    {t('modals.gymDetails.changePlan')}
-                  </SlidePanelActionButton>
-                )}
-                {gymForActions && canRenewGym(gymForActions) && onRenew && (
-                  <SlidePanelActionButton
-                    variant="success"
+                    variant="successHero"
                     icon={RefreshCw}
-                    className="flex-1"
                     onClick={() => onRenew(gymForActions)}
                   >
                     {t('modals.gymDetails.renewLicense')}
                   </SlidePanelActionButton>
+                ) : null}
+
+                {((gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0) ||
+                  (onResetOwnerPassword && gymDetail?.owner_user_id)) && (
+                  <SlidePanelActionGrid>
+                    {gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0 && (
+                      <SlidePanelActionButton
+                        variant="tile"
+                        icon={ArrowLeftRight}
+                        className={!(onResetOwnerPassword && gymDetail?.owner_user_id) ? 'col-span-2' : ''}
+                        onClick={() => onChangePlan(gymForActions)}
+                      >
+                        {t('modals.gymDetails.changePlan')}
+                      </SlidePanelActionButton>
+                    )}
+                    {onResetOwnerPassword && gymDetail?.owner_user_id && (
+                      <SlidePanelActionButton
+                        variant="tile"
+                        icon={KeyRound}
+                        className={
+                          !(gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0)
+                            ? 'col-span-2'
+                            : ''
+                        }
+                        onClick={() => {
+                          setResetError('');
+                          setIsResetOpen(true);
+                        }}
+                      >
+                        {t('modals.gymDetails.resetOwnerPassword')}
+                      </SlidePanelActionButton>
+                    )}
+                  </SlidePanelActionGrid>
                 )}
-              </div>
-              <div className="flex gap-2">
-                {onResetOwnerPassword && gymDetail?.owner_user_id && (
+
+                <div className="flex items-stretch gap-2.5">
                   <SlidePanelActionButton
                     variant="secondary"
-                    icon={KeyRound}
+                    icon={Pencil}
                     className="flex-1"
                     onClick={() => {
-                      setResetError('');
-                      setIsResetOpen(true);
+                      setMutationError('');
+                      setIsEditOpen(true);
                     }}
                   >
-                    {t('modals.gymDetails.resetOwnerPassword')}
+                    {t('modals.gymDetails.editGym')}
                   </SlidePanelActionButton>
-                )}
-                <SlidePanelActionButton
-                  variant="primary"
-                  icon={Pencil}
-                  className="flex-1"
-                  onClick={() => {
-                    setMutationError('');
-                    setIsEditOpen(true);
-                  }}
-                >
-                  {t('modals.gymDetails.editGym')}
-                </SlidePanelActionButton>
-                <SlidePanelActionButton
-                  variant="danger"
-                  icon={Trash2}
-                  className="px-4"
-                  onClick={() => setIsDeleteOpen(true)}
-                  title={t('modals.gymDetails.deleteGym')}
-                  aria-label={t('modals.gymDetails.deleteGym')}
-                />
+                  <SlidePanelActionButton
+                    variant="dangerIcon"
+                    icon={Trash2}
+                    onClick={() => setIsDeleteOpen(true)}
+                    title={t('modals.gymDetails.deleteGym')}
+                    aria-label={t('modals.gymDetails.deleteGym')}
+                  />
+                </div>
               </div>
             </SlidePanelFooter>
           ) : null

@@ -65,7 +65,9 @@ export function SlidePanel({
         <div className="safe-bottom flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">{children}</div>
 
         {footer && (
-          <div className="safe-bottom shrink-0 border-t border-slate-100 dark:border-app-border-subtle bg-white px-4 py-4  dark:bg-app-surface sm:px-6">{footer}</div>
+          <div className="safe-bottom shrink-0 border-t border-slate-200/80 bg-gradient-to-t from-slate-50 to-white px-4 py-4 shadow-[0_-8px_24px_-12px_rgba(15,23,42,0.12)] dark:border-app-border-subtle dark:from-app-raised dark:to-app-surface dark:shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.45)] sm:px-6 sm:py-5">
+            {footer}
+          </div>
         )}
       </aside>
     </div>,
@@ -179,11 +181,11 @@ export function SlidePanelListItem({ icon: Icon, title, subtitle, trailing }) {
 
 export function SlidePanelFooterAlert({ variant = 'info', children }) {
   const styles = {
-    info: 'border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300',
-    warning: 'border-amber-100 bg-amber-50 text-amber-700 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-300',
+    info: 'border-emerald-200/80 bg-emerald-50 text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300',
+    warning: 'border-amber-200/80 bg-amber-50 text-amber-900 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200',
   };
   return (
-    <p className={`rounded-lg border px-3 py-2 text-center text-xs ${styles[variant] || styles.info}`}>
+    <p className={`rounded-xl border px-3.5 py-2.5 text-center text-xs font-medium leading-relaxed ${styles[variant] || styles.info}`}>
       {children}
     </p>
   );
@@ -191,7 +193,7 @@ export function SlidePanelFooterAlert({ variant = 'info', children }) {
 
 export function SlidePanelFooter({ alerts = [], children }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {alerts.map((alert) => (
         <SlidePanelFooterAlert key={alert.key || alert.text} variant={alert.variant}>
           {alert.text}
@@ -202,6 +204,19 @@ export function SlidePanelFooter({ alerts = [], children }) {
   );
 }
 
+/** Horizontal wrap / grid for secondary panel actions. */
+export function SlidePanelActionGrid({ children, columns = 2 }) {
+  const cols = columns === 3 ? 'grid-cols-3' : 'grid-cols-2';
+  return <div className={`grid ${cols} gap-2.5`}>{children}</div>;
+}
+
+/**
+ * Panel action control.
+ * - hero: full-width primary money/lifecycle CTA
+ * - tile: icon chip + label (secondary workflow)
+ * - primary / secondary / success / danger: legacy row buttons (still supported)
+ * - dangerIcon: compact destructive control
+ */
 export function SlidePanelActionButton({
   children,
   onClick,
@@ -210,23 +225,99 @@ export function SlidePanelActionButton({
   icon: Icon,
   ...props
 }) {
+  if (variant === 'hero') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`group relative flex w-full min-h-[48px] cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-md shadow-indigo-600/25 transition hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 dark:bg-indigo-500 dark:shadow-indigo-900/40 dark:hover:bg-indigo-400 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
+        {...props}
+      >
+        <span
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 transition group-hover:opacity-100"
+          aria-hidden
+        />
+        {Icon && (
+          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+            <Icon className="h-4 w-4" aria-hidden />
+          </span>
+        )}
+        <span className="relative">{children}</span>
+      </button>
+    );
+  }
+
+  if (variant === 'tile') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`group flex min-h-[56px] cursor-pointer flex-col items-start justify-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-3.5 py-3 text-left transition hover:border-indigo-300 hover:bg-indigo-50/70 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 dark:border-app-border-subtle dark:bg-app-raised dark:hover:border-indigo-500/40 dark:hover:bg-indigo-500/10 disabled:opacity-50 ${className}`}
+        {...props}
+      >
+        {Icon && (
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition group-hover:bg-indigo-100 group-hover:text-indigo-700 dark:bg-app-surface dark:text-app-muted dark:group-hover:bg-indigo-500/20 dark:group-hover:text-indigo-300">
+            <Icon className="h-4 w-4" aria-hidden />
+          </span>
+        )}
+        <span className="text-xs font-semibold leading-tight text-slate-800 dark:text-app-text-strong sm:text-sm">
+          {children}
+        </span>
+      </button>
+    );
+  }
+
+  if (variant === 'successHero') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`group relative flex w-full min-h-[48px] cursor-pointer items-center justify-center gap-2.5 overflow-hidden rounded-xl bg-emerald-600 px-4 py-3.5 text-sm font-semibold text-white shadow-md shadow-emerald-600/25 transition hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 dark:shadow-emerald-900/40 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
+        {...props}
+      >
+        {Icon && (
+          <span className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-white/15">
+            <Icon className="h-4 w-4" aria-hidden />
+          </span>
+        )}
+        <span className="relative">{children}</span>
+      </button>
+    );
+  }
+
+  if (variant === 'dangerIcon') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-rose-200/90 bg-white text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 dark:border-rose-500/30 dark:bg-app-raised dark:text-rose-400 dark:hover:bg-rose-500/10 disabled:opacity-50 ${className}`}
+        {...props}
+      >
+        {Icon && <Icon className="h-4.5 w-4.5 h-[18px] w-[18px]" aria-hidden />}
+        {children}
+      </button>
+    );
+  }
+
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600',
+    primary:
+      'min-h-[44px] bg-indigo-600 text-white shadow-sm shadow-indigo-600/20 hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400',
     secondary:
-      'border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-300 dark:hover:bg-indigo-500/20',
-    success: 'bg-emerald-600 text-white hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500',
+      'min-h-[44px] border border-slate-200 bg-white text-slate-700 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-800 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text dark:hover:border-indigo-500/30 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-200',
+    success:
+      'min-h-[44px] bg-emerald-600 text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-500',
     danger:
-      'border border-rose-200 text-rose-600 hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-500/10',
+      'min-h-[44px] border border-rose-200 bg-white text-rose-600 hover:bg-rose-50 dark:border-rose-500/30 dark:bg-app-raised dark:text-rose-400 dark:hover:bg-rose-500/10',
   };
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 cursor-pointer disabled:opacity-50 ${variants[variant] || variants.primary} ${className}`}
       {...props}
     >
-      {Icon && <Icon className="h-4 w-4" aria-hidden />}
+      {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
       {children}
     </button>
   );
