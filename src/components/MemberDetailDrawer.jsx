@@ -162,7 +162,7 @@ export default function MemberDetailDrawer({
           !readOnly || showTransfer ? (
           <SlidePanelFooter alerts={footerAlerts}>
             {!readOnly && (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {canCollectMissedPayment && onRecordPayment ? (
                   <SlidePanelActionButton
                     variant="hero"
@@ -229,7 +229,7 @@ export default function MemberDetailDrawer({
               </SlidePanelActionButton>
             )}
             {!readOnly && (
-              <div className="flex items-stretch gap-2.5">
+              <div className="flex items-stretch gap-2">
                 <SlidePanelActionButton
                   variant="secondary"
                   icon={Pencil}

@@ -171,7 +171,7 @@ export default function GymDetailsModal({
         footer={
           !detailLoading && gymDetail ? (
             <SlidePanelFooter alerts={footerAlerts}>
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {canCollect && onCollectPayment ? (
                   <SlidePanelActionButton
                     variant="hero"
@@ -223,7 +223,7 @@ export default function GymDetailsModal({
                   </SlidePanelActionGrid>
                 )}
 
-                <div className="flex items-stretch gap-2.5">
+                <div className="flex items-stretch gap-2">
                   <SlidePanelActionButton
                     variant="secondary"
                     icon={Pencil}
