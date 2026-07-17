@@ -7,7 +7,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-const PIE_PALETTE = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#f43f5e', '#64748b'];
+const PIE_PALETTE = ['#0f766e', '#0891b2', '#06b6d4', '#10b981', '#f59e0b', '#f43f5e', '#64748b'];
 
 /** Donut chart for categorical report breakdowns. */
 export default function ReportDonut({ data, colors = {}, showCounts = false, formatValue }) {

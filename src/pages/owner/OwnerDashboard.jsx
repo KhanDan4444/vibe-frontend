@@ -307,8 +307,8 @@ export default function OwnerDashboard() {
                 <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#0f766e" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.55 : 1} />
@@ -319,7 +319,7 @@ export default function OwnerDashboard() {
                     itemStyle={{ color: '#0f766e', fontWeight: 600 }}
                     formatter={(value) => [`$${value}`, t('pages.dashboard.chartRevenue')]}
                   />
-                  <Area type="monotone" dataKey="amount" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                  <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (

@@ -23,7 +23,7 @@ export const PAYMENT_STATUS_COLORS = {
 export const MEMBERSHIP_PLAN_PALETTE = [
   '#2563eb', // blue
   '#f97316', // orange
-  '#8b5cf6', // violet
+  '#0891b2', // cyan
   '#059669', // emerald
   '#db2777', // rose
   '#ca8a04', // amber

@@ -40,6 +40,13 @@
 }
 
 @layer base {
+  :root {
+    --color-brand: #0f766e;
+    --color-brand-hover: #0d9488;
+    --color-brand-soft: #ccfbf1;
+    --color-brand-text: #115e59;
+  }
+
   html {
     color-scheme: light;
     background-color: #f8fafc;
@@ -56,6 +63,10 @@
   }
 
   html.dark {
+    --color-brand: #2dd4bf;
+    --color-brand-hover: #5eead4;
+    --color-brand-soft: rgb(45 212 191 / 0.16);
+    --color-brand-text: #99f6e4;
     color-scheme: dark;
     background-color: #13161c;
   }

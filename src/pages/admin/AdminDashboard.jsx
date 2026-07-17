@@ -723,7 +723,7 @@ export default function AdminDashboard() {
                             itemStyle={{ color: '#0f766e', fontWeight: 600 }}
                             cursor={{ fill: chartTheme.isDark ? 'rgba(245, 158, 11, 0.06)' : '#f8fafc' }}
                           />
-                          <Bar dataKey="members" fill="#6366f1" radius={[4, 4, 0, 0]} name={t('admin.activeMembers')} />
+                          <Bar dataKey="members" fill="#0f766e" radius={[4, 4, 0, 0]} name={t('admin.activeMembers')} />
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (
