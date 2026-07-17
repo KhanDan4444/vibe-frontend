@@ -17,11 +17,11 @@ export function paymentSourceLabel(source) {
 export function paymentSourceStyle(source) {
   switch (source) {
     case 'enroll':
-      return 'bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-500/12 dark:text-orange-300 dark:border-orange-500/25';
+      return 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-400/10 dark:text-emerald-300 dark:border-emerald-400/25';
     case 'renew':
       return 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-500/12 dark:text-sky-300 dark:border-sky-500/25';
     case 'change_plan':
-      return 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-500/12 dark:text-amber-300 dark:border-amber-500/25';
+      return 'bg-cyan-50 text-cyan-800 border-cyan-200 dark:bg-cyan-400/10 dark:text-cyan-300 dark:border-cyan-400/25';
     case 'collect':
     default:
       return 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-app-surface dark:text-app-text dark:border-app-border-subtle';
