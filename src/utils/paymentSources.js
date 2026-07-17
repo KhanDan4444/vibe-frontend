@@ -17,7 +17,7 @@ export function paymentSourceLabel(source) {
 export function paymentSourceStyle(source) {
   switch (source) {
     case 'enroll':
-      return 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-400/10 dark:text-emerald-300 dark:border-emerald-400/25';
+      return 'bg-lime-50 text-lime-800 border-lime-200 dark:bg-lime-400/10 dark:text-lime-300 dark:border-lime-400/25';
     case 'renew':
       return 'bg-sky-50 text-sky-700 border-sky-100 dark:bg-sky-500/12 dark:text-sky-300 dark:border-sky-500/25';
     case 'change_plan':
