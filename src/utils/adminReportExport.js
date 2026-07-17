@@ -3,11 +3,10 @@
  * @description PDF/CSV exports for platform admin reports.
  */
 
-import jsPDF from 'jspdf';
 import { downloadCsv } from './paymentReport';
 import { exportPaymentMethod, exportColumn, exportText } from '../i18n/helpers';
 import {
-  PDF_FORMAT,
+  createPdfDoc,
   pdfTable,
   formatDate,
   formatMoney,
@@ -110,9 +109,9 @@ export function revenueToCsv(payments) {
 }
 
 /** @param {Array<object>} gyms @param {{ filterLabel?: string }} meta */
-export function downloadGymsPdf(gyms, meta = {}) {
+export async function downloadGymsPdf(gyms, meta = {}) {
   const sorted = sortGymsList(gyms, DEFAULT_EXPORT_SORT);
-  const doc = new jsPDF(PDF_FORMAT);
+  const doc = await createPdfDoc();
   const snap = buildGymSnapshot(sorted);
   const filterLabel = meta.filterLabel || exportText('filters.allGyms');
 
@@ -137,9 +136,9 @@ export function downloadGymsPdf(gyms, meta = {}) {
 }
 
 /** @param {Array<object>} payments @param {{ periodLabel: string, summary: object }} meta */
-export function downloadRevenuePdf(payments, meta) {
+export async function downloadRevenuePdf(payments, meta) {
   const sorted = sortAdminPaymentsList(payments, DEFAULT_EXPORT_SORT);
-  const doc = new jsPDF(PDF_FORMAT);
+  const doc = await createPdfDoc();
   const { periodLabel, summary } = meta;
 
   let startY = pdfHeader(doc, {
@@ -210,10 +209,10 @@ export function downloadFullReportCsv(gyms, payments, meta = {}) {
 }
 
 /** Combined PDF — gym directory then revenue by method + transactions (all landscape). */
-export function downloadFullReportPdf(gyms, payments, meta = {}) {
+export async function downloadFullReportPdf(gyms, payments, meta = {}) {
   const sortedGyms = sortGymsList(gyms, DEFAULT_EXPORT_SORT);
   const sortedPayments = sortAdminPaymentsList(payments, DEFAULT_EXPORT_SORT);
-  const doc = new jsPDF(PDF_FORMAT);
+  const doc = await createPdfDoc();
   const { gymFilterLabel = exportText('filters.allGyms'), periodLabel = exportText('period.allTime'), summary } = meta;
 
   const startY = pdfHeader(doc, {

@@ -1,17 +1,37 @@
 /**
  * @file reportExportCore.js
  * @description Shared PDF/CSV helpers for admin and owner report exports.
+ * jsPDF is loaded on demand so the main bundle stays lean.
  */
 
-import jsPDF from 'jspdf';
-import { applyPlugin } from 'jspdf-autotable';
 import { exportPaymentMethod, exportText } from '../i18n/helpers';
 import { formatDisplayDate, todayString } from './date';
 
-applyPlugin(jsPDF);
-
 /** Landscape A4 — used by all report PDFs. */
 export const PDF_FORMAT = { orientation: 'landscape', unit: 'mm', format: 'a4' };
+
+let pdfReady = null;
+
+/** Dynamically load jsPDF + autotable once. */
+export async function loadJsPdf() {
+  if (!pdfReady) {
+    pdfReady = (async () => {
+      const [{ default: jsPDF }, { applyPlugin }] = await Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable'),
+      ]);
+      applyPlugin(jsPDF);
+      return jsPDF;
+    })();
+  }
+  return pdfReady;
+}
+
+/** @returns {Promise<import('jspdf').jsPDF>} */
+export async function createPdfDoc(format = PDF_FORMAT) {
+  const jsPDF = await loadJsPdf();
+  return new jsPDF(format);
+}
 
 /** @param {import('jspdf').jsPDF} doc */
 export function pdfTable(doc, options) {

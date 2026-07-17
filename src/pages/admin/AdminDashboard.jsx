@@ -6,29 +6,19 @@ import {
   AlertTriangle,
   Plus,
   X,
-  ShieldCheck,
-  Menu,
   Users,
-  CreditCard,
-  LayoutDashboard,
   Search,
   AlertCircle,
   DollarSign,
-  FileBarChart,
   RefreshCw,
   Edit,
   Trash2,
   ArrowLeftRight,
-  MessageSquare,
 } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { parseApiResponse } from '../../utils/api';
-import AdminSaasPlans from './AdminSaasPlans';
-import AdminPayments from './AdminPayments';
 import InitialsAvatar from '../../components/InitialsAvatar';
-import AdminReports from './AdminReports';
-import AdminGymMessages from './AdminGymMessages';
 import RegisterGymModal from '../../components/RegisterGymModal';
 import GymDetailsModal from '../../components/GymDetailsModal';
 import GymEditModal from '../../components/GymEditModal';
@@ -42,8 +32,6 @@ import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { AdminTableRowsSkeleton, AdminListSkeleton, ChartPanelSkeleton } from '../../components/LoadingSkeletons';
 import FlashBanner from '../../components/FlashBanner';
 import ConfirmDialog from '../../components/ConfirmDialog';
-import UserProfileMenu from '../../components/UserProfileMenu';
-import LanguageSwitcher from '../../components/LanguageSwitcher';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { formatDisplayDate } from '../../utils/date';
@@ -56,7 +44,7 @@ import { DEFAULT_GYM_SORT, ADMIN_GYM_SORT_OPTIONS, sortGymsList } from '../../ut
 import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
-import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop, cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
 import { useChartTheme } from '../../utils/chartTheme';
 
 const UNPAID = 'Unpaid';
@@ -81,17 +69,9 @@ export default function AdminDashboard() {
   const location = useLocation();
   const adminSection = useMemo(() => adminPathToSection(location.pathname), [location.pathname]);
 
-  const setAdminSection = useCallback(
-    (section) => {
-      navigate(ADMIN_SECTION_PATH[section] || ADMIN_SECTION_PATH.dashboard);
-    },
-    [navigate]
-  );
-
   const [gyms, setGyms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [saasPlans, setSaasPlans] = useState([]);
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,11 +94,6 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [platformMetrics, setPlatformMetrics] = useState(null);
   const [flash, setFlash] = useState('');
-  const [childBooting, setChildBooting] = useState(false);
-
-  useEffect(() => {
-    setChildBooting(false);
-  }, [adminSection]);
 
   const [selectedGymId, setSelectedGymId] = useState(null);
   const [gymEditState, setGymEditState] = useState({ isOpen: false, gym: null, error: '' });
@@ -513,7 +488,6 @@ export default function AdminDashboard() {
   const adminBooting =
     (adminSection === 'dashboard' && dashboardBooting) ||
     (adminSection === 'gyms' && gymsBooting);
-  const shellBooting = adminBooting || childBooting;
 
   const retryAdminLoad = useCallback(() => {
     fetchPlatformMetrics();
@@ -529,112 +503,11 @@ export default function AdminDashboard() {
         .sort((a, b) => b.members - a.members)
         .slice(0, 5);
 
-  const adminNavItems = useMemo(
-    () => [
-      { section: 'dashboard', to: ADMIN_SECTION_PATH.dashboard, icon: LayoutDashboard, labelKey: 'nav.dashboard' },
-      { section: 'gyms', to: ADMIN_SECTION_PATH.gyms, icon: Building2, labelKey: 'nav.gyms' },
-      { section: 'plans', to: ADMIN_SECTION_PATH.plans, icon: CreditCard, labelKey: 'nav.saasPlans' },
-      { section: 'payments', to: ADMIN_SECTION_PATH.payments, icon: DollarSign, labelKey: 'nav.payments', badge: unpaidCount > 0 ? { count: unpaidCount, tone: 'amber' } : null },
-      { section: 'messages', to: ADMIN_SECTION_PATH.messages, icon: MessageSquare, labelKey: 'nav.smsLog' },
-      { section: 'reports', to: ADMIN_SECTION_PATH.reports, icon: FileBarChart, labelKey: 'nav.reports' },
-    ],
-    [unpaidCount]
-  );
-
   return (
-    <div className={shellPage}>
-      <header className={`safe-top sticky top-0 z-40 flex h-14 min-h-[3.5rem] items-center justify-between px-4 lg:hidden ${shellHeader}`}>
-        <button
-          type="button"
-          onClick={() => setSidebarOpen(true)}
-          className="-ml-1 rounded-lg p-2.5 text-slate-600 dark:text-app-text active:bg-slate-100 dark:text-app-text dark:active:bg-app-raised"
-          aria-label={t('common.openMenu')}
-        >
-          <Menu className="h-6 w-6" />
-        </button>
-        <span className="truncate text-base font-bold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.platformCore')}</span>
-        <div className="flex items-center gap-0.5">
-          <LanguageSwitcher compact />
-          <UserProfileMenu compact />
-        </div>
-      </header>
+    <>
+      <div className="space-y-8">
+          {adminSection === 'dashboard' ? (
 
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div className={`fixed inset-0 ${overlayBackdrop}`} onClick={() => setSidebarOpen(false)} />
-          <div className={`relative flex w-full max-w-xs flex-col p-6 ${sidebarSurface}`}>
-            <button onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
-              <X className="h-6 w-6" />
-            </button>
-            <div className="mb-8 mt-2 text-2xl font-bold text-indigo-400">{t('admin.platformCore')}</div>
-            <nav className="mb-auto space-y-1">
-              {adminNavItems.map((item) => (
-                <SidebarLink
-                  key={item.section}
-                  active={adminSection === item.section}
-                  to={item.to}
-                  onClick={() => setSidebarOpen(false)}
-                  icon={item.icon}
-                  label={t(item.labelKey)}
-                  badge={item.badge}
-                />
-              ))}
-            </nav>
-          </div>
-        </div>
-      )}
-
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-8 text-2xl font-bold text-indigo-400">{t('admin.platformCore')}</div>
-        <nav className="space-y-1">
-          {adminNavItems.map((item) => (
-            <SidebarLink
-              key={item.section}
-              active={adminSection === item.section}
-              to={item.to}
-              icon={item.icon}
-              label={t(item.labelKey)}
-              badge={item.badge}
-            />
-          ))}
-        </nav>
-      </aside>
-
-      <div className="lg:pl-64">
-        {shellBooting && (
-          <div className="sticky top-0 z-20 h-0.5 overflow-hidden bg-slate-200 dark:bg-app-border-subtle">
-            <div className="app-boot-bar h-full w-1/3 bg-indigo-500" />
-          </div>
-        )}
-        <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-600 dark:text-indigo-300">
-            <ShieldCheck className="h-3.5 w-3.5" /> {t('admin.platformAdmin')}
-          </div>
-          <div className="flex items-center gap-3">
-            <LanguageSwitcher />
-            <UserProfileMenu />
-          </div>
-        </div>
-
-        <main className="safe-bottom app-page p-4 sm:p-6 lg:p-8 space-y-8">
-          {adminSection === 'plans' ? (
-            <AdminSaasPlans onPlansChange={(list) => setSaasPlans(list.filter((p) => p.is_active !== false))} onBootingChange={setChildBooting} />
-          ) : adminSection === 'payments' ? (
-            <AdminPayments
-              gyms={gyms}
-              saasPlans={saasPlans}
-              onCollectPayment={(gym) => setCollectState({ isOpen: true, gym, error: '' })}
-              onBootingChange={setChildBooting}
-            />
-          ) : adminSection === 'reports' ? (
-            <AdminReports onBootingChange={setChildBooting} />
-          ) : adminSection === 'messages' ? (
-            <AdminGymMessages
-              gyms={gyms}
-              onGymClick={openGymDetail}
-              onBootingChange={setChildBooting}
-            />
-          ) : adminSection === 'dashboard' ? (
             <>
               <div className="mb-6">
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{t('nav.dashboard')}</h1>
@@ -644,7 +517,7 @@ export default function AdminDashboard() {
               {saasPlans.length === 0 && (
                 <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
                   {t('admin.noSaasPlansWarning')}{' '}
-                  <button type="button" className="font-semibold underline" onClick={() => setAdminSection('plans')}>
+                  <button type="button" className="font-semibold underline" onClick={() => navigate(ADMIN_SECTION_PATH.plans)}>
                     {t('admin.goToSaasPlans')}
                   </button>
                 </div>
@@ -741,7 +614,7 @@ export default function AdminDashboard() {
                       onClick={() => {
                         setGymPage(1);
                         setStatusFilter(DUE_SOON);
-                        setAdminSection('gyms');
+                        navigate(ADMIN_SECTION_PATH.gyms);
                       }}
                       className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-indigo-600 dark:text-app-muted dark:hover:text-indigo-400 cursor-pointer"
                     >
@@ -875,7 +748,9 @@ export default function AdminDashboard() {
                 <Plus className="h-6 w-6" />
               </button>
             </>
+          
           ) : (
+
             <>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
@@ -1247,8 +1122,8 @@ export default function AdminDashboard() {
                 </p>
               </section>
             </>
+          
           )}
-        </main>
       </div>
 
       <GymDetailsModal
@@ -1328,38 +1203,6 @@ export default function AdminDashboard() {
       />
 
       <FlashBanner message={flash} onDismiss={() => setFlash('')} />
-    </div>
-  );
-}
-
-function SidebarLink({ active, to, onClick, icon: Icon, label, badge }) {
-  const className = `flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
-    active ? sidebarNavActive : sidebarNavIdle
-  }`;
-  const inner = (
-    <>
-      <Icon className="h-5 w-5" /> {label}
-      {badge && (
-        <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
-          active ? 'bg-white/20 text-white' : badge.tone === 'amber' ? 'bg-amber-500 text-white' : 'bg-rose-500 text-white'
-        }`}>
-          {badge.count}
-        </span>
-      )}
     </>
-  );
-
-  if (to) {
-    return (
-      <Link to={to} onClick={onClick} className={className}>
-        {inner}
-      </Link>
-    );
-  }
-
-  return (
-    <button type="button" onClick={onClick} className={className}>
-      {inner}
-    </button>
   );
 }

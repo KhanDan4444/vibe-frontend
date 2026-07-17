@@ -27,7 +27,9 @@ import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { PERIOD_PRESETS, saasPaymentsToCsv, downloadCsv } from '../../utils/saasPaymentReport';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortAdminPaymentsList } from '../../utils/listSort';
-import { getSaasPayments, updateSaasPayment } from '../../services/gymAdminService';
+import { getSaasPayments, updateSaasPayment, getGyms, collectGymPayment } from '../../services/gymAdminService';
+import { getSaasPlans } from '../../services/saasPlanService';
+import { mapGymFromApi } from '../../utils/apiMappers';
 import { useTranslation } from 'react-i18next';
 import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../../i18n/helpers';
 import { AdminTableRowsSkeleton, AdminListSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
@@ -55,11 +57,13 @@ function termStartForGym(gyms, gymId) {
   return raw ? String(raw).split('T')[0] : null;
 }
 
-export default function AdminPayments({ gyms = [], onCollectPayment, onBootingChange }) {
+export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBootingChange }) {
   const { t } = useTranslation();
   const { apiFetch } = useAuth();
 
   const [payments, setPayments] = useState([]);
+  const [localGyms, setLocalGyms] = useState([]);
+  const [saasPlans, setSaasPlans] = useState([]);
   const [summary, setSummary] = useState({ total: 0, count: 0, average: 0, byMethod: {} });
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -76,12 +80,43 @@ export default function AdminPayments({ gyms = [], onCollectPayment, onBootingCh
   const [customEnd, setCustomEnd] = useState('');
   const [paymentToDelete, setPaymentToDelete] = useState(null);
   const [editState, setEditState] = useState({ isOpen: false, payment: null, error: '' });
+  const [collectState, setCollectState] = useState({ isOpen: false, gym: null, error: '' });
   const [saving, setSaving] = useState(false);
+
+  const gyms = gymsProp ?? localGyms;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (gymsProp) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [gymsRes, plansRes] = await Promise.all([
+          getGyms(apiFetch, { page: 1, limit: 500 }),
+          getSaasPlans(apiFetch),
+        ]);
+        const gymsData = await parseApiResponse(gymsRes);
+        const plansData = await parseApiResponse(plansRes);
+        if (cancelled) return;
+        if (gymsRes.ok) {
+          const items = Array.isArray(gymsData) ? gymsData : gymsData.items || [];
+          setLocalGyms(items.map(mapGymFromApi));
+        }
+        if (plansRes.ok && Array.isArray(plansData)) {
+          setSaasPlans(plansData.filter((p) => p.is_active !== false));
+        }
+      } catch {
+        /* optional for attention list / collect */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [apiFetch, gymsProp]);
 
   useEffect(() => {
     setPage(1);
@@ -164,6 +199,23 @@ export default function AdminPayments({ gyms = [], onCollectPayment, onBootingCh
       await fetchPayments();
     } catch (err) {
       setEditState((s) => ({ ...s, error: err.message }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCollectSubmit = async (formData) => {
+    if (!collectState.gym) return;
+    setSaving(true);
+    setCollectState((s) => ({ ...s, error: '' }));
+    try {
+      const res = await collectGymPayment(apiFetch, formData);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || 'Failed to collect payment');
+      setCollectState({ isOpen: false, gym: null, error: '' });
+      await fetchPayments();
+    } catch (err) {
+      setCollectState((s) => ({ ...s, error: err.message }));
     } finally {
       setSaving(false);
     }
@@ -313,10 +365,14 @@ export default function AdminPayments({ gyms = [], onCollectPayment, onBootingCh
                   {gym.subscription_status}
                   {gym.saasEndDate ? t('admin.endsOn', { date: formatDisplayDate(gym.saasEndDate) }) : ''}
                 </span>
-                {onCollectPayment && (
+                {(onCollectPayment || !gymsProp) && (
                   <button
                     type="button"
-                    onClick={() => onCollectPayment(gym)}
+                    onClick={() =>
+                      onCollectPayment
+                        ? onCollectPayment(gym)
+                        : setCollectState({ isOpen: true, gym, error: '' })
+                    }
                     className="inline-flex w-fit items-center gap-1.5 whitespace-nowrap rounded-md bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 cursor-pointer sm:justify-self-end"
                   >
                     <CircleDollarSign className="h-3.5 w-3.5 shrink-0" /> {t('actions.collectPayment')}
@@ -569,6 +625,16 @@ export default function AdminPayments({ gyms = [], onCollectPayment, onBootingCh
         payment={editPaymentWithTerm}
         saving={saving}
         error={editState.error}
+      />
+
+      <AdminPaymentModal
+        isOpen={collectState.isOpen}
+        onClose={() => setCollectState({ isOpen: false, gym: null, error: '' })}
+        onSubmit={handleCollectSubmit}
+        gym={collectState.gym}
+        saasPlans={saasPlans}
+        saving={saving}
+        error={collectState.error}
       />
 
       <ConfirmDialog

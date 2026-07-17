@@ -1,4 +1,15 @@
-import { clampIsoDate, normalizeCalendarIso, todayString } from './date';
+import {
+  boundsForCustomRangeFrom as coreFrom,
+  boundsForCustomRangeTo as coreTo,
+  boundsForEnrollStart as coreEnroll,
+  boundsForLicensePayment as coreLicensePayment,
+  boundsForLicenseRenewStart as coreLicenseRenew,
+  boundsForPaymentOnTerm as corePayment,
+  boundsForTermStartWithPayment as coreTermStart,
+  clampPaymentToTerm as coreClamp,
+  paymentDateForTermStart as corePaymentForTerm,
+  normalizeIso,
+} from './paymentDateRules';
 import { defaultRenewStartDate } from './memberRenew';
 
 /**
@@ -7,60 +18,43 @@ import { defaultRenewStartDate } from './memberRenew';
 
 /** Payment collected on/after term start, never in the future. */
 export function boundsForPaymentOnTerm(termStartIso) {
-  const term = normalizeCalendarIso(termStartIso);
-  return {
-    min: term,
-    max: todayString(),
-  };
+  return corePayment(termStartIso);
 }
 
-/** New term / membership start when payment is recorded in the same flow (today or earlier). */
 export function boundsForTermStartWithPayment() {
-  return { max: todayString() };
+  return coreTermStart();
 }
 
-/** Enroll membership start — future allowed only when skipping payment. */
 export function boundsForEnrollStart(skipPayment) {
-  return skipPayment ? {} : { max: todayString() };
+  return coreEnroll(skipPayment);
 }
 
-/** Renewal term start — earliest allowed date; may be in the future. */
 export function boundsForRenewStart(member) {
   return { min: defaultRenewStartDate(member) };
 }
 
-/** SaaS / gym license renewal start. */
 export function boundsForLicenseRenewStart(minStartDate) {
-  return { min: minStartDate };
+  return coreLicenseRenew(minStartDate);
 }
 
-/** Revenue / report custom range pickers. */
 export function boundsForCustomRangeFrom(toIso) {
-  const to = normalizeCalendarIso(toIso);
-  return { max: to || todayString() };
+  return coreFrom(toIso);
 }
 
 export function boundsForCustomRangeTo(fromIso) {
-  const from = normalizeCalendarIso(fromIso);
-  return {
-    min: from,
-    max: todayString(),
-  };
+  return coreTo(fromIso);
 }
 
-/** Gym registration — license starts on payment date (today or earlier). */
 export function boundsForLicensePayment() {
-  return { max: todayString() };
+  return coreLicensePayment();
 }
 
-/** After term start changes, keep payment inside [term start, today]. */
 export function clampPaymentToTerm(termStartIso, paymentIso) {
-  const term = normalizeCalendarIso(termStartIso);
-  if (!term) return clampIsoDate(paymentIso, undefined, todayString());
-  return clampIsoDate(paymentIso, term, todayString());
+  return coreClamp(termStartIso, paymentIso);
 }
 
-/** Payment follows term start (change plan / fresh term), capped at today. */
 export function paymentDateForTermStart(termStartIso) {
-  return clampPaymentToTerm(termStartIso, termStartIso);
+  return corePaymentForTerm(termStartIso);
 }
+
+export { normalizeIso };

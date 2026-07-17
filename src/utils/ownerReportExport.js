@@ -3,11 +3,10 @@
  * @description PDF/CSV exports for gym owner reports.
  */
 
-import jsPDF from 'jspdf';
 import { downloadCsv } from './paymentReport';
 import { exportPaymentMethod, exportColumn, exportText } from '../i18n/helpers';
 import {
-  PDF_FORMAT,
+  createPdfDoc,
   pdfTable,
   formatDate,
   formatMoney,
@@ -99,9 +98,9 @@ export function ownerRevenueToCsv(payments, meta = {}) {
   return [header, ...rows].join('\n');
 }
 
-export function downloadMembersPdf(members, meta = {}) {
+export async function downloadMembersPdf(members, meta = {}) {
   const sorted = sortMembersList(members, DEFAULT_EXPORT_SORT);
-  const doc = new jsPDF(PDF_FORMAT);
+  const doc = await createPdfDoc();
   const filterLabel = meta.filterLabel || exportText('filters.allMembers');
 
   const startY = pdfHeader(doc, {
@@ -128,9 +127,9 @@ export function downloadMembersCsv(members, meta = {}) {
   downloadCsv(`member-directory-${reportTimestamp()}.csv`, membersToCsv(members, meta));
 }
 
-export function downloadOwnerRevenuePdf(payments, meta) {
+export async function downloadOwnerRevenuePdf(payments, meta) {
   const sorted = sortOwnerPaymentsList(payments, DEFAULT_EXPORT_SORT);
-  const doc = new jsPDF(PDF_FORMAT);
+  const doc = await createPdfDoc();
   const { periodLabel, summary } = meta;
 
   let startY = pdfHeader(doc, {
@@ -197,10 +196,10 @@ export function downloadFullOwnerReportCsv(members, payments, meta = {}) {
   downloadCsv(`gym-report-${slug}-${reportTimestamp()}.csv`, fullOwnerReportToCsv(members, payments, meta));
 }
 
-export function downloadFullOwnerReportPdf(members, payments, meta = {}) {
+export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
   const sortedMembers = sortMembersList(members, DEFAULT_EXPORT_SORT);
   const sortedPayments = sortOwnerPaymentsList(payments, DEFAULT_EXPORT_SORT);
-  const doc = new jsPDF(PDF_FORMAT);
+  const doc = await createPdfDoc();
   const { memberFilterLabel = exportText('filters.allMembers'), periodLabel = exportText('period.allTime'), summary } = meta;
 
   const startY = pdfHeader(doc, {
