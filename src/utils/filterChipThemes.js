@@ -25,12 +25,12 @@ export const FILTER_CHIP_THEMES = {
     badgeInactive: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300',
   },
   due_soon: {
-    dot: 'bg-amber-400',
-    active: 'bg-amber-400/20 border-amber-400 text-amber-700 dark:text-amber-300',
+    dot: 'bg-sky-500',
+    active: 'bg-sky-500/15 border-sky-500 text-sky-700 dark:text-sky-300',
     inactive:
-      'bg-white border-amber-200 text-amber-700 hover:bg-amber-50 dark:bg-app-raised dark:border-amber-500/30 dark:text-amber-300 dark:hover:bg-amber-500/10',
-    badgeActive: 'bg-amber-400 text-white',
-    badgeInactive: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+      'bg-white border-sky-200 text-sky-700 hover:bg-sky-50 dark:bg-app-raised dark:border-sky-500/30 dark:text-sky-300 dark:hover:bg-sky-500/10',
+    badgeActive: 'bg-sky-500 text-white',
+    badgeInactive: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
   },
   expired: {
     dot: 'bg-red-400',
