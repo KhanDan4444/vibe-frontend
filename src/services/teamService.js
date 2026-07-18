@@ -17,10 +17,3 @@ export function updateStaff(apiFetch, staffId, payload) {
     body: JSON.stringify(payload),
   });
 }
-
-export function resetStaffPassword(apiFetch, staffId, payload) {
-  return apiFetch(`/gym/team/${staffId}/reset-password`, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
-}

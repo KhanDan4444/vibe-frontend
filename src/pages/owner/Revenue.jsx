@@ -197,14 +197,7 @@ export default function Revenue() {
         <div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.revenue.title')}</h1>
           <p className="text-sm text-slate-500">
-            {t('pages.revenue.subtitle')}{' '}
-            <button
-              type="button"
-              onClick={() => navigate('/dashboard/members')}
-              className="font-medium text-teal-700 hover:text-teal-800 cursor-pointer"
-            >
-              {t('pages.revenue.enrollLink')}
-            </button>
+            {t('pages.revenue.subtitle')}
           </p>
         </div>
         <button

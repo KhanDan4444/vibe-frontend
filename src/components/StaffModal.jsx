@@ -114,7 +114,7 @@ export default function StaffModal({
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} onChangeCapture={markTouched}>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} autoComplete="off">
         <div className={`${modalBody} space-y-4`}>
           {displayError && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
@@ -190,7 +190,8 @@ export default function StaffModal({
               id="staff-username"
               type="text"
               required
-              autoComplete="username"
+              autoComplete="off"
+              name="staff-username"
               pattern="[a-z0-9._]{3,30}"
               title={t('account.usernamePattern')}
               placeholder={t('modals.staff.usernamePlaceholder')}
@@ -218,12 +219,14 @@ export default function StaffModal({
                 type={showPassword ? 'text' : 'password'}
                 required={!isEdit}
                 minLength={isEdit && !password ? undefined : 8}
+                autoComplete="new-password"
+                name="staff-password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
+                className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
               />
               <button
                 type="button"

@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
-import { UserPlus, Edit, UserX, UserCheck, Users, KeyRound } from 'lucide-react';
+import { UserPlus, Edit, UserX, UserCheck, Users } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
-import { listTeam, createStaff, updateStaff, resetStaffPassword } from '../../services/teamService';
+import { listTeam, createStaff, updateStaff } from '../../services/teamService';
 import StaffModal from '../../components/StaffModal';
-import ResetPasswordModal from '../../components/ResetPasswordModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../../utils/surfaceClasses';
@@ -23,9 +22,6 @@ export default function Team() {
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState('');
   const [toggleTarget, setToggleTarget] = useState(null);
-  const [resetTarget, setResetTarget] = useState(null);
-  const [resetSaving, setResetSaving] = useState(false);
-  const [resetError, setResetError] = useState('');
 
   const loadTeam = useCallback(async () => {
     setLoading(true);
@@ -110,28 +106,6 @@ export default function Team() {
     } catch (err) {
       showFlash(err.message);
       setToggleTarget(null);
-    }
-  };
-
-  const handleResetPassword = async (password) => {
-    if (!resetTarget) return;
-    if (readOnly) {
-      setResetError(t('alerts.readOnlyBody'));
-      return;
-    }
-    setResetSaving(true);
-    setResetError('');
-    try {
-      const res = await resetStaffPassword(apiFetch, resetTarget.id, { password });
-      const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to reset password');
-      showFlash(t('pages.team.passwordReset', { name: resetTarget.name }));
-      setResetTarget(null);
-      loadTeam();
-    } catch (err) {
-      setResetError(err.message);
-    } finally {
-      setResetSaving(false);
     }
   };
 
@@ -220,30 +194,19 @@ export default function Team() {
                           setModalError('');
                           setModalState({ isOpen: true, member });
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-teal-700 active:bg-teal-50 dark:border-app-border-subtle dark:text-teal-400 dark:active:bg-teal-500/10"
                       >
                         <Edit className="h-3.5 w-3.5" />
                         {t('common.edit')}
                       </button>
                       <button
                         type="button"
-                        onClick={() => {
-                          setResetError('');
-                          setResetTarget(member);
-                        }}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
-                      >
-                        <KeyRound className="h-3.5 w-3.5" />
-                        {t('pages.team.resetPassword')}
-                      </button>
-                      <button
-                        type="button"
                         onClick={() => setToggleTarget(member)}
-                        className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium ${
+                        className={
                           member.is_active
-                            ? 'border-rose-200 text-rose-600 active:bg-rose-50 dark:active:bg-rose-500/10'
-                            : 'border-emerald-200 text-emerald-600 active:bg-emerald-50'
-                        }`}
+                            ? 'inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400 dark:active:bg-rose-500/10'
+                            : 'inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 px-3 py-2 text-xs font-medium text-emerald-700 active:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-400 dark:active:bg-emerald-500/10'
+                        }
                       >
                         {member.is_active ? (
                           <>
@@ -294,52 +257,39 @@ export default function Team() {
                       </span>
                     </td>
                     {!readOnly && (
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setModalError('');
-                              setModalState({ isOpen: true, member });
-                            }}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60"
-                          >
-                            <Edit className="h-3.5 w-3.5" />
-                            {t('common.edit')}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setResetError('');
-                              setResetTarget(member);
-                            }}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60"
-                          >
-                            <KeyRound className="h-3.5 w-3.5" />
-                            {t('pages.team.resetPassword')}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setToggleTarget(member)}
-                            className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-medium ${
-                              member.is_active
-                                ? 'border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10'
-                                : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
-                            }`}
-                          >
-                            {member.is_active ? (
-                              <>
-                                <UserX className="h-3.5 w-3.5" />
-                                {t('actions.disable')}
-                              </>
-                            ) : (
-                              <>
-                                <UserCheck className="h-3.5 w-3.5" />
-                                {t('actions.enable')}
-                              </>
-                            )}
-                          </button>
-                        </div>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setModalError('');
+                            setModalState({ isOpen: true, member });
+                          }}
+                          className="mr-1 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-teal-700 hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-500/10"
+                        >
+                          <Edit className="h-4 w-4" />
+                          {t('common.edit')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setToggleTarget(member)}
+                          className={
+                            member.is_active
+                              ? 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10'
+                              : 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10'
+                          }
+                        >
+                          {member.is_active ? (
+                            <>
+                              <UserX className="h-4 w-4" />
+                              {t('actions.disable')}
+                            </>
+                          ) : (
+                            <>
+                              <UserCheck className="h-4 w-4" />
+                              {t('actions.enable')}
+                            </>
+                          )}
+                        </button>
                       </td>
                     )}
                   </tr>
@@ -373,17 +323,6 @@ export default function Team() {
         type={toggleTarget?.is_active ? 'danger' : 'primary'}
         onConfirm={handleToggleActive}
         onCancel={() => setToggleTarget(null)}
-      />
-
-      <ResetPasswordModal
-        isOpen={!!resetTarget}
-        onClose={() => setResetTarget(null)}
-        onSubmit={handleResetPassword}
-        accountName={resetTarget?.name}
-        title={t('modals.resetPassword.title')}
-        subtitle={t('modals.resetPassword.staffSubtitle', { name: resetTarget?.name })}
-        saving={resetSaving}
-        error={resetError}
       />
     </div>
   );

@@ -50,7 +50,7 @@ export default function Members() {
   const { apiFetch, user } = useAuth();
   const {
     plans, summary, refreshSummary, enrollMember, updateMember, deleteMember, renewMember, changeMemberPlan, addPayment, transferMember, showFlash,
-    readOnly, branchReadOnly, getBranchQueryParams, branches, selectedBranchId,
+    readOnly, branchReadOnly, getBranchQueryParams, branches, selectedBranchId, loading: gymLoading,
   } = useGym();
   const location = useLocation();
   const membersRequestGuard = useLatestRequestGuard();
@@ -406,8 +406,8 @@ export default function Members() {
               setError('');
               setModalState({ isOpen: true, member: null, error: '' });
             }}
-            disabled={plans.length === 0}
-            title={plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
+            disabled={gymLoading || plans.length === 0}
+            title={!gymLoading && plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
             className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 transition-colors self-start sm:self-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
@@ -428,7 +428,7 @@ export default function Members() {
         </div>
       )}
 
-      {!readOnly && plans.length === 0 && (
+      {!readOnly && !gymLoading && plans.length === 0 && (
         <div className="admin-alert-amber flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-2">
             <AlertCircle className="admin-alert-amber-icon mt-0.5 h-5 w-5 shrink-0" />
