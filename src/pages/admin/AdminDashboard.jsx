@@ -736,17 +736,6 @@ export default function AdminDashboard() {
               </div>
               )}
 
-              {/* Floating Action Button */}
-              <button
-                onClick={() => {
-                  loadSaasPlansForForms();
-                  setIsRegisterOpen(true);
-                }}
-                className="safe-bottom fixed bottom-4 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg hover:bg-slate-800 hover:shadow-xl transition-all cursor-pointer sm:bottom-6 sm:right-6"
-                title={t('admin.registerGym')}
-              >
-                <Plus className="h-6 w-6" />
-              </button>
             </>
           
           ) : (

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Users, AlertTriangle, XCircle, TrendingUp, Plus, RefreshCw, UserPlus } from 'lucide-react';
+import { Users, AlertTriangle, XCircle, TrendingUp, RefreshCw, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
@@ -332,16 +332,6 @@ export default function OwnerDashboard() {
         </>
         )}
       </div>
-
-      {!readOnly && !gymBooting && (
-        <button
-          onClick={() => navigate('/dashboard/members')}
-          className="safe-bottom fixed bottom-4 right-4 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg hover:bg-slate-800 hover:shadow-xl transition-all cursor-pointer sm:bottom-6 sm:right-6"
-          title={t('pages.dashboard.addMemberFab')}
-        >
-          <Plus className="h-6 w-6" />
-        </button>
-      )}
 
       <RenewModal
         isOpen={renewState.isOpen}

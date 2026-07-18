@@ -257,39 +257,32 @@ export default function Team() {
                       </span>
                     </td>
                     {!readOnly && (
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setModalError('');
-                            setModalState({ isOpen: true, member });
-                          }}
-                          className="mr-1 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-teal-700 hover:bg-teal-50 dark:text-teal-400 dark:hover:bg-teal-500/10"
-                        >
-                          <Edit className="h-4 w-4" />
-                          {t('common.edit')}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setToggleTarget(member)}
-                          className={
-                            member.is_active
-                              ? 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10'
-                              : 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10'
-                          }
-                        >
-                          {member.is_active ? (
-                            <>
-                              <UserX className="h-4 w-4" />
-                              {t('actions.disable')}
-                            </>
-                          ) : (
-                            <>
-                              <UserCheck className="h-4 w-4" />
-                              {t('actions.enable')}
-                            </>
-                          )}
-                        </button>
+                      <td>
+                        <div className="admin-row-actions">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setModalError('');
+                              setModalState({ isOpen: true, member });
+                            }}
+                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                            title={t('common.edit')}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setToggleTarget(member)}
+                            className={
+                              member.is_active
+                                ? 'text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                                : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                            }
+                            title={member.is_active ? t('actions.disable') : t('actions.enable')}
+                          >
+                            {member.is_active ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
