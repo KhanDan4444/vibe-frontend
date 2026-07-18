@@ -55,9 +55,11 @@ export default function GymEditModal({
     sub.plan ||
     saasPlans.find((p) => p.id === sub.saas_plan_id)?.name ||
     '—';
+  const canSubmit = !saving && validateGymProfileEdit({ gymName: name, ownerName, phone }).ok;
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     if (!showValidationError(validateGymProfileEdit({ gymName: name, ownerName, phone }), setValidationError, t, { setFieldErrors: setLocalFieldErrors })) {
@@ -174,8 +176,8 @@ export default function GymEditModal({
             </button>
             <button
               type="submit"
-              disabled={saving}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
+              disabled={!canSubmit}
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : t('common.save')}
             </button>

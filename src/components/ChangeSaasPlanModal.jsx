@@ -102,13 +102,26 @@ export default function ChangeSaasPlanModal({
 
   if (!isOpen || !gym) return null;
 
+  const termStart = customTermStart ? startDate : licenseStart;
+  const isSameTerm = termStart === licenseStart;
+  const isBusy = saving || submitting;
+  const canSubmit =
+    !isBusy &&
+    otherPlans.length > 0 &&
+    validateChangePlanPayment({
+      planId,
+      termStart,
+      paymentDate,
+      amount,
+      isSameTerm,
+      license: true,
+    }).ok;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (submitting || saving) return;
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
-    const termStart = customTermStart ? startDate : licenseStart;
-    const isSameTerm = termStart === licenseStart;
     const planResult = validateChangePlanPayment({
       planId,
       termStart,
@@ -134,8 +147,6 @@ export default function ChangeSaasPlanModal({
       setSubmitting(false);
     }
   };
-
-  const isBusy = saving || submitting;
 
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
   const gymName = gym.name || gym.gym_name;
@@ -414,8 +425,8 @@ export default function ChangeSaasPlanModal({
             </button>
             <button
               type="submit"
-              disabled={isBusy || otherPlans.length === 0}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
+              disabled={!canSubmit}
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {isBusy ? t('common.processing') : t('modals.changeSaasPlan.save')}
             </button>

@@ -78,9 +78,19 @@ export default function AdminPaymentModal({
 
   if (!isOpen || (!gym && !payment)) return null;
 
+  const isBusy = saving || submitting;
+  const canSubmit =
+    !isBusy &&
+    validateStandalonePayment({
+      amount,
+      date,
+      minStartDate: termStart,
+      afterStartKey: 'validation.paymentDateAfterLicenseStartOrInvalid',
+    }).ok;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (submitting || saving) return;
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     const paymentResult = validateStandalonePayment({
@@ -116,7 +126,6 @@ export default function AdminPaymentModal({
     }
   };
 
-  const isBusy = saving || submitting;
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
 
   return (
@@ -234,8 +243,8 @@ export default function AdminPaymentModal({
           </button>
           <button
             type="submit"
-            disabled={isBusy}
-            className="w-full rounded-lg bg-teal-700 px-6 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
+            disabled={!canSubmit}
+            className="w-full rounded-lg bg-teal-700 px-6 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {isBusy ? t('common.processing') : isEdit ? t('common.save') : t('modals.adminPayment.save')}
           </button>

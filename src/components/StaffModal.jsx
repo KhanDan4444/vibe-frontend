@@ -66,8 +66,20 @@ export default function StaffModal({
     saving,
   });
 
+  const canSubmit =
+    !saving &&
+    validateStaffForm({
+      name,
+      username,
+      email,
+      password,
+      branchId,
+      isEdit,
+    }).ok;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     const staffResult = validateStaffForm({
@@ -95,7 +107,6 @@ export default function StaffModal({
     onSubmit(payload);
   };
 
-  const passwordValid = isEdit ? !password || password.length >= 8 : password.length >= 8;
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
 
   return (
@@ -252,7 +263,7 @@ export default function StaffModal({
           </button>
           <button
             type="submit"
-            disabled={saving || !passwordValid}
+            disabled={!canSubmit}
             className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {saving ? t('common.processing') : isEdit ? t('modals.staff.saveUpdate') : t('modals.staff.saveCreate')}

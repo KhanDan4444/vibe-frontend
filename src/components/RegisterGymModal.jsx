@@ -70,8 +70,25 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
 
   if (!isOpen) return null;
 
+  const canSubmit =
+    !saving &&
+    saasPlans.length > 0 &&
+    validateAdminGymRegister({
+      gymName,
+      ownerName,
+      username,
+      email,
+      password,
+      phone,
+      saasPlanId,
+      skipPayment,
+      amount,
+      paymentDate,
+    }).ok;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setError('');
     clearAllFieldErrors(setLocalFieldErrors);
     const registerResult = validateAdminGymRegister({
@@ -348,8 +365,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
             </button>
             <button
               type="submit"
-              disabled={saving || saasPlans.length === 0}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
+              disabled={!canSubmit}
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : t('modals.registerGym.save')}
             </button>

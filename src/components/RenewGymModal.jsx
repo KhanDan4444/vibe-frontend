@@ -75,8 +75,14 @@ export default function RenewGymModal({
 
   if (!isOpen || !gym) return null;
 
+  const canSubmit =
+    !saving &&
+    saasPlans.length > 0 &&
+    validateGymRenewPayment({ planId, startDate, paymentDate, amount }).ok;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     const renewResult = validateGymRenewPayment({ planId, startDate, paymentDate, amount });
@@ -259,8 +265,8 @@ export default function RenewGymModal({
             </button>
             <button
               type="submit"
-              disabled={saving || saasPlans.length === 0}
-              className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 sm:w-auto"
+              disabled={!canSubmit}
+              className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : t('modals.renewGym.save')}
             </button>

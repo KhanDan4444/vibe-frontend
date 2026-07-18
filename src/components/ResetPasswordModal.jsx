@@ -41,8 +41,11 @@ export default function ResetPasswordModal({
     saving,
   });
 
+  const canSubmit = !saving && validatePassword(password).ok;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     if (!showValidationError(validatePassword(password), setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
@@ -50,7 +53,6 @@ export default function ResetPasswordModal({
     onSubmit(password);
   };
 
-  const passwordValid = password.length >= 8;
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
 
   return (
@@ -120,8 +122,8 @@ export default function ResetPasswordModal({
           </button>
           <button
             type="submit"
-            disabled={saving || !passwordValid}
-            className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
+            disabled={!canSubmit}
+            className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? t('common.saving') : t('modals.resetPassword.submit')}
           </button>
