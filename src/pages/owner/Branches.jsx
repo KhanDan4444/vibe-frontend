@@ -204,14 +204,7 @@ export default function Branches() {
       return;
     }
 
-    if (branch.is_active) {
-      const staffCount = branch.staff_count ?? 0;
-      if (staffCount > 0) {
-        setError(t('pages.branches.cannotDeactivateWithStaff', { count: staffCount }));
-        return;
-      }
-    }
-
+    setError('');
     try {
       if (branch.is_active) {
         await deactivateBranch(branch);
@@ -349,7 +342,11 @@ export default function Branches() {
                         <button
                           type="button"
                           onClick={() => toggleActive(branch)}
-                          className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-600 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
+                          className={
+                            branch.is_active
+                              ? 'rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50 dark:border-rose-500/30 dark:text-rose-400 dark:active:bg-rose-500/10'
+                              : 'rounded-lg border border-emerald-200 px-3 py-2 text-xs font-medium text-emerald-700 active:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-400 dark:active:bg-emerald-500/10'
+                          }
                         >
                           {branch.is_active ? t('actions.deactivate') : t('actions.activate')}
                         </button>
@@ -423,7 +420,11 @@ export default function Branches() {
                           <button
                             type="button"
                             onClick={() => toggleActive(branch)}
-                            className="rounded-lg px-2 py-1 text-slate-600 dark:text-app-text hover:bg-slate-100 dark:hover:bg-app-surface/80"
+                            className={
+                              branch.is_active
+                                ? 'rounded-lg px-2 py-1 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10'
+                                : 'rounded-lg px-2 py-1 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10'
+                            }
                           >
                             {branch.is_active ? t('actions.deactivate') : t('actions.activate')}
                           </button>
