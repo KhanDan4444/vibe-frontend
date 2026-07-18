@@ -81,6 +81,39 @@
     min-height: 100vh;
   }
 
+  /*
+   * Browsers often keep the default arrow on <button> / <select>.
+   * Use the hand cursor for interactive controls across the app.
+   */
+  button:not(:disabled):not([aria-disabled='true']),
+  input[type='button']:not(:disabled),
+  input[type='submit']:not(:disabled),
+  input[type='reset']:not(:disabled),
+  input[type='checkbox']:not(:disabled),
+  input[type='radio']:not(:disabled),
+  input[type='file']:not(:disabled),
+  select:not(:disabled),
+  summary,
+  [role='button']:not([aria-disabled='true']),
+  [role='option'],
+  [role='menuitem'],
+  [role='menuitemcheckbox'],
+  [role='menuitemradio'],
+  [role='tab'],
+  [role='switch']:not([aria-disabled='true']),
+  [role='combobox']:not([aria-disabled='true']),
+  label[for] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  button[aria-disabled='true'],
+  input:disabled,
+  select:disabled,
+  [aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
   html.dark body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -364,7 +397,7 @@
   }
 
   .admin-field {
-    @apply h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-teal-600 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong;
+    @apply h-10 cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-teal-600 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong disabled:cursor-not-allowed;
   }
 
   .form-label {
