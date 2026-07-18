@@ -991,8 +991,8 @@ export default function AdminDashboard() {
                               {gym.saas_plan_name || '—'}
                             </td>
                             <td>
-                              <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-1 text-sm font-bold text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
-                                <Users className="h-3.5 w-3.5 shrink-0" />
+                              <span className="inline-flex items-center gap-1.5 text-sm text-slate-600 dark:text-app-text">
+                                <Users className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-app-muted" />
                                 {Number(gym.active_member_count ?? 0)}
                               </span>
                             </td>
