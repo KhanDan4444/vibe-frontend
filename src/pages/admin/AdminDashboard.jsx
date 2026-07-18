@@ -74,6 +74,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [saasPlans, setSaasPlans] = useState([]);
+  const [saasPlansLoaded, setSaasPlansLoaded] = useState(false);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -113,6 +114,8 @@ export default function AdminDashboard() {
       }
     } catch {
       /* optional for forms */
+    } finally {
+      setSaasPlansLoaded(true);
     }
   }, [apiFetch]);
 
@@ -515,7 +518,7 @@ export default function AdminDashboard() {
                 <p className="text-sm text-slate-500">{t('admin.dashboardSubtitle')}</p>
               </div>
 
-              {saasPlans.length === 0 && (
+              {saasPlansLoaded && saasPlans.length === 0 && (
                 <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
                   {t('admin.noSaasPlansWarning')}{' '}
                   <button type="button" className="font-semibold underline" onClick={() => navigate(ADMIN_SECTION_PATH.plans)}>

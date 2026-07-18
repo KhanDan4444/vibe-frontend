@@ -7,10 +7,10 @@ import { formatDisplayDate } from './date';
 
 /** Distinct slice colors for payment method donut charts. */
 export const PAYMENT_METHOD_COLORS = {
-  Card: '#0d9488',
-  'Bank Transfer': '#0284c7',
-  Cash: '#059669',
-  Other: '#94a3b8',
+  Card: '#0284c7', // blue
+  'Bank Transfer': '#f59e0b', // amber
+  Cash: '#0d9488', // teal
+  Other: '#94a3b8', // slate
 };
 
 /** Paid vs unpaid slice colors (member / gym payment status donuts). */
