@@ -125,7 +125,8 @@ function memberStatusLabel(status) {
 export function memberReportStats(members) {
   return {
     total: members.length,
-    active: members.filter((m) => (m.status || '').toLowerCase() === 'active').length,
+    // Active = valid term and paid (unpaid members are reported separately).
+    active: members.filter((m) => (m.status || '').toLowerCase() === 'active' && !m.is_unpaid).length,
     unpaid: members.filter((m) => m.is_unpaid).length,
     dueSoon: members.filter((m) => (m.status || '').toLowerCase() === 'due soon').length,
     expired: members.filter((m) => (m.status || '').toLowerCase() === 'expired').length,

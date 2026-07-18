@@ -8,7 +8,7 @@ import ResponsiveModal from '../../components/ResponsiveModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { useTranslation } from 'react-i18next';
-import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../../utils/validation';
+import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { tableRowHover } from '../../utils/surfaceClasses';
@@ -22,7 +22,7 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
-  const fc = (field) => inputClass('w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm', fieldErrors, field);
+  const fc = (field) => inputClass(FORM_INPUT_CLASS, fieldErrors, field);
 
   const initDefaults = useCallback(() => {
     setName(branch?.name || '');

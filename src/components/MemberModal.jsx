@@ -322,6 +322,23 @@ export default function MemberModal({
   const displayError = validationError || error;
   const isBusy = saving || submitting || photoProcessing;
 
+  const selectedPlan = plans.find((p) => String(p.id) === String(planId));
+  const enrollAmount = selectedPlan ? String(selectedPlan.price) : amount;
+  const memberFieldsReady = validateMemberForm({ name, phone }).ok;
+  const enrollExtrasReady =
+    plans.length > 0 &&
+    Boolean(planId) &&
+    Boolean(startDate) &&
+    (!showBranchPicker || Boolean(branchId)) &&
+    (skipPayment ||
+      validateMemberEnrollPayment({
+        amount: enrollAmount,
+        paymentDate,
+        startDate,
+        skipPayment,
+      }).ok);
+  const canSubmit = !isBusy && memberFieldsReady && (isEdit || enrollExtrasReady);
+
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
       <div className={`${modalBody} relative`}>
@@ -594,8 +611,8 @@ export default function MemberModal({
             </button>
             <button
               type="submit"
-              disabled={isBusy || (!isEdit && plans.length === 0)}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
+              disabled={!canSubmit}
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {isBusy
                 ? photoProcessing

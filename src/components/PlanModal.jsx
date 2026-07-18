@@ -60,9 +60,11 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
 
   const isEdit = !!plan;
   const modalTitle = title || (isEdit ? t('modals.plan.editTitle') : t('modals.plan.createTitle'));
+  const canSubmit = !saving && validatePlanForm({ name, duration, price }).ok;
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     const planResult = validatePlanForm({ name, duration, price });
@@ -172,8 +174,8 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
             </button>
             <button
               type="submit"
-              disabled={saving}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
+              disabled={!canSubmit}
+              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
             >
               {saving ? t('common.processing') : isEdit ? t('modals.plan.saveUpdate') : t('modals.plan.saveCreate')}
             </button>

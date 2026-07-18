@@ -114,6 +114,28 @@
     cursor: not-allowed;
   }
 
+  /*
+   * Browsers (esp. Firefox) paint empty required fields red on focus.
+   * We use app validation for errors; focus should stay brand teal.
+   */
+  input:invalid,
+  textarea:invalid,
+  select:invalid {
+    box-shadow: none;
+  }
+
+  input:-moz-ui-invalid,
+  textarea:-moz-ui-invalid,
+  select:-moz-ui-invalid {
+    box-shadow: none;
+  }
+
+  input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='hidden']):focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+  }
+
   html.dark body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -397,7 +419,7 @@
   }
 
   .admin-field {
-    @apply h-10 cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-teal-600 focus:outline-none dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong disabled:cursor-not-allowed;
+    @apply h-10 cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong disabled:cursor-not-allowed;
   }
 
   .form-label {
