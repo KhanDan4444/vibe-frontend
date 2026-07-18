@@ -104,6 +104,31 @@ export function aggregateMembersByStatus(members) {
   return Object.entries(counts).map(([name, value]) => ({ name, value }));
 }
 
+/**
+ * Exclusive member buckets for a single overview donut.
+ * Priority: Expired → Due Soon → Unpaid → Active (each member counted once).
+ */
+export function aggregateMembersOverview(members) {
+  const counts = {
+    Active: 0,
+    Unpaid: 0,
+    'Due Soon': 0,
+    Expired: 0,
+  };
+
+  members.forEach((m) => {
+    const status = (m.status || '').toLowerCase();
+    if (status === 'expired') counts.Expired += 1;
+    else if (status === 'due soon') counts['Due Soon'] += 1;
+    else if (m.is_unpaid) counts.Unpaid += 1;
+    else counts.Active += 1;
+  });
+
+  return ['Active', 'Unpaid', 'Due Soon', 'Expired']
+    .map((name) => ({ name, value: counts[name] }))
+    .filter((d) => d.value > 0);
+}
+
 export function aggregateMembersByPlan(members) {
   const counts = {};
   members.forEach((m) => {

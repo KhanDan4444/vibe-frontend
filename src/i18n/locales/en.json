@@ -546,7 +546,8 @@
       "title": "Reports",
       "subtitle": "Member trends, revenue breakdowns, and exports.",
       "memberFilter": "Member filter",
-      "exportNote": "Exports use the selected period and filters above."
+      "exportNote": "Exports use the selected period and filters above.",
+      "memberOverviewSubtitle": "Active, unpaid, due soon, and expired — each member once."
     },
     "branches": {
       "title": "Branches",

@@ -34,19 +34,18 @@ import {
   formatMoney,
 } from '../../utils/ownerReportExport';
 import {
-  aggregateMembersByStatus,
+  aggregateMembersOverview,
   aggregateMembersByPlan,
-  aggregateMembersPaymentStatus,
   aggregateRevenueByMethod,
   aggregateRevenueByMember,
   aggregateRevenueByDate,
   memberReportStats,
   PAYMENT_METHOD_COLORS,
-  PAYMENT_STATUS_COLORS,
   planChartColors,
 } from '../../utils/reportChartData';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 
 const MEMBER_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allMembers', query: {} },
@@ -55,13 +54,6 @@ const MEMBER_STATUS_FILTERS = [
   { id: 'due_soon', labelKey: 'filters.dueSoon', query: { filter: 'due_soon' } },
   { id: 'expired', labelKey: 'filters.expired', query: { filter: 'expired' } },
 ];
-
-const STATUS_COLORS = {
-  Active: '#0d9488',
-  Expired: '#e11d48',
-  'Due Soon': '#0ea5e9',
-  Unknown: '#94a3b8',
-};
 
 export default function OwnerReports() {
   const { t } = useTranslation();
@@ -148,10 +140,9 @@ export default function OwnerReports() {
   }, [loadRevenueReport]);
 
   const memberStats = useMemo(() => memberReportStats(members), [members]);
-  const statusChart = useMemo(() => aggregateMembersByStatus(members), [members]);
+  const overviewChart = useMemo(() => aggregateMembersOverview(members), [members]);
   const planChart = useMemo(() => aggregateMembersByPlan(members), [members]);
   const planColors = useMemo(() => planChartColors(planChart), [planChart]);
-  const paymentStatusChart = useMemo(() => aggregateMembersPaymentStatus(members), [members]);
   const methodChart = useMemo(() => aggregateRevenueByMethod(revenueSummary), [revenueSummary]);
   const topMembersChart = useMemo(() => aggregateRevenueByMember(payments), [payments]);
   const trendChart = useMemo(() => aggregateRevenueByDate(payments), [payments]);
@@ -297,15 +288,12 @@ export default function OwnerReports() {
           <MetricCard label={t('metrics.expired')} value={memberStats.expired} icon={AlertCircle} color="rose" />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-3">
-          <ChartCard title={t('table.status')} subtitle={t('filters.active')} empty={statusChart.length === 0}>
-            <ReportDonut data={statusChart} colors={STATUS_COLORS} showCounts />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <ChartCard title={t('table.status')} subtitle={t('pages.reports.memberOverviewSubtitle')} empty={overviewChart.length === 0}>
+            <ReportDonut data={overviewChart} colors={MEMBER_FILTER_CHART_COLORS} showCounts />
           </ChartCard>
           <ChartCard title={t('table.plan')} subtitle={t('nav.plans')} empty={planChart.length === 0}>
             <ReportDonut data={planChart} colors={planColors} showCounts />
-          </ChartCard>
-          <ChartCard title={t('filters.unpaid')} subtitle={t('status.unpaidTooltip')} empty={paymentStatusChart.length === 0}>
-            <ReportDonut data={paymentStatusChart} colors={PAYMENT_STATUS_COLORS} showCounts />
           </ChartCard>
         </div>
       </section>
