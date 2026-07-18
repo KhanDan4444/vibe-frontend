@@ -7,27 +7,27 @@ import { formatDisplayDate } from './date';
 
 /** Distinct slice colors for payment method donut charts. */
 export const PAYMENT_METHOD_COLORS = {
-  Card: '#0f766e',
-  'Bank Transfer': '#0891b2',
+  Card: '#0d9488',
+  'Bank Transfer': '#0284c7',
   Cash: '#059669',
-  Other: '#d97706',
+  Other: '#94a3b8',
 };
 
 /** Paid vs unpaid slice colors (member / gym payment status donuts). */
 export const PAYMENT_STATUS_COLORS = {
   Paid: '#0d9488',
-  Unpaid: '#e11d48',
+  Unpaid: '#ea580c',
 };
 
 /** Distinct slice colors for membership / SaaS plan donuts (applied by slice order). */
 export const MEMBERSHIP_PLAN_PALETTE = [
-  '#2563eb', // blue
-  '#f97316', // orange
-  '#0891b2', // cyan
-  '#059669', // emerald
-  '#db2777', // rose
-  '#ca8a04', // amber
+  '#0d9488', // teal
+  '#38bdf8', // sky
+  '#5eead4', // light teal
   '#64748b', // slate
+  '#fbbf24', // amber
+  '#fb7185', // soft rose
+  '#67e8f9', // cyan
 ];
 
 /** Build a name → color map for plan donut charts. */

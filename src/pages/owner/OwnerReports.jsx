@@ -57,9 +57,9 @@ const MEMBER_STATUS_FILTERS = [
 ];
 
 const STATUS_COLORS = {
-  Active: '#10b981',
-  Expired: '#f43f5e',
-  'Due Soon': '#f59e0b',
+  Active: '#0d9488',
+  Expired: '#e11d48',
+  'Due Soon': '#0ea5e9',
   Unknown: '#94a3b8',
 };
 

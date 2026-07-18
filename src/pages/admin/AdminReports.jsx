@@ -58,9 +58,9 @@ const GYM_STATUS_FILTERS = [
 ];
 
 const STATUS_COLORS = {
-  Active: '#10b981',
-  Suspended: '#f43f5e',
-  Expired: '#f59e0b',
+  Active: '#0d9488',
+  Suspended: '#e11d48',
+  Expired: '#ea580c',
   Unknown: '#94a3b8',
 };
 

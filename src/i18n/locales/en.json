@@ -566,7 +566,9 @@
       "branchDefaultSet": "{{name}} is now the default branch.",
       "staffMoved": "{{count}} staff moved to {{branch}}.",
       "selectedBranch": "the selected branch",
-      "cannotDeactivateWithStaff": "Move {{count}} staff to another branch in Team before deactivating."
+      "cannotDeactivateWithStaff": "Move {{count}} staff to another branch in Team before deactivating.",
+      "deactivateTitle": "Deactivate branch?",
+      "deactivateMessage": "Are you sure you want to deactivate {{name}}?"
     },
     "team": {
       "title": "Team",

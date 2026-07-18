@@ -891,7 +891,9 @@
       "branchDefaultSet": "{{name}} አሁን ነባሪ ቅርንጫፍ ነው።",
       "staffMoved": "{{count}} ሰራተኞች ወደ {{branch}} ተላልፈዋል።",
       "selectedBranch": "የተመረጠው ቅርንጫፍ",
-      "cannotDeactivateWithStaff": "ከመሰናከል በፊት {{count}} ሰራተኞችን በቡድን ገጽ ወደ ሌላ ቅርንጫፍ ያንቀሳቅሱ።"
+      "cannotDeactivateWithStaff": "ከመሰናከል በፊት {{count}} ሰራተኞችን በቡድን ገጽ ወደ ሌላ ቅርንጫፍ ያንቀሳቅሱ።",
+      "deactivateTitle": "ቅርንጫፍ ይሰናከል?",
+      "deactivateMessage": "{{name}}ን ማሰናከል እርግጠኛ ነዎት?"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",

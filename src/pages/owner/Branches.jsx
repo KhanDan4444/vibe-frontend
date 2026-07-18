@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
-import { MapPin, Plus, Edit, Star } from 'lucide-react';
+import { MapPin, Plus, Edit, Star, Ban, CheckCircle } from 'lucide-react';
 import { parseApiResponse, apiErrorFromResponse } from '../../utils/api';
 import { listBranches, createBranch, updateBranch } from '../../services/branchService';
 import ResponsiveModal from '../../components/ResponsiveModal';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { useTranslation } from 'react-i18next';
 import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../../utils/validation';
@@ -142,6 +143,7 @@ export default function Branches() {
   const [modal, setModal] = useState({ open: false, branch: null });
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState('');
+  const [deactivateTarget, setDeactivateTarget] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -204,17 +206,30 @@ export default function Branches() {
       return;
     }
 
+    if (branch.is_active) {
+      setDeactivateTarget(branch);
+      return;
+    }
+
     setError('');
     try {
-      if (branch.is_active) {
-        await deactivateBranch(branch);
-      } else {
-        const res = await updateBranch(apiFetch, branch.id, { is_active: true });
-        const data = await parseApiResponse(res);
-        if (!res.ok) throw apiErrorFromResponse(data, res.status);
-        showFlash(t('pages.branches.branchReactivated', { name: branch.name }));
-        await Promise.all([load(), reloadBranches()]);
-      }
+      const res = await updateBranch(apiFetch, branch.id, { is_active: true });
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw apiErrorFromResponse(data, res.status);
+      showFlash(t('pages.branches.branchReactivated', { name: branch.name }));
+      await Promise.all([load(), reloadBranches()]);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleConfirmDeactivate = async () => {
+    if (!deactivateTarget) return;
+    const branch = deactivateTarget;
+    setDeactivateTarget(null);
+    setError('');
+    try {
+      await deactivateBranch(branch);
     } catch (err) {
       setError(err.message);
     }
@@ -393,42 +408,44 @@ export default function Branches() {
                       </span>
                     </td>
                     {!readOnly && (
-                      <td className="px-6 py-4 text-right">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setModalError('');
-                            setModal({ open: true, branch });
-                          }}
-                          className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-teal-700 hover:bg-teal-50 dark:hover:bg-teal-500/10"
-                        >
-                          <Edit className="h-4 w-4" />
-                          {t('common.edit')}
-                        </button>
-                        {!branch.is_default && branch.is_active && (
+                      <td>
+                        <div className="admin-row-actions">
                           <button
                             type="button"
-                            onClick={() => setAsDefault(branch)}
-                            className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-500/10"
-                            title={t('pages.branches.defaultBranch')}
+                            onClick={() => {
+                              setModalError('');
+                              setModal({ open: true, branch });
+                            }}
+                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                            title={t('common.edit')}
                           >
-                            <Star className="h-4 w-4" />
-                            {t('actions.setDefault')}
+                            <Edit className="h-4 w-4" />
                           </button>
-                        )}
-                        {!branch.is_default && (
-                          <button
-                            type="button"
-                            onClick={() => toggleActive(branch)}
-                            className={
-                              branch.is_active
-                                ? 'rounded-lg px-2 py-1 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10'
-                                : 'rounded-lg px-2 py-1 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10'
-                            }
-                          >
-                            {branch.is_active ? t('actions.deactivate') : t('actions.activate')}
-                          </button>
-                        )}
+                          {!branch.is_default && branch.is_active && (
+                            <button
+                              type="button"
+                              onClick={() => setAsDefault(branch)}
+                              className="text-slate-400 hover:bg-slate-100 hover:text-amber-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                              title={t('actions.setDefault')}
+                            >
+                              <Star className="h-4 w-4" />
+                            </button>
+                          )}
+                          {!branch.is_default && (
+                            <button
+                              type="button"
+                              onClick={() => toggleActive(branch)}
+                              className={
+                                branch.is_active
+                                  ? 'text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                                  : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                              }
+                              title={branch.is_active ? t('actions.deactivate') : t('actions.activate')}
+                            >
+                              {branch.is_active ? <Ban className="h-4 w-4" /> : <CheckCircle className="h-4 w-4" />}
+                            </button>
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -447,6 +464,16 @@ export default function Branches() {
         onSubmit={handleSubmit}
         saving={saving}
         error={modalError}
+      />
+
+      <ConfirmDialog
+        isOpen={!!deactivateTarget}
+        title={t('pages.branches.deactivateTitle')}
+        message={t('pages.branches.deactivateMessage', { name: deactivateTarget?.name })}
+        confirmText={t('actions.deactivate')}
+        type="danger"
+        onConfirm={handleConfirmDeactivate}
+        onCancel={() => setDeactivateTarget(null)}
       />
     </div>
   );
