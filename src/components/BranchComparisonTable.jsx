@@ -1,10 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../utils/surfaceClasses';
-
-function formatMoney(value) {
-  return `$${Number(value || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-}
+import { formatMoneyShort as formatMoney } from '../utils/formatMoney';
 
 export default function BranchComparisonTable({ branches = [], loading = false }) {
   const { t } = useTranslation();

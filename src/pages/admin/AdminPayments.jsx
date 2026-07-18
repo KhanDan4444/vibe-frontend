@@ -16,6 +16,7 @@ import {
   CircleDollarSign,
 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
+import { formatMoney } from '../../utils/formatMoney';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { DateField } from '../../components/DateField';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
@@ -395,7 +396,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
             <TrendingUp className="h-5 w-5 text-emerald-600" />
           </div>
           <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">
-            ${periodRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatMoney(periodRevenue)}
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
@@ -405,7 +406,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
           <span className="text-sm font-medium text-slate-500">{t('metrics.averagePayment')}</span>
           <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">
-            ${averagePayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatMoney(averagePayment)}
           </p>
         </div>
         </>
@@ -422,7 +423,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
               <div key={method} className="admin-method-chip">
                 <p className="text-xs font-medium text-slate-500 dark:text-app-muted">{translatePaymentMethod(method)}</p>
                 <p className="mt-1 text-lg font-bold text-slate-900 dark:text-app-text-strong">
-                  ${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {formatMoney(amount)}
                 </p>
               </div>
             ))}
@@ -502,7 +503,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                     {payment.notes && <p className="mt-0.5 text-xs text-slate-500">{payment.notes}</p>}
                   </div>
                   <p className="shrink-0 text-lg font-bold text-slate-900 dark:text-app-text-strong">
-                    ${Number(payment.amount).toFixed(2)}
+                    {formatMoney(payment.amount)}
                   </p>
                 </div>
                 <div className="mt-3 flex gap-2">
@@ -574,7 +575,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       {payment.planName && <div className="truncate font-semibold text-teal-700">{payment.planName}</div>}
                       {payment.notes && <div className="truncate text-xs text-slate-500">{payment.notes}</div>}
                     </td>
-                    <td className="font-bold whitespace-nowrap">${Number(payment.amount).toFixed(2)}</td>
+                    <td className="font-bold whitespace-nowrap">{formatMoney(payment.amount)}</td>
                     <td>
                       <div className="admin-row-actions">
                       <button
@@ -641,7 +642,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         isOpen={!!paymentToDelete}
         title={t('admin.revokePaymentTitle')}
         message={t('admin.revokePaymentMessage', {
-          amount: paymentToDelete?.amount,
+          amount: Number(paymentToDelete?.amount ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
           name: paymentToDelete?.gymName,
         })}
         confirmText={t('admin.revokePaymentConfirm')}

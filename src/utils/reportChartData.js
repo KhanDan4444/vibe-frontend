@@ -22,12 +22,12 @@ export const PAYMENT_STATUS_COLORS = {
 /** Distinct slice colors for membership / SaaS plan donuts (applied by slice order). */
 export const MEMBERSHIP_PLAN_PALETTE = [
   '#0d9488', // teal
-  '#38bdf8', // sky
-  '#5eead4', // light teal
-  '#64748b', // slate
-  '#fbbf24', // amber
-  '#fb7185', // soft rose
-  '#67e8f9', // cyan
+  '#f59e0b', // amber
+  '#0284c7', // blue
+  '#94a3b8', // slate
+  '#e11d48', // rose
+  '#65a30d', // lime
+  '#7c3aed', // violet (last resort for 7+ plans)
 ];
 
 /** Build a name → color map for plan donut charts. */

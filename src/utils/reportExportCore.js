@@ -6,6 +6,9 @@
 
 import { exportPaymentMethod, exportText } from '../i18n/helpers';
 import { formatDisplayDate, todayString } from './date';
+import { formatMoney } from './formatMoney';
+
+export { formatMoney } from './formatMoney';
 
 /** Landscape A4 — used by all report PDFs. */
 export const PDF_FORMAT = { orientation: 'landscape', unit: 'mm', format: 'a4' };
@@ -47,12 +50,6 @@ export function compareLocale(a, b) {
 
 export function formatDate(dateStr) {
   return formatDisplayDate(dateStr);
-}
-
-export function formatMoney(amount) {
-  const n = Number(amount);
-  if (Number.isNaN(n)) return '—';
-  return `$${n.toFixed(2)}`;
 }
 
 export function escapeCsv(value) {

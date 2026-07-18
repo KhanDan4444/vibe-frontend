@@ -27,6 +27,7 @@ import { getMemberPayments } from '../services/memberService';
 import ConfirmDialog from './ConfirmDialog';
 import MemberModal from './MemberModal';
 import MemberPhoto from './MemberPhoto';
+import { formatMoney } from '../utils/formatMoney';
 import {
   SlidePanel,
   SlidePanelProfileHeader,
@@ -110,11 +111,7 @@ export default function MemberDetailDrawer({
   const termPaymentCount = termPayments.length;
   const recentPayments = memberPayments.slice(0, 3);
   const olderPaymentCount = Math.max(memberPayments.length - recentPayments.length, 0);
-  const currency = (amount) => {
-    const n = Number(amount);
-    if (!Number.isFinite(n)) return '—';
-    return n.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
-  };
+  const currency = (amount) => formatMoney(amount);
 
   const handleEditSubmit = async (data) => {
     setSaving(true);

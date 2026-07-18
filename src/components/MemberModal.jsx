@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Upload, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
+import { formatMoney } from '../utils/formatMoney';
 import {
   boundsForEnrollStart,
   boundsForPaymentOnTerm,
@@ -464,7 +465,7 @@ export default function MemberModal({
               >
                 <option value="" disabled>{t('modals.renew.selectPlan')}</option>
                 {plans.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} (${p.price})</option>
+                  <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
                 ))}
               </select>
               <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />

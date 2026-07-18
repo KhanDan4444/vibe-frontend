@@ -40,7 +40,7 @@ function parseAmount(notification) {
     return Number(notification.amount);
   }
   const msg = notification.message || '';
-  const match = msg.match(/\$([0-9]+(?:\.[0-9]{2})?)/);
+  const match = msg.match(/\$([0-9]+(?:\.[0-9]{2})?)/) || msg.match(/([0-9]+(?:\.[0-9]{2})?)\s*ETB/i);
   return match ? Number(match[1]) : null;
 }
 

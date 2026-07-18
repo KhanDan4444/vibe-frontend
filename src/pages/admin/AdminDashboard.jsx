@@ -18,6 +18,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { parseApiResponse } from '../../utils/api';
+import { formatMoneyShort } from '../../utils/formatMoney';
 import InitialsAvatar from '../../components/InitialsAvatar';
 import RegisterGymModal from '../../components/RegisterGymModal';
 import GymDetailsModal from '../../components/GymDetailsModal';
@@ -578,7 +579,7 @@ export default function AdminDashboard() {
                 />
                 <MetricCard 
                   label={t('admin.saasRevenue')} 
-                  value={`$${(platformMetrics?.saasIncomeThisMonth ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`}
+                  value={formatMoneyShort(platformMetrics?.saasIncomeThisMonth ?? 0)}
                   icon={DollarSign}
                   color="teal"
                   trend={platformMetrics?.saasRevenueTrendPercent ?? null}
@@ -586,7 +587,7 @@ export default function AdminDashboard() {
                 />
                 <MetricCard 
                   label={t('admin.estMrr')} 
-                  value={`$${estimatedMrc.toLocaleString(undefined, { maximumFractionDigits: 0 })}`} 
+                  value={formatMoneyShort(estimatedMrc)} 
                   hint={t('admin.fromActivePlans')} 
                   icon={TrendingUp} 
                   color="teal" 

@@ -17,6 +17,7 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import { formatMoney } from '../../utils/formatMoney';
 
 export default function RegisterGym() {
   const { t } = useTranslation();
@@ -258,7 +259,7 @@ export default function RegisterGym() {
                 >
                   {plans.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.name} — ${Number(p.price).toLocaleString()} / {p.duration}mo
+                      {p.name} — {formatMoney(p.price)} / {p.duration}mo
                     </option>
                   ))}
                 </select>

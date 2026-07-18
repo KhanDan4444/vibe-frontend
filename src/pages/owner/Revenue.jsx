@@ -18,6 +18,7 @@ import { getPayments } from '../../services/paymentService';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } from '../../utils/listSort';
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
+import { formatMoney } from '../../utils/formatMoney';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
@@ -304,7 +305,7 @@ export default function Revenue() {
           </div>
           <div className="mt-2 flex items-baseline">
             <span className="text-3xl font-bold text-slate-900 dark:text-app-text-strong">
-              ${periodRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatMoney(periodRevenue)}
             </span>
             {trendStr && (
               <span className={`ml-2 text-xs font-semibold flex items-center ${isTrendPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
@@ -336,7 +337,7 @@ export default function Revenue() {
           </div>
           <div className="mt-2">
             <span className="text-3xl font-bold text-slate-900 dark:text-app-text-strong">
-              ${averagePayment.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              {formatMoney(averagePayment)}
             </span>
           </div>
         </div>
@@ -352,7 +353,7 @@ export default function Revenue() {
               <div key={method} className="admin-method-chip">
                 <p className="text-xs font-medium text-slate-500 dark:text-app-muted">{paymentMethodLabel(method, t)}</p>
                 <p className="mt-1 text-lg font-bold text-slate-900 dark:text-app-text-strong">
-                  ${Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  {formatMoney(amount)}
                 </p>
               </div>
             ))}
@@ -438,7 +439,7 @@ export default function Revenue() {
                     </div>
                   </div>
                   <p className="shrink-0 text-lg font-bold text-slate-900 dark:text-app-text-strong">
-                    ${payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formatMoney(payment.amount)}
                   </p>
                 </div>
                 {canManageRevenue && (
@@ -518,7 +519,7 @@ export default function Revenue() {
                       </span>
                     </td>
                     <td className="font-bold whitespace-nowrap text-slate-900 dark:text-app-text-strong">
-                      ${payment.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {formatMoney(payment.amount)}
                     </td>
                     {canManageRevenue && (
                     <td>

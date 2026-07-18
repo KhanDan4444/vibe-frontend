@@ -18,6 +18,7 @@ import { suggestChangePlanAmount, previewMemberTermEnd } from '../utils/memberRe
 import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { getMemberPayments } from '../services/memberService';
+import { formatMoney } from '../utils/formatMoney';
 import ChangePlanPaymentSummary from './ChangePlanPaymentSummary';
 import ResponsiveModal from './ResponsiveModal';
 import { modalBody } from '../utils/modalLayout';
@@ -133,9 +134,6 @@ export default function ChangePlanModal({
     setAmount(hint ? String(hint.suggestedAmount) : String(plan.price));
   }, [planId, plans, member, currentPlan, amountEdited, customTermStart, startDate]);
 
-  const formatMoney = (n) =>
-    Number(n).toLocaleString(undefined, { style: 'currency', currency: 'USD' });
-
   if (!isOpen || !member) return null;
 
   const handleSubmit = async (e) => {
@@ -248,7 +246,7 @@ export default function ChangePlanModal({
               <option value="" disabled>{t('modals.renew.selectPlan')}</option>
               {otherPlans.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — ${p.price} / {p.duration}mo
+                  {p.name} — {formatMoney(p.price)} / {p.duration}mo
                 </option>
               ))}
             </select>

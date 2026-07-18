@@ -9,6 +9,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { useTranslation } from 'react-i18next';
 import { cardSurface } from '../../utils/surfaceClasses';
+import { formatMoney } from '../../utils/formatMoney';
 
 export default function Plans() {
   const { t } = useTranslation();
@@ -169,7 +170,7 @@ export default function Plans() {
 
               <div className="mt-6 pt-6 border-t border-slate-100 dark:border-app-border-subtle flex items-baseline justify-between">
                 <span className="text-2xl font-black text-slate-900 dark:text-app-text-strong">
-                  {plan.price.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
+                  {formatMoney(plan.price)}
                 </span>
                 <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:border-app-border-subtle dark:bg-app-surface dark:text-app-muted">
                   {t('common.month', { count: plan.duration })}

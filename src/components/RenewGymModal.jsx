@@ -13,6 +13,7 @@ import { validateGymRenewPayment, showValidationError, inputClass, fieldErrorMes
 import FieldError from './FieldError';
 import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
+import { formatMoney } from '../utils/formatMoney';
 import { defaultGymRenewStartDate } from '../utils/saasRenew';
 import { calculateEndDate } from '../utils/memberDates';
 import ResponsiveModal from './ResponsiveModal';
@@ -155,7 +156,7 @@ export default function RenewGymModal({
               <option value="" disabled>{t('modals.renew.selectPlan')}</option>
               {saasPlans.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — ${Number(p.price).toFixed(2)} / {p.duration}mo
+                  {p.name} — {formatMoney(p.price)} / {p.duration}mo
                 </option>
               ))}
             </select>

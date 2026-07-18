@@ -17,6 +17,7 @@ import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { useChartTheme } from '../../utils/chartTheme';
+import { formatMoney, formatMoneyTick } from '../../utils/formatMoney';
 import { panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
 
 export default function OwnerDashboard() {
@@ -151,7 +152,7 @@ export default function OwnerDashboard() {
         />
         <MetricCard
           label={t('pages.dashboard.thisMonthRevenue')}
-          value={`$${monthlyIncome.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+          value={formatMoney(monthlyIncome)}
           icon={TrendingUp}
           color="teal"
           trend={revenueTrend}
@@ -313,11 +314,11 @@ export default function OwnerDashboard() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.55 : 1} />
                   <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} tickFormatter={(val) => `$${val}`} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} tickFormatter={(val) => formatMoneyTick(val)} />
                   <Tooltip
                     contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     itemStyle={{ color: '#0f766e', fontWeight: 600 }}
-                    formatter={(value) => [`$${value}`, t('pages.dashboard.chartRevenue')]}
+                    formatter={(value) => [formatMoney(value), t('pages.dashboard.chartRevenue')]}
                   />
                   <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
                 </AreaChart>

@@ -21,6 +21,7 @@ import {
 import { paymentSourceLabel } from '../utils/paymentSources';
 import { translatePaymentMethod } from '../i18n/helpers.js';
 import { toDateString, formatDisplayDate } from '../utils/date';
+import { formatMoney } from '../utils/formatMoney';
 import StatusBadge from './StatusBadge';
 import InitialsAvatar from './InitialsAvatar';
 import { canRenewGym, canChangeSaasPlan } from '../utils/saasRenew';
@@ -109,8 +110,7 @@ export default function GymDetailsModal({
   const recentPayments = saasPayments.slice(0, 3);
   const olderPaymentCount = Math.max(saasPayments.length - recentPayments.length, 0);
   const displayError = mutationError || detailError;
-  const currency = (amount) =>
-    amount.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+  const currency = (amount) => formatMoney(amount);
 
   const handleEditSubmit = async (formData) => {
     setSaving(true);

@@ -18,6 +18,7 @@ import FieldError from './FieldError';
 import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
+import { formatMoney } from '../utils/formatMoney';
 import { modalBody } from '../utils/modalLayout';
 
 export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans, saving = false, error: externalError }) {
@@ -255,7 +256,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
               <option value="">-- Select a Plan --</option>
               {saasPlans.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — ${Number(p.price).toFixed(2)} / {p.duration}mo
+                  {p.name} — {formatMoney(p.price)} / {p.duration}mo
                 </option>
               ))}
             </select>

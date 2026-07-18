@@ -9,6 +9,7 @@ import {
 } from 'recharts';
 import { useChartTheme } from '../../utils/chartTheme';
 import { useTranslation } from 'react-i18next';
+import { formatMoney, formatMoneyTick } from '../../utils/formatMoney';
 
 /** Area chart for daily revenue totals within a period. */
 export default function RevenueTrendChart({ data, gradientId = 'revGrad' }) {
@@ -26,8 +27,8 @@ export default function RevenueTrendChart({ data, gradientId = 'revGrad' }) {
         </defs>
         <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} />
         <XAxis dataKey="date" tick={{ fontSize: 10, fill: chartTheme.tick }} />
-        <YAxis tickFormatter={(v) => `$${v}`} tick={{ fontSize: 10, fill: chartTheme.tick }} width={48} />
-        <Tooltip contentStyle={chartTheme.tooltip.contentStyle} formatter={(v) => [`$${Number(v).toFixed(2)}`, t('charts.revenue')]} />
+        <YAxis tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 10, fill: chartTheme.tick }} width={48} />
+        <Tooltip contentStyle={chartTheme.tooltip.contentStyle} formatter={(v) => [formatMoney(v), t('charts.revenue')]} />
         <Area type="monotone" dataKey="amount" stroke="#0f766e" fill={`url(#${gradientId})`} strokeWidth={2} />
       </AreaChart>
     </ResponsiveContainer>

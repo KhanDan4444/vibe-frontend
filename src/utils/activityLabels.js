@@ -1,6 +1,7 @@
 /** Human-readable labels for audit log actions. */
 import i18n from '../i18n/index.js';
 import { translatePaymentMethod } from '../i18n/helpers.js';
+import { formatMoney } from './formatMoney.js';
 
 const ACTION_KEYS = {
   'member.created': 'activity.actions.member.created',
@@ -30,7 +31,7 @@ export function formatAuditDetails(entry) {
   const parts = [];
 
   if (d.payment_amount != null) {
-    parts.push(`$${Number(d.payment_amount).toFixed(2)}${d.payment_method ? ` · ${translatePaymentMethod(d.payment_method)}` : ''}`);
+    parts.push(`${formatMoney(d.payment_amount)}${d.payment_method ? ` · ${translatePaymentMethod(d.payment_method)}` : ''}`);
   }
   if (d.skip_payment) parts.push(i18n.t('activity.details.noPaymentRecorded'));
   if (d.staff_role) parts.push(`${i18n.t('activity.details.role')} ${d.staff_role}`);
@@ -44,7 +45,7 @@ export function formatAuditDetails(entry) {
     parts.push(`${d.previous_plan_name} → ${d.plan_name}`);
   }
   if (d.duration != null && d.price != null) {
-    parts.push(`${d.duration} mo · $${Number(d.price).toFixed(2)}`);
+    parts.push(`${d.duration} mo · ${formatMoney(d.price)}`);
   }
 
   return parts.join(' · ') || null;

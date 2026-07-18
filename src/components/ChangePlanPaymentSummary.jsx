@@ -3,12 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { formatDisplayDate } from '../utils/date';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import { paymentsForCurrentTerm, sumPaymentAmounts } from '../utils/termPayments';
-
-function formatMoney(n) {
-  const value = Number(n);
-  if (!Number.isFinite(value)) return '—';
-  return value.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
-}
+import { formatMoney } from '../utils/formatMoney';
 
 export default function ChangePlanPaymentSummary({ payments, termStart, pendingAmount }) {
   const { t } = useTranslation();

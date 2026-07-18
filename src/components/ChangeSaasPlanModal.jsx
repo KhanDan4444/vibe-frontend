@@ -16,6 +16,7 @@ import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import { suggestChangeSaasPlanAmount, previewSaasLicenseEnd } from '../utils/saasRenew';
 import ResponsiveModal from './ResponsiveModal';
 import { modalBody } from '../utils/modalLayout';
+import { formatMoney } from '../utils/formatMoney';
 
 /** Switch an active, paid gym to a different SaaS plan mid-term. */
 export default function ChangeSaasPlanModal({
@@ -98,9 +99,6 @@ export default function ChangeSaasPlanModal({
     const hint = suggestChangeSaasPlanAmount(gym, currentPlan, plan, { customTermStart, startDate });
     setAmount(hint ? String(hint.suggestedAmount) : String(plan.price));
   }, [planId, saasPlans, gym, currentPlan, amountEdited, customTermStart, startDate]);
-
-  const formatMoney = (n) =>
-    Number(n).toLocaleString(undefined, { style: 'currency', currency: 'USD' });
 
   if (!isOpen || !gym) return null;
 
@@ -213,7 +211,7 @@ export default function ChangeSaasPlanModal({
               <option value="" disabled>{t('modals.renew.selectPlan')}</option>
               {otherPlans.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — ${p.price} / {p.duration}mo
+                  {p.name} — {formatMoney(p.price)} / {p.duration}mo
                 </option>
               ))}
             </select>

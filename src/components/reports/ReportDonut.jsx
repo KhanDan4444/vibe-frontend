@@ -7,8 +7,8 @@ import {
 } from 'recharts';
 import { useChartTheme } from '../../utils/chartTheme';
 
-/** Soft teal-forward fallback palette — readable on light and dark cards. */
-const PIE_PALETTE = ['#0d9488', '#38bdf8', '#5eead4', '#94a3b8', '#fbbf24', '#fb7185', '#67e8f9'];
+/** Fallback slice palette — alternating hues so adjacent slices stay distinct. */
+const PIE_PALETTE = ['#0d9488', '#f59e0b', '#0284c7', '#94a3b8', '#e11d48', '#65a30d', '#7c3aed'];
 
 /** Donut chart for categorical report breakdowns with a vertical legend. */
 export default function ReportDonut({ data, colors = {}, showCounts = false, formatValue }) {
