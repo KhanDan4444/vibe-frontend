@@ -7,7 +7,7 @@
     "revenue": "Revenue",
     "reports": "Reports",
     "branches": "Branches",
-    "team": "Team",
+    "team": "Staff",
     "activity": "Activity",
     "messages": "SMS Messages",
     "ownerSms": "Owner SMS",
@@ -568,12 +568,12 @@
       "branchDefaultSet": "{{name}} is now the default branch.",
       "staffMoved": "{{count}} staff moved to {{branch}}.",
       "selectedBranch": "the selected branch",
-      "cannotDeactivateWithStaff": "Move {{count}} staff to another branch in Team before deactivating.",
+      "cannotDeactivateWithStaff": "Move {{count}} staff to another branch in Staff before deactivating.",
       "deactivateTitle": "Deactivate branch?",
       "deactivateMessage": "Are you sure you want to deactivate {{name}}?"
     },
     "team": {
-      "title": "Team",
+      "title": "Staff",
       "subtitle": "Staff accounts for your help desk.",
       "add": "Add staff",
       "sectionTitle": "Staff accounts",

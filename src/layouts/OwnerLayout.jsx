@@ -53,11 +53,11 @@ export default function OwnerLayout() {
       { nameKey: 'nav.revenue', path: '/dashboard/revenue', icon: DollarSign },
       { nameKey: 'nav.reports', path: '/dashboard/reports', icon: FileBarChart },
     ];
-    if (showManagementNav) {
-      items.push({ nameKey: 'nav.branches', path: '/dashboard/branches', icon: MapPin });
-    }
     if (showTeamNav) {
       items.push({ nameKey: 'nav.team', path: '/dashboard/team', icon: UserCog });
+    }
+    if (showManagementNav) {
+      items.push({ nameKey: 'nav.branches', path: '/dashboard/branches', icon: MapPin });
     }
     if (showActivityNav) {
       items.push({ nameKey: 'nav.activity', path: '/dashboard/activity', icon: ScrollText });

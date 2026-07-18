@@ -797,7 +797,7 @@
     "reports": "ሪፖርቶች",
     "revenue": "ገቢ",
     "saasPlans": "የSaaS ዕቅዶች",
-    "team": "ቡድን"
+    "team": "ሰራተኞች"
   },
   "smsLog": {
     "filterLabel": "የመልእክት ዓይነት",
@@ -892,7 +892,7 @@
       "branchDefaultSet": "{{name}} አሁን ነባሪ ቅርንጫፍ ነው።",
       "staffMoved": "{{count}} ሰራተኞች ወደ {{branch}} ተላልፈዋል።",
       "selectedBranch": "የተመረጠው ቅርንጫፍ",
-      "cannotDeactivateWithStaff": "ከመሰናከል በፊት {{count}} ሰራተኞችን በቡድን ገጽ ወደ ሌላ ቅርንጫፍ ያንቀሳቅሱ።",
+      "cannotDeactivateWithStaff": "ከመሰናከል በፊት {{count}} ሰራተኞችን በሰራተኞች ገጽ ወደ ሌላ ቅርንጫፍ ያንቀሳቅሱ።",
       "deactivateTitle": "ቅርንጫፍ ይሰናከል?",
       "deactivateMessage": "{{name}}ን ማሰናከል እርግጠኛ ነዎት?"
     },
@@ -1003,7 +1003,7 @@
       "noBranch": "ምንም ቅርንጫፍ የለም",
       "sectionTitle": "የሰራተኛ መለያዎች",
       "subtitle": "ለእገዛ ዴስክ የሚሆኑ የሰራተኛ መለያዎች።",
-      "title": "ቡድን",
+      "title": "ሰራተኞች",
       "staffCreated": "{{name}} በሰጡት የመግቢያ መረጃ መግባት ይችላሉ።",
       "staffUpdated": "የሰራተኛ መለያ ተዘምኗል።",
       "staffEnabled": "{{name}} እንደገና መግባት ይችላሉ።",
