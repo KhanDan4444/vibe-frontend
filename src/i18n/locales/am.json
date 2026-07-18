@@ -642,6 +642,7 @@
   },
   "member": {
     "amount": "መጠን",
+    "amountFromPlan": "ከተመረጠው ዕቅድ የሚወሰድ — በመመዝገብ ጊዜ አይስተካከልም።",
     "branch": "ቅርንጫፍ",
     "editSubtitle": "የአባል ዝርዝር መረጃዎችን ያዘምኑ።",
     "editTitle": "አባል አርትዕ",
@@ -889,7 +890,8 @@
       "branchReactivated": "{{name}} እንደገና ነቅቷል።",
       "branchDefaultSet": "{{name}} አሁን ነባሪ ቅርንጫፍ ነው።",
       "staffMoved": "{{count}} ሰራተኞች ወደ {{branch}} ተላልፈዋል።",
-      "selectedBranch": "የተመረጠው ቅርንጫፍ"
+      "selectedBranch": "የተመረጠው ቅርንጫፍ",
+      "cannotDeactivateWithStaff": "ከመሰናከል በፊት {{count}} ሰራተኞችን በቡድን ገጽ ወደ ሌላ ቅርንጫፍ ያንቀሳቅሱ።"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",

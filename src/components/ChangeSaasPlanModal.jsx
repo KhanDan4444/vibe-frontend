@@ -95,7 +95,7 @@ export default function ChangeSaasPlanModal({
     if (!planId || amountEdited) return;
     const plan = saasPlans.find((p) => p.id === parseInt(planId, 10));
     if (!plan) return;
-    const hint = suggestChangeSaasPlanAmount(gym, currentPlan, plan);
+    const hint = suggestChangeSaasPlanAmount(gym, currentPlan, plan, { customTermStart, startDate });
     setAmount(hint ? String(hint.suggestedAmount) : String(plan.price));
   }, [planId, saasPlans, gym, currentPlan, amountEdited, customTermStart, startDate]);
 
@@ -148,7 +148,7 @@ export default function ChangeSaasPlanModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-app-text"
+          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
         >
           <X className="h-5 w-5" />
         </button>

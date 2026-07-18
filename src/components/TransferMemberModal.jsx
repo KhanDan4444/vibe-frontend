@@ -45,7 +45,7 @@ export default function TransferMemberModal({
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100"
+          className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80"
           aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />

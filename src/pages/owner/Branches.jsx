@@ -3,8 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { MapPin, Plus, Edit, Star } from 'lucide-react';
 import { parseApiResponse, apiErrorFromResponse } from '../../utils/api';
-import { listBranches, createBranch, updateBranch, reassignBranchStaff } from '../../services/branchService';
-import ReassignStaffModal from '../../components/ReassignStaffModal';
+import { listBranches, createBranch, updateBranch } from '../../services/branchService';
 import ResponsiveModal from '../../components/ResponsiveModal';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { useTranslation } from 'react-i18next';
@@ -116,7 +115,7 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-app-text hover:bg-slate-100 sm:w-auto"
+            className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-app-text hover:bg-slate-100 dark:hover:bg-app-surface/80 sm:w-auto"
           >
             {t('common.cancel')}
           </button>
@@ -141,7 +140,6 @@ export default function Branches() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [modal, setModal] = useState({ open: false, branch: null });
-  const [reassignState, setReassignState] = useState({ open: false, branch: null, deactivateAfter: false });
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState('');
 
@@ -209,7 +207,7 @@ export default function Branches() {
     if (branch.is_active) {
       const staffCount = branch.staff_count ?? 0;
       if (staffCount > 0) {
-        setReassignState({ open: true, branch, deactivateAfter: true });
+        setError(t('pages.branches.cannotDeactivateWithStaff', { count: staffCount }));
         return;
       }
     }
@@ -243,39 +241,6 @@ export default function Branches() {
       await Promise.all([load(), reloadBranches()]);
     } catch (err) {
       setError(err.message);
-    }
-  };
-
-  const handleReassignStaff = async (targetBranchId) => {
-    if (!reassignState.branch) return;
-    if (readOnly) {
-      setModalError(t('alerts.readOnlyBody'));
-      return;
-    }
-    setSaving(true);
-    setModalError('');
-    try {
-      const res = await reassignBranchStaff(apiFetch, reassignState.branch.id, targetBranchId);
-      const data = await parseApiResponse(res);
-      if (!res.ok) throw apiErrorFromResponse(data, res.status);
-
-      const branch = reassignState.branch;
-      const deactivateAfter = reassignState.deactivateAfter;
-      setReassignState({ open: false, branch: null, deactivateAfter: false });
-
-      if (deactivateAfter) {
-        await deactivateBranch(branch);
-      } else {
-        showFlash(t('pages.branches.staffMoved', {
-          count: data.moved,
-          branch: data.target_branch?.name || t('pages.branches.selectedBranch'),
-        }));
-        await Promise.all([load(), reloadBranches()]);
-      }
-    } catch (err) {
-      setModalError(err.message);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -365,7 +330,7 @@ export default function Branches() {
                           setModalError('');
                           setModal({ open: true, branch });
                         }}
-                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-teal-700 active:bg-teal-50"
+                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-teal-700 active:bg-teal-50 dark:active:bg-teal-500/10"
                       >
                         <Edit className="h-3.5 w-3.5" />
                         {t('common.edit')}
@@ -374,26 +339,17 @@ export default function Branches() {
                         <button
                           type="button"
                           onClick={() => setAsDefault(branch)}
-                          className="inline-flex items-center gap-1 rounded-lg border border-amber-200 px-3 py-2 text-xs font-medium text-amber-700 active:bg-amber-50"
+                          className="inline-flex items-center gap-1 rounded-lg border border-amber-200 px-3 py-2 text-xs font-medium text-amber-700 active:bg-amber-50 dark:active:bg-amber-500/10"
                         >
                           <Star className="h-3.5 w-3.5" />
                           {t('actions.setDefault')}
-                        </button>
-                      )}
-                      {(branch.staff_count ?? 0) > 0 && branch.is_active && (
-                        <button
-                          type="button"
-                          onClick={() => setReassignState({ open: true, branch, deactivateAfter: false })}
-                          className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-600 dark:text-app-text active:bg-slate-50"
-                        >
-                          {t('modals.reassignStaff.title')}
                         </button>
                       )}
                       {!branch.is_default && (
                         <button
                           type="button"
                           onClick={() => toggleActive(branch)}
-                          className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-600 dark:text-app-text active:bg-slate-50"
+                          className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-600 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                         >
                           {branch.is_active ? t('actions.deactivate') : t('actions.activate')}
                         </button>
@@ -447,7 +403,7 @@ export default function Branches() {
                             setModalError('');
                             setModal({ open: true, branch });
                           }}
-                          className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-teal-700 hover:bg-teal-50"
+                          className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-teal-700 hover:bg-teal-50 dark:hover:bg-teal-500/10"
                         >
                           <Edit className="h-4 w-4" />
                           {t('common.edit')}
@@ -456,27 +412,18 @@ export default function Branches() {
                           <button
                             type="button"
                             onClick={() => setAsDefault(branch)}
-                            className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-amber-700 hover:bg-amber-50"
+                            className="mr-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-500/10"
                             title={t('pages.branches.defaultBranch')}
                           >
                             <Star className="h-4 w-4" />
                             {t('actions.setDefault')}
                           </button>
                         )}
-                        {(branch.staff_count ?? 0) > 0 && branch.is_active && (
-                          <button
-                            type="button"
-                            onClick={() => setReassignState({ open: true, branch, deactivateAfter: false })}
-                            className="mr-2 rounded-lg px-2 py-1 text-slate-600 dark:text-app-text hover:bg-slate-100"
-                          >
-                            {t('modals.reassignStaff.title')}
-                          </button>
-                        )}
                         {!branch.is_default && (
                           <button
                             type="button"
                             onClick={() => toggleActive(branch)}
-                            className="rounded-lg px-2 py-1 text-slate-600 dark:text-app-text hover:bg-slate-100"
+                            className="rounded-lg px-2 py-1 text-slate-600 dark:text-app-text hover:bg-slate-100 dark:hover:bg-app-surface/80"
                           >
                             {branch.is_active ? t('actions.deactivate') : t('actions.activate')}
                           </button>
@@ -497,17 +444,6 @@ export default function Branches() {
         branch={modal.branch}
         onClose={() => setModal({ open: false, branch: null })}
         onSubmit={handleSubmit}
-        saving={saving}
-        error={modalError}
-      />
-
-      <ReassignStaffModal
-        isOpen={reassignState.open}
-        branch={reassignState.branch}
-        branches={branches}
-        deactivateAfter={reassignState.deactivateAfter}
-        onClose={() => setReassignState({ open: false, branch: null, deactivateAfter: false })}
-        onSubmit={handleReassignStaff}
         saving={saving}
         error={modalError}
       />

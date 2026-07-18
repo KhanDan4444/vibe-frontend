@@ -277,15 +277,16 @@ export default function MemberModal({
     }
 
     if (!skipPayment) {
+      const enrollAmount = selectedPlan ? String(selectedPlan.price) : amount;
       const paymentResult = validateMemberEnrollPayment({
-        amount,
+        amount: enrollAmount,
         paymentDate,
         startDate,
         skipPayment,
         startDateDisplay: formatDisplayDate(startDate),
       });
       if (!showValidationError(paymentResult, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
-      const parsedAmount = parseMoneyAmount(amount);
+      const parsedAmount = parseMoneyAmount(enrollAmount);
       setSubmitting(true);
       try {
         await onSubmit({
@@ -528,14 +529,11 @@ export default function MemberModal({
                           min="0.01"
                           step="0.01"
                           required
-                          className={fc('amount')}
+                          readOnly
+                          className={`${fc('amount')} cursor-default bg-slate-50 text-slate-600 dark:bg-app-surface dark:text-app-muted`}
                           value={amount}
-                          onChange={(e) => {
-                            setAmount(e.target.value);
-                            clearFieldError(setLocalFieldErrors, 'amount');
-                            markEnrollTouched();
-                          }}
                         />
+                        <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">{t('modals.member.amountFromPlan')}</p>
                         <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
                       </div>
                       <div>

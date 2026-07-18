@@ -12,9 +12,3 @@ export const updateBranch = (apiFetch, branchId, payload) =>
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
-
-export const reassignBranchStaff = (apiFetch, branchId, targetBranchId) =>
-  apiFetch(`/gym/branches/${branchId}/reassign-staff`, {
-    method: 'POST',
-    body: JSON.stringify({ target_branch_id: targetBranchId }),
-  });

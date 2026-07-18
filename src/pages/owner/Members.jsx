@@ -599,7 +599,7 @@ export default function Members() {
                         <button
                           type="button"
                           onClick={() => openChangePlanModal(member)}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                         >
                           <ArrowLeftRight className="h-3.5 w-3.5" /> {t('table.plan')}
                         </button>
@@ -611,7 +611,7 @@ export default function Members() {
                             setError('');
                             openRenewModal(member);
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                         >
                           <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
                         </button>
@@ -622,7 +622,7 @@ export default function Members() {
                           setError('');
                           setModalState({ isOpen: true, member, error: '' });
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                       >
                         <Edit className="h-3.5 w-3.5" /> {t('common.edit')}
                       </button>
@@ -630,7 +630,7 @@ export default function Members() {
                         <button
                           type="button"
                           onClick={() => setMemberToDelete(member)}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50 dark:active:bg-rose-500/10"
                         >
                           <Trash2 className="h-3.5 w-3.5" /> {t('common.delete')}
                         </button>
@@ -732,7 +732,7 @@ export default function Members() {
                               e.stopPropagation();
                               openChangePlanModal(member);
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
                             title={t('actions.changePlan')}
                           >
                             <ArrowLeftRight className="h-4 w-4" />
@@ -745,7 +745,7 @@ export default function Members() {
                               setError('');
                               openRenewModal(member);
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface cursor-pointer"
+                            className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
                             title={t('actions.renew')}
                           >
                             <RefreshCw className="h-4 w-4" />
@@ -759,7 +759,7 @@ export default function Members() {
                                 setError('');
                                 setModalState({ isOpen: true, member, error: '' });
                               }}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                              className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
                               title={t('common.edit')}
                             >
                               <Edit className="h-4 w-4" />
@@ -770,7 +770,7 @@ export default function Members() {
                                 e.stopPropagation();
                                 setMemberToDelete(member);
                               }}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                              className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
                               title={t('common.delete')}
                             >
                               <Trash2 className="h-4 w-4" />

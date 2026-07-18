@@ -191,7 +191,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700">
+                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300">
                     <Dumbbell className="h-6 w-6" />
                   </span>
                   <h3 className="font-bold text-slate-900 dark:text-app-text-strong text-lg pr-16">{plan.name}</h3>
@@ -207,7 +207,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
                 <span className="text-2xl font-black text-slate-900 dark:text-app-text-strong">
                   {Number(plan.price).toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
                 </span>
-                <span className="text-xs font-semibold rounded-full bg-slate-100 px-2.5 py-1 text-slate-600 dark:text-app-text">
+                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:border-app-border-subtle dark:bg-app-surface dark:text-app-muted">
                   {t('common.month', { count: plan.duration })}
                 </span>
               </div>

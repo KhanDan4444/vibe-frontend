@@ -80,12 +80,12 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
   };
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-50">
-      <div className={`${modalBody} relative`}>
+    <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-50">
+      <div className={`${modalBody} relative sm:min-h-[280px]`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-app-text sm:right-0 sm:top-0"
+          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-app-text dark:hover:bg-app-surface/80 sm:right-0 sm:top-0"
         >
           <X className="h-5 w-5" />
         </button>

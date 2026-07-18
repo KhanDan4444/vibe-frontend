@@ -565,7 +565,8 @@
       "branchReactivated": "{{name}} reactivated.",
       "branchDefaultSet": "{{name}} is now the default branch.",
       "staffMoved": "{{count}} staff moved to {{branch}}.",
-      "selectedBranch": "the selected branch"
+      "selectedBranch": "the selected branch",
+      "cannotDeactivateWithStaff": "Move {{count}} staff to another branch in Team before deactivating."
     },
     "team": {
       "title": "Team",
@@ -692,6 +693,7 @@
       "processingPhoto": "Processing photo…",
       "paymentSection": "Initial payment",
       "amount": "Amount",
+      "amountFromPlan": "Taken from the selected plan — not editable on enroll.",
       "method": "Payment method",
       "paymentDate": "Payment date",
       "unpaidWarning": "Member will be marked unpaid until payment is collected.",

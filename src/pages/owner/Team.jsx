@@ -220,7 +220,7 @@ export default function Team() {
                           setModalError('');
                           setModalState({ isOpen: true, member });
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                       >
                         <Edit className="h-3.5 w-3.5" />
                         {t('common.edit')}
@@ -231,7 +231,7 @@ export default function Team() {
                           setResetError('');
                           setResetTarget(member);
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                       >
                         <KeyRound className="h-3.5 w-3.5" />
                         {t('pages.team.resetPassword')}
@@ -241,7 +241,7 @@ export default function Team() {
                         onClick={() => setToggleTarget(member)}
                         className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium ${
                           member.is_active
-                            ? 'border-rose-200 text-rose-600 active:bg-rose-50'
+                            ? 'border-rose-200 text-rose-600 active:bg-rose-50 dark:active:bg-rose-500/10'
                             : 'border-emerald-200 text-emerald-600 active:bg-emerald-50'
                         }`}
                       >
@@ -323,7 +323,7 @@ export default function Team() {
                             onClick={() => setToggleTarget(member)}
                             className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-medium ${
                               member.is_active
-                                ? 'border-rose-200 text-rose-600 hover:bg-rose-50'
+                                ? 'border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10'
                                 : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
                             }`}
                           >

@@ -133,7 +133,7 @@ export default function Plans() {
                   <button
                     type="button"
                     onClick={() => handleEditClick(plan)}
-                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-teal-700 sm:p-1.5 sm:hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:hover:text-teal-700"
+                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-teal-700 dark:active:bg-app-surface/60 sm:p-1.5 sm:hover:bg-slate-50 dark:sm:hover:bg-app-surface/60 sm:hover:text-teal-700"
                     title={t('pages.plans.editPlanTitle')}
                     aria-label={t('pages.plans.editPlanTitle')}
                   >
@@ -142,7 +142,7 @@ export default function Plans() {
                   <button
                     type="button"
                     onClick={() => handleDeletePlanClick(plan)}
-                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-rose-600 sm:p-1.5 sm:hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:hover:text-rose-600"
+                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-rose-600 dark:active:bg-app-surface/60 sm:p-1.5 sm:hover:bg-slate-50 dark:sm:hover:bg-app-surface/60 sm:hover:text-rose-600"
                     title={t('pages.plans.deletePlanTitle')}
                     aria-label={t('pages.plans.deletePlanTitle')}
                   >
@@ -153,7 +153,7 @@ export default function Plans() {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700">
+                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300">
                     <Dumbbell className="h-6 w-6" />
                   </span>
                   <h3 className="font-bold text-slate-900 dark:text-app-text-strong text-lg pr-16 truncate" title={plan.name}>
@@ -171,7 +171,7 @@ export default function Plans() {
                 <span className="text-2xl font-black text-slate-900 dark:text-app-text-strong">
                   {plan.price.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
                 </span>
-                <span className="text-xs font-semibold rounded-full bg-slate-100 px-2.5 py-1 text-slate-600 dark:text-app-text">
+                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:border-app-border-subtle dark:bg-app-surface dark:text-app-muted">
                   {t('common.month', { count: plan.duration })}
                 </span>
               </div>

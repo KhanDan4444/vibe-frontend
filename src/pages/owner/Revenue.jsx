@@ -456,14 +456,14 @@ export default function Revenue() {
                         setError('');
                         setModalState({ isOpen: true, payment });
                       }}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
                     >
                       <Edit className="h-3.5 w-3.5" /> {t('common.edit')}
                     </button>
                     <button
                       type="button"
                       onClick={() => setPaymentToDelete(payment)}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50 dark:active:bg-rose-500/10"
                     >
                       <Trash2 className="h-3.5 w-3.5" /> {t('common.delete')}
                     </button>
@@ -535,14 +535,14 @@ export default function Revenue() {
                               setError('');
                               setModalState({ isOpen: true, payment });
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
                             title={t('pages.revenue.editTransaction')}
                           >
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => setPaymentToDelete(payment)}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                            className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
                             title={t('pages.revenue.deleteTransaction')}
                           >
                             <Trash2 className="h-4 w-4" />
