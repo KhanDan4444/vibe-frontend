@@ -50,6 +50,43 @@ export function aggregateGymsByStatus(gyms) {
   return Object.entries(counts).map(([name, value]) => ({ name, value }));
 }
 
+function isGymDueSoon(gym) {
+  if ((gym.subscription_status || '').toLowerCase() !== 'active') return false;
+  if (!gym.saas_end_date) return false;
+  const endDate = new Date(gym.saas_end_date);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+  return diffDays >= 0 && diffDays <= 7;
+}
+
+/**
+ * Exclusive gym buckets for a single overview donut.
+ * Priority: Expired → Suspended → Due Soon → Unpaid → Active.
+ */
+export function aggregateGymsOverview(gyms) {
+  const counts = {
+    Active: 0,
+    Unpaid: 0,
+    'Due Soon': 0,
+    Expired: 0,
+    Suspended: 0,
+  };
+
+  gyms.forEach((g) => {
+    const status = (g.subscription_status || '').toLowerCase();
+    if (status === 'expired') counts.Expired += 1;
+    else if (status === 'suspended') counts.Suspended += 1;
+    else if (isGymDueSoon(g)) counts['Due Soon'] += 1;
+    else if (g.is_unpaid) counts.Unpaid += 1;
+    else counts.Active += 1;
+  });
+
+  return ['Active', 'Unpaid', 'Due Soon', 'Expired', 'Suspended']
+    .map((name) => ({ name, value: counts[name] }))
+    .filter((d) => d.value > 0);
+}
+
 export function aggregateGymsByPlan(gyms) {
   const counts = {};
   gyms.forEach((g) => {

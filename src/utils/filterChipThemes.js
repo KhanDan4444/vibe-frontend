@@ -42,10 +42,11 @@ export const FILTER_CHIP_THEMES = {
   },
 };
 
-/** Hex colors matching FILTER_CHIP_THEMES dots (for charts / Recharts). */
+/** Hex colors matching FILTER_CHIP_THEMES / status badge dots (for charts). */
 export const MEMBER_FILTER_CHART_COLORS = {
   Active: '#34d399', // emerald-400
   Unpaid: '#fb923c', // orange-400
   'Due Soon': '#0ea5e9', // sky-500
   Expired: '#f87171', // red-400
+  Suspended: '#fb7185', // rose-400 (gym subscription)
 };

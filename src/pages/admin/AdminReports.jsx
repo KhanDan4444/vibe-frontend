@@ -34,19 +34,18 @@ import {
   formatMoney,
 } from '../../utils/adminReportExport';
 import {
-  aggregateGymsByStatus,
+  aggregateGymsOverview,
   aggregateGymsByPlan,
-  aggregateGymsPaymentStatus,
   aggregateRevenueByMethod,
   aggregateRevenueByGym,
   aggregateRevenueByDate,
   gymReportStats,
   PAYMENT_METHOD_COLORS,
-  PAYMENT_STATUS_COLORS,
   planChartColors,
 } from '../../utils/reportChartData';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 
 const GYM_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allGyms', query: {} },
@@ -56,13 +55,6 @@ const GYM_STATUS_FILTERS = [
   { id: 'suspended', labelKey: 'status.suspended', query: { status: 'suspended' } },
   { id: 'unpaid', labelKey: 'filters.unpaidActive', query: { filter: 'unpaid' } },
 ];
-
-const STATUS_COLORS = {
-  Active: '#0d9488',
-  Suspended: '#e11d48',
-  Expired: '#ea580c',
-  Unknown: '#94a3b8',
-};
 
 export default function AdminReports({ onBootingChange }) {
   const { t } = useTranslation();
@@ -154,10 +146,9 @@ export default function AdminReports({ onBootingChange }) {
   }, [reportsBooting, onBootingChange]);
 
   const gymStats = useMemo(() => gymReportStats(gyms), [gyms]);
-  const statusChart = useMemo(() => aggregateGymsByStatus(gyms), [gyms]);
+  const overviewChart = useMemo(() => aggregateGymsOverview(gyms), [gyms]);
   const planChart = useMemo(() => aggregateGymsByPlan(gyms), [gyms]);
   const planColors = useMemo(() => planChartColors(planChart), [planChart]);
-  const paymentStatusChart = useMemo(() => aggregateGymsPaymentStatus(gyms), [gyms]);
   const methodChart = useMemo(() => aggregateRevenueByMethod(revenueSummary), [revenueSummary]);
   const topGymsChart = useMemo(() => aggregateRevenueByGym(payments), [payments]);
   const trendChart = useMemo(() => aggregateRevenueByDate(payments), [payments]);
@@ -309,21 +300,18 @@ export default function AdminReports({ onBootingChange }) {
         </div>
 
         {!gymLoaded ? (
-          <div className="grid gap-4 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {Array.from({ length: 2 }).map((_, i) => (
               <ChartPanelSkeleton key={i} />
             ))}
           </div>
         ) : (
-        <div className="grid gap-4 lg:grid-cols-3">
-          <ChartCard title={t('admin.bySubscriptionStatus')} subtitle={t('admin.subscriptionStatusSubtitle')} empty={statusChart.length === 0}>
-            <ReportDonut data={statusChart} colors={STATUS_COLORS} showCounts />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <ChartCard title={t('admin.bySubscriptionStatus')} subtitle={t('admin.gymOverviewSubtitle')} empty={overviewChart.length === 0}>
+            <ReportDonut data={overviewChart} colors={MEMBER_FILTER_CHART_COLORS} showCounts />
           </ChartCard>
           <ChartCard title={t('admin.bySaasPlan')} subtitle={t('admin.planDistribution')} empty={planChart.length === 0}>
             <ReportDonut data={planChart} colors={planColors} showCounts />
-          </ChartCard>
-          <ChartCard title={t('admin.paymentStatusChart')} subtitle={t('admin.paidVsUnpaid')} empty={paymentStatusChart.length === 0}>
-            <ReportDonut data={paymentStatusChart} colors={PAYMENT_STATUS_COLORS} showCounts />
           </ChartCard>
         </div>
         )}

@@ -162,6 +162,7 @@
     "platformMembersHint": "Active members across filtered gyms",
     "bySubscriptionStatus": "By subscription status",
     "subscriptionStatusSubtitle": "Active, suspended, expired",
+    "gymOverviewSubtitle": "Active, unpaid, due soon, expired, and suspended — each gym once.",
     "bySaasPlan": "By SaaS plan",
     "planDistribution": "Plan distribution",
     "paymentStatusChart": "Payment status",
