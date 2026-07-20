@@ -700,10 +700,10 @@ export default function Members() {
                       <td className="truncate font-semibold text-teal-700">
                         {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                       </td>
-                      <td className="whitespace-nowrap text-slate-500">
-                        <span>{formatDisplayDate(member.startDate)}</span>
+                      <td className="text-slate-500">
+                        <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
                         <span className="mx-1 text-xs text-slate-400">{t('common.to')}</span>
-                        <span className="font-semibold text-slate-800 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
+                        <span className="whitespace-nowrap font-semibold text-slate-800 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
                       </td>
                       <td>
                         <div className="flex flex-wrap items-center gap-1.5">
