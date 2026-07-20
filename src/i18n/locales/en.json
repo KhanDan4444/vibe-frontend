@@ -271,6 +271,17 @@
     "branchReadOnlyTitle": "Inactive branch — view only",
     "branchReadOnlyBody": "{{name}} is inactive. Member history is visible but enrollments and edits are disabled. Reactivate the branch under Branches to make changes."
   },
+  "offline": {
+    "bannerTitle": "You're offline",
+    "bannerBody": "Showing saved data. New changes will be queued and synced when you're back online.",
+    "pendingOne": "1 change waiting to sync",
+    "pendingMany": "{{count}} changes waiting to sync",
+    "syncing": "Syncing…",
+    "syncNow": "Sync now",
+    "failedTitle": "Some changes could not sync",
+    "discard": "Discard",
+    "discardAllFailed": "Discard failed changes"
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",

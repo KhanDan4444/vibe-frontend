@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PreferencesProvider } from './context/PreferencesContext';
 import { GymProvider } from './context/GymContext';
+import { OfflineProvider } from './offline/OfflineContext';
 import { isPlatformAdmin, isGymOwner, hasGymPortalAccess } from './utils/roles';
 
 const Login = lazy(() => import('./pages/auth/Login'));
@@ -75,6 +76,7 @@ function RootRedirect() {
 export default function App() {
   return (
     <AuthProvider>
+      <OfflineProvider>
       <PreferencesProvider>
         <BrowserRouter>
           <Suspense fallback={<RouteFallback />}>
@@ -167,6 +169,7 @@ export default function App() {
           </Suspense>
         </BrowserRouter>
       </PreferencesProvider>
+      </OfflineProvider>
     </AuthProvider>
   );
 }

@@ -8,6 +8,7 @@ import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
 import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, RefreshCw, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
 import FlashBanner from '../components/FlashBanner';
+import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import BranchSwitcher from '../components/BranchSwitcher';
@@ -240,6 +241,7 @@ export default function OwnerLayout() {
         </div>
 
         <main className="safe-bottom app-page p-4 sm:p-6 lg:p-8">
+          <OfflineStatusBar />
           {error && (
             <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
               <p>{error}</p>

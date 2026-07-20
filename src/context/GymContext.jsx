@@ -11,6 +11,7 @@ import { listBranches } from '../services/branchService';
 import { branchQueryParams, branchStorageKey } from '../utils/branchQuery';
 import { isGymOwner } from '../utils/roles';
 import SubscriptionLockout from '../components/SubscriptionLockout';
+import { SYNCED_EVENT } from '../offline/events';
 
 const EMPTY_SUMMARY = {
   totalMembers: 0,
@@ -233,6 +234,16 @@ export const GymProvider = ({ children }) => {
       }
     })();
   }, [token, loadSubscription, fetchCoreData, selectedBranchId]);
+
+  // Re-fetch fresh data after queued offline writes finish syncing.
+  useEffect(() => {
+    const onSynced = () => {
+      fetchCoreData();
+      reloadBranches();
+    };
+    window.addEventListener(SYNCED_EVENT, onSynced);
+    return () => window.removeEventListener(SYNCED_EVENT, onSynced);
+  }, [fetchCoreData, reloadBranches]);
 
   const refreshSummary = useCallback(async () => {
     try {

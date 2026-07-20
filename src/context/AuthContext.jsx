@@ -1,5 +1,5 @@
 // src/context/AuthContext.jsx (Live API & FormData Optimized)
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
 import { API_BASE_URL } from '../config/api';
 import { decodeToken } from '../utils/jwt';
@@ -10,6 +10,8 @@ import {
   getStoredToken,
   setStoredToken,
 } from '../utils/authStorage';
+import { cacheRead, getCachedRead, clearReadCacheForUser } from '../offline/readCache';
+import { queueableJob, bodyHasPhoto, enqueueJob } from '../offline/writeQueue';
 
 function apiUnreachableMessage() {
   if (import.meta.env.DEV) {
@@ -17,6 +19,19 @@ function apiUnreachableMessage() {
   }
   return 'Cannot reach the server. Please try again later.';
 }
+
+const isNetworkError = (error) =>
+  error?.message === 'Failed to fetch' || error?.name === 'TypeError';
+
+const jsonResponse = (body, { status = 200, cached = false, queued = false } = {}) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(cached ? { 'X-Vibe-Cache': 'hit' } : {}),
+      ...(queued ? { 'X-Vibe-Queued': '1' } : {}),
+    },
+  });
 
 const AuthContext = createContext(null);
 
@@ -35,8 +50,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(initialSession.user);
   const [token, setToken] = useState(initialSession.token);
   const [gymSubscription, setGymSubscription] = useState(null);
+  // Offline cache/queue keys derive from the token (stable per session),
+  // so apiFetch identity doesn't churn when profile details load.
+  const tokenUserId = useMemo(() => resolveUserFromToken(token)?.id ?? null, [token]);
+  const tokenUserIdRef = useRef(tokenUserId);
+  useEffect(() => {
+    tokenUserIdRef.current = tokenUserId;
+  }, [tokenUserId]);
 
   const logout = useCallback(() => {
+    const userId = tokenUserIdRef.current;
+    if (userId) {
+      void clearReadCacheForUser(userId);
+    }
     clearStoredToken();
     setUser(null);
     setToken(null);
@@ -117,6 +143,8 @@ export const AuthProvider = ({ children }) => {
 
   const apiFetch = useCallback(async (endpoint, options = {}) => {
     const headers = { ...options.headers };
+    const method = (options.method || 'GET').toUpperCase();
+    const userId = tokenUserId;
 
     if (!(options.body instanceof FormData)) {
       headers['Content-Type'] = headers['Content-Type'] || 'application/json';
@@ -124,6 +152,41 @@ export const AuthProvider = ({ children }) => {
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    /** Offline fallback: serve cached GETs, queue allowlisted writes. */
+    const offlineFallback = async () => {
+      if (method === 'GET') {
+        const cached = await getCachedRead(userId, endpoint);
+        if (cached) {
+          return jsonResponse(cached.body, { cached: true });
+        }
+        return null;
+      }
+
+      const rule = queueableJob(endpoint, options);
+      if (!rule) return null;
+      if (bodyHasPhoto(options.body)) {
+        throw new Error('Photos need an internet connection. Retry without a photo, or when back online.');
+      }
+      await enqueueJob({
+        userId,
+        endpoint,
+        method,
+        body: options.body,
+        label: rule.label,
+      });
+      return jsonResponse({ queued: true, message: 'Saved offline. It will sync when you are back online.' }, {
+        status: 202,
+        queued: true,
+      });
+    };
+
+    // Skip a doomed network round-trip when the browser knows it is offline.
+    if (typeof navigator !== 'undefined' && navigator.onLine === false && token) {
+      const fallback = await offlineFallback();
+      if (fallback) return fallback;
+      throw new Error(apiUnreachableMessage());
     }
 
     try {
@@ -137,15 +200,33 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Session expired');
       }
 
+      if (
+        method === 'GET' &&
+        response.ok &&
+        userId &&
+        (response.headers.get('Content-Type') || '').includes('application/json')
+      ) {
+        // Cache a copy for offline reads; never block or fail the live response.
+        response
+          .clone()
+          .json()
+          .then((body) => cacheRead(userId, endpoint, body))
+          .catch(() => {});
+      }
+
       return response;
     } catch (error) {
-      if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+      if (isNetworkError(error)) {
+        if (token) {
+          const fallback = await offlineFallback();
+          if (fallback) return fallback;
+        }
         throw new Error(apiUnreachableMessage());
       }
       console.error(`API Request Failed [${endpoint}]:`, error.message);
       throw error;
     }
-  }, [token, logout]);
+  }, [token, tokenUserId, logout]);
 
   const updateUser = useCallback((patch) => {
     setUser((prev) => (prev ? { ...prev, ...patch } : prev));
