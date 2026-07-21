@@ -21,7 +21,7 @@ export default function InitialsAvatar({ name, size = 'md', className = '' }) {
   const sizeClass = SIZE_STYLES[size] || SIZE_STYLES.md;
   return (
     <div
-      className={`flex shrink-0 items-center justify-center bg-teal-100 font-bold text-teal-700 dark:bg-teal-600/20 dark:text-teal-300 ${sizeClass} ${className}`}
+      className={`flex shrink-0 items-center justify-center bg-teal-700 font-bold text-white dark:bg-teal-600 dark:text-white ${sizeClass} ${className}`}
       aria-hidden={Boolean(name)}
     >
       {getInitials(name)}

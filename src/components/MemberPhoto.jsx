@@ -17,7 +17,7 @@ export default function MemberPhoto({
   expandable = true,
   cacheBust = 0,
   className = 'h-14 w-14 rounded-2xl object-cover',
-  fallbackClassName = 'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-100 text-xl font-bold text-teal-700',
+  fallbackClassName = 'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-700 text-xl font-bold text-white dark:bg-teal-600 dark:text-white',
 }) {
   const { t } = useTranslation();
   const [src, setSrc] = useState(null);

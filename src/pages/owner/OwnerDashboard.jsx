@@ -208,7 +208,7 @@ export default function OwnerDashboard() {
                   <div key={member.id} className="flex items-start justify-between gap-3 p-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600 dark:text-app-text">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600">
                           {getInitials(member.name)}
                         </div>
                         <span className="font-semibold text-slate-900 dark:text-app-text-strong truncate">{member.name}</span>
@@ -259,7 +259,7 @@ export default function OwnerDashboard() {
                       <tr key={member.id} className={tableRowHover}>
                         <td>
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600 dark:bg-app-surface dark:text-app-text">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600">
                               {getInitials(member.name)}
                             </div>
                             <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
