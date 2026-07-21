@@ -77,10 +77,10 @@ export default function App() {
   return (
     <AuthProvider>
       <OfflineProvider>
-      <PreferencesProvider>
         <BrowserRouter>
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
+          <PreferencesProvider>
+            <Suspense fallback={<RouteFallback />}>
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/register-gym" element={<RegisterGym />} />
@@ -166,9 +166,9 @@ export default function App() {
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </Suspense>
+            </Suspense>
+          </PreferencesProvider>
         </BrowserRouter>
-      </PreferencesProvider>
       </OfflineProvider>
     </AuthProvider>
   );
