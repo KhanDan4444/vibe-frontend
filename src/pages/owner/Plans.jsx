@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { isGymOwner } from '../../utils/roles';
 import { Dumbbell, Plus, Trash2, Edit, HelpCircle } from 'lucide-react';
 import PlanModal from '../../components/PlanModal';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { useTranslation } from 'react-i18next';
@@ -90,26 +92,24 @@ export default function Plans() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.plans.title')}</h1>
-          <p className="text-sm text-slate-500">
-            {t('pages.plans.subtitle')}
-          </p>
-        </div>
-        {canManagePlans && (
-          <button
-            onClick={() => {
-              setError('');
-              setIsAddModalOpen(true);
-            }}
-            className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 transition-colors cursor-pointer self-start sm:self-auto"
-          >
-            <Plus className="h-4 w-4" /> {t('pages.plans.add')}
-          </button>
-        )}
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.plans.title')}
+        subtitle={t('pages.plans.subtitle')}
+        actions={
+          canManagePlans ? (
+            <button
+              onClick={() => {
+                setError('');
+                setIsAddModalOpen(true);
+              }}
+              className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-800 transition-colors cursor-pointer"
+            >
+              <Plus className="h-4 w-4" /> {t('pages.plans.add')}
+            </button>
+          ) : null
+        }
+      />
 
       {error && (
         <div className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">{error}</div>
@@ -180,23 +180,25 @@ export default function Plans() {
           ))}
         </div>
       ) : (
-        <div className={`text-center py-20 rounded-2xl border border-slate-200 dark:border-app-border-subtle p-6 shadow-sm ${cardSurface}`}>
-          <HelpCircle className="h-12 w-12 mx-auto text-slate-300 mb-3" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-app-text-strong">{t('pages.plans.emptyTitle')}</h3>
-          <p className="text-sm text-slate-500 dark:text-app-muted max-w-sm mx-auto mt-1">
-            {t('pages.plans.emptyBody')}
-          </p>
-          {canManagePlans && (
-            <button
-              onClick={() => {
-                setError('');
-                setIsAddModalOpen(true);
-              }}
-              className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle px-4 py-2 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 cursor-pointer"
-            >
-              {t('pages.plans.createFirst')}
-            </button>
-          )}
+        <div className={`rounded-2xl border border-slate-200 dark:border-app-border-subtle shadow-sm ${cardSurface}`}>
+          <EmptyState
+            icon={HelpCircle}
+            title={t('pages.plans.emptyTitle')}
+            body={t('pages.plans.emptyBody')}
+            action={
+              canManagePlans ? (
+                <button
+                  onClick={() => {
+                    setError('');
+                    setIsAddModalOpen(true);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 cursor-pointer"
+                >
+                  {t('pages.plans.createFirst')}
+                </button>
+              ) : null
+            }
+          />
         </div>
       )}
 

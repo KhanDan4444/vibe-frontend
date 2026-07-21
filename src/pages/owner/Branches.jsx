@@ -6,6 +6,8 @@ import { parseApiResponse, apiErrorFromResponse } from '../../utils/api';
 import { listBranches, createBranch, updateBranch } from '../../services/branchService';
 import ResponsiveModal from '../../components/ResponsiveModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { useTranslation } from 'react-i18next';
 import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../../utils/validation';
@@ -253,28 +255,26 @@ export default function Branches() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.branches.title')}</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {t('pages.branches.subtitle')}
-          </p>
-        </div>
-        {!readOnly && (
-          <button
-            type="button"
-            onClick={() => {
-              setModalError('');
-              setModal({ open: true, branch: null });
-            }}
-            className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700"
-          >
-            <Plus className="h-4 w-4" />
-            {t('pages.branches.add')}
-          </button>
-        )}
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.branches.title')}
+        subtitle={t('pages.branches.subtitle')}
+        actions={
+          !readOnly ? (
+            <button
+              type="button"
+              onClick={() => {
+                setModalError('');
+                setModal({ open: true, branch: null });
+              }}
+              className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+            >
+              <Plus className="h-4 w-4" />
+              {t('pages.branches.add')}
+            </button>
+          ) : null
+        }
+      />
 
       {error && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
@@ -297,10 +297,11 @@ export default function Branches() {
             </div>
           </>
         ) : branches.length === 0 ? (
-          <div className="flex flex-col items-center px-6 py-12 text-center">
-            <MapPin className="h-10 w-10 text-slate-300" />
-            <p className="mt-3 text-sm font-medium text-slate-600 dark:text-app-text">{t('pages.branches.empty')}</p>
-          </div>
+          <EmptyState
+            icon={MapPin}
+            title={t('pages.branches.emptyTitle')}
+            body={t('pages.branches.emptyBody')}
+          />
         ) : (
           <>
             <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">

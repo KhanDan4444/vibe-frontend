@@ -1,5 +1,7 @@
 {
-  "app": { "name": "VibeSaaS" },
+  "app": {
+    "name": "VibeSaaS"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "members": "Members",
@@ -513,7 +515,11 @@
       "unpaidRegistered": "Unpaid (registered, no payment)",
       "contactInfo": "Contact Info",
       "durationRange": "Duration (Start - End)",
-      "sortMembers": "Sort members"
+      "sortMembers": "Sort members",
+      "emptyTitle": "No members yet",
+      "emptyBody": "Enroll your first member to start tracking terms and payments.",
+      "emptyFiltered": "No members match this filter.",
+      "emptyFilteredBody": "Try another status or clear search."
     },
     "plans": {
       "title": "Membership Plans",
@@ -553,7 +559,9 @@
       "amountReceived": "Amount Received",
       "editTransaction": "Edit Transaction",
       "deleteTransaction": "Delete Transaction",
-      "searchPlaceholder": "Search payments by member name…"
+      "searchPlaceholder": "Search payments by member name…",
+      "emptyTitle": "No payments yet",
+      "emptyBody": "Payments show up here once members enroll or renew."
     },
     "reports": {
       "title": "Reports",
@@ -582,7 +590,9 @@
       "selectedBranch": "the selected branch",
       "cannotDeactivateWithStaff": "Move {{count}} staff to another branch in Staff before deactivating.",
       "deactivateTitle": "Deactivate branch?",
-      "deactivateMessage": "Are you sure you want to deactivate {{name}}?"
+      "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
+      "emptyTitle": "No branches yet",
+      "emptyBody": "Add your first location to organize members by branch."
     },
     "team": {
       "title": "Staff",
@@ -600,18 +610,24 @@
       "staffEnabled": "{{name}} can log in again.",
       "staffDisabled": "{{name}} has been disabled.",
       "resetPassword": "Reset password",
-      "passwordReset": "Password reset for {{name}}. Share the new password securely."
+      "passwordReset": "Password reset for {{name}}. Share the new password securely.",
+      "emptyTitle": "No staff yet",
+      "emptyBody": "Invite help desk staff so they can manage members at the desk."
     },
     "activity": {
       "title": "Activity",
       "subtitle": "Audit log of changes across your gym.",
-      "empty": "No activity recorded yet."
+      "empty": "No activity recorded yet.",
+      "emptyTitle": "No activity yet",
+      "emptyBody": "Member and payment events will appear here as you work."
     },
     "memberMessages": {
       "title": "Member SMS",
       "subtitle": "Automatic reminder texts sent to members (due soon, expiring today, expired).",
       "empty": "No member SMS has been sent yet.",
-      "loadError": "Failed to load SMS log."
+      "loadError": "Failed to load SMS log.",
+      "emptyTitle": "No SMS yet",
+      "emptyBody": "Member SMS history shows up after you send the first message."
     },
     "adminGymMessages": {
       "title": "Platform SMS Log",
@@ -633,7 +649,11 @@
     "newMembers": "New members"
   },
   "activity": {
-    "role": { "owner": "Owner", "staff": "Staff", "user": "User" },
+    "role": {
+      "owner": "Owner",
+      "staff": "Staff",
+      "user": "User"
+    },
     "actions": {
       "member": {
         "created": "Added member",

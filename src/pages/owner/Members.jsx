@@ -7,6 +7,8 @@ import { isGymOwner } from '../../utils/roles';
 import { Search, UserPlus, Trash2, Edit, AlertCircle, RefreshCw, DollarSign, ArrowLeftRight } from 'lucide-react';
 import UnpaidBadge from '../../components/UnpaidBadge';
 import MemberPhoto from '../../components/MemberPhoto';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -394,26 +396,26 @@ export default function Members() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.members.title')}</h1>
-          <p className="text-sm text-slate-500 dark:text-app-muted">{t('pages.members.subtitle')}</p>
-        </div>
-        {!readOnly && (
-          <button
-            onClick={() => {
-              setError('');
-              setModalState({ isOpen: true, member: null, error: '' });
-            }}
-            disabled={gymLoading || plans.length === 0}
-            title={!gymLoading && plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
-            className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 transition-colors self-start sm:self-auto cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
-          </button>
-        )}
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.members.title')}
+        subtitle={t('pages.members.subtitle')}
+        actions={
+          !readOnly ? (
+            <button
+              onClick={() => {
+                setError('');
+                setModalState({ isOpen: true, member: null, error: '' });
+              }}
+              disabled={gymLoading || plans.length === 0}
+              title={!gymLoading && plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
+              className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
+            </button>
+          ) : null
+        }
+      />
 
       {error && (
         <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
@@ -641,10 +643,20 @@ export default function Members() {
               );
             })
           ) : (
-            <div className="py-16 text-center text-slate-400">
-              <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
-              <p className="text-sm font-medium">{t('pages.members.empty')}</p>
-            </div>
+            <EmptyState
+              icon={AlertCircle}
+              compact
+              title={
+                statusFilter !== 'All' || debouncedSearch
+                  ? t('pages.members.emptyFiltered')
+                  : t('pages.members.emptyTitle')
+              }
+              body={
+                statusFilter !== 'All' || debouncedSearch
+                  ? t('pages.members.emptyFilteredBody')
+                  : t('pages.members.emptyBody')
+              }
+            />
           )}
         </div>
 
@@ -785,9 +797,21 @@ export default function Members() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={showBranchColumn ? 7 : 6} className="admin-panel-empty">
-                    <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
-                    {t('pages.members.empty')}
+                  <td colSpan={showBranchColumn ? 7 : 6} className="p-0">
+                    <EmptyState
+                      icon={AlertCircle}
+                      compact
+                      title={
+                        statusFilter !== 'All' || debouncedSearch
+                          ? t('pages.members.emptyFiltered')
+                          : t('pages.members.emptyTitle')
+                      }
+                      body={
+                        statusFilter !== 'All' || debouncedSearch
+                          ? t('pages.members.emptyFilteredBody')
+                          : t('pages.members.emptyBody')
+                      }
+                    />
                   </td>
                 </tr>
               )}

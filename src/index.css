@@ -19,6 +19,10 @@
   --color-brand-hover: #0d9488;
   --color-brand-soft: #ccfbf1;
   --color-brand-text: #115e59;
+  /* Warm signature accent — identity only, not primary CTAs */
+  --color-accent-warm: #b45309;
+  --color-accent-warm-soft: rgb(180 83 9 / 0.12);
+  --color-accent-warm-text: #92400e;
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
@@ -45,6 +49,9 @@
     --color-brand-hover: #0d9488;
     --color-brand-soft: #ccfbf1;
     --color-brand-text: #115e59;
+    --color-accent-warm: #b45309;
+    --color-accent-warm-soft: rgb(180 83 9 / 0.12);
+    --color-accent-warm-text: #92400e;
   }
 
   html {
@@ -67,6 +74,9 @@
     --color-brand-hover: #5eead4;
     --color-brand-soft: rgb(45 212 191 / 0.16);
     --color-brand-text: #99f6e4;
+    --color-accent-warm: #fbbf24;
+    --color-accent-warm-soft: rgb(251 191 36 / 0.14);
+    --color-accent-warm-text: #fcd34d;
     color-scheme: dark;
     background-color: #13161c;
   }

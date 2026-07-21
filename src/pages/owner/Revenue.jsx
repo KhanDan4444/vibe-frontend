@@ -6,6 +6,8 @@ import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
 import { DollarSign, Search, CreditCard, ArrowUpRight, TrendingUp, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX } from 'lucide-react';
 import PaymentModal from '../../components/PaymentModal';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
@@ -193,23 +195,21 @@ export default function Revenue() {
     : [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.revenue.title')}</h1>
-          <p className="text-sm text-slate-500">
-            {t('pages.revenue.subtitle')}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={handleExportCsv}
-          disabled={transactionCount === 0}
-          className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50 cursor-pointer self-start sm:self-auto"
-        >
-          <Download className="h-4 w-4" /> {t('common.exportCsv')}
-        </button>
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.revenue.title')}
+        subtitle={t('pages.revenue.subtitle')}
+        actions={
+          <button
+            type="button"
+            onClick={handleExportCsv}
+            disabled={transactionCount === 0}
+            className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50 cursor-pointer"
+          >
+            <Download className="h-4 w-4" /> {t('common.exportCsv')}
+          </button>
+        }
+      />
 
       {error && (
         <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
@@ -466,9 +466,12 @@ export default function Revenue() {
               </div>
             ))
           ) : (
-            <p className="py-16 text-center text-sm font-medium text-slate-400">
-              {t('pages.revenue.empty')}
-            </p>
+            <EmptyState
+              icon={CreditCard}
+              compact
+              title={t('pages.revenue.emptyTitle')}
+              body={t('pages.revenue.emptyBody')}
+            />
           )}
         </div>
 
@@ -548,8 +551,13 @@ export default function Revenue() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={showBranchColumn ? (canManageRevenue ? 7 : 6) : (canManageRevenue ? 6 : 5)} className="admin-panel-empty">
-                    {t('pages.revenue.empty')}
+                  <td colSpan={showBranchColumn ? (canManageRevenue ? 7 : 6) : (canManageRevenue ? 6 : 5)} className="p-0">
+                    <EmptyState
+                      icon={CreditCard}
+                      compact
+                      title={t('pages.revenue.emptyTitle')}
+                      body={t('pages.revenue.emptyBody')}
+                    />
                   </td>
                 </tr>
               )}

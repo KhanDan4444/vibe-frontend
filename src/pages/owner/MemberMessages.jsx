@@ -8,6 +8,8 @@ import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import { formatDisplayDateTime } from '../../utils/date';
 import { formatSmsMessageType, SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
@@ -67,26 +69,22 @@ export default function MemberMessages() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">
-            {t('pages.memberMessages.title')}
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-app-muted">
-            {t('pages.memberMessages.subtitle')}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={loadMessages}
-          disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          {t('common.refresh')}
-        </button>
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.memberMessages.title')}
+        subtitle={t('pages.memberMessages.subtitle')}
+        actions={
+          <button
+            type="button"
+            onClick={loadMessages}
+            disabled={loading}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            {t('common.refresh')}
+          </button>
+        }
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <label htmlFor="sms-type-filter" className="text-sm font-medium text-slate-600 dark:text-app-text">
@@ -144,7 +142,12 @@ export default function MemberMessages() {
               </button>
             ))
           ) : (
-            <p className="admin-panel-empty">{t('pages.memberMessages.empty')}</p>
+            <EmptyState
+              icon={MessageSquare}
+              compact
+              title={t('pages.memberMessages.emptyTitle')}
+              body={t('pages.memberMessages.emptyBody')}
+            />
           )}
         </div>
 
@@ -186,8 +189,13 @@ export default function MemberMessages() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={showBranchColumn ? 5 : 4} className="admin-panel-empty">
-                    {t('pages.memberMessages.empty')}
+                  <td colSpan={showBranchColumn ? 5 : 4} className="p-0">
+                    <EmptyState
+                      icon={MessageSquare}
+                      compact
+                      title={t('pages.memberMessages.emptyTitle')}
+                      body={t('pages.memberMessages.emptyBody')}
+                    />
                   </td>
                 </tr>
               )}

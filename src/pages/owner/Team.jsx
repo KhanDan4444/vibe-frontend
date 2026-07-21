@@ -6,6 +6,8 @@ import { parseApiResponse } from '../../utils/api';
 import { listTeam, createStaff, updateStaff } from '../../services/teamService';
 import StaffModal from '../../components/StaffModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
@@ -110,28 +112,26 @@ export default function Team() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.team.title')}</h1>
-          <p className="text-sm text-slate-500">
-            {t('pages.team.subtitle')}
-          </p>
-        </div>
-        {!readOnly && (
-          <button
-            type="button"
-            onClick={() => {
-              setModalError('');
-              setModalState({ isOpen: true, member: null });
-            }}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700"
-          >
-            <UserPlus className="h-4 w-4" />
-            {t('pages.team.add')}
-          </button>
-        )}
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.team.title')}
+        subtitle={t('pages.team.subtitle')}
+        actions={
+          !readOnly ? (
+            <button
+              type="button"
+              onClick={() => {
+                setModalError('');
+                setModalState({ isOpen: true, member: null });
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
+            >
+              <UserPlus className="h-4 w-4" />
+              {t('pages.team.add')}
+            </button>
+          ) : null
+        }
+      />
 
       {error && (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
@@ -158,10 +158,11 @@ export default function Team() {
             </div>
           </>
         ) : staff.length === 0 ? (
-          <div className="flex flex-col items-center px-6 py-12 text-center">
-            <Users className="h-10 w-10 text-slate-300" />
-            <p className="mt-3 text-sm font-medium text-slate-600 dark:text-app-text">{t('pages.team.empty')}</p>
-          </div>
+          <EmptyState
+            icon={Users}
+            title={t('pages.team.emptyTitle')}
+            body={t('pages.team.emptyBody')}
+          />
         ) : (
           <>
             <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">

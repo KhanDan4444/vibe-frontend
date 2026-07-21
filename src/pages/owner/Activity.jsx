@@ -7,6 +7,8 @@ import { parseApiResponse } from '../../utils/api';
 import { getActivityLogs } from '../../services/activityService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import { formatAuditAction, formatAuditDetails, formatActorRole } from '../../utils/activityLabels';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatDisplayDateTime } from '../../utils/date';
@@ -70,24 +72,22 @@ export default function Activity() {
   }, [actorFilter]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.activity.title')}</h1>
-          <p className="text-sm text-slate-500">
-            {t('pages.activity.subtitle')}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={loadActivity}
-          disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          {t('common.refresh')}
-        </button>
-      </div>
+    <div className="space-y-5 sm:space-y-6">
+      <PageHeader
+        title={t('pages.activity.title')}
+        subtitle={t('pages.activity.subtitle')}
+        actions={
+          <button
+            type="button"
+            onClick={loadActivity}
+            disabled={loading}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            {t('common.refresh')}
+          </button>
+        }
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <label htmlFor="actor-filter" className="text-sm font-medium text-slate-600 dark:text-app-text">
@@ -126,10 +126,11 @@ export default function Activity() {
             </div>
           </>
         ) : items.length === 0 ? (
-          <div className="flex flex-col items-center px-6 py-12 text-center">
-            <ScrollText className="h-10 w-10 text-slate-300" />
-            <p className="mt-3 text-sm font-medium text-slate-600 dark:text-app-text">{t('pages.activity.empty')}</p>
-          </div>
+          <EmptyState
+            icon={ScrollText}
+            title={t('pages.activity.emptyTitle')}
+            body={t('pages.activity.emptyBody')}
+          />
         ) : (
           <>
             <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
