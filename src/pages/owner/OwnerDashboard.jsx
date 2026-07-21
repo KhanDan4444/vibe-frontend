@@ -1,11 +1,10 @@
 // src/pages/owner/OwnerDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
 import { Users, AlertTriangle, XCircle, TrendingUp, RefreshCw, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import StatusBadge from '../../components/StatusBadge';
 import RenewModal from '../../components/RenewModal';
@@ -16,13 +15,13 @@ import { formatDisplayDate } from '../../utils/date';
 import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
-import { useChartTheme } from '../../utils/chartTheme';
-import { formatMoney, formatMoneyTick } from '../../utils/formatMoney';
+import { formatMoney } from '../../utils/formatMoney';
 import { panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
+
+const OwnerRevenueChart = lazy(() => import('../../components/OwnerRevenueChart'));
 
 export default function OwnerDashboard() {
   const { t } = useTranslation();
-  const chartTheme = useChartTheme();
   const { apiFetch, user } = useAuth();
   const { summary, plans, renewMember, showFlash, readOnly, selectedBranchId, branches, gymBooting, gymName } = useGym();
   const navigate = useNavigate();
@@ -303,31 +302,15 @@ export default function OwnerDashboard() {
         <div className={`lg:col-span-2 flex flex-col p-4 sm:p-6 ${panelQuiet}`}>
           <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong mb-4 sm:text-lg sm:mb-5">{t('pages.dashboard.revenueThisMonth')}</h2>
           <div className="flex-1 min-h-[200px] sm:min-h-[250px]">
-            {chartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0f766e" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.55 : 1} />
-                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} tickFormatter={(val) => formatMoneyTick(val)} />
-                  <Tooltip
-                    contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                    itemStyle={{ color: '#0f766e', fontWeight: 600 }}
-                    formatter={(value) => [formatMoney(value), t('pages.dashboard.chartRevenue')]}
-                  />
-                  <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-slate-400">
-                {t('pages.dashboard.noPaymentsMonth')}
-              </div>
-            )}
+            <Suspense
+              fallback={
+                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                  {t('common.loading')}
+                </div>
+              }
+            >
+              <OwnerRevenueChart chartData={chartData} />
+            </Suspense>
           </div>
         </div>
         </>

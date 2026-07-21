@@ -12,6 +12,7 @@ import {
 } from '../utils/authStorage';
 import { cacheRead, getCachedRead, clearReadCacheForUser } from '../offline/readCache';
 import { queueableJob, bodyHasPhoto, enqueueJob } from '../offline/writeQueue';
+import { clearMemberPhotoCache } from '../utils/memberPhotoCache';
 
 function apiUnreachableMessage() {
   if (import.meta.env.DEV) {
@@ -63,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     if (userId) {
       void clearReadCacheForUser(userId);
     }
+    clearMemberPhotoCache();
     clearStoredToken();
     setUser(null);
     setToken(null);

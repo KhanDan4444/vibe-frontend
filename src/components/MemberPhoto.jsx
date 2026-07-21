@@ -1,10 +1,13 @@
+// src/components/MemberPhoto.jsx
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { User, X } from 'lucide-react';
+import { getMemberPhotoUrl, releaseMemberPhotoUrl } from '../utils/memberPhotoCache';
 
 /**
  * Loads a member photo through the authenticated API and shows a fallback avatar.
+ * Shares an in-memory blob URL cache so list rows don't re-fetch the same photo.
  */
 export default function MemberPhoto({
   memberId,
@@ -12,6 +15,7 @@ export default function MemberPhoto({
   name = '',
   hasPhoto = true,
   expandable = true,
+  cacheBust = 0,
   className = 'h-14 w-14 rounded-2xl object-cover',
   fallbackClassName = 'flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-teal-100 text-xl font-bold text-teal-700',
 }) {
@@ -21,7 +25,7 @@ export default function MemberPhoto({
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    let objectUrl;
+    let cancelled = false;
     setSrc(null);
     setFailed(false);
     setExpanded(false);
@@ -29,24 +33,23 @@ export default function MemberPhoto({
     if (!memberId || !apiFetch || !hasPhoto) return undefined;
 
     (async () => {
-      try {
-        const res = await apiFetch(`/members/${memberId}/photo`);
-        if (!res.ok) {
-          setFailed(true);
-          return;
-        }
-        const blob = await res.blob();
-        objectUrl = URL.createObjectURL(blob);
-        setSrc(objectUrl);
-      } catch {
-        setFailed(true);
+      const url = await getMemberPhotoUrl(memberId, apiFetch, { bust: cacheBust });
+      if (cancelled) {
+        if (url) releaseMemberPhotoUrl(memberId, cacheBust);
+        return;
       }
+      if (!url) {
+        setFailed(true);
+        return;
+      }
+      setSrc(url);
     })();
 
     return () => {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      cancelled = true;
+      releaseMemberPhotoUrl(memberId, cacheBust);
     };
-  }, [memberId, apiFetch, hasPhoto]);
+  }, [memberId, apiFetch, hasPhoto, cacheBust]);
 
   useEffect(() => {
     if (!expanded) return undefined;

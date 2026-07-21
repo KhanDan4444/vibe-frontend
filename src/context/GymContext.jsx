@@ -53,6 +53,7 @@ export const GymProvider = ({ children }) => {
   const readOnlyRef = useRef(false);
   const subscriptionReadOnlyRef = useRef(false);
   const branchReadOnlyRef = useRef(false);
+  const bootDoneRef = useRef(false);
 
   const selectedBranch = useMemo(() => {
     if (selectedBranchId === 'all') return null;
@@ -146,21 +147,39 @@ export const GymProvider = ({ children }) => {
     }
   }, [apiFetch, loginSubscription]);
 
-  const fetchCoreData = useCallback(async () => {
+  const fetchPlans = useCallback(async () => {
+    const plansRes = await getPlans(apiFetch);
+    const plansData = await parseApiResponse(plansRes);
+    if (!plansRes.ok) {
+      throw new Error(plansData.error || 'Failed to load plans.');
+    }
+    const safePlans = Array.isArray(plansData)
+      ? plansData.map((p) => ({
+          ...p,
+          price: parseFloat(p.price),
+          duration: parseInt(p.duration, 10),
+          activeMemberCount: parseInt(p.active_member_count ?? 0, 10),
+        }))
+      : [];
+    setPlans(safePlans);
+    return safePlans;
+  }, [apiFetch]);
+
+  const fetchCoreData = useCallback(async ({ includePlans = true } = {}) => {
     try {
       setLoading(true);
       setError(null);
-      const [plansRes, dashboardRes] = await Promise.all([
-        getPlans(apiFetch),
-        getDashboardMetrics(apiFetch, getBranchQueryParams()),
-      ]);
+      const jobs = [
+        includePlans ? fetchPlans() : Promise.resolve(null),
+        getDashboardMetrics(apiFetch, getBranchQueryParams()).then(async (dashboardRes) => {
+          const dashboardData = await parseApiResponse(dashboardRes);
+          return { dashboardRes, dashboardData };
+        }),
+      ];
 
-      const plansData = await parseApiResponse(plansRes);
-      const dashboardData = await parseApiResponse(dashboardRes);
+      const [, dash] = await Promise.all(jobs);
+      const { dashboardRes, dashboardData } = dash;
 
-      if (!plansRes.ok) {
-        throw new Error(plansData.error || 'Failed to load plans.');
-      }
       if (!dashboardRes.ok) {
         if (dashboardRes.status === 403 && dashboardData.code === 'SUBSCRIPTION_EXPIRED') {
           setSubscription((prev) => ({
@@ -184,16 +203,6 @@ export const GymProvider = ({ children }) => {
         throw new Error(dashboardData.error || 'Failed to load dashboard summary.');
       }
 
-      const safePlans = Array.isArray(plansData)
-        ? plansData.map((p) => ({
-            ...p,
-            price: parseFloat(p.price),
-            duration: parseInt(p.duration, 10),
-            activeMemberCount: parseInt(p.active_member_count ?? 0, 10),
-          }))
-        : [];
-
-      setPlans(safePlans);
       setSummary({ ...EMPTY_SUMMARY, ...dashboardData });
 
       if (dashboardData.subscriptionStatus || dashboardData.readOnly !== undefined) {
@@ -211,34 +220,55 @@ export const GymProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, getBranchQueryParams, user?.role, selectedBranchId, setSelectedBranchId]);
+  }, [apiFetch, fetchPlans, getBranchQueryParams, user?.role, selectedBranchId, setSelectedBranchId]);
 
+  // Initial boot + subscription — plans + summary.
   useEffect(() => {
     if (!token) {
       setSubscriptionLoading(false);
       setLoading(false);
+      bootDoneRef.current = false;
       return;
     }
 
+    let cancelled = false;
     (async () => {
       try {
         const sub = await loadSubscription();
+        if (cancelled) return;
         if (sub?.accessDenied) {
           setLoading(false);
+          bootDoneRef.current = true;
           return;
         }
-        await fetchCoreData();
+        await fetchCoreData({ includePlans: true });
+        if (!cancelled) bootDoneRef.current = true;
       } catch (err) {
-        setError(err.message || 'Failed to load gym subscription.');
-        setLoading(false);
+        if (!cancelled) {
+          setError(err.message || 'Failed to load gym subscription.');
+          setLoading(false);
+          bootDoneRef.current = true;
+        }
       }
     })();
-  }, [token, loadSubscription, fetchCoreData, selectedBranchId]);
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally omit fetchCoreData — branch changes handled below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, loadSubscription]);
+
+  // Branch switch only needs dashboard metrics (plans are gym-wide).
+  useEffect(() => {
+    if (!token || !bootDoneRef.current) return;
+    fetchCoreData({ includePlans: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedBranchId]);
 
   // Re-fetch fresh data after queued offline writes finish syncing.
   useEffect(() => {
     const onSynced = () => {
-      fetchCoreData();
+      fetchCoreData({ includePlans: true });
       reloadBranches();
     };
     window.addEventListener(SYNCED_EVENT, onSynced);
@@ -273,125 +303,181 @@ export const GymProvider = ({ children }) => {
     if (!res.ok) {
       throw apiErrorFromResponse(data, res.status);
     }
-    await fetchCoreData();
-    return data;
-  };
-
-  const addPlan = async (newPlan) =>
-    runMutation(() =>
-      createPlan(apiFetch, {
-        name: newPlan.name,
-        duration: newPlan.duration,
-        price: newPlan.price,
-      })
-    );
-
-  const updatePlan = async (id, updatedFields) =>
-    runMutation(() =>
-      updatePlanReq(apiFetch, id, {
-        name: updatedFields.name,
-        duration: updatedFields.duration,
-        price: updatedFields.price,
-      })
-    );
-
-  const deletePlan = async (id) => runMutation(() => deletePlanReq(apiFetch, id));
-
-  const enrollMember = async (memberData) => {
-    const payload = {
-      name: memberData.name,
-      phone: memberData.phone,
-      plan_id: memberData.planId,
-      start_date: memberData.startDate,
-    };
-
-    if (memberData.skipPayment) {
-      payload.skip_payment = true;
+    const refreshPlans = options.refreshPlans === true;
+    if (refreshPlans) {
+      await fetchCoreData({ includePlans: true });
     } else {
-      payload.amount = memberData.amount;
-      payload.date = memberData.paymentDate;
-      payload.method = memberData.method;
+      await refreshSummary();
     }
-
-    if (memberData.branchId) {
-      payload.branch_id = memberData.branchId;
-    } else if (isGymOwner(user?.role) && selectedBranchId !== 'all') {
-      payload.branch_id = selectedBranchId;
-    }
-
-    if (memberData.photo) {
-      payload.photo = memberData.photo;
-    }
-
-    return runMutation(() => enrollMemberReq(apiFetch, payload));
-  };
-
-  const updateMember = async (id, memberData) => {
-    const payload = {
-      name: memberData.name,
-      phone: memberData.phone,
-    };
-    if (memberData.branchId !== undefined) {
-      payload.branch_id = memberData.branchId;
-    }
-    if (memberData.photo !== undefined) {
-      payload.photo = memberData.photo;
-    }
-
-    return runMutation(() => updateMemberReq(apiFetch, id, payload));
-  };
-
-  const deleteMember = async (id) => runMutation(() => deleteMemberReq(apiFetch, id));
-
-  const transferMember = async (id, branchId) =>
-    runMutation(() => transferMemberReq(apiFetch, id, { branch_id: branchId }), {
-      allowOnInactiveBranch: true,
-    });
-
-  const renewMember = async (id, renewalData) =>
-    runMutation(() => renewMemberReq(apiFetch, id, renewalData));
-
-  const changeMemberPlan = async (id, payload) =>
-    runMutation(() => changeMemberPlanReq(apiFetch, id, payload));
-
-  const addPayment = async (paymentData) => {
-    const payload = {
-      member_id: paymentData.memberId,
-      amount: paymentData.amount,
-      date: paymentData.date,
-      method: paymentData.method,
-    };
-
-    return runMutation(() => createPayment(apiFetch, payload));
-  };
-
-  const updatePayment = async (id, paymentData) => {
-    assertWritable();
-    const payload = {
-      amount: paymentData.amount,
-      date: paymentData.date,
-      method: paymentData.method,
-    };
-
-    const res = await updatePaymentReq(apiFetch, id, payload);
-    const data = await parseApiResponse(res);
-    if (!res.ok) {
-      throw new Error(data.error || `Request failed (${res.status})`);
-    }
-    await refreshSummary();
     return data;
   };
 
-  const deletePayment = async (id) => {
-    assertWritable();
-    const res = await deletePaymentReq(apiFetch, id);
-    const data = await parseApiResponse(res);
-    if (!res.ok) {
-      throw new Error(data.error || `Request failed (${res.status})`);
-    }
-    await refreshSummary();
-    return data;
-  };
+  const addPlan = useCallback(
+    async (newPlan) =>
+      runMutation(
+        () =>
+          createPlan(apiFetch, {
+            name: newPlan.name,
+            duration: newPlan.duration,
+            price: newPlan.price,
+          }),
+        { refreshPlans: true }
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const updatePlan = useCallback(
+    async (id, updatedFields) =>
+      runMutation(
+        () =>
+          updatePlanReq(apiFetch, id, {
+            name: updatedFields.name,
+            duration: updatedFields.duration,
+            price: updatedFields.price,
+          }),
+        { refreshPlans: true }
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const deletePlan = useCallback(
+    async (id) => runMutation(() => deletePlanReq(apiFetch, id), { refreshPlans: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const enrollMember = useCallback(
+    async (memberData) => {
+      const payload = {
+        name: memberData.name,
+        phone: memberData.phone,
+        plan_id: memberData.planId,
+        start_date: memberData.startDate,
+      };
+
+      if (memberData.skipPayment) {
+        payload.skip_payment = true;
+      } else {
+        payload.amount = memberData.amount;
+        payload.date = memberData.paymentDate;
+        payload.method = memberData.method;
+      }
+
+      if (memberData.branchId) {
+        payload.branch_id = memberData.branchId;
+      } else if (isGymOwner(user?.role) && selectedBranchId !== 'all') {
+        payload.branch_id = selectedBranchId;
+      }
+
+      if (memberData.photo) {
+        payload.photo = memberData.photo;
+      }
+
+      return runMutation(() => enrollMemberReq(apiFetch, payload), { refreshPlans: true });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch, user?.role, selectedBranchId]
+  );
+
+  const updateMember = useCallback(
+    async (id, memberData) => {
+      const payload = {
+        name: memberData.name,
+        phone: memberData.phone,
+      };
+      if (memberData.branchId !== undefined) {
+        payload.branch_id = memberData.branchId;
+      }
+      if (memberData.photo !== undefined) {
+        payload.photo = memberData.photo;
+      }
+
+      return runMutation(() => updateMemberReq(apiFetch, id, payload));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const deleteMember = useCallback(
+    async (id) => runMutation(() => deleteMemberReq(apiFetch, id), { refreshPlans: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const transferMember = useCallback(
+    async (id, branchId) =>
+      runMutation(() => transferMemberReq(apiFetch, id, { branch_id: branchId }), {
+        allowOnInactiveBranch: true,
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const renewMember = useCallback(
+    async (id, renewalData) => runMutation(() => renewMemberReq(apiFetch, id, renewalData)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const changeMemberPlan = useCallback(
+    async (id, payload) =>
+      runMutation(() => changeMemberPlanReq(apiFetch, id, payload), { refreshPlans: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const addPayment = useCallback(
+    async (paymentData) => {
+      const payload = {
+        member_id: paymentData.memberId,
+        amount: paymentData.amount,
+        date: paymentData.date,
+        method: paymentData.method,
+      };
+
+      return runMutation(() => createPayment(apiFetch, payload));
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
+  const updatePayment = useCallback(
+    async (id, paymentData) => {
+      assertWritable();
+      const payload = {
+        amount: paymentData.amount,
+        date: paymentData.date,
+        method: paymentData.method,
+      };
+
+      const res = await updatePaymentReq(apiFetch, id, payload);
+      const data = await parseApiResponse(res);
+      if (!res.ok) {
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
+      await refreshSummary();
+      return data;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch, refreshSummary]
+  );
+
+  const deletePayment = useCallback(
+    async (id) => {
+      assertWritable();
+      const res = await deletePaymentReq(apiFetch, id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) {
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
+      await refreshSummary();
+      return data;
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch, refreshSummary]
+  );
 
   if (subscription?.accessDenied) {
     return <SubscriptionLockout gymName={subscription.gymName} />;
@@ -399,47 +485,80 @@ export const GymProvider = ({ children }) => {
 
   const gymBooting = subscriptionLoading || loading;
 
-  return (
-    <GymContext.Provider
-      value={{
-        plans,
-        addPlan,
-        deletePlan,
-        updatePlan,
-        summary,
-        refreshSummary,
-        enrollMember,
-        updateMember,
-        deleteMember,
-        transferMember,
-        renewMember,
-        changeMemberPlan,
-        addPayment,
-        updatePayment,
-        deletePayment,
-        loading,
-        gymBooting,
-        error,
-        fetchCoreData,
-        loadSubscription,
-        flash,
-        showFlash,
-        clearFlash,
-        readOnly,
-        subscriptionStatus: subscription?.status ?? 'active',
-        gymName: subscription?.gymName,
-        branches,
-        selectedBranchId,
-        setSelectedBranchId,
-        getBranchQueryParams,
-        reloadBranches,
-        selectedBranch,
-        branchReadOnly,
-      }}
-    >
-      {children}
-    </GymContext.Provider>
+  const value = useMemo(
+    () => ({
+      plans,
+      addPlan,
+      deletePlan,
+      updatePlan,
+      summary,
+      refreshSummary,
+      enrollMember,
+      updateMember,
+      deleteMember,
+      transferMember,
+      renewMember,
+      changeMemberPlan,
+      addPayment,
+      updatePayment,
+      deletePayment,
+      loading,
+      gymBooting,
+      error,
+      fetchCoreData,
+      loadSubscription,
+      flash,
+      showFlash,
+      clearFlash,
+      readOnly,
+      subscriptionStatus: subscription?.status ?? 'active',
+      gymName: subscription?.gymName,
+      branches,
+      selectedBranchId,
+      setSelectedBranchId,
+      getBranchQueryParams,
+      reloadBranches,
+      selectedBranch,
+      branchReadOnly,
+    }),
+    [
+      plans,
+      addPlan,
+      deletePlan,
+      updatePlan,
+      summary,
+      refreshSummary,
+      enrollMember,
+      updateMember,
+      deleteMember,
+      transferMember,
+      renewMember,
+      changeMemberPlan,
+      addPayment,
+      updatePayment,
+      deletePayment,
+      loading,
+      gymBooting,
+      error,
+      fetchCoreData,
+      loadSubscription,
+      flash,
+      showFlash,
+      clearFlash,
+      readOnly,
+      subscription?.status,
+      subscription?.gymName,
+      branches,
+      selectedBranchId,
+      setSelectedBranchId,
+      getBranchQueryParams,
+      reloadBranches,
+      selectedBranch,
+      branchReadOnly,
+    ]
   );
+
+  return <GymContext.Provider value={value}>{children}</GymContext.Provider>;
 };
 
 export const useGym = () => useContext(GymContext);
