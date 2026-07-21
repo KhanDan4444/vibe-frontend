@@ -14,7 +14,7 @@ export default function LoginBrandPanel({ variant = 'compact' }) {
       }
     >
       <img
-        src="/favicon.svg"
+        src="/app-icon.png"
         alt=""
         className={
           isPanel

@@ -32,7 +32,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-sm text-white placeholder-slate-500 caret-white focus:border-teal-600 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong dark:placeholder-app-muted';
+    'mt-1 block w-full rounded-lg border px-3 py-2 text-sm focus:border-teal-600 focus:outline-none dark:focus:border-brand border-slate-300 bg-white text-slate-900 placeholder-slate-400 caret-slate-900 dark:border-app-border dark:bg-app-input dark:text-app-text-strong dark:placeholder-app-muted dark:caret-app-text-strong';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,17 +61,13 @@ export default function Login() {
   };
 
   const formCard = (
-    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200 dark:border-app-border-subtle dark:bg-app-raised sm:p-8 lg:max-w-[420px]">
+    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-xl backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200 dark:border-app-border-subtle dark:bg-app-raised sm:p-8 lg:max-w-[420px]">
       <div className="absolute inset-x-0 top-0 h-[3px] bg-teal-600 dark:bg-brand" />
 
       <div className="lg:hidden">
         <LoginBrandPanel variant="compact" />
-        <p className="mb-6 text-center text-sm text-slate-400 dark:text-app-muted">{t('auth.signInSubtitle')}</p>
+        <p className="mb-6 text-center text-sm text-slate-500 dark:text-app-muted">{t('auth.signInSubtitle')}</p>
       </div>
-
-      <p className="mb-4 hidden text-sm font-semibold text-slate-400 dark:text-app-muted lg:block">
-        {t('auth.signInSubtitle')}
-      </p>
 
       {successMessage && (
         <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-400">
@@ -88,7 +84,7 @@ export default function Login() {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4 rounded-md shadow-sm">
           <div>
-            <label htmlFor="login-email" className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.emailOrUsername')}</label>
+            <label htmlFor="login-email" className="block text-sm font-medium text-slate-700 dark:text-app-text">{t('auth.emailOrUsername')}</label>
             <input
               id="login-email"
               type="text"
@@ -105,7 +101,7 @@ export default function Login() {
             <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
           </div>
           <div>
-            <label htmlFor="login-password" className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.password')}</label>
+            <label htmlFor="login-password" className="block text-sm font-medium text-slate-700 dark:text-app-text">{t('auth.password')}</label>
             <input
               id="login-password"
               type="password"
@@ -122,17 +118,17 @@ export default function Login() {
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
           </div>
           <div className="flex items-center justify-between gap-3">
-            <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-slate-300 dark:text-app-text">
+            <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 dark:text-app-text">
               <input
                 id="login-remember"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-600 bg-slate-900/40 text-teal-700 focus:ring-teal-600 dark:border-app-border dark:bg-app-input"
+                className="h-4 w-4 rounded border-slate-300 bg-white text-teal-700 focus:ring-teal-600 dark:border-app-border dark:bg-app-input"
               />
               {t('auth.rememberMe')}
             </label>
-            <Link to="/forgot-password" className="text-sm text-teal-400 hover:text-teal-300">
+            <Link to="/forgot-password" className="text-sm text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300">
               {t('auth.forgotPassword')}
             </Link>
           </div>
@@ -141,7 +137,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-teal-700 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-slate-800 disabled:opacity-50 dark:bg-brand dark:hover:bg-brand-hover dark:focus:ring-brand dark:focus:ring-offset-app-raised"
+          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-teal-700 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 dark:bg-brand dark:hover:bg-brand-hover dark:focus:ring-brand dark:focus:ring-offset-app-raised"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -157,9 +153,9 @@ export default function Login() {
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-slate-400 dark:text-app-muted">
+      <p className="mt-4 text-center text-sm text-slate-500 dark:text-app-muted">
         {t('auth.noAccount')}{' '}
-        <Link to="/register-gym" className="font-medium text-teal-400 hover:text-teal-300">
+        <Link to="/register-gym" className="font-medium text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300">
           {t('auth.registerGymLink')}
         </Link>
       </p>
