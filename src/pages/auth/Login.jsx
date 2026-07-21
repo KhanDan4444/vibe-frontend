@@ -61,13 +61,11 @@ export default function Login() {
   };
 
   const formCard = (
-    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200 sm:p-8 lg:max-w-[420px]">
+    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200 sm:p-8">
       <div className="absolute inset-x-0 top-0 h-[3px] bg-brand" />
 
-      <div className="lg:hidden">
-        <LoginBrandPanel variant="compact" />
-        <p className="mb-6 text-center text-sm text-app-muted">{t('auth.signInSubtitle')}</p>
-      </div>
+      <LoginBrandPanel />
+      <p className="mb-6 text-center text-sm text-app-muted">{t('auth.signInSubtitle')}</p>
 
       {successMessage && (
         <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-400">
@@ -175,15 +173,8 @@ export default function Login() {
 
   return (
     <AuthScreen hero>
-      <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
-        <div className="flex w-full max-w-[920px] flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-10">
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <LoginBrandPanel variant="panel" />
-          </div>
-          <div className="flex w-full flex-1 justify-center lg:max-w-[420px] lg:justify-start">
-            {formCard}
-          </div>
-        </div>
+      <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6">
+        {formCard}
       </div>
     </AuthScreen>
   );
