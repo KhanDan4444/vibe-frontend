@@ -17,6 +17,7 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import AuthScreen from '../../components/auth/AuthScreen';
 import { formatMoney } from '../../utils/formatMoney';
 
 export default function RegisterGym() {
@@ -127,28 +128,28 @@ export default function RegisterGym() {
 
   if (plansLoading) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-slate-900 dark:bg-app-bg">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-teal-600 border-t-transparent" />
-      </div>
+      <AuthScreen>
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
+      </AuthScreen>
     );
   }
 
   if (plans.length === 0) {
     return (
-      <div className="safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-slate-900 px-4 dark:bg-app-bg">
-        <div className="max-w-md rounded-2xl border border-slate-700 bg-slate-800 p-8 text-center dark:border-app-border-subtle dark:bg-app-raised">
-          <p className="text-slate-300 dark:text-app-text">{t('auth.signupUnavailable')}</p>
-          <Link to="/login" className="mt-4 inline-block text-teal-400 hover:text-teal-300">
+      <AuthScreen>
+        <div className="max-w-md rounded-2xl border border-app-border-subtle bg-app-raised p-8 text-center">
+          <p className="text-app-text">{t('auth.signupUnavailable')}</p>
+          <Link to="/login" className="mt-4 inline-block text-brand hover:text-brand-hover">
             {t('auth.backToSignIn')}
           </Link>
         </div>
-      </div>
+      </AuthScreen>
     );
   }
 
   return (
-    <div className="safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-slate-900 px-4 py-8 dark:bg-app-bg">
-      <div className="w-full max-w-lg space-y-6 rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-xl dark:border-app-border-subtle dark:bg-app-raised sm:p-8">
+    <AuthScreen>
+      <div className="w-full max-w-lg space-y-6 rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl sm:p-8">
         <div>
           <h2 className="text-center text-2xl font-bold text-white dark:text-app-text-strong">
             {t('auth.signupTitle')}
@@ -309,6 +310,6 @@ export default function RegisterGym() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthScreen>
   );
 }

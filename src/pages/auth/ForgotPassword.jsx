@@ -14,6 +14,7 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import AuthScreen from '../../components/auth/AuthScreen';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -75,8 +76,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-slate-900 px-4 py-8 dark:bg-app-bg">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-700 bg-slate-800 p-6 shadow-xl dark:border-app-border-subtle dark:bg-app-raised sm:p-8">
+    <AuthScreen>
+      <div className="w-full max-w-md space-y-6 rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl sm:p-8">
         <div>
           <h2 className="text-center text-2xl font-bold text-white dark:text-app-text-strong">
             {t('auth.forgotTitle')}
@@ -226,6 +227,6 @@ export default function ForgotPassword() {
           </Link>
         </p>
       </div>
-    </div>
+    </AuthScreen>
   );
 }

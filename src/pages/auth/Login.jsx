@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getRememberMePreference } from '../../utils/authStorage';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { isPlatformAdmin, hasGymPortalAccess } from '../../utils/roles';
-import AuthHeroBackground from '../../components/auth/AuthHeroBackground';
+import AuthScreen from '../../components/auth/AuthScreen';
 import LoginBrandPanel from '../../components/auth/LoginBrandPanel';
 import {
   validateLogin,
@@ -32,7 +32,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'mt-1 block w-full rounded-lg border px-3 py-2 text-sm focus:border-teal-600 focus:outline-none dark:focus:border-brand border-slate-300 bg-white text-slate-900 placeholder-slate-400 caret-slate-900 dark:border-app-border dark:bg-app-input dark:text-app-text-strong dark:placeholder-app-muted dark:caret-app-text-strong';
+    'auth-login-input mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm text-app-text-strong placeholder-app-muted caret-app-text-strong focus:border-brand focus:outline-none';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,12 +61,12 @@ export default function Login() {
   };
 
   const formCard = (
-    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-xl backdrop-blur-sm animate-in fade-in zoom-in-95 duration-200 dark:border-app-border-subtle dark:bg-app-raised sm:p-8 lg:max-w-[420px]">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-teal-600 dark:bg-brand" />
+    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200 sm:p-8 lg:max-w-[420px]">
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-brand" />
 
       <div className="lg:hidden">
         <LoginBrandPanel variant="compact" />
-        <p className="mb-6 text-center text-sm text-slate-500 dark:text-app-muted">{t('auth.signInSubtitle')}</p>
+        <p className="mb-6 text-center text-sm text-app-muted">{t('auth.signInSubtitle')}</p>
       </div>
 
       {successMessage && (
@@ -84,7 +84,7 @@ export default function Login() {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4 rounded-md shadow-sm">
           <div>
-            <label htmlFor="login-email" className="block text-sm font-medium text-slate-700 dark:text-app-text">{t('auth.emailOrUsername')}</label>
+            <label htmlFor="login-email" className="block text-sm font-medium text-app-text">{t('auth.emailOrUsername')}</label>
             <input
               id="login-email"
               type="text"
@@ -101,7 +101,7 @@ export default function Login() {
             <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
           </div>
           <div>
-            <label htmlFor="login-password" className="block text-sm font-medium text-slate-700 dark:text-app-text">{t('auth.password')}</label>
+            <label htmlFor="login-password" className="block text-sm font-medium text-app-text">{t('auth.password')}</label>
             <input
               id="login-password"
               type="password"
@@ -118,17 +118,17 @@ export default function Login() {
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
           </div>
           <div className="flex items-center justify-between gap-3">
-            <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-slate-600 dark:text-app-text">
+            <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-app-text">
               <input
                 id="login-remember"
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 bg-white text-teal-700 focus:ring-teal-600 dark:border-app-border dark:bg-app-input"
+                className="h-4 w-4 rounded border-app-border bg-app-input text-brand focus:ring-brand"
               />
               {t('auth.rememberMe')}
             </label>
-            <Link to="/forgot-password" className="text-sm text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300">
+            <Link to="/forgot-password" className="text-sm text-brand hover:text-brand-hover">
               {t('auth.forgotPassword')}
             </Link>
           </div>
@@ -137,7 +137,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-teal-700 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 dark:bg-brand dark:hover:bg-brand-hover dark:focus:ring-brand dark:focus:ring-offset-app-raised"
+          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-brand px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app-raised disabled:opacity-50"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -153,28 +153,28 @@ export default function Login() {
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-slate-500 dark:text-app-muted">
+      <p className="mt-4 text-center text-sm text-app-muted">
         {t('auth.noAccount')}{' '}
-        <Link to="/register-gym" className="font-medium text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300">
+        <Link to="/register-gym" className="font-medium text-brand hover:text-brand-hover">
           {t('auth.registerGymLink')}
         </Link>
       </p>
 
       {import.meta.env.DEV && (
-        <div className="mt-6 animate-pulse space-y-2 rounded-lg border border-slate-700 bg-slate-900/50 p-4 text-xs text-slate-400">
-          <p className="flex items-center gap-1 font-semibold text-slate-300">
+        <div className="mt-6 animate-pulse space-y-2 rounded-lg border border-app-border bg-app-surface/60 p-4 text-xs text-app-muted">
+          <p className="flex items-center gap-1 font-semibold text-app-text">
             💡 Developer Quick-Access (Sandbox Active):
           </p>
-          <p>• Gym Owner portal: Use <code className="font-mono text-teal-400">owner@gym.com</code> with password <code className="font-mono text-teal-400">password</code></p>
-          <p>• Help Desk portal: Use <code className="font-mono text-teal-400">helpdesk@gym.com</code> with password <code className="font-mono text-teal-400">password</code></p>
-          <p>• SaaS Admin portal: Use <code className="font-mono text-teal-400">admin@saas.com</code> with password <code className="font-mono text-teal-400">password</code></p>
+          <p>• Gym Owner portal: Use <code className="font-mono text-brand">owner@gym.com</code> with password <code className="font-mono text-brand">password</code></p>
+          <p>• Help Desk portal: Use <code className="font-mono text-brand">helpdesk@gym.com</code> with password <code className="font-mono text-brand">password</code></p>
+          <p>• SaaS Admin portal: Use <code className="font-mono text-brand">admin@saas.com</code> with password <code className="font-mono text-brand">password</code></p>
         </div>
       )}
     </div>
   );
 
   return (
-    <AuthHeroBackground>
+    <AuthScreen hero>
       <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
         <div className="flex w-full max-w-[920px] flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-10">
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
@@ -185,6 +185,6 @@ export default function Login() {
           </div>
         </div>
       </div>
-    </AuthHeroBackground>
+    </AuthScreen>
   );
 }

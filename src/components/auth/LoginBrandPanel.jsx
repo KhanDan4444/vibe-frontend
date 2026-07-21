@@ -25,8 +25,8 @@ export default function LoginBrandPanel({ variant = 'compact' }) {
       <p
         className={
           isPanel
-            ? 'text-left text-[32px] font-extrabold tracking-tight text-brand-text dark:text-brand'
-            : 'text-[26px] font-extrabold tracking-tight text-brand-text dark:text-brand'
+            ? 'text-left text-[32px] font-extrabold tracking-tight text-brand'
+            : 'text-[26px] font-extrabold tracking-tight text-brand'
         }
       >
         {t('app.name')}
@@ -34,14 +34,14 @@ export default function LoginBrandPanel({ variant = 'compact' }) {
       <p
         className={
           isPanel
-            ? 'mt-1.5 max-w-[320px] text-left text-base leading-6 text-slate-600 dark:text-app-muted'
-            : 'mt-1.5 max-w-[280px] text-sm leading-[21px] text-slate-600 dark:text-app-muted'
+            ? 'mt-1.5 max-w-[320px] text-left text-base leading-6 text-app-muted'
+            : 'mt-1.5 max-w-[280px] text-sm leading-[21px] text-app-muted'
         }
       >
         {t('auth.tagline')}
       </p>
       {isPanel ? (
-        <p className="mt-3 text-left text-[13px] font-semibold text-slate-500 dark:text-app-muted/80">
+        <p className="mt-3 text-left text-[13px] font-semibold text-app-muted/80">
           {t('auth.signInSubtitle')}
         </p>
       ) : null}

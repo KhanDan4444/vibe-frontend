@@ -149,21 +149,12 @@
 
 @layer components {
   .auth-hero-bg {
-    background: linear-gradient(135deg, rgb(204 251 241 / 0.9) 0%, #f1f5f9 40%, #f8fafc 100%);
-  }
-
-  .dark .auth-hero-bg {
     background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
   }
 
   .auth-hero-pattern {
-    background-image: radial-gradient(circle, #0f766e 1.2px, transparent 1.2px);
-    background-size: 28px 28px;
-    opacity: 0.035;
-  }
-
-  .dark .auth-hero-pattern {
     background-image: radial-gradient(circle, #ffffff 1.2px, transparent 1.2px);
+    background-size: 28px 28px;
     opacity: 0.05;
   }
 
