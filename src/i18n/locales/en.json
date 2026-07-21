@@ -18,6 +18,7 @@
     "payments": "Revenue"
   },
   "auth": {
+    "tagline": "Members, payments & branches — in one place.",
     "signInTitle": "VibeSaaS Gyms",
     "signInSubtitle": "Sign in to manage your workspace",
     "emailOrUsername": "Email or username",
