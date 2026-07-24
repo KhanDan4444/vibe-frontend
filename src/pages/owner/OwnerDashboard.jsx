@@ -200,7 +200,7 @@ export default function OwnerDashboard() {
             </button>
           </div>
 
-          <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+          <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
             {alertMembers.length > 0 ? (
               alertMembers.map((member) => {
                 const matchingPlan = plans.find((p) => p.id === member.planId);
@@ -243,7 +243,7 @@ export default function OwnerDashboard() {
             )}
           </div>
 
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden lg:block overflow-x-auto">
             <table className="admin-data-table owner-dashboard-alert-table min-w-[720px]">
               <thead>
                 <tr>

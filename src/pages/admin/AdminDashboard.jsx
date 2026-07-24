@@ -625,7 +625,7 @@ export default function AdminDashboard() {
                     </button>
                   </div>
 
-                  <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                  <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
                     {alertGyms.length > 0 ? (
                       alertGyms.map((gym) => (
                         <button
@@ -656,7 +656,7 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
-                  <div className="hidden md:block overflow-x-auto">
+                  <div className="hidden lg:block overflow-x-auto">
                     <table className="admin-data-table admin-dashboard-alert-table">
                       <thead>
                         <tr>
@@ -850,7 +850,7 @@ export default function AdminDashboard() {
                   </button>
                 </div>
 
-                <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
                   {loading && gyms.length === 0 ? (
                     <AdminListSkeleton rows={5} />
                   ) : displayedGyms.length > 0 ? (
@@ -942,7 +942,7 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <div className="hidden md:block overflow-x-auto">
+                <div className="hidden lg:block overflow-x-auto">
                   <table className="admin-data-table admin-gyms-table min-w-[800px]">
                     <thead>
                       <tr>

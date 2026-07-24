@@ -474,7 +474,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
-        <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {initialLoading ? (
             <AdminListSkeleton rows={6} />
           ) : filteredPayments.length > 0 ? (
@@ -534,7 +534,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           )}
         </div>
 
-        <div className="hidden md:block overflow-x-auto">
+        <div className="hidden lg:block overflow-x-auto">
           <table className="admin-data-table admin-payments-table min-w-[800px]">
             <thead>
               <tr>

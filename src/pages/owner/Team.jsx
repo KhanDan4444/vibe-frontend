@@ -146,10 +146,10 @@ export default function Team() {
 
         {loading ? (
           <>
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <AdminListSkeleton rows={5} />
             </div>
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="admin-data-table">
                 <tbody>
                   <AdminTableRowsSkeleton rows={5} cols={5} />
@@ -165,7 +165,7 @@ export default function Team() {
           />
         ) : (
           <>
-            <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+            <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
               {staff.map((member) => (
                 <div key={member.id} className="p-4">
                   <div className="flex items-start justify-between gap-3">
@@ -218,7 +218,7 @@ export default function Team() {
               ))}
             </div>
 
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
             <table className="admin-data-table owner-team-table min-w-[720px]">
               <thead>
                 <tr>

@@ -532,8 +532,8 @@ export default function Members() {
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
-        {/* Phone card list */}
-        <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        {/* Phone + tablet portrait — full name/phone cards */}
+        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {listLoading ? (
             <AdminListSkeleton rows={6} />
           ) : displayedMembers.length > 0 ? (
@@ -665,8 +665,8 @@ export default function Members() {
           )}
         </div>
 
-        {/* Tablet+ desktop table */}
-        <div className="hidden md:block overflow-x-auto">
+        {/* Landscape tablet + desktop table */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className={`admin-data-table owner-members-table ${showBranchColumn ? 'owner-members-table--branches' : ''}`}>
             <thead>
               <tr>

@@ -285,10 +285,10 @@ export default function Branches() {
       <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
         {loading ? (
           <>
-            <div className="md:hidden">
+            <div className="lg:hidden">
               <AdminListSkeleton rows={4} />
             </div>
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
               <table className="admin-data-table">
                 <tbody>
                   <AdminTableRowsSkeleton rows={4} cols={5} />
@@ -304,7 +304,7 @@ export default function Branches() {
           />
         ) : (
           <>
-            <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+            <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
               {branches.map((branch) => (
                 <div key={branch.id} className="p-4">
                   <div className="flex items-start justify-between gap-2">
@@ -374,7 +374,7 @@ export default function Branches() {
               ))}
             </div>
 
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden lg:block overflow-x-auto">
             <table className="admin-data-table owner-branches-table min-w-[720px]">
               <thead>
                 <tr>
