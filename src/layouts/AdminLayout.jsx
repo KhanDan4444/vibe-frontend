@@ -127,7 +127,7 @@ export default function AdminLayout() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <BrandLogo />
+        <BrandLogo to="/admin/dashboard" />
         <div className="flex items-center gap-0.5">
           <LanguageSwitcher compact />
           <UserProfileMenu compact />
@@ -142,7 +142,7 @@ export default function AdminLayout() {
               <X className="h-6 w-6" />
             </button>
             <div className="mb-7 mt-1">
-              <BrandLogo />
+              <BrandLogo to="/admin/dashboard" onClick={() => setSidebarOpen(false)} />
             </div>
             <nav className="mb-auto space-y-1">
               {adminNavItems.map((item) => (
@@ -163,7 +163,7 @@ export default function AdminLayout() {
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
         <div className="mb-7">
-          <BrandLogo />
+          <BrandLogo to="/admin/dashboard" />
         </div>
         <nav className="space-y-1">
           {adminNavItems.map((item) => (
