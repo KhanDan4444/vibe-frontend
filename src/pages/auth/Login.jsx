@@ -61,8 +61,8 @@ export default function Login() {
   };
 
   const formCard = (
-    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-300 sm:p-8">
-      <div className="absolute inset-x-0 top-0 h-[3px] bg-teal-600" />
+    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/5 bg-app-raised/90 p-6 shadow-2xl shadow-black/25 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:p-8">
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-teal-500/80 to-transparent" />
 
       <LoginBrandPanel />
       <p className="mb-6 text-center text-sm text-app-muted">{t('auth.signInSubtitle')}</p>

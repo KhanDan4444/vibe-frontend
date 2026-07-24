@@ -141,7 +141,7 @@ export default function AdminLayout() {
             <button type="button" onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
               <X className="h-6 w-6" />
             </button>
-            <div className="mb-6 mt-1">
+            <div className="mb-7 mt-1">
               <BrandLogo />
             </div>
             <nav className="mb-auto space-y-1">
@@ -162,7 +162,7 @@ export default function AdminLayout() {
       )}
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-6">
+        <div className="mb-7">
           <BrandLogo />
         </div>
         <nav className="space-y-1">
