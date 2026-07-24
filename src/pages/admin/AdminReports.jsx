@@ -41,6 +41,7 @@ import {
   aggregateRevenueByDate,
   gymReportStats,
   PAYMENT_METHOD_COLORS,
+  SAAS_PLAN_PALETTE,
   planChartColors,
 } from '../../utils/reportChartData';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
@@ -148,7 +149,10 @@ export default function AdminReports({ onBootingChange }) {
   const gymStats = useMemo(() => gymReportStats(gyms), [gyms]);
   const overviewChart = useMemo(() => aggregateGymsOverview(gyms), [gyms]);
   const planChart = useMemo(() => aggregateGymsByPlan(gyms), [gyms]);
-  const planColors = useMemo(() => planChartColors(planChart), [planChart]);
+  const planColors = useMemo(
+    () => planChartColors(planChart, SAAS_PLAN_PALETTE),
+    [planChart],
+  );
   const methodChart = useMemo(() => aggregateRevenueByMethod(revenueSummary), [revenueSummary]);
   const topGymsChart = useMemo(() => aggregateRevenueByGym(payments), [payments]);
   const trendChart = useMemo(() => aggregateRevenueByDate(payments), [payments]);

@@ -30,11 +30,22 @@ export const MEMBERSHIP_PLAN_PALETTE = [
   '#7c3aed', // violet (last resort for 7+ plans)
 ];
 
+/** SaaS-plan palette kept visually distinct from semantic status colors. */
+export const SAAS_PLAN_PALETTE = [
+  '#2563eb', // blue-600
+  '#8b5cf6', // violet-500
+  '#06b6d4', // cyan-500
+  '#d946ef', // fuchsia-500
+  '#64748b', // slate-500
+  '#4f46e5', // indigo-600
+  '#0891b2', // cyan-600
+];
+
 /** Build a name → color map for plan donut charts. */
-export function planChartColors(planData) {
+export function planChartColors(planData, palette = MEMBERSHIP_PLAN_PALETTE) {
   const colors = {};
   planData.forEach((entry, i) => {
-    colors[entry.name] = MEMBERSHIP_PLAN_PALETTE[i % MEMBERSHIP_PLAN_PALETTE.length];
+    colors[entry.name] = palette[i % palette.length];
   });
   return colors;
 }

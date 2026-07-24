@@ -531,123 +531,124 @@ export default function Members() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
-        {/* Phone + tablet portrait — full name/phone cards */}
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
-          {listLoading ? (
+      <div className="lg:hidden space-y-3">
+        {listLoading ? (
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised">
             <AdminListSkeleton rows={6} />
-          ) : displayedMembers.length > 0 ? (
-            displayedMembers.map((member) => {
-              const matchingPlan = plans.find((p) => p.id === member.planId);
-              return (
-                <div
-                  key={member.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => openMemberRow(member)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      openMemberRow(member);
-                    }
-                  }}
-                  className={`p-4 active:bg-slate-50 dark:active:bg-app-surface/60 ${
-                    member.isUnpaid ? 'admin-row-unpaid' : ''
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <MemberPhoto
-                      memberId={member.id}
-                      apiFetch={apiFetch}
-                      name={member.name}
-                      hasPhoto={member.hasPhoto}
-                      expandable={false}
-                      className={LIST_AVATAR_CLASS}
-                      fallbackClassName={LIST_AVATAR_FALLBACK_CLASS}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
-                        {member.isUnpaid && <UnpaidBadge compact />}
-                        <StatusBadge status={member.status} />
-                      </div>
-                      <p className="mt-1 font-mono text-sm text-slate-500">{member.phone}</p>
-                      <p className="mt-1 text-sm font-medium text-teal-700">
-                        {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
-                      </p>
-                      {showBranchColumn && member.branchName && (
-                        <p className="mt-0.5 text-xs text-slate-400">{member.branchName}</p>
-                      )}
-                      <p className="mt-1 text-xs text-slate-500">
-                        {formatDisplayDate(member.startDate)} → <span className="font-semibold text-slate-700 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
-                      </p>
+          </div>
+        ) : displayedMembers.length > 0 ? (
+          displayedMembers.map((member) => {
+            const matchingPlan = plans.find((p) => p.id === member.planId);
+            return (
+              <div
+                key={member.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => openMemberRow(member)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openMemberRow(member);
+                  }
+                }}
+                className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm active:bg-slate-50 dark:border-app-border-subtle dark:bg-app-raised dark:active:bg-app-surface/60 ${
+                  member.isUnpaid ? 'admin-row-unpaid' : ''
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <MemberPhoto
+                    memberId={member.id}
+                    apiFetch={apiFetch}
+                    name={member.name}
+                    hasPhoto={member.hasPhoto}
+                    expandable={false}
+                    className={LIST_AVATAR_CLASS}
+                    fallbackClassName={LIST_AVATAR_FALLBACK_CLASS}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
+                      {member.isUnpaid && <UnpaidBadge compact />}
+                      <StatusBadge status={member.status} />
                     </div>
+                    <p className="mt-1 font-mono text-sm text-slate-500">{member.phone}</p>
+                    <p className="mt-1 text-sm font-medium text-teal-700">
+                      {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                    </p>
+                    {showBranchColumn && member.branchName && (
+                      <p className="mt-0.5 text-xs text-slate-400">{member.branchName}</p>
+                    )}
+                    <p className="mt-1 text-xs text-slate-500">
+                      {formatDisplayDate(member.startDate)} → <span className="font-semibold text-slate-700 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
+                    </p>
                   </div>
-                  {!readOnly && (
-                    <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
-                      {member.isUnpaid && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setError('');
-                            setPaymentState({ isOpen: true, member, error: '' });
-                          }}
-                          className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
-                          title={t('actions.collectPayment')}
-                        >
-                          <DollarSign className="h-4 w-4" />
-                        </button>
-                      )}
-                      {canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
-                        <button
-                          type="button"
-                          onClick={() => openChangePlanModal(member)}
-                          className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
-                          title={t('actions.changePlan')}
-                        >
-                          <ArrowLeftRight className="h-4 w-4" />
-                        </button>
-                      )}
-                      {canRenewMember(member) && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setError('');
-                            openRenewModal(member);
-                          }}
-                          className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
-                          title={t('actions.renew')}
-                        >
-                          <RefreshCw className="h-4 w-4" />
-                        </button>
-                      )}
+                </div>
+                {!readOnly && (
+                  <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
+                    {member.isUnpaid && (
                       <button
                         type="button"
                         onClick={() => {
                           setError('');
-                          setModalState({ isOpen: true, member, error: '' });
+                          setPaymentState({ isOpen: true, member, error: '' });
                         }}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
-                        title={t('common.edit')}
+                        className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
+                        title={t('actions.collectPayment')}
                       >
-                        <Edit className="h-4 w-4" />
+                        <DollarSign className="h-4 w-4" />
                       </button>
-                      {canDeleteMembers && (
-                        <button
-                          type="button"
-                          onClick={() => setMemberToDelete(member)}
-                          className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
-                          title={t('common.delete')}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          ) : (
+                    )}
+                    {canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => openChangePlanModal(member)}
+                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                        title={t('actions.changePlan')}
+                      >
+                        <ArrowLeftRight className="h-4 w-4" />
+                      </button>
+                    )}
+                    {canRenewMember(member) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setError('');
+                          openRenewModal(member);
+                        }}
+                        className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                        title={t('actions.renew')}
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setError('');
+                        setModalState({ isOpen: true, member, error: '' });
+                      }}
+                      className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                      title={t('common.edit')}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    {canDeleteMembers && (
+                      <button
+                        type="button"
+                        onClick={() => setMemberToDelete(member)}
+                        className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                        title={t('common.delete')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised">
             <EmptyState
               icon={AlertCircle}
               compact
@@ -662,11 +663,13 @@ export default function Members() {
                   : t('pages.members.emptyBody')
               }
             />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
+      <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised lg:block">
         {/* Landscape tablet + desktop table */}
-        <div className="hidden lg:block overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className={`admin-data-table owner-members-table ${showBranchColumn ? 'owner-members-table--branches' : ''}`}>
             <thead>
               <tr>
@@ -823,7 +826,9 @@ export default function Members() {
             </tbody>
           </table>
         </div>
-        <PaginationControls
+      </div>
+
+      <PaginationControls
           page={page}
           totalPages={totalPages}
           total={total}
@@ -831,7 +836,6 @@ export default function Members() {
           onPageChange={setPage}
           disabled={listLoading}
         />
-      </div>
 
       <MemberModal
         isOpen={modalState.isOpen}

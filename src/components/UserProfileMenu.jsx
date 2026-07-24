@@ -134,15 +134,15 @@ export default function UserProfileMenu({ compact = false }) {
               <p className="truncate text-xs text-slate-500 dark:text-app-muted">{user?.email}</p>
             </div>
 
-            <div className="border-b border-slate-100 px-4 py-3 dark:border-app-border-subtle">
-              <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="border-b border-slate-100 py-1.5 dark:border-app-border-subtle">
+              <p className="mb-1 px-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 {t('profile.appearance')}
               </p>
               <button
                 type="button"
                 role="menuitem"
                 onClick={cycleTheme}
-                className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-sm ${menuItem}`}
+                className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
               >
                 <ThemeIcon className="h-4 w-4 text-slate-400" aria-hidden />
                 {themeLabel(theme, t)}
