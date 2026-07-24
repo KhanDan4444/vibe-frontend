@@ -1,13 +1,12 @@
 /**
- * Brand mark — Niku app icon (V + ንቁ).
- * Pass className to size (e.g. h-12 w-12 rounded-2xl).
+ * Brand mark — 1024 Niku app icon.
  */
 export default function BrandLogo({ className = '', imgClassName = '' }) {
   return (
     <img
-      src="/app-icon.png"
+      src="/app-icon.png?v=1024"
       alt="ንቁ"
-      className={`h-10 w-10 rounded-xl object-cover ${imgClassName} ${className}`}
+      className={`h-10 w-10 rounded-[22%] object-cover ${imgClassName} ${className}`}
     />
   );
 }
