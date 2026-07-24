@@ -385,7 +385,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         </div>
       )}
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
         {initialLoading ? (
           Array.from({ length: 3 }).map((_, i) => <SummaryCardSkeleton key={i} />)
         ) : (
@@ -416,7 +416,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       {!initialLoading && Object.keys(byMethod).length > 0 && (
         <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm">
           <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {Object.entries(byMethod)
               .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
               .map(([method, amount]) => (
@@ -474,7 +474,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {initialLoading ? (
             <AdminListSkeleton rows={6} />
           ) : filteredPayments.length > 0 ? (
@@ -534,8 +534,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           )}
         </div>
 
-        <div className="hidden lg:block overflow-x-auto">
-          <table className="admin-data-table admin-payments-table min-w-[980px]">
+        <div className="hidden md:block overflow-x-auto">
+          <table className="admin-data-table admin-payments-table min-w-[800px]">
             <thead>
               <tr>
                 <th>{t('table.gym')}</th>

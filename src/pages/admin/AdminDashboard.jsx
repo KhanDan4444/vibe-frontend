@@ -539,7 +539,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-8">
+              <section className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-8">
                 {adminBooting ? (
                   Array.from({ length: 6 }).map((_, i) => <MetricCardSkeleton key={i} />)
                 ) : (
@@ -600,17 +600,17 @@ export default function AdminDashboard() {
               </section>
 
               {adminBooting ? (
-              <div className="grid gap-6 lg:grid-cols-5">
-                <div className="lg:col-span-3">
+              <div className="grid gap-6 md:grid-cols-5">
+                <div className="md:col-span-3">
                   <ChartPanelSkeleton tall />
                 </div>
-                <div className="lg:col-span-2">
+                <div className="md:col-span-2">
                   <ChartPanelSkeleton tall />
                 </div>
               </div>
               ) : (
-              <div className="grid gap-6 lg:grid-cols-5">
-                <div className={`lg:col-span-3 overflow-hidden ${cardSurface}`}>
+              <div className="grid gap-6 md:grid-cols-5">
+                <div className={`md:col-span-3 overflow-hidden ${cardSurface}`}>
                   <div className="admin-panel-header">
                     <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.recentExpiringGyms')}</h2>
                     <button
@@ -625,7 +625,7 @@ export default function AdminDashboard() {
                     </button>
                   </div>
 
-                  <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                  <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
                     {alertGyms.length > 0 ? (
                       alertGyms.map((gym) => (
                         <button
@@ -656,7 +656,7 @@ export default function AdminDashboard() {
                     )}
                   </div>
 
-                  <div className="hidden lg:block overflow-x-auto">
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="admin-data-table admin-dashboard-alert-table">
                       <thead>
                         <tr>
@@ -705,7 +705,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className={`lg:col-span-2 flex flex-col p-6 ${cardSurface}`}>
+                <div className={`md:col-span-2 flex flex-col p-6 ${cardSurface}`}>
                   <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong mb-5">{t('admin.topGymsByMembers')}</h2>
                   <div className="flex-1 min-h-[250px]">
                     <Suspense
@@ -850,7 +850,7 @@ export default function AdminDashboard() {
                   </button>
                 </div>
 
-                <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
                   {loading && gyms.length === 0 ? (
                     <AdminListSkeleton rows={5} />
                   ) : displayedGyms.length > 0 ? (
@@ -942,8 +942,8 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <div className="hidden lg:block overflow-x-auto">
-                  <table className="admin-data-table admin-gyms-table min-w-[920px]">
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="admin-data-table admin-gyms-table min-w-[800px]">
                     <thead>
                       <tr>
                         <th>{t('table.gym')}</th>

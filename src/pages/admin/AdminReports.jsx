@@ -170,7 +170,7 @@ export default function AdminReports({ onBootingChange }) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{t('admin.reportsTitle')}</h1>
           <p className="text-sm text-slate-500 mt-1 max-w-xl">
@@ -182,7 +182,7 @@ export default function AdminReports({ onBootingChange }) {
             type="button"
             onClick={refreshAll}
             disabled={loading}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+            className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             {t('common.refresh')}
@@ -191,7 +191,7 @@ export default function AdminReports({ onBootingChange }) {
             type="button"
             disabled={!canExport || exporting === 'full-csv'}
             onClick={() => withExport('full-csv', () => downloadFullReportCsv(gyms, payments, exportMeta))}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+            className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
           >
             <FileStack className="h-4 w-4" />
             {t('admin.fullReportCsv')}
@@ -200,7 +200,7 @@ export default function AdminReports({ onBootingChange }) {
             type="button"
             disabled={!canExport || exporting === 'full-pdf'}
             onClick={() => withExport('full-pdf', () => downloadFullReportPdf(gyms, payments, exportMeta))}
-            className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
           >
             <FileText className="h-4 w-4" />
             {t('admin.fullReportPdf')}
@@ -269,7 +269,7 @@ export default function AdminReports({ onBootingChange }) {
               type="button"
               disabled={!gymLoaded || gyms.length === 0 || exporting === 'gym-csv'}
               onClick={() => withExport('gym-csv', () => downloadGymsCsv(gyms))}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
               {t('admin.gymsCsv')}
@@ -278,7 +278,7 @@ export default function AdminReports({ onBootingChange }) {
               type="button"
               disabled={!gymLoaded || gyms.length === 0 || exporting === 'gym-pdf'}
               onClick={() => withExport('gym-pdf', () => downloadGymsPdf(gyms, { filterLabel: t(gymFilterMeta.labelKey) }))}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-100 disabled:opacity-50"
+              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-100 disabled:opacity-50"
             >
               <FileText className="h-4 w-4" />
               {t('admin.gymsPdf')}
@@ -286,7 +286,7 @@ export default function AdminReports({ onBootingChange }) {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
           {!gymLoaded ? (
             Array.from({ length: 4 }).map((_, i) => <MetricCardSkeleton key={i} />)
           ) : (
@@ -300,13 +300,13 @@ export default function AdminReports({ onBootingChange }) {
         </div>
 
         {!gymLoaded ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             {Array.from({ length: 2 }).map((_, i) => (
               <ChartPanelSkeleton key={i} />
             ))}
           </div>
         ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <ChartCard title={t('admin.bySubscriptionStatus')} subtitle={t('admin.gymOverviewSubtitle')} empty={overviewChart.length === 0}>
             <ReportDonut data={overviewChart} colors={MEMBER_FILTER_CHART_COLORS} showCounts />
           </ChartCard>
@@ -319,7 +319,7 @@ export default function AdminReports({ onBootingChange }) {
 
       {/* Revenue analytics */}
       <section className="space-y-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-emerald-100 p-2 text-emerald-600">
               <DollarSign className="h-5 w-5" />
@@ -369,7 +369,7 @@ export default function AdminReports({ onBootingChange }) {
               type="button"
               disabled={!revenueLoaded || payments.length === 0 || exporting === 'rev-csv'}
               onClick={() => withExport('rev-csv', () => downloadRevenueCsv(payments, periodSlug, revenueSummary))}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
               {t('admin.revenueCsv')}
@@ -378,7 +378,7 @@ export default function AdminReports({ onBootingChange }) {
               type="button"
               disabled={!revenueLoaded || payments.length === 0 || exporting === 'rev-pdf'}
               onClick={() => withExport('rev-pdf', () => downloadRevenuePdf(payments, { periodLabel, summary: revenueSummary }))}
-              className="inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
+              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
             >
               <FileText className="h-4 w-4" />
               {t('admin.revenuePdf')}
@@ -393,7 +393,7 @@ export default function AdminReports({ onBootingChange }) {
                 <MetricCardSkeleton key={i} />
               ))}
             </div>
-            <div className="grid gap-4 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-3">
               {Array.from({ length: 3 }).map((_, i) => (
                 <ChartPanelSkeleton key={i} />
               ))}
@@ -402,7 +402,7 @@ export default function AdminReports({ onBootingChange }) {
         ) : (
         <>
         {revenueSummary && (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-3">
             <MetricCard
               label={t('metrics.totalRevenue')}
               value={formatMoney(revenueSummary.total)}
@@ -416,7 +416,7 @@ export default function AdminReports({ onBootingChange }) {
           </div>
         )}
 
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <ChartCard title={t('metrics.revenueByMethod')} subtitle={t('admin.revenueByMethodSubtitle')} empty={methodChart.length === 0}>
             <ReportDonut
               data={methodChart}
