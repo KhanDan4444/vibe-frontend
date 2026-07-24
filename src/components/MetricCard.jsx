@@ -58,7 +58,8 @@ export default function MetricCard({
 
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-semibold leading-snug text-slate-500 dark:text-app-muted">{label}</span>
-        {Icon && (
+        {/* Hide corner icon when a badge is shown — it reads as a stray circle next to the badge. */}
+        {Icon && !badge && (
           <Icon className="h-4 w-4 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />
         )}
       </div>
