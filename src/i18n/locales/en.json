@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "VibeSaaS"
+    "name": "ንቁ"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -20,7 +20,7 @@
     "payments": "Revenue"
   },
   "auth": {
-    "tagline": "Members, payments & branches — in one place.",
+    "tagline": "Get up, Do It, Be Active",
     "signInTitle": "VibeSaaS Gyms",
     "signInSubtitle": "Sign in to manage your workspace",
     "emailOrUsername": "Email or username",

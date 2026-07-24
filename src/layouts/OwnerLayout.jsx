@@ -12,6 +12,7 @@ import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import BranchSwitcher from '../components/BranchSwitcher';
+import BrandLogo from '../components/BrandLogo';
 import { SlidePanel, SlidePanelEmpty } from '../components/SlidePanel';
 import { localizeNotification } from '../utils/notificationText';
 
@@ -146,7 +147,7 @@ export default function OwnerLayout() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <span className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('app.name')}</span>
+        <BrandLogo className="h-8 max-w-[9.5rem]" />
         <div className="flex items-center gap-0.5">
           <button
             type="button"
@@ -184,7 +185,9 @@ export default function OwnerLayout() {
             <button onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400 hover:text-slate-200 dark:text-app-muted dark:hover:text-app-text-strong">
               <X className="h-6 w-6" />
             </button>
-            <div className="mb-8 mt-2 text-2xl font-bold text-teal-400">{t('app.name')}</div>
+            <div className="mb-8 mt-2">
+              <BrandLogo className="h-11 max-w-[12rem]" />
+            </div>
             <nav className="flex-1 space-y-1">
               {menuItems.map((item) => renderNavLink(item, () => setSidebarOpen(false)))}
             </nav>
@@ -193,7 +196,9 @@ export default function OwnerLayout() {
       )}
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-8 text-2xl font-bold text-teal-400">{t('app.name')}</div>
+        <div className="mb-8">
+          <BrandLogo className="h-11 max-w-[12rem]" />
+        </div>
         <nav className="flex-1 space-y-1">
           {menuItems.map((item) => renderNavLink(item, undefined))}
         </nav>

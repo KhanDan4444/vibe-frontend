@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import UserProfileMenu from '../components/UserProfileMenu';
+import BrandLogo from '../components/BrandLogo';
 import { parseApiResponse } from '../utils/api';
 import { getAdminDashboard } from '../services/gymAdminService';
 import { ADMIN_SECTION_PATH, adminPathToSection } from '../utils/adminRoutes';
@@ -126,9 +127,7 @@ export default function AdminLayout() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <span className="truncate text-base font-bold text-slate-900 dark:text-app-text-strong sm:text-lg">
-          {t('admin.platformCore')}
-        </span>
+        <BrandLogo className="h-8 max-w-[9.5rem]" />
         <div className="flex items-center gap-0.5">
           <LanguageSwitcher compact />
           <UserProfileMenu compact />
@@ -142,7 +141,9 @@ export default function AdminLayout() {
             <button type="button" onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
               <X className="h-6 w-6" />
             </button>
-            <div className="mb-8 mt-2 text-2xl font-bold text-teal-400">{t('admin.platformCore')}</div>
+            <div className="mb-8 mt-2">
+              <BrandLogo className="h-11 max-w-[12rem]" />
+            </div>
             <nav className="mb-auto space-y-1">
               {adminNavItems.map((item) => (
                 <SidebarLink
@@ -161,7 +162,9 @@ export default function AdminLayout() {
       )}
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-8 text-2xl font-bold text-teal-400">{t('admin.platformCore')}</div>
+        <div className="mb-8">
+          <BrandLogo className="h-11 max-w-[12rem]" />
+        </div>
         <nav className="space-y-1">
           {adminNavItems.map((item) => (
             <SidebarLink
