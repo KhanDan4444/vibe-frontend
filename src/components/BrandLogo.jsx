@@ -1,27 +1,13 @@
 /**
- * Brand mark — Niku lockup (sidebar / header) or icon-only (compact).
+ * Brand mark — Niku app icon (V + ንቁ).
+ * Pass className to size (e.g. h-12 w-12 rounded-2xl).
  */
-export default function BrandLogo({
-  variant = 'lockup',
-  className = '',
-  imgClassName = '',
-}) {
-  if (variant === 'icon') {
-    return (
-      <img
-        src="/app-icon.png"
-        alt=""
-        className={`h-9 w-9 rounded-full object-cover ${imgClassName} ${className}`}
-        aria-hidden
-      />
-    );
-  }
-
+export default function BrandLogo({ className = '', imgClassName = '' }) {
   return (
     <img
-      src="/brand-logo.png"
+      src="/app-icon.png"
       alt="ንቁ"
-      className={`h-10 w-auto max-w-[11rem] object-contain object-left ${imgClassName} ${className}`}
+      className={`h-10 w-10 rounded-xl object-cover ${imgClassName} ${className}`}
     />
   );
 }

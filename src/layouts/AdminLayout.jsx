@@ -127,7 +127,7 @@ export default function AdminLayout() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <BrandLogo className="h-8 max-w-[9.5rem]" />
+        <BrandLogo className="h-9 w-9" />
         <div className="flex items-center gap-0.5">
           <LanguageSwitcher compact />
           <UserProfileMenu compact />
@@ -142,7 +142,7 @@ export default function AdminLayout() {
               <X className="h-6 w-6" />
             </button>
             <div className="mb-8 mt-2">
-              <BrandLogo className="h-11 max-w-[12rem]" />
+              <BrandLogo className="h-12 w-12 rounded-2xl" />
             </div>
             <nav className="mb-auto space-y-1">
               {adminNavItems.map((item) => (
@@ -163,7 +163,7 @@ export default function AdminLayout() {
 
       <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
         <div className="mb-8">
-          <BrandLogo className="h-11 max-w-[12rem]" />
+          <BrandLogo className="h-12 w-12 rounded-2xl" />
         </div>
         <nav className="space-y-1">
           {adminNavItems.map((item) => (
