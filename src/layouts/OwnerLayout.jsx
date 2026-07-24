@@ -147,7 +147,6 @@ export default function OwnerLayout() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <BrandLogo to="/dashboard" className="justify-self-center" />
         <div className="flex items-center gap-0.5">
           <button
             type="button"

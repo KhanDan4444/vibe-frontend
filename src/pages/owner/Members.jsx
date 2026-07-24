@@ -667,16 +667,16 @@ export default function Members() {
 
         {/* Tablet+ desktop table */}
         <div className="hidden md:block overflow-x-auto">
-          <table className="admin-data-table min-w-[800px]">
+          <table className={`admin-data-table owner-members-table ${showBranchColumn ? 'owner-members-table--branches' : ''}`}>
             <thead>
               <tr>
                 <th>{t('table.name')}</th>
                 {showBranchColumn && <th>{t('table.branch')}</th>}
                 <th>{t('pages.members.contactInfo')}</th>
                 <th>{t('table.plan')}</th>
-                <th>{t('pages.members.durationRange')}</th>
-                <th>{t('table.status')}</th>
-                <th className="text-right">{t('table.actions')}</th>
+                <th className="owner-members-col-duration">{t('pages.members.durationRange')}</th>
+                <th className="owner-members-col-status">{t('table.status')}</th>
+                <th className="owner-members-col-actions text-right">{t('table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -717,18 +717,18 @@ export default function Members() {
                       <td className="truncate font-semibold text-teal-700">
                         {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                       </td>
-                      <td className="text-slate-500">
+                      <td className="owner-members-col-duration text-slate-500">
                         <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
                         <span className="mx-1 text-xs text-slate-400">{t('common.to')}</span>
                         <span className="whitespace-nowrap font-semibold text-slate-800 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
                       </td>
-                      <td>
-                        <div className="flex flex-wrap items-center gap-1.5">
+                      <td className="owner-members-col-status">
+                        <div>
                           <StatusBadge status={member.status} />
                           {member.isUnpaid && <UnpaidBadge />}
                         </div>
                       </td>
-                      <td>
+                      <td className="owner-members-col-actions">
                         <div className="admin-row-actions">
                         {!readOnly && member.isUnpaid && (
                           <button

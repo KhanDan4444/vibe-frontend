@@ -127,7 +127,6 @@ export default function AdminLayout() {
         >
           <Menu className="h-6 w-6" />
         </button>
-        <BrandLogo to="/admin/dashboard" />
         <div className="flex items-center gap-0.5">
           <LanguageSwitcher compact />
           <UserProfileMenu compact />

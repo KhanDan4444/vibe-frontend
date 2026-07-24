@@ -390,6 +390,37 @@
     width: 30%;
   }
 
+  /* Members table: auto layout so Status/Duration never overlap under table-fixed squeeze. */
+  .owner-members-table.admin-data-table {
+    table-layout: auto;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .owner-members-table .owner-members-col-duration {
+    white-space: nowrap;
+    min-width: 12rem;
+  }
+
+  .owner-members-table .owner-members-col-status {
+    white-space: nowrap;
+    min-width: 6.5rem;
+    vertical-align: middle;
+  }
+
+  .owner-members-table .owner-members-col-actions {
+    white-space: nowrap;
+    min-width: 8.5rem;
+    text-align: right;
+  }
+
+  .owner-members-table td.owner-members-col-status > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
   .admin-panel-header {
     @apply flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6 dark:border-app-border-subtle dark:bg-app-surface/80;
   }
