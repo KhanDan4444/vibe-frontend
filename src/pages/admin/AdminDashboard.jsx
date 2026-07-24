@@ -882,14 +882,15 @@ export default function AdminDashboard() {
                               </div>
                             </div>
                           </button>
-                          <div className="mt-3 flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
+                          <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
                             {isUnpaid && gym.subscription_status?.toLowerCase() === 'active' && !canRenewGym(gym) && (
                               <button
                                 type="button"
                                 onClick={() => setCollectState({ isOpen: true, gym, error: '' })}
-                                className="inline-flex items-center gap-1 rounded-lg bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-800 active:bg-amber-200"
+                                className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
+                                title={t('actions.collectPayment')}
                               >
-                                <DollarSign className="h-3.5 w-3.5" /> {t('actions.collect')}
+                                <DollarSign className="h-4 w-4" />
                               </button>
                             )}
                             {canChangeSaasPlan(gym) &&
@@ -897,33 +898,37 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => openChangePlanModal(gym)}
-                                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                                className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                                title={t('admin.changeSaasPlanTitle')}
                               >
-                                <ArrowLeftRight className="h-3.5 w-3.5" /> {t('admin.changePlanShort')}
+                                <ArrowLeftRight className="h-4 w-4" />
                               </button>
                             )}
                             {canRenewGym(gym) && (
                               <button
                                 type="button"
                                 onClick={() => openRenewGymModal(gym)}
-                                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                                className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface cursor-pointer"
+                                title={t('admin.renewLicenseTitle')}
                               >
-                                <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
+                                <RefreshCw className="h-4 w-4" />
                               </button>
                             )}
                             <button
                               type="button"
                               onClick={() => setGymEditState({ isOpen: true, gym, error: '' })}
-                              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                              className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                              title={t('common.edit')}
                             >
-                              <Edit className="h-3.5 w-3.5" /> {t('common.edit')}
+                              <Edit className="h-4 w-4" />
                             </button>
                             <button
                               type="button"
                               onClick={() => setGymToDelete(gym)}
-                              className="inline-flex items-center gap-1 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50"
+                              className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                              title={t('common.delete')}
                             >
-                              <Trash2 className="h-3.5 w-3.5" /> {t('common.delete')}
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         </div>

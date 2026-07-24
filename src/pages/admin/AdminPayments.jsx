@@ -506,20 +506,22 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                     {formatMoney(payment.amount)}
                   </p>
                 </div>
-                <div className="mt-3 flex gap-2">
+                <div className="admin-row-actions mt-3">
                   <button
                     type="button"
                     onClick={() => setEditState({ isOpen: true, payment, error: '' })}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50"
+                    className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                    title={t('common.edit')}
                   >
-                    <Edit className="h-3.5 w-3.5" /> {t('common.edit')}
+                    <Edit className="h-4 w-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => setPaymentToDelete(payment)}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50"
+                    className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                    title={t('common.delete')}
                   >
-                    <Trash2 className="h-3.5 w-3.5" /> {t('common.delete')}
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               </div>

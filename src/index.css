@@ -395,7 +395,7 @@
   }
 
   .admin-panel-empty {
-    @apply py-12 text-center text-sm font-medium text-slate-400 dark:text-app-muted;
+    @apply py-6 text-center text-sm font-medium text-slate-400 dark:text-app-muted sm:py-8;
   }
 
   .admin-filter-pill {
@@ -516,7 +516,7 @@
   }
 
   .admin-row-actions button {
-    @apply rounded-md p-2 transition-colors;
+    @apply rounded-md p-2 transition-colors active:bg-slate-100 dark:active:bg-app-surface/80;
   }
 
   .admin-row-unpaid {

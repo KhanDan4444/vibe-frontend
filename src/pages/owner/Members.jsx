@@ -532,8 +532,8 @@ export default function Members() {
       </div>
 
       <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
-        {/* Mobile / tablet card list */}
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        {/* Phone card list */}
+        <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {listLoading ? (
             <AdminListSkeleton rows={6} />
           ) : displayedMembers.length > 0 ? (
@@ -584,7 +584,7 @@ export default function Members() {
                     </div>
                   </div>
                   {!readOnly && (
-                    <div className="mt-3 flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
                       {member.isUnpaid && (
                         <button
                           type="button"
@@ -592,18 +592,20 @@ export default function Members() {
                             setError('');
                             setPaymentState({ isOpen: true, member, error: '' });
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-100 px-3 py-2 text-xs font-semibold text-amber-800 active:bg-amber-200"
+                          className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
+                          title={t('actions.collectPayment')}
                         >
-                          <DollarSign className="h-3.5 w-3.5" /> {t('actions.collect')}
+                          <DollarSign className="h-4 w-4" />
                         </button>
                       )}
                       {canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
                         <button
                           type="button"
                           onClick={() => openChangePlanModal(member)}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
+                          className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                          title={t('actions.changePlan')}
                         >
-                          <ArrowLeftRight className="h-3.5 w-3.5" /> {t('table.plan')}
+                          <ArrowLeftRight className="h-4 w-4" />
                         </button>
                       )}
                       {canRenewMember(member) && (
@@ -613,9 +615,10 @@ export default function Members() {
                             setError('');
                             openRenewModal(member);
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
+                          className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                          title={t('actions.renew')}
                         >
-                          <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
+                          <RefreshCw className="h-4 w-4" />
                         </button>
                       )}
                       <button
@@ -624,17 +627,19 @@ export default function Members() {
                           setError('');
                           setModalState({ isOpen: true, member, error: '' });
                         }}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-xs font-medium text-slate-700 dark:text-app-text active:bg-slate-50 dark:active:bg-app-surface/60"
+                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                        title={t('common.edit')}
                       >
-                        <Edit className="h-3.5 w-3.5" /> {t('common.edit')}
+                        <Edit className="h-4 w-4" />
                       </button>
                       {canDeleteMembers && (
                         <button
                           type="button"
                           onClick={() => setMemberToDelete(member)}
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 px-3 py-2 text-xs font-medium text-rose-600 active:bg-rose-50 dark:active:bg-rose-500/10"
+                          className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                          title={t('common.delete')}
                         >
-                          <Trash2 className="h-3.5 w-3.5" /> {t('common.delete')}
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       )}
                     </div>
@@ -660,9 +665,9 @@ export default function Members() {
           )}
         </div>
 
-        {/* Desktop table */}
-        <div className="hidden lg:block overflow-x-auto">
-          <table className="admin-data-table min-w-[960px]">
+        {/* Tablet+ desktop table */}
+        <div className="hidden md:block overflow-x-auto">
+          <table className="admin-data-table min-w-[800px]">
             <thead>
               <tr>
                 <th>{t('table.name')}</th>

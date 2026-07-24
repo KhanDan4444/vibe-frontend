@@ -111,7 +111,7 @@ export default function MemberMessages() {
       )}
 
       <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {loading && items.length === 0 ? (
             <AdminListSkeleton rows={5} />
           ) : items.length > 0 ? (
@@ -151,7 +151,7 @@ export default function MemberMessages() {
           )}
         </div>
 
-        <div className="hidden lg:block overflow-x-auto">
+        <div className="hidden md:block overflow-x-auto">
           <table className="admin-data-table min-w-[720px]">
             <thead>
               <tr>

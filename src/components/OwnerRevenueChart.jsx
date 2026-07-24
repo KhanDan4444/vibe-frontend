@@ -19,7 +19,7 @@ export default function OwnerRevenueChart({ chartData }) {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+      <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 4 }}>
         <defs>
           <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#0f766e" stopOpacity={0.3} />
@@ -27,8 +27,14 @@ export default function OwnerRevenueChart({ chartData }) {
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.55 : 1} />
-        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} dy={10} />
-        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: chartTheme.tick }} tickFormatter={(val) => formatMoneyTick(val)} />
+        <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: chartTheme.tick }} dy={8} />
+        <YAxis
+          width={52}
+          axisLine={false}
+          tickLine={false}
+          tick={{ fontSize: 11, fill: chartTheme.tick }}
+          tickFormatter={(val) => formatMoneyTick(val)}
+        />
         <Tooltip
           contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
           itemStyle={{ color: '#0f766e', fontWeight: 600 }}

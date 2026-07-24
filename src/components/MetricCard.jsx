@@ -49,9 +49,9 @@ export default function MetricCard({
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
 
   return (
-    <div className={`relative p-5 ${panelQuiet}`}>
+    <div className={`relative p-4 sm:p-5 ${panelQuiet}`}>
       {badge && (
-        <span className={`absolute top-4 right-4 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${badgeClass}`}>
+        <span className={`absolute top-3 right-3 sm:top-4 sm:right-4 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${badgeClass}`}>
           {badge}
         </span>
       )}
@@ -63,8 +63,8 @@ export default function MetricCard({
         )}
       </div>
 
-      <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-        <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{value}</span>
+      <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:mt-2">
+        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-3xl">{value}</span>
         {subValue && (
           <span className="text-lg font-medium text-slate-400">{subValue}</span>
         )}

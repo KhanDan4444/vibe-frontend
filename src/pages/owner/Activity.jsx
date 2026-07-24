@@ -114,10 +114,10 @@ export default function Activity() {
       <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
         {loading && items.length === 0 ? (
           <>
-            <div className="lg:hidden">
+            <div className="md:hidden">
               <AdminListSkeleton rows={5} />
             </div>
-            <div className="hidden lg:block overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto">
               <table className="admin-data-table">
                 <tbody>
                   <AdminTableRowsSkeleton rows={5} cols={4} />
@@ -133,7 +133,7 @@ export default function Activity() {
           />
         ) : (
           <>
-            <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+            <div className="md:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
               {items.map((entry) => {
                 const detailText = formatAuditDetails(entry);
                 const isStaff = entry.actor_role !== 'Gym Owner';
@@ -167,8 +167,8 @@ export default function Activity() {
               })}
             </div>
 
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="admin-data-table min-w-[900px]">
+            <div className="hidden md:block overflow-x-auto">
+              <table className="admin-data-table min-w-[720px]">
                 <thead>
                   <tr>
                     <th>{t('table.when')}</th>
