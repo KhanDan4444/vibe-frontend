@@ -1,4 +1,4 @@
-// src/pages/auth/Login.jsx (Asynchronous Sync & Environment Guarded)
+// src/pages/auth/Login.jsx — cardless glass login matching mobile brand treatment
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
@@ -32,7 +32,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm text-app-text-strong placeholder-app-muted caret-app-text-strong focus:border-brand focus:outline-none';
+    'auth-login-input block w-full rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none backdrop-blur-sm transition-[border-color,background-color] focus:border-teal-300/55 focus:bg-white/[0.12] focus:outline-none';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,121 +60,130 @@ export default function Login() {
     }
   };
 
-  const formCard = (
-    <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/5 bg-app-raised/90 p-6 shadow-2xl shadow-black/25 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-2 duration-300 sm:p-8">
-      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-teal-500/80 to-transparent" />
-
-      <LoginBrandPanel />
-      <p className="mb-6 text-center text-sm text-app-muted">{t('auth.signInSubtitle')}</p>
-
-      {successMessage && (
-        <div className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-400">
-          {successMessage}
-        </div>
-      )}
-
-      {error && (
-        <div className="mb-4 rounded-lg border border-rose-500/30 bg-rose-500/10 p-4 text-sm font-medium text-rose-400">
-          {error}
-        </div>
-      )}
-
-      <form className="space-y-6" onSubmit={handleSubmit}>
-        <div className="space-y-4 rounded-md shadow-sm">
-          <div>
-            <label htmlFor="login-email" className="block text-sm font-medium text-app-text">{t('auth.emailOrUsername')}</label>
-            <input
-              id="login-email"
-              type="text"
-              required
-              autoComplete="username"
-              className={inputClass(inputBase, fieldErrors, 'email')}
-              placeholder={t('auth.emailOrUsernamePlaceholder')}
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                clearFieldError(setFieldErrors, 'email');
-              }}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
-          </div>
-          <div>
-            <label htmlFor="login-password" className="block text-sm font-medium text-app-text">{t('auth.password')}</label>
-            <input
-              id="login-password"
-              type="password"
-              required
-              autoComplete="current-password"
-              className={inputClass(inputBase, fieldErrors, 'password')}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                clearFieldError(setFieldErrors, 'password');
-              }}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-          </div>
-          <div className="flex items-center justify-between gap-3">
-            <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-app-text">
-              <input
-                id="login-remember"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-app-border bg-app-input text-brand focus:ring-brand"
-              />
-              {t('auth.rememberMe')}
-            </label>
-            <Link to="/forgot-password" className="text-sm text-brand hover:text-brand-hover">
-              {t('auth.forgotPassword')}
-            </Link>
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-lg bg-brand px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app-raised disabled:opacity-50"
-        >
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-              {t('auth.processing')}
-            </span>
-          ) : (
-            t('auth.signIn')
-          )}
-        </button>
-      </form>
-
-      <p className="mt-4 text-center text-sm text-app-muted">
-        {t('auth.noAccount')}{' '}
-        <Link to="/register-gym" className="font-medium text-brand hover:text-brand-hover">
-          {t('auth.registerGymLink')}
-        </Link>
-      </p>
-
-      {import.meta.env.DEV && (
-        <div className="mt-6 animate-pulse space-y-2 rounded-lg border border-app-border bg-app-surface/60 p-4 text-xs text-app-muted">
-          <p className="flex items-center gap-1 font-semibold text-app-text">
-            💡 Developer Quick-Access (Sandbox Active):
-          </p>
-          <p>• Gym Owner portal: Use <code className="font-mono text-brand">owner@gym.com</code> with password <code className="font-mono text-brand">password</code></p>
-          <p>• Help Desk portal: Use <code className="font-mono text-brand">helpdesk@gym.com</code> with password <code className="font-mono text-brand">password</code></p>
-          <p>• SaaS Admin portal: Use <code className="font-mono text-brand">admin@saas.com</code> with password <code className="font-mono text-brand">password</code></p>
-        </div>
-      )}
-    </div>
-  );
-
   return (
     <AuthScreen hero>
-      <div className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6">
-        {formCard}
+      <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+        <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <LoginBrandPanel />
+
+          {successMessage && (
+            <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-300">
+              {successMessage}
+            </div>
+          )}
+
+          {error && (
+            <div className="mb-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm font-medium text-rose-300">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-3" onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="login-email" className="sr-only">
+                {t('auth.emailOrUsername')}
+              </label>
+              <input
+                id="login-email"
+                type="text"
+                required
+                autoComplete="username"
+                className={inputClass(inputBase, fieldErrors, 'email')}
+                placeholder={t('auth.emailOrUsername')}
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  clearFieldError(setFieldErrors, 'email');
+                }}
+              />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+            </div>
+            <div>
+              <label htmlFor="login-password" className="sr-only">
+                {t('auth.password')}
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                required
+                autoComplete="current-password"
+                className={inputClass(inputBase, fieldErrors, 'password')}
+                placeholder={t('auth.password')}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  clearFieldError(setFieldErrors, 'password');
+                }}
+              />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
+            </div>
+
+            <div className="flex items-center justify-between gap-3 pt-1">
+              <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-white/75">
+                <input
+                  id="login-remember"
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-teal-500 focus:ring-teal-400/40"
+                />
+                {t('auth.rememberMe')}
+              </label>
+              <Link to="/forgot-password" className="text-sm font-semibold text-teal-300 hover:text-teal-200">
+                {t('auth.forgotPassword')}
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-brand px-4 py-3.5 text-base font-semibold text-white shadow-lg shadow-teal-900/30 transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-300/50 disabled:opacity-50"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  {t('auth.processing')}
+                </span>
+              ) : (
+                t('auth.signIn')
+              )}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-white/70">
+            {t('auth.noAccount')}{' '}
+            <Link to="/register-gym" className="font-semibold text-teal-300 hover:text-teal-200">
+              {t('auth.registerGymLink')}
+            </Link>
+          </p>
+
+          {import.meta.env.DEV && (
+            <div className="mt-8 animate-pulse space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-white/55">
+              <p className="flex items-center gap-1 font-semibold text-white/80">
+                Developer Quick-Access (Sandbox Active):
+              </p>
+              <p>
+                • Gym Owner: <code className="font-mono text-teal-300">owner@gym.com</code> /{' '}
+                <code className="font-mono text-teal-300">password</code>
+              </p>
+              <p>
+                • Help Desk: <code className="font-mono text-teal-300">helpdesk@gym.com</code> /{' '}
+                <code className="font-mono text-teal-300">password</code>
+              </p>
+              <p>
+                • SaaS Admin: <code className="font-mono text-teal-300">admin@saas.com</code> /{' '}
+                <code className="font-mono text-teal-300">password</code>
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </AuthScreen>
   );

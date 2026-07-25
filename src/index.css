@@ -159,7 +159,7 @@
 
 @layer components {
   .auth-hero-bg {
-    background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
+    background-color: #020617;
   }
 
   .auth-login-input {
@@ -194,7 +194,7 @@
   .auth-login-input:-webkit-autofill:focus {
     -webkit-text-fill-color: #ffffff;
     caret-color: #ffffff;
-    box-shadow: 0 0 0 1000px rgb(15 23 42 / 0.9) inset;
+    box-shadow: 0 0 0 1000px rgb(15 23 42 / 0.72) inset;
     transition: background-color 9999s ease-in-out 0s;
   }
 
