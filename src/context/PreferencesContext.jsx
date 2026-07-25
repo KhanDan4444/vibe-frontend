@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { setDocumentLanguage } from '../i18n';
 import {
-  defaultGuestLanguage,
   persistGuestLanguage,
   persistLanguage,
   readGuestLanguage,
@@ -41,6 +40,8 @@ export function PreferencesProvider({ children }) {
   );
   const userScopeRef = useRef(null);
   const skipThemePersistRef = useRef(true);
+  const languageRef = useRef(language);
+  languageRef.current = language;
 
   useEffect(() => {
     const scope = user ? `${user.gym_id ?? ''}:${user.id ?? ''}` : 'guest';
@@ -54,14 +55,16 @@ export function PreferencesProvider({ children }) {
     applyThemeClass(storedTheme);
     setIsDark(storedTheme === 'dark');
 
+    // Logout: carry the current language onto the login/guest screen
+    // (previously reset to browser default, dropping an Amharic choice).
     if (!user && previousScope && previousScope !== 'guest') {
-      const guest = defaultGuestLanguage();
-      persistGuestLanguage(guest);
-      setLanguageState(guest);
-      if (i18n.language !== guest) {
-        i18n.changeLanguage(guest);
+      const carried = normalizeLanguage(languageRef.current);
+      persistGuestLanguage(carried);
+      setLanguageState(carried);
+      if (i18n.language !== carried) {
+        i18n.changeLanguage(carried);
       }
-      setDocumentLanguage(guest);
+      setDocumentLanguage(carried);
     }
   }, [user?.id, user?.gym_id, i18n]);
 
@@ -99,6 +102,8 @@ export function PreferencesProvider({ children }) {
   const setLanguage = useCallback(
     (lng) => {
       const code = persistLanguage(lng, user);
+      // Mirror to guest storage so login/register keep the choice after logout.
+      persistGuestLanguage(code);
       setLanguageState(code);
       i18n.changeLanguage(code);
       setDocumentLanguage(code);
