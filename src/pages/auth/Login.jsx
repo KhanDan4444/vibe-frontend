@@ -68,10 +68,7 @@ export default function Login() {
 
         <div className="relative flex flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-10 xl:px-16">
           <div className="relative w-full max-w-md">
-            {/* Mobile / tablet: brand above form. Desktop: brand lives on the left. */}
-            <div className="lg:hidden">
-              <LoginBrandPanel />
-            </div>
+            <LoginBrandPanel />
 
             {successMessage && (
               <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-300">
