@@ -20,6 +20,7 @@
     "passwordsMatch": "የይለፍ ቃሎቹ ይዛመዳሉ",
     "platformEmailDesc": "የመግቢያ ኢሜይልዎ በመድረኩ ይተዳደራል።",
     "profileSaved": "መገለጫው ተቀምጧል።",
+    "profileLoadFailed": "የጂም መገለጫ ማፍለቅ አልተቻለም።",
     "staffEmailDesc": "የመግቢያ ኢሜይልዎ በጂም ባለቤትዎ ይተዳደራል።",
     "updating": "በማዘመን ላይ…",
     "username": "የተጠቃሚ ስም",

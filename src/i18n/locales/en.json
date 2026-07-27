@@ -1004,6 +1004,7 @@
     "loginEmail": "Login email",
     "discard": "Discard",
     "profileSaved": "Profile saved successfully.",
+    "profileLoadFailed": "Could not load gym profile.",
     "changePasswordTitle": "Change password",
     "changePasswordDesc": "Use a strong password you do not use elsewhere.",
     "currentPassword": "Current password",

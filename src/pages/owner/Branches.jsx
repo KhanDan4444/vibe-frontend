@@ -271,8 +271,11 @@ export default function Branches() {
       />
 
       {error && (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
-          {error}
+        <div className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
+          <p>{error}</p>
+          <Button variant="danger" size="sm" onClick={() => void load()}>
+            {t('common.retry')}
+          </Button>
         </div>
       )}
 
@@ -306,7 +309,7 @@ export default function Branches() {
                       <p className="font-medium text-slate-900 dark:text-app-text-strong">
                         {branch.name}
                         {branch.is_default && (
-                          <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                          <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-app-surface dark:text-app-muted">
                             {t('common.default')}
                           </span>
                         )}

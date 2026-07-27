@@ -1004,6 +1004,7 @@
     "loginEmail": "Imeelii seensaa",
     "discard": "Dhiisi",
     "profileSaved": "Profaayiliin milkaa'inaan ol ka'ameera.",
+    "profileLoadFailed": "Profaayilii jiimii fe'uu hin dandeenye.",
     "changePasswordTitle": "Jechama siriitii jijjiiri",
     "changePasswordDesc": "Jechama siriitii cimaa bakka biraatti hin fayyadamne fayyadami.",
     "currentPassword": "Jechama siriitii ammaa",

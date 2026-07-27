@@ -9,6 +9,7 @@ import { formatDisplayDateTime } from '../../utils/date';
 import { formatAdminSmsMessageType, ADMIN_SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
 import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -143,8 +144,11 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
       </div>
 
       {error && (
-        <div className="ui-alert-rose">
-          {error}
+        <div className="ui-alert-rose flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p>{error}</p>
+          <Button variant="danger" size="sm" onClick={() => void loadMessages()}>
+            {t('common.retry')}
+          </Button>
         </div>
       )}
 

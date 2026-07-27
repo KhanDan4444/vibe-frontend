@@ -58,6 +58,7 @@ export default function GymDetailsModal({
   onChangePlan,
   onCollectPayment,
   onResetOwnerPassword,
+  onRetryDetail,
 }) {
   const { t } = useTranslation();
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -109,7 +110,7 @@ export default function GymDetailsModal({
   const totalPaid = saasPayments.reduce((s, p) => s + Number(p.amount), 0);
   const recentPayments = saasPayments.slice(0, 3);
   const olderPaymentCount = Math.max(saasPayments.length - recentPayments.length, 0);
-  const displayError = mutationError || detailError;
+  const displayError = mutationError || (gymDetail ? detailError : '');
   const currency = (amount) => formatMoney(amount);
 
   const handleEditSubmit = async (formData) => {
@@ -256,6 +257,15 @@ export default function GymDetailsModal({
 
         {detailLoading ? (
           <p className="py-12 text-center text-sm text-slate-400 dark:text-app-muted">{t('common.loading')}</p>
+        ) : !gymDetail && detailError ? (
+          <div className="space-y-4 py-8 text-center">
+            <p className="text-sm text-rose-600 dark:text-rose-400">{detailError}</p>
+            {onRetryDetail ? (
+              <SlidePanelActionButton variant="secondary" onClick={onRetryDetail}>
+                {t('common.retry')}
+              </SlidePanelActionButton>
+            ) : null}
+          </div>
         ) : gymDetail ? (
           <div className="space-y-6">
             <SlidePanelProfileHeader

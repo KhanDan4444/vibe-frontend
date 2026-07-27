@@ -107,9 +107,9 @@ function PasswordChecklist({ password, confirm }) {
 function ProfileSkeleton() {
   return (
     <div className="animate-pulse space-y-4" aria-hidden>
-      <div className="h-12 rounded-lg bg-slate-100" />
-      <div className="h-12 rounded-lg bg-slate-100" />
-      <div className="h-12 rounded-lg bg-slate-100" />
+      <div className="h-12 rounded-lg bg-slate-200/80 dark:bg-app-surface" />
+      <div className="h-12 rounded-lg bg-slate-200/80 dark:bg-app-surface" />
+      <div className="h-12 rounded-lg bg-slate-200/80 dark:bg-app-surface" />
     </div>
   );
 }
@@ -144,7 +144,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
   const { apiFetch, user, updateUser } = useAuth();
   const showGymProfile = isGymOwner(user?.role);
 
-  const [loading, setLoading] = useState(showGymProfile);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -199,21 +199,28 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
     if (!showGymProfile) {
       setAccountEmail(user?.email || '');
       setLoading(false);
+      setError('');
       return;
     }
     setLoading(true);
     setError('');
     try {
-      const res = await getGymProfile(apiFetch);
+      const res = await Promise.race([
+        getGymProfile(apiFetch),
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error(t('common.requestTimedOut', { defaultValue: 'Request timed out. Please try again.' }))), 20000);
+        }),
+      ]);
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to load profile');
       applyProfile(data);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to load profile');
+      setSavedProfile(null);
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, showGymProfile, applyProfile, user?.email]);
+  }, [apiFetch, showGymProfile, applyProfile, user?.email, t]);
 
   const { markTouched } = useModalFormDraft({
     isOpen: open,
@@ -279,6 +286,16 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
     >
       {loading ? (
         <ProfileSkeleton />
+      ) : showGymProfile && !savedProfile ? (
+        <div className="space-y-4">
+          {error ? <Alert>{error}</Alert> : null}
+          <p className="text-sm text-slate-500 dark:text-app-muted">
+            {t('account.profileLoadFailed')}
+          </p>
+          <Button type="button" variant="secondary" onClick={() => void loadProfile()}>
+            {t('common.retry')}
+          </Button>
+        </div>
       ) : showGymProfile ? (
         <form className="space-y-4" onSubmit={handleSubmit} onChangeCapture={markTouched}>
           {error && !Object.keys(fieldErrors).length && <Alert>{error}</Alert>}

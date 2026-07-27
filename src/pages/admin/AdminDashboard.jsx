@@ -1110,6 +1110,7 @@ export default function AdminDashboard() {
         onChangePlan={openChangePlanModal}
         onCollectPayment={(gym) => setCollectState({ isOpen: true, gym, error: '' })}
         onResetOwnerPassword={handleResetOwnerPassword}
+        onRetryDetail={selectedGymId ? () => fetchGymDetail(selectedGymId) : undefined}
       />
 
       <RenewGymModal
