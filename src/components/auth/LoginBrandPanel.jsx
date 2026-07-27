@@ -9,7 +9,7 @@ export default function LoginBrandPanel() {
   return (
     <div className="mb-8 flex flex-col items-center text-center sm:mb-10">
       <img
-        src="/brand-lockup-mark.png"
+        src="/brand-lockup-mark.png?v=restore"
         alt="ንቁ"
         className="mb-4 h-16 w-auto max-w-[15rem] object-contain object-center sm:mb-5 sm:h-[4.75rem] sm:max-w-[17rem]"
       />

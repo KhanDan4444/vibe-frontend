@@ -13,7 +13,7 @@ export default function BrandLogo({
   const img =
     variant === 'icon' ? (
       <img
-        src="/brand-mark.png?v=blend"
+        src="/brand-mark.png?v=restore"
         alt="ንቁ"
         className={`h-9 w-9 object-contain ${className}`}
       />

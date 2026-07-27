@@ -35,7 +35,7 @@ export default function LoginBrandAside() {
 
       <div className="relative z-10 flex flex-1 flex-col justify-between p-10 xl:p-14">
         <img
-          src="/brand-lockup-mark.png"
+          src="/brand-lockup-mark.png?v=restore"
           alt={t('app.name')}
           className="h-11 w-auto max-w-[12rem] object-contain object-left xl:h-12 xl:max-w-[13rem]"
         />
