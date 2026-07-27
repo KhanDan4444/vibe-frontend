@@ -13,6 +13,7 @@ import { isGymOwner } from '../utils/roles';
 import SubscriptionLockout from '../components/SubscriptionLockout';
 import { SYNCED_EVENT } from '../offline/events';
 import { runInBackground } from '../utils/runInBackground';
+import { useFlash } from './FlashContext';
 
 const EMPTY_SUMMARY = {
   totalMembers: 0,
@@ -48,7 +49,7 @@ export const GymProvider = ({ children }) => {
   const [subscriptionLoading, setSubscriptionLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [flash, setFlash] = useState(null);
+  const { showFlash, clearFlash } = useFlash();
   const [branches, setBranches] = useState([]);
   const [selectedBranchId, setSelectedBranchIdState] = useState('all');
   const readOnlyRef = useRef(false);
@@ -70,11 +71,6 @@ export const GymProvider = ({ children }) => {
   subscriptionReadOnlyRef.current = subscriptionReadOnly;
   branchReadOnlyRef.current = branchReadOnly;
 
-  const showFlash = useCallback((message) => {
-    setFlash(typeof message === 'string' ? message : { variant: 'success', ...message });
-  }, []);
-
-  const clearFlash = useCallback(() => setFlash(null), []);
 
   const getBranchQueryParams = useCallback(
     () => (isGymOwner(user?.role) ? branchQueryParams(selectedBranchId) : {}),
@@ -508,7 +504,6 @@ export const GymProvider = ({ children }) => {
       error,
       fetchCoreData,
       loadSubscription,
-      flash,
       showFlash,
       clearFlash,
       readOnly,
@@ -543,7 +538,6 @@ export const GymProvider = ({ children }) => {
       error,
       fetchCoreData,
       loadSubscription,
-      flash,
       showFlash,
       clearFlash,
       readOnly,

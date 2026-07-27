@@ -33,8 +33,8 @@ import StatusBadge from '../../components/StatusBadge';
 import { FilterChip, FilterChipBar } from '../../components/FilterChip';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { AdminTableRowsSkeleton, AdminListSkeleton, ChartPanelSkeleton } from '../../components/LoadingSkeletons';
-import FlashBanner from '../../components/FlashBanner';
 import { runInBackground } from '../../utils/runInBackground';
+import { useFlash } from '../../context/FlashContext';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
   const [collectState, setCollectState] = useState({ isOpen: false, gym: null, error: '' });
   const [saving, setSaving] = useState(false);
   const [platformMetrics, setPlatformMetrics] = useState(null);
-  const [flash, setFlash] = useState('');
+  const { showFlash } = useFlash();
 
   const [selectedGymId, setSelectedGymId] = useState(null);
   const [gymEditState, setGymEditState] = useState({ isOpen: false, gym: null, error: '' });
@@ -274,8 +274,6 @@ export default function AdminDashboard() {
       setDetailRefreshKey((k) => k + 1);
     }
   };
-
-  const showFlash = (message) => setFlash(message);
 
   const flashThenRefresh = (message, gymId) => {
     showFlash(message);
@@ -1175,7 +1173,6 @@ export default function AdminDashboard() {
         onCancel={() => setGymToDelete(null)}
       />
 
-      <FlashBanner message={flash} onDismiss={() => setFlash('')} />
     </>
   );
 }

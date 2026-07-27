@@ -7,7 +7,6 @@ import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
 import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, RefreshCw, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
-import FlashBanner from '../components/FlashBanner';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -19,7 +18,7 @@ import { localizeNotification } from '../utils/notificationText';
 export default function OwnerLayout() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { summary, flash, clearFlash, readOnly, branches, selectedBranchId, setSelectedBranchId, branchReadOnly, selectedBranch, gymBooting, error, fetchCoreData, loadSubscription } = useGym();
+  const { summary, readOnly, branches, selectedBranchId, setSelectedBranchId, branchReadOnly, selectedBranch, gymBooting, error, fetchCoreData, loadSubscription } = useGym();
   const navigate = useNavigate();
   const location = useLocation();
   const ownerAccount = isGymOwner(user?.role);
@@ -402,7 +401,6 @@ export default function OwnerLayout() {
         )}
       </SlidePanel>
 
-      <FlashBanner message={flash} onDismiss={clearFlash} />
     </div>
   );
 }

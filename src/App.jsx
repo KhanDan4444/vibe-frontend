@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ChunkLoadErrorBoundary } from './components/ChunkLoadErrorBoundary';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PreferencesProvider } from './context/PreferencesContext';
+import { FlashProvider } from './context/FlashContext';
 import { GymProvider } from './context/GymContext';
 import { OfflineProvider } from './offline/OfflineContext';
 import { lazyWithRetry } from './utils/lazyWithRetry';
@@ -81,6 +82,7 @@ export default function App() {
       <OfflineProvider>
         <BrowserRouter>
           <PreferencesProvider>
+            <FlashProvider>
             <ChunkLoadErrorBoundary>
             <Suspense fallback={<RouteFallback />}>
               <Routes>
@@ -171,6 +173,7 @@ export default function App() {
             </Routes>
             </Suspense>
             </ChunkLoadErrorBoundary>
+            </FlashProvider>
           </PreferencesProvider>
         </BrowserRouter>
       </OfflineProvider>

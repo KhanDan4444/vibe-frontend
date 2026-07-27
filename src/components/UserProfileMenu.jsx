@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { usePreferences } from '../context/PreferencesContext';
 import { isGymOwner, isGymStaff, isPlatformAdmin } from '../utils/roles';
 import { ProfilePanel, PasswordPanel } from './account/AccountPanels';
-import FlashBanner from './FlashBanner';
+import { useFlash } from '../context/FlashContext';
 import { menuItem, menuSurface } from '../utils/surfaceClasses';
 import { User, KeyRound, LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
 
@@ -45,7 +45,7 @@ export default function UserProfileMenu({ compact = false }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
-  const [flash, setFlash] = useState('');
+  const { showFlash } = useFlash();
 
   const displayName = user?.name || user?.email || user?.username || 'User';
   const subtitle = roleSubtitle(user?.role, t);
@@ -187,14 +187,13 @@ export default function UserProfileMenu({ compact = false }) {
       <ProfilePanel
         open={profileOpen}
         onClose={() => setProfileOpen(false)}
-        onSuccess={setFlash}
+        onSuccess={showFlash}
       />
       <PasswordPanel
         open={passwordOpen}
         onClose={() => setPasswordOpen(false)}
-        onSuccess={setFlash}
+        onSuccess={showFlash}
       />
-      <FlashBanner message={flash} onDismiss={() => setFlash('')} />
     </>
   );
 }
