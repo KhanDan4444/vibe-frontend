@@ -679,6 +679,51 @@
     animation: app-page-in 0.25s ease-out;
   }
 
+  @keyframes flash-toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes flash-toast-out {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+    }
+  }
+
+  @keyframes flash-toast-progress {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
+
+  .flash-toast-in {
+    animation: flash-toast-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .flash-toast-out {
+    animation: flash-toast-out 0.22s cubic-bezier(0.4, 0, 1, 1) forwards;
+  }
+
+  .flash-toast-progress {
+    animation-name: flash-toast-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+  }
+
   .app-skeleton {
     @apply animate-pulse rounded-md bg-slate-200 dark:bg-app-border-subtle;
   }

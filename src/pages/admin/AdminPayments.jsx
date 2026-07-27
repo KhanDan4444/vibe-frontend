@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { formatMoney } from '../../utils/formatMoney';
+import { runInBackground } from '../../utils/runInBackground';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { DateField } from '../../components/DateField';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
@@ -180,7 +181,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       const res = await apiFetch(`/admin/payments/${paymentToDelete.id}`, { method: 'DELETE' });
       const resData = await parseApiResponse(res);
       if (!res.ok) throw new Error(resData.error || 'Failed to delete payment');
-      await fetchPayments();
+      runInBackground(fetchPayments());
     } catch (err) {
       setError(err.message);
     } finally {
@@ -197,7 +198,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to update payment');
       setEditState({ isOpen: false, payment: null, error: '' });
-      await fetchPayments();
+      runInBackground(fetchPayments());
     } catch (err) {
       setEditState((s) => ({ ...s, error: err.message }));
     } finally {
@@ -214,7 +215,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to collect payment');
       setCollectState({ isOpen: false, gym: null, error: '' });
-      await fetchPayments();
+      runInBackground(fetchPayments());
     } catch (err) {
       setCollectState((s) => ({ ...s, error: err.message }));
     } finally {

@@ -1,6 +1,7 @@
 // src/pages/owner/Members.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -29,6 +30,7 @@ import { getMembers, getMember } from '../../services/memberService';
 import { DEFAULT_MEMBER_SORT, MEMBER_SORT_OPTIONS, sortMembersList } from '../../utils/listSort';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
 import { formatDisplayDate } from '../../utils/date';
 import { tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
@@ -219,18 +221,26 @@ export default function Members() {
     await Promise.all([fetchMembers(), refreshSummary()]);
   };
 
+  const refreshAfterMemberChange = (memberId) => {
+    const tasks = [afterMutation()];
+    if (memberId && selectedMember?.id === memberId) {
+      tasks.push(loadMemberById(memberId));
+    }
+    runInBackground(Promise.all(tasks));
+  };
+
   const handleEnrollSubmit = async (data) => {
     setSaving(true);
     setModalState((s) => ({ ...s, error: '', fieldErrors: {} }));
     try {
       await enrollMember(data);
       setModalState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      await afterMutation();
       showFlash(
-        data.skipPayment
-          ? t('pages.members.enrolledSkip', { name: data.name })
-          : t('pages.members.enrolledPaid', { name: data.name })
+        flashFromKey(t, data.skipPayment ? 'enrolledSkip' : 'enrolledPaid', {
+          subtitleParams: { name: data.name },
+        })
       );
+      refreshAfterMemberChange();
     } catch (err) {
       setModalState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));
     } finally {
@@ -246,11 +256,8 @@ export default function Members() {
       await updateMember(modalState.member.id, data);
       const memberId = modalState.member.id;
       setModalState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      await afterMutation();
-      if (selectedMember?.id === memberId) {
-        await loadMemberById(memberId);
-      }
-      showFlash(t('pages.members.updated'));
+      showFlash(flashFromKey(t, 'memberUpdated'));
+      refreshAfterMemberChange(memberId);
     } catch (err) {
       setModalState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));
     } finally {
@@ -267,11 +274,8 @@ export default function Members() {
       const memberId = renewState.member.id;
       const name = renewState.member.name;
       setRenewState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      await afterMutation();
-      if (selectedMember?.id === memberId) {
-        await loadMemberById(memberId);
-      }
-      showFlash(t('pages.members.renewed', { name }));
+      showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
+      refreshAfterMemberChange(memberId);
     } catch (err) {
       setRenewState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));
     } finally {
@@ -284,11 +288,8 @@ export default function Members() {
     setError('');
     try {
       await updateMember(id, data);
-      await afterMutation();
-      if (selectedMember?.id === id) {
-        await loadMemberById(id);
-      }
-      showFlash(t('pages.members.contactUpdated'));
+      showFlash(flashFromKey(t, 'contactUpdated'));
+      refreshAfterMemberChange(id);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -306,15 +307,12 @@ export default function Members() {
       const memberId = changePlanState.member.id;
       const name = changePlanState.member.name;
       setChangePlanState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      await afterMutation();
-      if (selectedMember?.id === memberId) {
-        await loadMemberById(memberId);
-      }
       showFlash(
-        data.amount > 0
-          ? t('pages.members.planChangedPaid', { name })
-          : t('pages.members.planChanged', { name })
+        flashFromKey(t, data.amount > 0 ? 'planChangedPaid' : 'planChanged', {
+          subtitleParams: { name },
+        })
       );
+      refreshAfterMemberChange(memberId);
     } catch (err) {
       setChangePlanState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));
     } finally {
@@ -338,11 +336,8 @@ export default function Members() {
       const name = member?.name || 'member';
       const memberId = member?.id;
       setPaymentState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      await afterMutation();
-      if (selectedMember?.id === memberId) {
-        await loadMemberById(memberId);
-      }
-      showFlash(t('pages.members.paymentRecorded', { name }));
+      showFlash(flashFromKey(t, 'paymentRecorded', { subtitleParams: { name } }));
+      refreshAfterMemberChange(memberId);
     } catch (err) {
       setPaymentState((s) => ({ ...s, ...mutationErrorState(err) }));
     } finally {
@@ -354,8 +349,8 @@ export default function Members() {
     const name = selectedMember?.name || 'Member';
     await deleteMember(id);
     setSelectedMember(null);
-    await afterMutation();
-    showFlash(t('pages.members.removed', { name }));
+    showFlash(flashFromKey(t, 'memberDeleted', { subtitleParams: { name }, variant: 'danger' }));
+    runInBackground(afterMutation());
   };
 
   const handleTransferSubmit = async (targetBranchId) => {
@@ -367,11 +362,15 @@ export default function Members() {
       const name = transferState.member.name;
       const updated = mapMemberFromApi(data);
       setTransferState({ isOpen: false, member: null });
-      await afterMutation();
       if (selectedMember?.id === transferState.member.id && updated) {
         setSelectedMember(updated);
       }
-      showFlash(t('pages.members.transferred', { name, branch: updated?.branchName || t('branch.label') }));
+      showFlash(
+        flashFromKey(t, 'transferred', {
+          subtitleParams: { name, branch: updated?.branchName || t('branch.label') },
+        })
+      );
+      runInBackground(afterMutation());
     } catch (err) {
       setError(formatApiError(err));
     } finally {
@@ -388,8 +387,8 @@ export default function Members() {
     try {
       await deleteMember(id);
       if (selectedMember?.id === id) setSelectedMember(null);
-      await afterMutation();
-      showFlash(t('pages.members.removed', { name }));
+      showFlash(flashFromKey(t, 'memberDeleted', { subtitleParams: { name }, variant: 'danger' }));
+      runInBackground(afterMutation());
     } catch (err) {
       setError(err.message);
     }

@@ -10,6 +10,8 @@ import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
+import { runInBackground } from '../../utils/runInBackground';
 import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
@@ -181,8 +183,8 @@ export default function Branches() {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to save branch');
       setModal({ open: false, branch: null });
-      showFlash(modal.branch ? t('pages.branches.branchUpdated') : t('pages.branches.branchCreated'));
-      await Promise.all([load(), reloadBranches()]);
+      showFlash(flashFromKey(t, modal.branch ? 'branchUpdated' : 'branchCreated'));
+      runInBackground(Promise.all([load(), reloadBranches()]));
     } catch (err) {
       setModalError(err.message);
     } finally {
@@ -197,8 +199,8 @@ export default function Branches() {
     const res = await updateBranch(apiFetch, branch.id, { is_active: false });
     const data = await parseApiResponse(res);
     if (!res.ok) throw apiErrorFromResponse(data, res.status);
-    showFlash(t('pages.branches.branchDeactivated', { name: branch.name }));
-    await Promise.all([load(), reloadBranches()]);
+    showFlash(flashFromKey(t, 'branchDeactivated', { subtitleParams: { name: branch.name } }));
+    runInBackground(Promise.all([load(), reloadBranches()]));
   };
 
   const toggleActive = async (branch) => {
@@ -218,8 +220,8 @@ export default function Branches() {
       const res = await updateBranch(apiFetch, branch.id, { is_active: true });
       const data = await parseApiResponse(res);
       if (!res.ok) throw apiErrorFromResponse(data, res.status);
-      showFlash(t('pages.branches.branchReactivated', { name: branch.name }));
-      await Promise.all([load(), reloadBranches()]);
+      showFlash(flashFromKey(t, 'branchReactivated', { subtitleParams: { name: branch.name } }));
+      runInBackground(Promise.all([load(), reloadBranches()]));
     } catch (err) {
       setError(err.message);
     }
@@ -247,8 +249,8 @@ export default function Branches() {
       const res = await updateBranch(apiFetch, branch.id, { is_default: true });
       const data = await parseApiResponse(res);
       if (!res.ok) throw apiErrorFromResponse(data, res.status);
-      showFlash(t('pages.branches.branchDefaultSet', { name: branch.name }));
-      await Promise.all([load(), reloadBranches()]);
+      showFlash(flashFromKey(t, 'branchDefaultSet', { subtitleParams: { name: branch.name } }));
+      runInBackground(Promise.all([load(), reloadBranches()]));
     } catch (err) {
       setError(err.message);
     }

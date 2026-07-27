@@ -1132,5 +1132,139 @@
     "title": "Miseensummaan ni barbaachisa",
     "body": "Eeyyamni jimii keetii dhumateera. Seensa deebisee argachuuf gargaarsa plaatfoormii qunnami ykn haaromsi.",
     "signOut": "Bahi"
+  },
+  "flash": {
+    "saved": {
+      "title": "Milkaa'inaan olkaa'ameera",
+      "subtitle": "Jijjiiramni keessan iddoo isaa irratti jira."
+    },
+    "profileSaved": {
+      "title": "Profaayiliin olkaa'ameera",
+      "subtitle": "Odeeffannoon herregaa keessan haaromfameera."
+    },
+    "passwordUpdated": {
+      "title": "Jechi iccitii haaromfameera",
+      "subtitle": "Yeroo itti aanu seenuu yeroo jecha iccitii haaraa fayyadamaa."
+    },
+    "enrolledSkip": {
+      "title": "Miseensi galmaa'eera",
+      "subtitle": "{{name}} si'aawaa dha — kaffaltiin booda fudhatamuu danda'a."
+    },
+    "enrolledPaid": {
+      "title": "Miseensi galmaa'eera",
+      "subtitle": "{{name}} si'aawaa fi kaffaltiin galmeeffameera."
+    },
+    "memberUpdated": {
+      "title": "Miseensi haaromfameera",
+      "subtitle": "Odeeffannoon profaayilii fi miseensummaa olkaa'ameera."
+    },
+    "contactUpdated": {
+      "title": "Quunnamtiin haaromfameera",
+      "subtitle": "Maqaa fi bilbila olkaa'ameera."
+    },
+    "renewed": {
+      "title": "Miseensummaan haaromfameera",
+      "subtitle": "Guyyoonni yeroo haaraa {{name}} haaromfameera."
+    },
+    "planChanged": {
+      "title": "Karooraan haaromfameera",
+      "subtitle": "{{name}} gara karoora haaraatti jijjiirameera."
+    },
+    "planChangedPaid": {
+      "title": "Karooraan haaromfameera",
+      "subtitle": "{{name}} karoora jijjiirtee kaffaltiin galmeeffameera."
+    },
+    "paymentRecorded": {
+      "title": "Kaffaltiin galmeeffameera",
+      "subtitle": "Galii fi haalli {{name}} haaromfameera."
+    },
+    "memberDeleted": {
+      "title": "Miseensi haqameera",
+      "subtitle": "{{name}} fi seenaan kaffaltii isaa haqameera."
+    },
+    "transferred": {
+      "title": "Miseensi darbeera",
+      "subtitle": "{{name}} amma {{branch}} irratti jira."
+    },
+    "paymentUpdated": {
+      "title": "Kaffaltiin haaromfameera",
+      "subtitle": "Galmee daldalaa sirreeffameera."
+    },
+    "paymentDeleted": {
+      "title": "Kaffaltiin haqameera",
+      "subtitle": "Kaffaltiin kun galii irraa haqameera."
+    },
+    "branchCreated": {
+      "title": "Dameen uumameera",
+      "subtitle": "Amma miseensotaafi hojjettota ramaduu dandeessu."
+    },
+    "branchUpdated": {
+      "title": "Dameen haaromfameera",
+      "subtitle": "Odeeffannoon damee olkaa'ameera."
+    },
+    "branchDeactivated": {
+      "title": "Dameen cufameera",
+      "subtitle": "{{name}} ramaddii haaraaf hin mul'atu."
+    },
+    "branchReactivated": {
+      "title": "Dameen deebi'ee banameera",
+      "subtitle": "{{name}} amma ni argama."
+    },
+    "branchDefaultSet": {
+      "title": "Damee baramaawaa murteeffameera",
+      "subtitle": "{{name}} amma galmeessuuf baramaawaa dha."
+    },
+    "staffCreated": {
+      "title": "Herrega hojjettootaa uumameera",
+      "subtitle": "{{name}} odeeffannoo seensaa kenniteen seenuu danda'a."
+    },
+    "staffUpdated": {
+      "title": "Herrega hojjettootaa haaromfameera",
+      "subtitle": "Seensaafi dameewwan olkaa'ameera."
+    },
+    "staffEnabled": {
+      "title": "Hojjettoonni dandeessifameera",
+      "subtitle": "{{name}} amma deebi'ee seenuu danda'a."
+    },
+    "staffDisabled": {
+      "title": "Hojjettoonni cufameera",
+      "subtitle": "{{name}} amma seenuu hin danda'u."
+    },
+    "gymUpdated": {
+      "title": "Jimii haaromfameera",
+      "subtitle": "Odeeffannoon galmee olkaa'ameera."
+    },
+    "ownerPasswordReset": {
+      "title": "Jechi iccitii abbaa qabeenyaa haaromfameera",
+      "subtitle": "Jecha iccitii haaraa {{name}} waliin nageenyaan qoodaa."
+    },
+    "gymRegistered": {
+      "title": "Jimii galmaa'eera",
+      "subtitle": "{{name}} waltajjii irratti jira — kaffaltiin ammaaf dhiifameera."
+    },
+    "gymRegisteredWithPayment": {
+      "title": "Jimii galmaa'eera",
+      "subtitle": "{{name}} si'aawaa fi kaffaltiin jalqabaa galmeeffameera."
+    },
+    "gymRenewed": {
+      "title": "Eeyyamni haaromfameera",
+      "subtitle": "Yeroon SaaS fi kaffaltiin {{name}} haaromfameera."
+    },
+    "gymPlanChanged": {
+      "title": "Karooraan jijjiirameera",
+      "subtitle": "{{name}} gara karoora SaaS haaraatti jijjiirameera."
+    },
+    "gymPlanChangedWithPayment": {
+      "title": "Karooraan jijjiirameera",
+      "subtitle": "{{name}} karoora jijjiirtee kaffaltiin galmeeffameera."
+    },
+    "adminPaymentRecorded": {
+      "title": "Kaffaltiin galmeeffameera",
+      "subtitle": "Kaffaltiin SaaS {{name}} irratti galmeeffameera."
+    },
+    "gymRemoved": {
+      "title": "Jimii haqameera",
+      "subtitle": "{{name}} fi odeeffannoon walqabatu hundi haqameera."
+    }
   }
 }

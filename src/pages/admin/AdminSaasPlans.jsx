@@ -8,6 +8,7 @@ import { getSaasPlans, createSaasPlan, updateSaasPlan, deleteSaasPlan } from '..
 import { useTranslation } from 'react-i18next';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { formatMoney } from '../../utils/formatMoney';
+import { runInBackground } from '../../utils/runInBackground';
 
 export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to create plan');
       setIsAddOpen(false);
-      await fetchPlans();
+      runInBackground(fetchPlans());
     } catch (err) {
       setError(err.message);
     } finally {
@@ -82,7 +83,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to update plan');
       setSelectedPlan(null);
-      await fetchPlans();
+      runInBackground(fetchPlans());
     } catch (err) {
       setError(err.message);
     } finally {
@@ -107,7 +108,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
       const res = await deleteSaasPlan(apiFetch, planId);
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to delete plan');
-      await fetchPlans();
+      runInBackground(fetchPlans());
     } catch (err) {
       setError(err.message);
     }

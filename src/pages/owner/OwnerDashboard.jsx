@@ -15,6 +15,7 @@ import { formatDisplayDate } from '../../utils/date';
 import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
 import { panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
@@ -93,7 +94,7 @@ export default function OwnerDashboard() {
       await renewMember(renewState.member.id, data);
       const name = renewState.member.name;
       setRenewState({ isOpen: false, member: null });
-      showFlash(t('pages.dashboard.renewed', { name }));
+      showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
     } catch (err) {
       setRenewError(err.message);
     } finally {

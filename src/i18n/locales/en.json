@@ -1132,5 +1132,139 @@
     "title": "Subscription required",
     "body": "Your gym license has expired. Contact platform support or renew to restore access.",
     "signOut": "Sign out"
+  },
+  "flash": {
+    "saved": {
+      "title": "Saved successfully",
+      "subtitle": "Your changes are in place."
+    },
+    "profileSaved": {
+      "title": "Profile saved",
+      "subtitle": "Your account details are updated."
+    },
+    "passwordUpdated": {
+      "title": "Password updated",
+      "subtitle": "Use your new password next time you sign in."
+    },
+    "enrolledSkip": {
+      "title": "Member enrolled",
+      "subtitle": "{{name}} is active — payment can be collected later."
+    },
+    "enrolledPaid": {
+      "title": "Member enrolled",
+      "subtitle": "{{name}} is active and payment is on file."
+    },
+    "memberUpdated": {
+      "title": "Member updated",
+      "subtitle": "Profile and membership details were saved."
+    },
+    "contactUpdated": {
+      "title": "Contact updated",
+      "subtitle": "Name and phone were saved."
+    },
+    "renewed": {
+      "title": "Membership renewed",
+      "subtitle": "{{name}}'s new term dates are updated."
+    },
+    "planChanged": {
+      "title": "Plan updated",
+      "subtitle": "{{name}} switched to the new plan."
+    },
+    "planChangedPaid": {
+      "title": "Plan updated",
+      "subtitle": "{{name}} switched plans and payment was recorded."
+    },
+    "paymentRecorded": {
+      "title": "Payment recorded",
+      "subtitle": "Revenue and status for {{name}} are updated."
+    },
+    "memberDeleted": {
+      "title": "Member removed",
+      "subtitle": "{{name}} and their payment history were deleted."
+    },
+    "transferred": {
+      "title": "Member transferred",
+      "subtitle": "{{name}} is now at {{branch}}."
+    },
+    "paymentUpdated": {
+      "title": "Payment updated",
+      "subtitle": "The transaction record was corrected."
+    },
+    "paymentDeleted": {
+      "title": "Payment removed",
+      "subtitle": "This payment was removed from revenue."
+    },
+    "branchCreated": {
+      "title": "Branch created",
+      "subtitle": "You can now assign members and staff to it."
+    },
+    "branchUpdated": {
+      "title": "Branch updated",
+      "subtitle": "Branch details were saved."
+    },
+    "branchDeactivated": {
+      "title": "Branch deactivated",
+      "subtitle": "{{name}} is hidden from new assignments."
+    },
+    "branchReactivated": {
+      "title": "Branch reactivated",
+      "subtitle": "{{name}} is available again."
+    },
+    "branchDefaultSet": {
+      "title": "Default branch set",
+      "subtitle": "{{name}} is now the default for new enrollments."
+    },
+    "staffCreated": {
+      "title": "Staff account created",
+      "subtitle": "{{name}} can sign in with the credentials you set."
+    },
+    "staffUpdated": {
+      "title": "Staff account updated",
+      "subtitle": "Login and branch access were saved."
+    },
+    "staffEnabled": {
+      "title": "Staff enabled",
+      "subtitle": "{{name}} can sign in again."
+    },
+    "staffDisabled": {
+      "title": "Staff disabled",
+      "subtitle": "{{name}} can no longer sign in."
+    },
+    "gymUpdated": {
+      "title": "Gym updated",
+      "subtitle": "Registry details were saved."
+    },
+    "ownerPasswordReset": {
+      "title": "Owner password reset",
+      "subtitle": "Share the new password with {{name}} securely."
+    },
+    "gymRegistered": {
+      "title": "Gym registered",
+      "subtitle": "{{name}} is on the platform — payment skipped for now."
+    },
+    "gymRegisteredWithPayment": {
+      "title": "Gym registered",
+      "subtitle": "{{name}} is active and the first payment is recorded."
+    },
+    "gymRenewed": {
+      "title": "License renewed",
+      "subtitle": "{{name}}'s SaaS term and payment are updated."
+    },
+    "gymPlanChanged": {
+      "title": "Plan changed",
+      "subtitle": "{{name}} switched to the new SaaS plan."
+    },
+    "gymPlanChangedWithPayment": {
+      "title": "Plan changed",
+      "subtitle": "{{name}} switched plans and payment was recorded."
+    },
+    "adminPaymentRecorded": {
+      "title": "Payment recorded",
+      "subtitle": "SaaS payment for {{name}} is on file."
+    },
+    "gymRemoved": {
+      "title": "Gym removed",
+      "subtitle": "{{name}} and all related data were deleted."
+    }
   }
 }

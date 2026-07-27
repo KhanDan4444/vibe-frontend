@@ -1132,5 +1132,139 @@
     "target": "ግብ",
     "when": "መቼ",
     "who": "ማን"
+  },
+  "flash": {
+    "saved": {
+      "title": "በተሳካ ሁኔታ ተቀምጧል",
+      "subtitle": "ለውጦችዎ ተግባራት ላይ ናቸው።"
+    },
+    "profileSaved": {
+      "title": "መገለጫ ተቀምጧል",
+      "subtitle": "የመለያ መረጃዎ ተዘምኗል።"
+    },
+    "passwordUpdated": {
+      "title": "የይለፍ ቃል ተዘምኗል",
+      "subtitle": "ሲያስገ enter ያደርጉትን አዲስ የይለፍ ቃል ይጠቀሙ።"
+    },
+    "enrolledSkip": {
+      "title": "አባል ተመዝግቧል",
+      "subtitle": "{{name}} ንቁ ነው — ክፍያ በኋላ ሊሰበሰብ ይችላል።"
+    },
+    "enrolledPaid": {
+      "title": "አባል ተመዝግቧል",
+      "subtitle": "{{name}} ንቁ ነው እና ክፍያ ተመዝግቧል።"
+    },
+    "memberUpdated": {
+      "title": "አባል ተዘምኗል",
+      "subtitle": "የመገለጫ እና የአባልነት መረጃ ተቀምጧል።"
+    },
+    "contactUpdated": {
+      "title": "የመገኛ መረጃ ተዘምኗል",
+      "subtitle": "ስም እና ስልክ ተቀምጧል።"
+    },
+    "renewed": {
+      "title": "አባልነት ተደሰቷል",
+      "subtitle": "አዲሱ የ{{name}} ጊዜ ገደብ ቀኖች ተዘምነዋል።"
+    },
+    "planChanged": {
+      "title": "ዕቅድ ተዘምኗል",
+      "subtitle": "{{name}} ወደ አዲሱ ዕቅድ ተቀይሯል።"
+    },
+    "planChangedPaid": {
+      "title": "ዕቅድ ተዘምኗል",
+      "subtitle": "{{name}} ዕቅድ ቀይሮ ክፍያ ተመዝግቧል።"
+    },
+    "paymentRecorded": {
+      "title": "ክፍያ ተመዝግቧል",
+      "subtitle": "ገቢ እና ሁኔታ ለ{{name}} ተዘምነዋል።"
+    },
+    "memberDeleted": {
+      "title": "አባል ተወግዷል",
+      "subtitle": "{{name}} እና የክፍያ ታሪካቸው ተሰርዟል።"
+    },
+    "transferred": {
+      "title": "አባል ተላልፏል",
+      "subtitle": "{{name}} አሁን በ{{branch}} ላይ ነው።"
+    },
+    "paymentUpdated": {
+      "title": "ክፍያ ተዘምኗል",
+      "subtitle": "የግብይት መዝገቡ ተሻሽሏል።"
+    },
+    "paymentDeleted": {
+      "title": "ክፍያ ተወግዷል",
+      "subtitle": "ይህ ክፍያ ከገቢ ተወግዷል።"
+    },
+    "branchCreated": {
+      "title": "ቅርንጫፍ ተፈጥሯል",
+      "subtitle": "አባላትን እና ሰራተኞችን ሊመድቡት ይችላሉ።"
+    },
+    "branchUpdated": {
+      "title": "ቅርንጫፍ ተዘምኗል",
+      "subtitle": "የቅርንጫፍ መረጃ ተቀምጧል።"
+    },
+    "branchDeactivated": {
+      "title": "ቅርንጫፍ ተሰናክሏል",
+      "subtitle": "{{name}} ለአዲስ መመደብ አይታይም።"
+    },
+    "branchReactivated": {
+      "title": "ቅርንጫፍ እንደገና ንቁ ሆኗል",
+      "subtitle": "{{name}} እንደገና ይገኛል።"
+    },
+    "branchDefaultSet": {
+      "title": "ነባሪ ቅርንጫፍ ተዘጋጅቷል",
+      "subtitle": "{{name}} ለአዲስ መመዝገብ ነባሪ ነው።"
+    },
+    "staffCreated": {
+      "title": "የሰራተኛ መለያ ተፈጥሯል",
+      "subtitle": "{{name}} በተሰጠው የመግቢያ መረጃ መግባት ይችላል።"
+    },
+    "staffUpdated": {
+      "title": "የሰራተኛ መለያ ተዘምኗል",
+      "subtitle": "መግቢያ እና የቅርንጫፍ መዳረሻ ተቀምጧል።"
+    },
+    "staffEnabled": {
+      "title": "ሰራተኛ ንቁ ሆኗል",
+      "subtitle": "{{name}} እንደገና መግባት ይችላል።"
+    },
+    "staffDisabled": {
+      "title": "ሰራተኛ ተሰናክሏል",
+      "subtitle": "{{name}} እንደገና መግባት አይችልም።"
+    },
+    "gymUpdated": {
+      "title": "ጂም ተዘምኗል",
+      "subtitle": "የመዝገብ መረጃ ተቀምጧል።"
+    },
+    "ownerPasswordReset": {
+      "title": "የባለቤት የይለፍ ቃል ተደጋግሟል",
+      "subtitle": "አዲሱን የይለፍ ቃል ለ{{name}} በደህንነት ያጋሩ።"
+    },
+    "gymRegistered": {
+      "title": "ጂም ተመዝግቧል",
+      "subtitle": "{{name}} ተመዝግቧል — ክፍያ ለአሁን ተዘግዷል።"
+    },
+    "gymRegisteredWithPayment": {
+      "title": "ጂም ተመዝግቧል",
+      "subtitle": "{{name}} ንቁ ነው እና የመጀመሪያ ክፍያ ተመዝግቧል።"
+    },
+    "gymRenewed": {
+      "title": "የፈቃድ ጊዜ ተደሰቷል",
+      "subtitle": "የ{{name}} SaaS ጊዜ እና ክፍያ ተዘምነዋል።"
+    },
+    "gymPlanChanged": {
+      "title": "ዕቅድ ተቀይሯል",
+      "subtitle": "{{name}} ወደ አዲሱ SaaS ዕቅድ ተቀይሯል።"
+    },
+    "gymPlanChangedWithPayment": {
+      "title": "ዕቅድ ተቀይሯል",
+      "subtitle": "{{name}} ዕቅድ ቀይሮ ክፍያ ተመዝግቧል።"
+    },
+    "adminPaymentRecorded": {
+      "title": "ክፍያ ተመዝግቧል",
+      "subtitle": "SaaS ክፍያ ለ{{name}} ተመዝግቧል።"
+    },
+    "gymRemoved": {
+      "title": "ጂም ተወግዷል",
+      "subtitle": "{{name}} እና ተያያዥ መረጃው ሁሉ ተሰርዟል።"
+    }
   }
 }

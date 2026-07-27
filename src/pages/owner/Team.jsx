@@ -9,6 +9,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
 import { tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
@@ -57,7 +58,7 @@ export default function Team() {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to create staff account');
       setModalState({ isOpen: false, member: null });
-      showFlash(t('pages.team.staffCreated', { name: data.staff.name }));
+      showFlash(flashFromKey(t, 'staffCreated', { subtitleParams: { name: data.staff.name } }));
       loadTeam();
     } catch (err) {
       setModalError(err.message);
@@ -81,7 +82,7 @@ export default function Team() {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to update staff account');
       setModalState({ isOpen: false, member: null });
-      showFlash(t('pages.team.staffUpdated'));
+      showFlash(flashFromKey(t, 'staffUpdated'));
       loadTeam();
     } catch (err) {
       setModalError(err.message);
@@ -93,7 +94,7 @@ export default function Team() {
   const handleToggleActive = async () => {
     if (!toggleTarget) return;
     if (readOnly) {
-      showFlash(t('alerts.readOnlyBody'));
+      showFlash({ title: t('alerts.readOnlyBody'), variant: 'warning' });
       setToggleTarget(null);
       return;
     }
@@ -102,11 +103,15 @@ export default function Team() {
       const res = await updateStaff(apiFetch, toggleTarget.id, { is_active: nextActive });
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to update staff account');
-      showFlash(nextActive ? t('pages.team.staffEnabled', { name: toggleTarget.name }) : t('pages.team.staffDisabled', { name: toggleTarget.name }));
+      showFlash(
+        flashFromKey(t, nextActive ? 'staffEnabled' : 'staffDisabled', {
+          subtitleParams: { name: toggleTarget.name },
+        })
+      );
       setToggleTarget(null);
       loadTeam();
     } catch (err) {
-      showFlash(err.message);
+      showFlash({ title: err.message, variant: 'danger' });
       setToggleTarget(null);
     }
   };

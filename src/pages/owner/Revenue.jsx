@@ -13,6 +13,7 @@ import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
 import { parseApiResponse } from '../../utils/api';
+import { runInBackground } from '../../utils/runInBackground';
 import { mapPaymentFromApi } from '../../utils/apiMappers';
 import { paymentMethodStyle, paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
 import { exportColumn, translatePaymentMethod } from '../../i18n/helpers';
@@ -25,6 +26,7 @@ import { toDateString, formatDisplayDate } from '../../utils/date';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
 import { tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
 
@@ -150,8 +152,8 @@ export default function Revenue() {
     try {
       await updatePayment(modalState.payment.id, data);
       setModalState({ isOpen: false, payment: null });
-      await Promise.all([fetchPayments(), refreshSummary()]);
-      showFlash(t('pages.revenue.paymentUpdated'));
+      showFlash(flashFromKey(t, 'paymentUpdated'));
+      runInBackground(Promise.all([fetchPayments(), refreshSummary()]));
     } catch (err) {
       setError(err.message);
     } finally {
@@ -166,8 +168,8 @@ export default function Revenue() {
     setError('');
     try {
       await deletePayment(id);
-      await Promise.all([fetchPayments(), refreshSummary()]);
-      showFlash(t('pages.revenue.paymentRemoved'));
+      showFlash(flashFromKey(t, 'paymentDeleted', { variant: 'danger' }));
+      runInBackground(Promise.all([fetchPayments(), refreshSummary()]));
     } catch (err) {
       setError(err.message);
     }

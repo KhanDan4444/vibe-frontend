@@ -12,6 +12,7 @@ import { branchQueryParams, branchStorageKey } from '../utils/branchQuery';
 import { isGymOwner } from '../utils/roles';
 import SubscriptionLockout from '../components/SubscriptionLockout';
 import { SYNCED_EVENT } from '../offline/events';
+import { runInBackground } from '../utils/runInBackground';
 
 const EMPTY_SUMMARY = {
   totalMembers: 0,
@@ -70,7 +71,7 @@ export const GymProvider = ({ children }) => {
   branchReadOnlyRef.current = branchReadOnly;
 
   const showFlash = useCallback((message) => {
-    setFlash(message);
+    setFlash(typeof message === 'string' ? message : { variant: 'success', ...message });
   }, []);
 
   const clearFlash = useCallback(() => setFlash(null), []);
@@ -305,9 +306,9 @@ export const GymProvider = ({ children }) => {
     }
     const refreshPlans = options.refreshPlans === true;
     if (refreshPlans) {
-      await fetchCoreData({ includePlans: true });
+      runInBackground(fetchCoreData({ includePlans: true }));
     } else {
-      await refreshSummary();
+      runInBackground(refreshSummary());
     }
     return data;
   };
@@ -457,7 +458,7 @@ export const GymProvider = ({ children }) => {
       if (!res.ok) {
         throw new Error(data.error || `Request failed (${res.status})`);
       }
-      await refreshSummary();
+      runInBackground(refreshSummary());
       return data;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -472,7 +473,7 @@ export const GymProvider = ({ children }) => {
       if (!res.ok) {
         throw new Error(data.error || `Request failed (${res.status})`);
       }
-      await refreshSummary();
+      runInBackground(refreshSummary());
       return data;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -34,6 +34,7 @@ import { FilterChip, FilterChipBar } from '../../components/FilterChip';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { AdminTableRowsSkeleton, AdminListSkeleton, ChartPanelSkeleton } from '../../components/LoadingSkeletons';
 import FlashBanner from '../../components/FlashBanner';
+import { runInBackground } from '../../utils/runInBackground';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -47,6 +48,7 @@ import { DEFAULT_GYM_SORT, ADMIN_GYM_SORT_OPTIONS, sortGymsList } from '../../ut
 import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
 
 const UNPAID = 'Unpaid';
@@ -267,9 +269,7 @@ export default function AdminDashboard() {
   };
 
   const refreshAfterChange = async (gymId) => {
-    await fetchGyms();
-    await fetchSaasPayments();
-    await fetchPlatformMetrics();
+    await Promise.all([fetchGyms(), fetchSaasPayments(), fetchPlatformMetrics()]);
     if (gymId) {
       setDetailRefreshKey((k) => k + 1);
     }
@@ -277,14 +277,18 @@ export default function AdminDashboard() {
 
   const showFlash = (message) => setFlash(message);
 
+  const flashThenRefresh = (message, gymId) => {
+    showFlash(message);
+    runInBackground(refreshAfterChange(gymId));
+  };
+
   const handleUpdateGym = async (gymId, formData) => {
     const payload = { ...formData };
     delete payload.saas_plan_id;
     const res = await updateGym(apiFetch, gymId, payload);
     const data = await parseApiResponse(res);
     if (!res.ok) throw new Error(data.error || 'Failed to update gym');
-    await refreshAfterChange(gymId);
-    showFlash(t('admin.gymUpdated'));
+    flashThenRefresh(flashFromKey(t, 'gymUpdated'), gymId);
   };
 
   const handleResetOwnerPassword = async (gymId, password) => {
@@ -292,8 +296,10 @@ export default function AdminDashboard() {
     const data = await parseApiResponse(res);
     if (!res.ok) throw new Error(data.error || 'Failed to reset owner password');
     const ownerName = data.owner?.name || gymDetail?.owner_name || t('account.role.owner');
-    await refreshAfterChange(gymId);
-    showFlash(t('admin.ownerPasswordReset', { name: ownerName }));
+    flashThenRefresh(
+      flashFromKey(t, 'ownerPasswordReset', { subtitleParams: { name: ownerName } }),
+      gymId
+    );
   };
 
   const handleGymEditSubmit = async (formData) => {
@@ -318,9 +324,13 @@ export default function AdminDashboard() {
       throw new Error(data.error || 'Failed to delete gym');
     }
     closeGymDetail();
-    await fetchGyms();
-    await fetchPlatformMetrics();
-    showFlash(t('admin.gymRemoved', { name: deletedGym?.name || 'Gym' }));
+    showFlash(
+      flashFromKey(t, 'gymRemoved', {
+        subtitleParams: { name: deletedGym?.name || 'Gym' },
+        variant: 'danger',
+      })
+    );
+    runInBackground(Promise.all([fetchGyms(), fetchPlatformMetrics()]));
   };
 
   const handleConfirmDeleteGym = async () => {
@@ -361,11 +371,11 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error(resData.error || 'Failed to register gym');
 
       setIsRegisterOpen(false);
-      await refreshAfterChange(null);
-      showFlash(
-        data.skipPayment
-          ? t('admin.gymRegistered', { name: data.gymName })
-          : t('admin.gymRegisteredWithPayment', { name: data.gymName })
+      flashThenRefresh(
+        flashFromKey(t, data.skipPayment ? 'gymRegistered' : 'gymRegisteredWithPayment', {
+          subtitleParams: { name: data.gymName },
+        }),
+        null
       );
     } catch (err) {
       setRegisterError(err.message);
@@ -385,8 +395,7 @@ export default function AdminDashboard() {
       const gymId = renewState.gym.id;
       const name = renewState.gym.name;
       setRenewState({ isOpen: false, gym: null, error: '' });
-      await refreshAfterChange(gymId);
-      showFlash(t('admin.gymRenewed', { name }));
+      flashThenRefresh(flashFromKey(t, 'gymRenewed', { subtitleParams: { name } }), gymId);
     } catch (err) {
       setRenewState((s) => ({ ...s, error: err.message }));
     } finally {
@@ -405,11 +414,11 @@ export default function AdminDashboard() {
       const gymId = changePlanState.gym.id;
       const name = changePlanState.gym.name;
       setChangePlanState({ isOpen: false, gym: null, error: '' });
-      await refreshAfterChange(gymId);
-      showFlash(
-        formData.amount > 0
-          ? t('admin.gymPlanChangedWithPayment', { name })
-          : t('admin.gymPlanChanged', { name })
+      flashThenRefresh(
+        flashFromKey(t, formData.amount > 0 ? 'gymPlanChangedWithPayment' : 'gymPlanChanged', {
+          subtitleParams: { name },
+        }),
+        gymId
       );
     } catch (err) {
       setChangePlanState((s) => ({ ...s, error: err.message }));
@@ -443,8 +452,7 @@ export default function AdminDashboard() {
       const gymId = collectState.gym?.id;
       const name = collectState.gym?.name || 'Gym';
       setCollectState({ isOpen: false, gym: null, error: '' });
-      await refreshAfterChange(gymId);
-      showFlash(t('admin.paymentRecorded', { name }));
+      flashThenRefresh(flashFromKey(t, 'adminPaymentRecorded', { subtitleParams: { name } }), gymId);
     } catch (err) {
       setCollectState((s) => ({ ...s, error: err.message }));
     } finally {

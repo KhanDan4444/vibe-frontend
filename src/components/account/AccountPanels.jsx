@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { flashFromKey } from '../../i18n/flashToast';
 import { useAuth } from '../../context/AuthContext';
 import { changePassword } from '../../services/authService';
 import { getGymProfile, updateGymProfile } from '../../services/gymProfileService';
@@ -243,7 +244,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to save profile');
       applyProfile(data);
-      onSuccess?.(t('account.profileSaved'));
+      onSuccess?.(flashFromKey(t, 'profileSaved'));
       onClose();
     } catch (err) {
       setError(err.message);
@@ -467,7 +468,7 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
     try {
       const data = await changePassword(apiFetch, currentPassword, newPassword);
       clearForm();
-      onSuccess?.(data.message || t('account.passwordUpdated'));
+      onSuccess?.(flashFromKey(t, 'passwordUpdated'));
       onClose();
     } catch (err) {
       setError(err.message);
