@@ -7,6 +7,7 @@ import { menuItem, menuSurface } from '../utils/surfaceClasses';
 const OPTIONS = [
   { code: 'en', labelKey: 'profile.english' },
   { code: 'am', labelKey: 'profile.amharic' },
+  { code: 'om', labelKey: 'profile.afanOromo' },
 ];
 
 /**
@@ -60,7 +61,7 @@ export default function LanguageSwitcher({ compact = false }) {
         <div
           role="listbox"
           aria-label={t('profile.language')}
-          className={`absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl py-1 shadow-lg animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
+          className={`absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-xl py-1 shadow-lg animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
         >
           {OPTIONS.map((opt) => {
             const selected = language === opt.code;

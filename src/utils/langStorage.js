@@ -3,9 +3,17 @@ import { userFromStoredToken } from './authSession';
 export const LANGUAGE_STORAGE_KEY = 'vibe-lang';
 export const GUEST_LANGUAGE_KEY = 'vibe-lang:guest';
 
+/** @typedef {'en' | 'am' | 'om'} AppLanguage */
+
+/** @param {string | null | undefined} code */
+export function normalizeLanguage(code) {
+  if (code === 'am' || code === 'om') return code;
+  return 'en';
+}
+
 export function setDocumentLanguage(lng) {
   if (typeof document !== 'undefined') {
-    document.documentElement.lang = lng === 'am' ? 'am' : 'en';
+    document.documentElement.lang = normalizeLanguage(lng);
   }
 }
 
@@ -13,6 +21,7 @@ export function defaultGuestLanguage() {
   if (typeof navigator !== 'undefined') {
     const lang = navigator.language || '';
     if (lang.startsWith('am')) return 'am';
+    if (lang.startsWith('om')) return 'om';
   }
   return 'en';
 }
@@ -20,12 +29,12 @@ export function defaultGuestLanguage() {
 export function readGuestLanguage() {
   if (typeof window === 'undefined') return 'en';
   const guest = localStorage.getItem(GUEST_LANGUAGE_KEY);
-  if (guest === 'am' || guest === 'en') return guest;
+  if (guest === 'am' || guest === 'en' || guest === 'om') return guest;
   return defaultGuestLanguage();
 }
 
 export function persistGuestLanguage(code) {
-  const normalized = code === 'am' ? 'am' : 'en';
+  const normalized = normalizeLanguage(code);
   localStorage.setItem(GUEST_LANGUAGE_KEY, normalized);
   return normalized;
 }
@@ -46,11 +55,11 @@ export function readStoredLanguage(user) {
   const key = languageStorageKey(user);
   if (key) {
     const scoped = localStorage.getItem(key);
-    if (scoped === 'am' || scoped === 'en') return scoped;
+    if (scoped === 'am' || scoped === 'en' || scoped === 'om') return scoped;
   }
 
   const legacy = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-  if (legacy === 'am' || legacy === 'en') return legacy;
+  if (legacy === 'am' || legacy === 'en' || legacy === 'om') return legacy;
 
   return 'en';
 }
@@ -60,7 +69,7 @@ export function readBootstrapLanguage() {
 }
 
 export function persistLanguage(code, user) {
-  const normalized = code === 'am' ? 'am' : 'en';
+  const normalized = normalizeLanguage(code);
   const key = languageStorageKey(user);
   if (key) {
     localStorage.setItem(key, normalized);

@@ -86,7 +86,8 @@
     "themeDark": "Dark",
     "language": "Language",
     "english": "English",
-    "amharic": "አማርኛ"
+    "amharic": "አማርኛ",
+    "afanOromo": "Afaan Oromoo"
   },
   "admin": {
     "platformAdmin": "Platform Admin",

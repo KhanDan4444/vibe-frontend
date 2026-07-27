@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { setDocumentLanguage } from '../i18n';
 import {
+  normalizeLanguage,
   persistGuestLanguage,
   persistLanguage,
   readGuestLanguage,
@@ -19,10 +20,6 @@ import {
 const PreferencesContext = createContext(null);
 
 const AUTH_PATHS = ['/login', '/register-gym', '/forgot-password', '/reset-password'];
-
-function normalizeLanguage(stored) {
-  return stored === 'am' ? 'am' : 'en';
-}
 
 function isAuthPath(pathname) {
   return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
