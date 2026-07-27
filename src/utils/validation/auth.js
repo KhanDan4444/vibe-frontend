@@ -1,5 +1,6 @@
 import { ok, fail, firstFailure } from './result';
 import { validatePasswordRequired } from './passwords';
+import { isValidEthiopianPhone } from './phone';
 
 export const MIN_USERNAME_LENGTH = 3;
 export const MAX_USERNAME_LENGTH = 30;
@@ -32,12 +33,15 @@ export function validateOptionalEmail(value) {
   return ok();
 }
 
-/** @param {string|null|undefined} value */
-export function validateLoginIdentifier(value) {
+/**
+ * Gym-owner forgot-password identifier: username or Ethiopian mobile.
+ * @param {string|null|undefined} value
+ */
+export function validateForgotIdentifier(value) {
   const trimmed = String(value ?? '').trim();
-  if (!trimmed) return fail('validation.loginRequired', 'email');
-  if (trimmed.length > 255) return fail('validation.loginTooLong', 'email');
-  return ok();
+  if (!trimmed) return fail('validation.forgotIdentifierRequired', 'email');
+  if (isValidEthiopianPhone(trimmed)) return ok();
+  return validateUsername(trimmed);
 }
 
 /** @param {string|null|undefined} value */

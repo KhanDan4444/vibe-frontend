@@ -5,6 +5,7 @@
 
 import { API_BASE_URL } from '../config/api';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
+import { normalizeEthiopianPhone } from '../utils/validation/phone';
 
 async function postJson(path, body) {
   const res = await fetch(`${API_BASE_URL}/api${path}`, {
@@ -22,8 +23,13 @@ export async function forgotPassword(email) {
   return postJson('/auth/forgot-password', { email: email.trim().toLowerCase() });
 }
 
-export async function requestForgotPasswordOtp(username) {
-  return postJson('/auth/forgot-password/request-otp', { username: username.trim().toLowerCase() });
+/** @param {string} identifier Username or Ethiopian gym phone */
+export async function requestForgotPasswordOtp(identifier) {
+  const trimmed = String(identifier ?? '').trim();
+  const phone = normalizeEthiopianPhone(trimmed);
+  return postJson('/auth/forgot-password/request-otp', {
+    username: phone || trimmed.toLowerCase(),
+  });
 }
 
 export async function resetPasswordWithOtp({ sessionId, code, password }) {

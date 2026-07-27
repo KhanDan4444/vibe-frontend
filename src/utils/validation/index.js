@@ -31,6 +31,7 @@ export {
   validateUsername,
   validateOptionalEmail,
   validateLoginIdentifier,
+  validateForgotIdentifier,
   validateOtpCode,
   validateLogin,
   MIN_USERNAME_LENGTH,

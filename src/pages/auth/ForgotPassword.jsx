@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { requestForgotPasswordOtp, resetPasswordWithOtp } from '../../services/authService';
 import {
-  validateLoginIdentifier,
+  validateForgotIdentifier,
   validateOtpCode,
   validatePassword,
   validatePasswordMatch,
@@ -20,7 +20,7 @@ export default function ForgotPassword() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState('username');
-  const [username, setUsername] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
@@ -41,10 +41,10 @@ export default function ForgotPassword() {
     setError('');
     setMessage('');
     clearAllFieldErrors(setFieldErrors);
-    if (!showValidationError(validateLoginIdentifier(username), setError, t, { setFieldErrors })) return;
+    if (!showValidationError(validateForgotIdentifier(identifier), setError, t, { setFieldErrors })) return;
     setLoading(true);
     try {
-      const data = await requestForgotPasswordOtp(username);
+      const data = await requestForgotPasswordOtp(identifier);
       if (data.sessionId) {
         setSessionId(data.sessionId);
         setStep('reset');
@@ -102,21 +102,31 @@ export default function ForgotPassword() {
           <form className="space-y-4" onSubmit={handleRequestOtp}>
             <div>
               <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
-                {t('account.username')}
+                {t('auth.forgotIdentifierLabel')}
               </label>
               <input
                 type="text"
                 required
                 autoComplete="username"
-                value={username}
+                inputMode="text"
+                value={identifier}
                 onChange={(e) => {
-                  setUsername(e.target.value.toLowerCase());
+                  setIdentifier(e.target.value);
                   clearFieldError(setFieldErrors, 'email');
+                  clearFieldError(setFieldErrors, 'username');
                 }}
                 className={fc('email')}
-                placeholder={t('auth.forgotUsernamePlaceholder')}
+                placeholder={t('auth.forgotIdentifierPlaceholder')}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+              <FieldError
+                message={
+                  fieldErrorMessage(fieldErrors, 'email') ||
+                  fieldErrorMessage(fieldErrors, 'username')
+                }
+              />
+              <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                {t('auth.forgotIdentifierHint')}
+              </p>
             </div>
             <button
               type="submit"
