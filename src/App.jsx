@@ -1,31 +1,33 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { ChunkLoadErrorBoundary } from './components/ChunkLoadErrorBoundary';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PreferencesProvider } from './context/PreferencesContext';
 import { GymProvider } from './context/GymContext';
 import { OfflineProvider } from './offline/OfflineContext';
+import { lazyWithRetry } from './utils/lazyWithRetry';
 import { isPlatformAdmin, isGymOwner, hasGymPortalAccess } from './utils/roles';
 
-const Login = lazy(() => import('./pages/auth/Login'));
-const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
-const RegisterGym = lazy(() => import('./pages/auth/RegisterGym'));
-const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
-const OwnerLayout = lazy(() => import('./layouts/OwnerLayout'));
-const OwnerDashboard = lazy(() => import('./pages/owner/OwnerDashboard'));
-const Members = lazy(() => import('./pages/owner/Members'));
-const Plans = lazy(() => import('./pages/owner/Plans'));
-const Revenue = lazy(() => import('./pages/owner/Revenue'));
-const OwnerReports = lazy(() => import('./pages/owner/OwnerReports'));
-const Team = lazy(() => import('./pages/owner/Team'));
-const Activity = lazy(() => import('./pages/owner/Activity'));
-const MemberMessages = lazy(() => import('./pages/owner/MemberMessages'));
-const Branches = lazy(() => import('./pages/owner/Branches'));
-const AdminLayout = lazy(() => import('./layouts/AdminLayout'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const AdminSaasPlans = lazy(() => import('./pages/admin/AdminSaasPlans'));
-const AdminPayments = lazy(() => import('./pages/admin/AdminPayments'));
-const AdminReports = lazy(() => import('./pages/admin/AdminReports'));
-const AdminGymMessages = lazy(() => import('./pages/admin/AdminGymMessages'));
+const Login = lazyWithRetry(() => import('./pages/auth/Login'));
+const ForgotPassword = lazyWithRetry(() => import('./pages/auth/ForgotPassword'));
+const RegisterGym = lazyWithRetry(() => import('./pages/auth/RegisterGym'));
+const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
+const OwnerLayout = lazyWithRetry(() => import('./layouts/OwnerLayout'));
+const OwnerDashboard = lazyWithRetry(() => import('./pages/owner/OwnerDashboard'));
+const Members = lazyWithRetry(() => import('./pages/owner/Members'));
+const Plans = lazyWithRetry(() => import('./pages/owner/Plans'));
+const Revenue = lazyWithRetry(() => import('./pages/owner/Revenue'));
+const OwnerReports = lazyWithRetry(() => import('./pages/owner/OwnerReports'));
+const Team = lazyWithRetry(() => import('./pages/owner/Team'));
+const Activity = lazyWithRetry(() => import('./pages/owner/Activity'));
+const MemberMessages = lazyWithRetry(() => import('./pages/owner/MemberMessages'));
+const Branches = lazyWithRetry(() => import('./pages/owner/Branches'));
+const AdminLayout = lazyWithRetry(() => import('./layouts/AdminLayout'));
+const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
+const AdminSaasPlans = lazyWithRetry(() => import('./pages/admin/AdminSaasPlans'));
+const AdminPayments = lazyWithRetry(() => import('./pages/admin/AdminPayments'));
+const AdminReports = lazyWithRetry(() => import('./pages/admin/AdminReports'));
+const AdminGymMessages = lazyWithRetry(() => import('./pages/admin/AdminGymMessages'));
 
 function RouteFallback() {
   return (
@@ -79,6 +81,7 @@ export default function App() {
       <OfflineProvider>
         <BrowserRouter>
           <PreferencesProvider>
+            <ChunkLoadErrorBoundary>
             <Suspense fallback={<RouteFallback />}>
               <Routes>
               <Route path="/login" element={<Login />} />
@@ -167,6 +170,7 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
             </Suspense>
+            </ChunkLoadErrorBoundary>
           </PreferencesProvider>
         </BrowserRouter>
       </OfflineProvider>

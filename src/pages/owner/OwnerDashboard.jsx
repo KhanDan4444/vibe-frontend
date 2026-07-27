@@ -1,5 +1,5 @@
 // src/pages/owner/OwnerDashboard.jsx
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -17,8 +17,9 @@ import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { formatMoney } from '../../utils/formatMoney';
 import { panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
+import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
-const OwnerRevenueChart = lazy(() => import('../../components/OwnerRevenueChart'));
+const OwnerRevenueChart = lazyWithRetry(() => import('../../components/OwnerRevenueChart'));
 
 export default function OwnerDashboard() {
   const { t } = useTranslation();

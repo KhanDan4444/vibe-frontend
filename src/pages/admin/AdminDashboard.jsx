@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
   Building2,
@@ -22,8 +22,9 @@ import InitialsAvatar from '../../components/InitialsAvatar';
 import RegisterGymModal from '../../components/RegisterGymModal';
 import GymDetailsModal from '../../components/GymDetailsModal';
 import GymEditModal from '../../components/GymEditModal';
+import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
-const AdminMembersChart = lazy(() => import('../../components/AdminMembersChart'));
+const AdminMembersChart = lazyWithRetry(() => import('../../components/AdminMembersChart'));
 import RenewGymModal from '../../components/RenewGymModal';
 import ChangeSaasPlanModal from '../../components/ChangeSaasPlanModal';
 import AdminPaymentModal from '../../components/AdminPaymentModal';
