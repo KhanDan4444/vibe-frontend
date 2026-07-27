@@ -66,7 +66,7 @@ export default function Login() {
       <div className="flex min-h-[100dvh] flex-1 flex-col lg:flex-row">
         <LoginBrandAside />
 
-        <div className="relative flex flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-10 xl:px-16">
+        <div className="relative flex flex-1 items-center justify-center bg-slate-950 px-4 py-10 sm:px-6 lg:px-12 xl:px-16">
           <div className="relative w-full max-w-md">
             <LoginBrandPanel />
 
