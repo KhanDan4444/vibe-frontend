@@ -68,14 +68,7 @@ export default function Login() {
 
         <div className="relative flex flex-1 items-center justify-center bg-[#0b1220] px-4 py-10 sm:px-6 lg:px-12 xl:px-16">
           <div className="relative w-full max-w-[22rem]">
-            {/* Mobile: brand above form. Desktop: brand lives on the photo panel. */}
-            <div className="lg:hidden">
-              <LoginBrandPanel />
-            </div>
-
-            <p className="mb-6 hidden text-center text-sm text-white/55 lg:block">
-              {t('auth.signInSubtitle')}
-            </p>
+            <LoginBrandPanel />
 
             {successMessage && (
               <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-300">

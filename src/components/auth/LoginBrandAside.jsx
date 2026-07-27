@@ -33,21 +33,10 @@ export default function LoginBrandAside() {
         aria-hidden
       />
 
-      <div className="relative z-10 flex flex-1 flex-col justify-between p-10 xl:p-14">
-        <img
-          src="/brand-lockup-mark.png"
-          alt={t('app.name')}
-          className="h-12 w-auto max-w-[13rem] object-contain object-left xl:h-14 xl:max-w-[15rem]"
-        />
-
-        <div className="max-w-md">
-          <p className="text-xl font-semibold tracking-wide text-teal-300 xl:text-2xl">
-            {t('auth.brandSlogan')}
-          </p>
-          <p className="mt-3 text-base leading-relaxed text-white/85 xl:text-lg">
-            {t('auth.brandDescription')}
-          </p>
-        </div>
+      <div className="relative z-10 flex flex-1 flex-col justify-end p-10 xl:p-14">
+        <p className="max-w-md text-base leading-relaxed text-white/85 xl:text-lg">
+          {t('auth.brandDescription')}
+        </p>
       </div>
     </aside>
   );
