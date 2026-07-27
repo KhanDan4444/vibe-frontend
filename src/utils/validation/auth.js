@@ -33,6 +33,15 @@ export function validateOptionalEmail(value) {
   return ok();
 }
 
+/** Login: email or username (non-empty, max 255). */
+/** @param {string|null|undefined} value */
+export function validateLoginIdentifier(value) {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) return fail('validation.loginRequired', 'email');
+  if (trimmed.length > 255) return fail('validation.loginTooLong', 'email');
+  return ok();
+}
+
 /**
  * Gym-owner forgot-password identifier: username or Ethiopian mobile.
  * @param {string|null|undefined} value
