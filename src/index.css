@@ -220,7 +220,7 @@
   }
 
   .admin-data-table th {
-    @apply px-4 py-3 text-xs font-semibold leading-snug text-slate-500 align-middle dark:text-app-muted;
+    @apply px-4 py-3 text-sm font-medium leading-snug text-slate-500 align-middle dark:text-app-muted;
   }
 
   .admin-data-table td {
@@ -460,7 +460,7 @@
   }
 
   .filter-chip {
-    @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-bold leading-snug transition-colors cursor-pointer;
+    @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-snug transition-colors cursor-pointer;
     min-height: 36px;
   }
 
@@ -473,7 +473,15 @@
   }
 
   .filter-chip-count {
-    @apply inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full px-1.5 text-xs font-extrabold;
+    @apply inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full px-1.5 text-xs font-semibold;
+  }
+
+  .ui-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  .dark .ui-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b93a3' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   }
 
   .admin-field {
@@ -737,6 +745,12 @@
 
     .app-page {
       animation: none;
+    }
+
+    .flash-toast-in,
+    .flash-toast-out,
+    .flash-toast-progress {
+      animation: none !important;
     }
   }
 }

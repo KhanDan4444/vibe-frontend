@@ -10,6 +10,9 @@ import UnpaidBadge from '../../components/UnpaidBadge';
 import MemberPhoto from '../../components/MemberPhoto';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
+import { cardSurface, selectSurface } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -31,6 +34,7 @@ import { DEFAULT_MEMBER_SORT, MEMBER_SORT_OPTIONS, sortMembersList } from '../..
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
+import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
 import { tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
@@ -73,6 +77,7 @@ export default function Members() {
   const [changePlanState, setChangePlanState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
   const [paymentState, setPaymentState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
   const [memberToDelete, setMemberToDelete] = useState(null);
+  const [pendingDeleteIds, setPendingDeleteIds] = useState(() => new Set());
   const [transferState, setTransferState] = useState({ isOpen: false, member: null });
   const [selectedMember, setSelectedMember] = useState(null);
   const [paymentsRefreshKey, setPaymentsRefreshKey] = useState(0);
@@ -103,9 +108,21 @@ export default function Members() {
   }, [debouncedSearch, statusFilter]);
 
   const displayedMembers = useMemo(
-    () => sortMembersList(members, listSort),
-    [members, listSort],
+    () => sortMembersList(members.filter((m) => !pendingDeleteIds.has(m.id)), listSort),
+    [members, listSort, pendingDeleteIds],
   );
+
+  const hideMemberPending = useCallback((id) => {
+    setPendingDeleteIds((prev) => new Set(prev).add(id));
+  }, []);
+
+  const restoreMemberPending = useCallback((id) => {
+    setPendingDeleteIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
 
   const fetchMembers = useCallback(async () => {
     const requestId = membersRequestGuard.start();
@@ -345,12 +362,24 @@ export default function Members() {
     }
   };
 
-  const handleDrawerDelete = async (id) => {
+  const handleDrawerDelete = (id) => {
     const name = selectedMember?.name || 'Member';
-    await deleteMember(id);
     setSelectedMember(null);
-    showFlash(flashFromKey(t, 'memberDeleted', { subtitleParams: { name }, variant: 'danger' }));
-    runInBackground(afterMutation());
+    hideMemberPending(id);
+    scheduleDeleteWithUndo({
+      showFlash,
+      t,
+      pendingKey: 'memberDeletePending',
+      cancelledKey: 'memberDeleteCancelled',
+      committedKey: 'memberDeleted',
+      subtitleParams: { name },
+      onUndo: () => restoreMemberPending(id),
+      onCommit: async () => {
+        await deleteMember(id);
+        restoreMemberPending(id);
+        runInBackground(afterMutation());
+      },
+    });
   };
 
   const handleTransferSubmit = async (targetBranchId) => {
@@ -378,20 +407,28 @@ export default function Members() {
     }
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!memberToDelete) return;
     const id = memberToDelete.id;
     const name = memberToDelete.name;
     setMemberToDelete(null);
     setError('');
-    try {
-      await deleteMember(id);
-      if (selectedMember?.id === id) setSelectedMember(null);
-      showFlash(flashFromKey(t, 'memberDeleted', { subtitleParams: { name }, variant: 'danger' }));
-      runInBackground(afterMutation());
-    } catch (err) {
-      setError(err.message);
-    }
+    if (selectedMember?.id === id) setSelectedMember(null);
+    hideMemberPending(id);
+    scheduleDeleteWithUndo({
+      showFlash,
+      t,
+      pendingKey: 'memberDeletePending',
+      cancelledKey: 'memberDeleteCancelled',
+      committedKey: 'memberDeleted',
+      subtitleParams: { name },
+      onUndo: () => restoreMemberPending(id),
+      onCommit: async () => {
+        await deleteMember(id);
+        restoreMemberPending(id);
+        runInBackground(afterMutation());
+      },
+    });
   };
 
   return (
@@ -401,17 +438,16 @@ export default function Members() {
         subtitle={t('pages.members.subtitle')}
         actions={
           !readOnly ? (
-            <button
+            <Button
               onClick={() => {
                 setError('');
                 setModalState({ isOpen: true, member: null, error: '' });
               }}
               disabled={gymLoading || plans.length === 0}
               title={!gymLoading && plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
-              className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
-            </button>
+            </Button>
           ) : null
         }
       />
@@ -515,7 +551,7 @@ export default function Members() {
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         <select
-          className="admin-field min-w-[10rem] cursor-pointer"
+          className={`ui-select ${selectSurface} min-w-[10rem]`}
           value={listSort}
           onChange={(e) => {
             setPage(1);
@@ -532,9 +568,9 @@ export default function Members() {
 
       <div className="lg:hidden space-y-3">
         {listLoading ? (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised">
+          <Card className="overflow-hidden">
             <AdminListSkeleton rows={6} />
-          </div>
+          </Card>
         ) : displayedMembers.length > 0 ? (
           displayedMembers.map((member) => {
             const matchingPlan = plans.find((p) => p.id === member.planId);
@@ -550,7 +586,7 @@ export default function Members() {
                     openMemberRow(member);
                   }
                 }}
-                className={`rounded-xl border border-slate-200 bg-white p-4 shadow-sm active:bg-slate-50 dark:border-app-border-subtle dark:bg-app-raised dark:active:bg-app-surface/60 ${
+                className={`${cardSurface} p-4 active:bg-slate-50 dark:active:bg-app-surface/60 ${
                   member.isUnpaid ? 'admin-row-unpaid' : ''
                 }`}
               >
@@ -647,7 +683,7 @@ export default function Members() {
             );
           })
         ) : (
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised">
+          <Card className="overflow-hidden">
             <EmptyState
               icon={AlertCircle}
               compact
@@ -662,12 +698,11 @@ export default function Members() {
                   : t('pages.members.emptyBody')
               }
             />
-          </div>
+          </Card>
         )}
       </div>
 
-      <div className="hidden overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-app-border-subtle dark:bg-app-raised lg:block">
-        {/* Landscape tablet + desktop table */}
+      <Card className="hidden overflow-hidden lg:block">
         <div className="overflow-x-auto">
           <table className={`admin-data-table owner-members-table ${showBranchColumn ? 'owner-members-table--branches' : ''}`}>
             <thead>
@@ -825,16 +860,17 @@ export default function Members() {
             </tbody>
           </table>
         </div>
-      </div>
-
-      <PaginationControls
-          page={page}
-          totalPages={totalPages}
-          total={total}
-          limit={PAGE_SIZE}
-          onPageChange={setPage}
-          disabled={listLoading}
-        />
+        <div className="border-t border-slate-100 px-4 py-3 dark:border-app-border-subtle">
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            limit={PAGE_SIZE}
+            onPageChange={setPage}
+            disabled={listLoading}
+          />
+        </div>
+      </Card>
 
       <MemberModal
         isOpen={modalState.isOpen}

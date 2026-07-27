@@ -18,6 +18,7 @@ import FieldError from './FieldError';
 import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
+import Button from './ui/Button';
 import { formatMoney } from '../utils/formatMoney';
 import { modalBody } from '../utils/modalLayout';
 
@@ -356,20 +357,12 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
           </div>
 
           <div className="pt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:w-auto"
-            >
+            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
               {t('common.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-            >
+            </Button>
+            <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
               {saving ? t('common.processing') : t('modals.registerGym.save')}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

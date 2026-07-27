@@ -325,6 +325,8 @@
     "noData": "No data yet.",
     "viewAll": "View all",
     "dismiss": "Dismiss",
+    "undo": "Undo",
+    "error": "Something went wrong",
     "signOut": "Sign out",
     "month_one": "{{count}} month",
     "month_other": "{{count}} months",
@@ -1182,6 +1184,14 @@
       "title": "Member removed",
       "subtitle": "{{name}} and their payment history were deleted."
     },
+    "memberDeletePending": {
+      "title": "Removing member…",
+      "subtitle": "{{name}} will be deleted unless you undo."
+    },
+    "memberDeleteCancelled": {
+      "title": "Delete cancelled",
+      "subtitle": "{{name}} was kept."
+    },
     "transferred": {
       "title": "Member transferred",
       "subtitle": "{{name}} is now at {{branch}}."
@@ -1193,6 +1203,14 @@
     "paymentDeleted": {
       "title": "Payment removed",
       "subtitle": "This payment was removed from revenue."
+    },
+    "paymentDeletePending": {
+      "title": "Removing payment…",
+      "subtitle": "This payment will be deleted unless you undo."
+    },
+    "paymentDeleteCancelled": {
+      "title": "Delete cancelled",
+      "subtitle": "The payment was kept."
     },
     "branchCreated": {
       "title": "Branch created",
@@ -1265,6 +1283,9 @@
     "gymRemoved": {
       "title": "Gym removed",
       "subtitle": "{{name}} and all related data were deleted."
-    }
+    },
+    "undoHint": "Tap Undo to keep — closing this won't cancel.",
+    "undoActionLabel": "{{action}} — cancel this change",
+    "dismissPending": "Hide notification — action still continues"
   }
 }

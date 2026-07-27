@@ -21,6 +21,7 @@ import {
   AtSign,
 } from 'lucide-react';
 import ResponsiveModal from '../ResponsiveModal';
+import Button from '../ui/Button';
 import { modalBody, modalHeader } from '../../utils/modalLayout';
 
 function Alert({ children }) {
@@ -382,22 +383,13 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-app-border-subtle pt-4">
-            <button
-              type="submit"
-              disabled={saving || !profileDirty}
-              className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
+            <Button type="submit" disabled={saving || !profileDirty}>
               {saving ? t('auth.saving') : t('common.save')}
-            </button>
+            </Button>
             {profileDirty && (
-              <button
-                type="button"
-                onClick={handleReset}
-                disabled={saving}
-                className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-4 py-2 text-sm font-medium text-slate-600 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60"
-              >
+              <Button type="button" variant="secondary" onClick={handleReset} disabled={saving}>
                 {t('account.discard')}
-              </button>
+              </Button>
             )}
           </div>
         </form>
@@ -529,20 +521,12 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
         <PasswordChecklist password={newPassword} confirm={confirm} />
 
         <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-app-border-subtle pt-4">
-          <button
-            type="submit"
-            disabled={loading || !passwordReady}
-            className="rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          <Button type="submit" disabled={loading || !passwordReady}>
             {loading ? t('account.updating') : t('auth.updatePassword')}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-app-text"
-          >
+          </Button>
+          <Button type="button" variant="ghost" onClick={onClose}>
             {t('common.cancel')}
-          </button>
+          </Button>
         </div>
       </form>
     </AccountModal>

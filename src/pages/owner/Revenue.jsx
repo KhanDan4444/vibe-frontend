@@ -27,7 +27,10 @@ import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/da
 import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { tableRowHover } from '../../utils/surfaceClasses';
+import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
+import { tableRowHover, selectSurface } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { AdminListSkeleton, AdminTableRowsSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -68,6 +71,7 @@ export default function Revenue() {
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
   const [paymentToDelete, setPaymentToDelete] = useState(null);
+  const [pendingDeleteIds, setPendingDeleteIds] = useState(() => new Set());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -81,9 +85,21 @@ export default function Revenue() {
   }, [debouncedSearch, methodFilter, periodPreset, customStart, customEnd]);
 
   const displayedPayments = useMemo(
-    () => sortOwnerPaymentsList(payments, listSort),
-    [payments, listSort],
+    () => sortOwnerPaymentsList(payments.filter((p) => !pendingDeleteIds.has(p.id)), listSort),
+    [payments, listSort, pendingDeleteIds],
   );
+
+  const hidePaymentPending = useCallback((id) => {
+    setPendingDeleteIds((prev) => new Set(prev).add(id));
+  }, []);
+
+  const restorePaymentPending = useCallback((id) => {
+    setPendingDeleteIds((prev) => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
 
   const buildQueryParams = useCallback((overrides = {}) => {
     const params = {
@@ -161,18 +177,25 @@ export default function Revenue() {
     }
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!paymentToDelete) return;
     const id = paymentToDelete.id;
     setPaymentToDelete(null);
     setError('');
-    try {
-      await deletePayment(id);
-      showFlash(flashFromKey(t, 'paymentDeleted', { variant: 'danger' }));
-      runInBackground(Promise.all([fetchPayments(), refreshSummary()]));
-    } catch (err) {
-      setError(err.message);
-    }
+    hidePaymentPending(id);
+    scheduleDeleteWithUndo({
+      showFlash,
+      t,
+      pendingKey: 'paymentDeletePending',
+      cancelledKey: 'paymentDeleteCancelled',
+      committedKey: 'paymentDeleted',
+      onUndo: () => restorePaymentPending(id),
+      onCommit: async () => {
+        await deletePayment(id);
+        restorePaymentPending(id);
+        runInBackground(Promise.all([fetchPayments(), refreshSummary()]));
+      },
+    });
   };
 
   const handleExportCsv = async () => {
@@ -202,35 +225,26 @@ export default function Revenue() {
         title={t('pages.revenue.title')}
         subtitle={t('pages.revenue.subtitle')}
         actions={
-          <button
-            type="button"
-            onClick={handleExportCsv}
-            disabled={transactionCount === 0}
-            className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50 cursor-pointer"
-          >
+          <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
             <Download className="h-4 w-4" /> {t('common.exportCsv')}
-          </button>
+          </Button>
         }
       />
 
       {error && (
         <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
           <p>{error}</p>
-          <button
-            type="button"
-            onClick={() => fetchPayments()}
-            className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
-          >
+          <Button variant="danger" size="sm" onClick={() => fetchPayments()}>
             {t('common.retry')}
-          </button>
+          </Button>
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-4 shadow-sm flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <Card className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="text-sm font-medium text-slate-700 dark:text-app-text">{t('period.reportPeriod')}</label>
           <select
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
+            className={`ui-select ${selectSurface}`}
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value)}
           >
@@ -257,7 +271,7 @@ export default function Revenue() {
             />
           </div>
         )}
-      </div>
+      </Card>
 
       {attentionMembers.length > 0 && (
         <div className="admin-alert-amber">
@@ -293,12 +307,12 @@ export default function Revenue() {
         </div>
       )}
 
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {listLoading && payments.length === 0 ? (
           Array.from({ length: 3 }).map((_, i) => <SummaryCardSkeleton key={i} />)
         ) : (
           <>
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
+        <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">{t('pages.revenue.periodRevenue', { period: periodLabel })}</span>
             <span className="rounded-lg bg-emerald-50 p-2 text-emerald-600 dark:bg-emerald-500/12 dark:text-emerald-400">
@@ -315,9 +329,9 @@ export default function Revenue() {
               </span>
             )}
           </div>
-        </div>
+        </Card>
 
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
+        <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">{t('metrics.transactions')}</span>
             <span className="rounded-lg bg-teal-50 p-2 text-teal-700 dark:bg-teal-600/12 dark:text-teal-400">
@@ -328,9 +342,9 @@ export default function Revenue() {
             <span className="text-3xl font-bold text-slate-900 dark:text-app-text-strong">{transactionCount}</span>
             <span className="ml-2 text-xs text-slate-400 font-medium">{t('pages.revenue.inSelectedPeriod')}</span>
           </div>
-        </div>
+        </Card>
 
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
+        <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">{t('metrics.averagePayment')}</span>
             <span className="rounded-lg bg-slate-50 p-2 text-slate-600 dark:bg-app-surface dark:text-app-muted">
@@ -342,13 +356,13 @@ export default function Revenue() {
               {formatMoney(averagePayment)}
             </span>
           </div>
-        </div>
+        </Card>
           </>
         )}
       </div>
 
       {Object.keys(byMethod).length > 0 && (
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm">
+        <Card className="p-4">
           <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {Object.entries(byMethod).map(([method, amount]) => (
@@ -360,10 +374,10 @@ export default function Revenue() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm">
+      <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-md">
           <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
             <Search className="h-5 w-5" />
@@ -379,7 +393,7 @@ export default function Revenue() {
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         <select
-          className="admin-field min-w-[10rem] cursor-pointer"
+          className={`ui-select ${selectSurface} min-w-[10rem]`}
           value={listSort}
           onChange={(e) => {
             setPage(1);
@@ -393,7 +407,7 @@ export default function Revenue() {
         </select>
 
         <select
-          className="admin-field min-w-[10rem] cursor-pointer"
+          className={`ui-select ${selectSurface} min-w-[10rem]`}
           value={methodFilter}
           onChange={(e) => setMethodFilter(e.target.value)}
         >
@@ -403,14 +417,14 @@ export default function Revenue() {
           <option value="Bank Transfer">{t('paymentMethod.bankTransfer')}</option>
         </select>
         </div>
-      </div>
+      </Card>
 
       {canManageRevenue && (
         <p className="text-xs text-slate-400 -mt-2">
           {t('pages.revenue.editDeleteHint')}
         </p>
       )}
-      <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {listLoading ? (
             <AdminListSkeleton rows={5} />
@@ -568,6 +582,7 @@ export default function Revenue() {
             </tbody>
           </table>
         </div>
+        <div className="border-t border-slate-100 px-4 py-3 dark:border-app-border-subtle">
         <PaginationControls
           page={page}
           totalPages={totalPages}
@@ -576,7 +591,8 @@ export default function Revenue() {
           onPageChange={setPage}
           disabled={listLoading}
         />
-      </div>
+        </div>
+      </Card>
 
       {canManageRevenue && modalState.payment && (
         <PaymentModal

@@ -17,7 +17,9 @@ import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
+import { pageTitle, mutedText, panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
 const OwnerRevenueChart = lazyWithRetry(() => import('../../components/OwnerRevenueChart'));
@@ -105,11 +107,11 @@ export default function OwnerDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{gymName || t('pages.dashboard.title')}</h1>
-        <p className="text-sm text-slate-500">{t('pages.dashboard.subtitle')}</p>
+        <h1 className={pageTitle}>{gymName || t('pages.dashboard.title')}</h1>
+        <p className={`mt-1.5 text-sm ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
       </div>
 
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
         {gymBooting ? (
           Array.from({ length: 5 }).map((_, i) => <MetricCardSkeleton key={i} />)
         ) : (
@@ -191,15 +193,12 @@ export default function OwnerDashboard() {
           </>
         ) : (
         <>
-        <div className={`md:col-span-3 overflow-hidden ${panelQuiet}`}>
+        <Card quiet className="md:col-span-3 overflow-hidden">
           <div className="admin-panel-header">
             <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('pages.dashboard.expiringSection')}</h2>
-            <button
-              onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
-              className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-teal-700 dark:text-app-muted dark:hover:text-teal-400 cursor-pointer"
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}>
               {t('common.viewAll')}
-            </button>
+            </Button>
           </div>
 
           <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
@@ -302,10 +301,10 @@ export default function OwnerDashboard() {
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
 
-        <div className={`md:col-span-2 flex flex-col p-4 sm:p-6 ${panelQuiet}`}>
-          <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong mb-4 sm:text-lg sm:mb-5">{t('pages.dashboard.revenueThisMonth')}</h2>
+        <Card quiet className="md:col-span-2 flex flex-col p-4 sm:p-6">
+          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-app-text-strong sm:mb-5 sm:text-lg">{t('pages.dashboard.revenueThisMonth')}</h2>
           <div className="flex-1 min-h-[220px] sm:min-h-[260px]">
             <Suspense
               fallback={
@@ -317,7 +316,7 @@ export default function OwnerDashboard() {
               <OwnerRevenueChart chartData={chartData} />
             </Suspense>
           </div>
-        </div>
+        </Card>
         </>
         )}
       </div>

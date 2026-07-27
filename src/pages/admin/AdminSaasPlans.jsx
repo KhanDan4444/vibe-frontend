@@ -9,6 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { formatMoney } from '../../utils/formatMoney';
 import { runInBackground } from '../../utils/runInBackground';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 
 export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
   const { t } = useTranslation();
@@ -142,15 +144,13 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
             {t('admin.saasPlansPageSubtitle')}
           </p>
         </div>
-        <button
-          type="button"
+        <Button
           onClick={() => {
             setIsAddOpen(true);
           }}
-          className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700"
         >
           <Plus className="h-4 w-4" /> {t('admin.createSaasPlan')}
-        </button>
+        </Button>
       </div>
 
       {error && (
@@ -169,9 +169,9 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
       {plans.length > 0 ? (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
-            <div
+            <Card
               key={plan.id}
-              className="relative flex flex-col justify-between rounded-2xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm"
+              className="relative flex flex-col justify-between p-6"
             >
               <div className="absolute right-3 top-3 flex gap-1 sm:right-4 sm:top-4">
                 <button
@@ -213,15 +213,15 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
                   {t('common.month', { count: plan.duration })}
                 </span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 py-16 text-center dark:border-app-border-subtle dark:bg-app-raised/80">
+        <Card className="py-16 text-center">
           <HelpCircle className="h-12 w-12 mx-auto text-slate-300 mb-3" />
           <p className="font-medium text-slate-600 dark:text-app-text">{t('admin.noSaasPlansTitle')}</p>
           <p className="mt-1 text-sm text-slate-500 dark:text-app-muted">{t('admin.noSaasPlansBody')}</p>
-        </div>
+        </Card>
       )}
 
       <PlanModal

@@ -10,7 +10,8 @@ import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { useTranslation } from 'react-i18next';
-import { cardSurface } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { formatMoney } from '../../utils/formatMoney';
 
 export default function Plans() {
@@ -98,15 +99,9 @@ export default function Plans() {
         subtitle={t('pages.plans.subtitle')}
         actions={
           canManagePlans ? (
-            <button
-              onClick={() => {
-                setError('');
-                setIsAddModalOpen(true);
-              }}
-              className="flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-800 transition-colors cursor-pointer"
-            >
+            <Button onClick={() => { setError(''); setIsAddModalOpen(true); }}>
               <Plus className="h-4 w-4" /> {t('pages.plans.add')}
-            </button>
+            </Button>
           ) : null
         }
       />
@@ -125,9 +120,9 @@ export default function Plans() {
       ) : plans.length > 0 ? (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {plans.map((plan) => (
-            <div
+            <Card
               key={plan.id}
-              className={`relative flex flex-col justify-between p-6 shadow-sm hover:shadow-md transition-all duration-200 group ${cardSurface}`}
+              className="group relative flex flex-col justify-between p-6 transition-colors hover:ring-slate-300/80 dark:hover:ring-app-border"
             >
               {canManagePlans && (
                 <div className="absolute right-3 top-3 flex gap-1 sm:right-4 sm:top-4">
@@ -176,30 +171,24 @@ export default function Plans() {
                   {t('common.month', { count: plan.duration })}
                 </span>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className={`rounded-2xl border border-slate-200 dark:border-app-border-subtle shadow-sm ${cardSurface}`}>
+        <Card>
           <EmptyState
             icon={HelpCircle}
             title={t('pages.plans.emptyTitle')}
             body={t('pages.plans.emptyBody')}
             action={
               canManagePlans ? (
-                <button
-                  onClick={() => {
-                    setError('');
-                    setIsAddModalOpen(true);
-                  }}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 cursor-pointer"
-                >
+                <Button onClick={() => { setError(''); setIsAddModalOpen(true); }}>
                   {t('pages.plans.createFirst')}
-                </button>
+                </Button>
               ) : null
             }
           />
-        </div>
+        </Card>
       )}
 
       <PlanModal

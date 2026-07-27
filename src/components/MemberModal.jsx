@@ -26,6 +26,7 @@ import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
 import ResponsiveModal from './ResponsiveModal';
+import Button from './ui/Button';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalFieldLabel } from '../utils/modalLayout';
 
@@ -602,18 +603,10 @@ export default function MemberModal({
           )}
 
           <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-app-border-subtle dark:text-app-text dark:hover:bg-app-surface/60 sm:w-auto"
-            >
+            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
               {t('common.cancel')}
-            </button>
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-            >
+            </Button>
+            <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
               {isBusy
                 ? photoProcessing
                   ? t('modals.member.processingPhoto')
@@ -621,7 +614,7 @@ export default function MemberModal({
                 : isEdit
                 ? t('modals.member.saveUpdate')
                 : t('modals.member.saveEnroll')}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

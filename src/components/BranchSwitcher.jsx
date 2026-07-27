@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { selectSurface } from '../utils/surfaceClasses';
 
 /**
  * Owner branch filter — "All branches" or a single location.
@@ -15,7 +16,7 @@ export default function BranchSwitcher({ branches, selectedBranchId, onChange, c
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <MapPin className="hidden h-4 w-4 shrink-0 text-slate-400 sm:block" aria-hidden />
+      <MapPin className="hidden h-4 w-4 shrink-0 text-slate-400 sm:block dark:text-app-muted" aria-hidden />
       <label className="sr-only" htmlFor="branch-switcher">
         {t('branch.label')}
       </label>
@@ -26,7 +27,7 @@ export default function BranchSwitcher({ branches, selectedBranchId, onChange, c
           const value = e.target.value;
           onChange(value === 'all' ? 'all' : parseInt(value, 10));
         }}
-        className="max-w-full flex-1 truncate rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-2.5 py-2 text-sm font-medium text-slate-700 dark:text-app-text shadow-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 sm:max-w-xs sm:py-1.5"
+        className={`ui-select max-w-full flex-1 truncate sm:max-w-xs ${selectSurface}`}
       >
         <option value="all">{t('branch.allBranches')}</option>
         {activeBranches.map((branch) => (

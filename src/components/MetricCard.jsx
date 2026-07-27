@@ -1,10 +1,9 @@
 // src/components/MetricCard.jsx
 import React from 'react';
-import { panelQuiet } from '../utils/surfaceClasses';
+import Card from './ui/Card';
 
 /**
  * Shared metric card for dashboards (AdminDashboard + OwnerDashboard).
- * Quiet chrome + monochrome icon (de-AI).
  */
 
 const PROGRESS_COLOR = {
@@ -49,23 +48,22 @@ export default function MetricCard({
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
 
   return (
-    <div className={`relative p-4 sm:p-5 ${panelQuiet}`}>
+    <Card quiet className="relative p-4 sm:p-5">
       {badge && (
-        <span className={`absolute top-3 right-3 sm:top-4 sm:right-4 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold ${badgeClass}`}>
+        <span className={`absolute top-3 right-3 sm:top-4 sm:right-4 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}>
           {badge}
         </span>
       )}
 
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold leading-snug text-slate-500 dark:text-app-muted">{label}</span>
-        {/* Hide corner icon when a badge is shown — it reads as a stray circle next to the badge. */}
+        <span className="text-xs font-medium leading-snug text-slate-500 dark:text-app-muted">{label}</span>
         {Icon && !badge && (
           <Icon className="h-4 w-4 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />
         )}
       </div>
 
       <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:mt-2">
-        <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-3xl">{value}</span>
+        <span className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-3xl">{value}</span>
         {subValue && (
           <span className="text-lg font-medium text-slate-400">{subValue}</span>
         )}
@@ -108,16 +106,16 @@ export default function MetricCard({
       {!badge && !showProgressBar && showHintBelow && hint && (
         <p className={`mt-2 text-xs ${hintColor || 'text-slate-400'}`}>{hint}</p>
       )}
-    </div>
+    </Card>
   );
 }
 
 export function MetricCardSkeleton() {
   return (
-    <div className={`relative p-5 ${panelQuiet}`}>
+    <Card quiet className="relative p-5">
       <div className="app-skeleton h-3 w-24" />
       <div className="app-skeleton mt-3 h-8 w-20" />
       <div className="app-skeleton mt-2 h-3 w-32" />
-    </div>
+    </Card>
   );
 }

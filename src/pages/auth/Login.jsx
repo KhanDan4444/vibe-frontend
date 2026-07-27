@@ -32,7 +32,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input block w-full rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none backdrop-blur-sm transition-[border-color,background-color] focus:border-teal-300/55 focus:bg-white/[0.12] focus:outline-none';
+    'auth-login-input block w-full rounded-md border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -137,7 +137,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-brand px-4 py-3.5 text-base font-semibold text-white shadow-lg shadow-teal-900/30 transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-300/50 disabled:opacity-50"
+              className="mt-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-300/50 disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">

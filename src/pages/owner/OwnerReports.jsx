@@ -46,6 +46,8 @@ import {
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
+import Button from '../../components/ui/Button';
+import { selectSurface } from '../../utils/surfaceClasses';
 
 const MEMBER_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allMembers', query: {} },
@@ -180,33 +182,25 @@ export default function OwnerReports() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={refreshAll}
-            disabled={loading}
-            className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
-          >
+          <Button variant="secondary" onClick={refreshAll} disabled={loading}>
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             {t('common.refresh')}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            variant="secondary"
             disabled={!canExport || exporting === 'full-csv'}
             onClick={() => withExport('full-csv', () => downloadFullOwnerReportCsv(members, payments, exportMeta))}
-            className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
           >
             <FileStack className="h-4 w-4" />
             {t('common.exportCsv')}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             disabled={!canExport || exporting === 'full-pdf'}
             onClick={() => withExport('full-pdf', () => downloadFullOwnerReportPdf(members, payments, exportMeta))}
-            className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
           >
             <FileText className="h-4 w-4" />
             {t('common.exportPdf')}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -242,30 +236,28 @@ export default function OwnerReports() {
             <select
               value={memberFilter}
               onChange={(e) => setMemberFilter(e.target.value)}
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
+              className={`ui-select ${selectSurface} min-w-[10rem]`}
             >
               {MEMBER_STATUS_FILTERS.map((f) => (
                 <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
               ))}
             </select>
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               disabled={!memberLoaded || members.length === 0 || exporting === 'member-csv'}
               onClick={() => withExport('member-csv', () => downloadMembersCsv(members, exportMeta))}
-              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
               {t('common.exportCsv')}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="secondary"
               disabled={!memberLoaded || members.length === 0 || exporting === 'member-pdf'}
               onClick={() => withExport('member-pdf', () => downloadMembersPdf(members, { filterLabel: t(memberFilterMeta.labelKey), ...exportMeta }))}
-              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2.5 text-sm font-medium text-teal-700 hover:bg-teal-100 disabled:opacity-50"
             >
               <FileText className="h-4 w-4" />
               {t('common.exportPdf')}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -315,7 +307,7 @@ export default function OwnerReports() {
               <select
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value)}
-                className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
+                className={`ui-select ${selectSurface} min-w-[10rem]`}
               >
                 {PERIOD_PRESETS.map((p) => (
                   <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
@@ -345,24 +337,22 @@ export default function OwnerReports() {
                 </div>
               </>
             )}
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               disabled={!revenueLoaded || payments.length === 0 || exporting === 'rev-csv'}
               onClick={() => withExport('rev-csv', () => downloadOwnerRevenueCsv(payments, periodSlug, revenueSummary, exportMeta))}
-              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
               {t('common.exportCsv')}
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="secondary"
               disabled={!revenueLoaded || payments.length === 0 || exporting === 'rev-pdf'}
               onClick={() => withExport('rev-pdf', () => downloadOwnerRevenuePdf(payments, { periodLabel, summary: revenueSummary, ...exportMeta }))}
-              className="inline-flex min-h-[44px] md:min-h-0 items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100 disabled:opacity-50"
             >
               <FileText className="h-4 w-4" />
               {t('common.exportPdf')}
-            </button>
+            </Button>
           </div>
         </div>
 

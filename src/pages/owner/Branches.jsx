@@ -16,6 +16,8 @@ import { validateBranchForm, showValidationError, inputClass, fieldErrorMessage,
 import FieldError from '../../components/FieldError';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
@@ -117,20 +119,12 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
           </div>
         </div>
         <div className={modalFooter}>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full rounded-lg px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-app-text hover:bg-slate-100 dark:hover:bg-app-surface/80 sm:w-auto"
-          >
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={saving || !name.trim()}
-            className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto"
-          >
+          </Button>
+          <Button type="submit" disabled={saving || !name.trim()} className="w-full sm:w-auto">
             {saving ? t('common.processing') : isEdit ? t('modals.staff.saveUpdate') : t('pages.branches.formAdd')}
-          </button>
+          </Button>
         </div>
       </form>
     </ResponsiveModal>
@@ -263,17 +257,15 @@ export default function Branches() {
         subtitle={t('pages.branches.subtitle')}
         actions={
           !readOnly ? (
-            <button
-              type="button"
+            <Button
               onClick={() => {
                 setModalError('');
                 setModal({ open: true, branch: null });
               }}
-              className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
             >
               <Plus className="h-4 w-4" />
               {t('pages.branches.add')}
-            </button>
+            </Button>
           ) : null
         }
       />
@@ -284,7 +276,7 @@ export default function Branches() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
+      <Card className="overflow-hidden">
         {loading ? (
           <>
             <div className="lg:hidden">
@@ -459,7 +451,7 @@ export default function Branches() {
           </div>
           </>
         )}
-      </div>
+      </Card>
 
       <BranchModal
         isOpen={modal.open}

@@ -354,6 +354,8 @@
     "unknown": "ያልታወቀ",
     "update": "አዘምን",
     "viewAll": "ሁሉንም ይመልከቱ",
+    "undo": "መልስ",
+    "error": "ስህተት ተፈጥሯል",
     "yes": "አዎ"
   },
   "drawer": {
@@ -1182,6 +1184,14 @@
       "title": "አባል ተወግዷል",
       "subtitle": "{{name}} እና የክፍያ ታሪካቸው ተሰርዟል።"
     },
+    "memberDeletePending": {
+      "title": "አባል በመሰረዝ ላይ…",
+      "subtitle": "{{name}} ካልመለሱ ይሰረዛል።"
+    },
+    "memberDeleteCancelled": {
+      "title": "መሰረዝ ተሰርዟል",
+      "subtitle": "{{name}} ተጠብቋል።"
+    },
     "transferred": {
       "title": "አባል ተላልፏል",
       "subtitle": "{{name}} አሁን በ{{branch}} ላይ ነው።"
@@ -1193,6 +1203,14 @@
     "paymentDeleted": {
       "title": "ክፍያ ተወግዷል",
       "subtitle": "ይህ ክፍያ ከገቢ ተወግዷል።"
+    },
+    "paymentDeletePending": {
+      "title": "ክፍያ በመሰረዝ ላይ…",
+      "subtitle": "ያልመለሱ ይህ ክፍያ ይሰረዛል።"
+    },
+    "paymentDeleteCancelled": {
+      "title": "መሰረዝ ተሰርዟል",
+      "subtitle": "ክፍያው ተጠብቋል።"
     },
     "branchCreated": {
       "title": "ቅርንጫፍ ተፈጥሯል",
@@ -1265,6 +1283,9 @@
     "gymRemoved": {
       "title": "ጂም ተወግዷል",
       "subtitle": "{{name}} እና ተያያዥ መረጃው ሁሉ ተሰርዟል።"
-    }
+    },
+    "undoHint": "ለመጠበቅ «መልስ»ን ይጫኑ — ይህን ማጥፋት አያስተላልፍም።",
+    "undoActionLabel": "{{action}} — ለውጡን ሰርዝ",
+    "dismissPending": "ማሳወቂያውን ደብቅ — ተግባሩ እንደገና ይቀጥላል"
   }
 }

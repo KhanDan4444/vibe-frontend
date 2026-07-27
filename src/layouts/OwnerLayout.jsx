@@ -94,59 +94,56 @@ export default function OwnerLayout() {
   const renderNavLink = (item, onNavigate) => {
     const Icon = item.icon;
     const active = location.pathname === item.path;
-    const showDueSoonBadge = item.nameKey === 'nav.members' && dueSoonCount > 0;
-    const showExpiredBadge = item.nameKey === 'nav.members' && expiredCount > 0;
-    const showUnpaidBadge = item.nameKey === 'nav.members' && unpaidCount > 0;
+    const showAttentionBadge = item.nameKey === 'nav.members' && (dueSoonCount + expiredCount + unpaidCount) > 0;
+    const attentionTotal = dueSoonCount + expiredCount + unpaidCount;
     return (
       <Link
         key={item.path}
         to={item.path}
         onClick={onNavigate}
-        className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors sm:py-2.5 ${
+        className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
           active ? sidebarNavActive : sidebarNavIdle
         }`}
       >
-        <Icon className="h-5 w-5" />
-        {t(item.nameKey)}
-        <span className="ml-auto flex items-center gap-1">
-          {showDueSoonBadge && (
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-              active ? 'bg-white/20 text-white' : 'bg-amber-500 text-white'
-            }`}>
-              {dueSoonCount}
-            </span>
-          )}
-          {showExpiredBadge && (
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-              active ? 'bg-white/20 text-white' : 'bg-rose-500 text-white'
-            }`}>
-              {expiredCount}
-            </span>
-          )}
-          {showUnpaidBadge && (
-            <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-              active ? 'bg-white/20 text-white' : 'bg-amber-500 text-white'
-            }`}>
-              {unpaidCount}
-            </span>
-          )}
-        </span>
+        <Icon className="h-5 w-5 shrink-0 opacity-90" />
+        <span className="truncate">{t(item.nameKey)}</span>
+        {showAttentionBadge ? (
+          <span
+            className={`ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
+              active
+                ? 'bg-white/15 text-white'
+                : 'bg-white/[0.08] text-slate-300 ring-1 ring-white/10'
+            }`}
+          >
+            {attentionTotal}
+          </span>
+        ) : null}
       </Link>
     );
   };
 
   return (
     <div className={shellPage}>
-      <header className={`safe-top sticky top-0 z-40 flex h-14 min-h-[3.5rem] items-center justify-between px-4 lg:hidden ${shellHeader}`}>
-        <button
-          type="button"
-          onClick={() => setSidebarOpen(true)}
-          className="-ml-1 rounded-lg p-2.5 text-slate-600 focus:outline-none active:bg-slate-100 dark:text-app-text dark:active:bg-app-raised"
-          aria-label={t('common.openMenu')}
-        >
-          <Menu className="h-6 w-6" />
-        </button>
-        <div className="flex items-center gap-0.5">
+      <header className={`safe-top sticky top-0 z-40 flex h-14 min-h-[3.5rem] items-center gap-2 px-4 lg:hidden ${shellHeader}`}>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen(true)}
+            className="-ml-1 shrink-0 rounded-lg p-2.5 text-slate-600 focus:outline-none active:bg-slate-100 dark:text-app-text dark:active:bg-app-raised"
+            aria-label={t('common.openMenu')}
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+          {ownerAccount && branches.length > 0 && (
+            <BranchSwitcher
+              branches={branches}
+              selectedBranchId={selectedBranchId}
+              onChange={setSelectedBranchId}
+              className="min-w-0 flex-1"
+            />
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-0.5">
           <button
             type="button"
             onClick={() => setNotificationsOpen(true)}
@@ -165,17 +162,6 @@ export default function OwnerLayout() {
         </div>
       </header>
 
-      {ownerAccount && branches.length > 0 && (
-        <div className={`border-b px-4 py-2.5 lg:hidden ${shellHeader}`}>
-          <BranchSwitcher
-            branches={branches}
-            selectedBranchId={selectedBranchId}
-            onChange={setSelectedBranchId}
-            className="w-full"
-          />
-        </div>
-      )}
-
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className={`fixed inset-0 ${overlayBackdrop}`} onClick={() => setSidebarOpen(false)} />
@@ -193,7 +179,7 @@ export default function OwnerLayout() {
         </div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col p-6 lg:flex ${sidebarSurface}`}>
         <div className="mb-7">
           <BrandLogo to="/dashboard" />
         </div>

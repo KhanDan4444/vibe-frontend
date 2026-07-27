@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, CheckCircle2, CloudOff, X, XCircle } from 'lucide-react';
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 /** Visible long enough to read, without feeling sticky. */
 export const FLASH_DISMISS_MS = 4500;
@@ -8,7 +9,16 @@ const EXIT_MS = 200;
 
 /**
  * @typedef {'success' | 'danger' | 'warning' | 'offline'} FlashVariant
- * @typedef {{ id: string, title: string, subtitle?: string, variant?: FlashVariant }} FlashToastRecord
+ * @typedef {{
+ *   id: string,
+ *   title: string,
+ *   subtitle?: string,
+ *   variant?: FlashVariant,
+ *   durationMs?: number,
+ *   urgent?: boolean,
+ *   actionHint?: string,
+ *   action?: { label: string, onClick: () => void },
+ * }} FlashToastRecord
  */
 
 const VARIANTS = {
@@ -20,8 +30,11 @@ const VARIANTS = {
       'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
     title: 'text-slate-900 dark:text-slate-50',
     subtitle: 'text-slate-600 dark:text-slate-400',
+    hint: 'text-slate-500 dark:text-slate-500',
     progress: 'bg-emerald-500/80 dark:bg-emerald-400/80',
     close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+    actionBtn:
+      'border-emerald-500/35 bg-emerald-500/8 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-400 dark:hover:bg-emerald-500/20',
   },
   danger: {
     Icon: XCircle,
@@ -31,8 +44,11 @@ const VARIANTS = {
       'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
     title: 'text-slate-900 dark:text-slate-50',
     subtitle: 'text-slate-600 dark:text-slate-400',
+    hint: 'text-slate-500 dark:text-slate-500',
     progress: 'bg-rose-500/80 dark:bg-rose-400/80',
     close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+    actionBtn:
+      'border-rose-500/35 bg-rose-500/8 text-rose-700 hover:bg-rose-500/15 dark:text-rose-400 dark:hover:bg-rose-500/20',
   },
   warning: {
     Icon: AlertTriangle,
@@ -42,8 +58,11 @@ const VARIANTS = {
       'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
     title: 'text-slate-900 dark:text-slate-50',
     subtitle: 'text-slate-600 dark:text-slate-400',
+    hint: 'text-slate-500 dark:text-slate-500',
     progress: 'bg-amber-500/80 dark:bg-amber-400/80',
     close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+    actionBtn:
+      'border-amber-500/35 bg-amber-500/8 text-amber-800 hover:bg-amber-500/15 dark:text-amber-400 dark:hover:bg-amber-500/20',
   },
   offline: {
     Icon: CloudOff,
@@ -53,19 +72,25 @@ const VARIANTS = {
       'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
     title: 'text-slate-900 dark:text-slate-50',
     subtitle: 'text-slate-600 dark:text-slate-400',
+    hint: 'text-slate-500 dark:text-slate-500',
     progress: 'bg-amber-500/80 dark:bg-amber-400/80',
     close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+    actionBtn:
+      'border-amber-500/35 bg-amber-500/8 text-amber-800 hover:bg-amber-500/15 dark:text-amber-400 dark:hover:bg-amber-500/20',
   },
 };
 
 function FlashToastItem({ toast, onDismiss }) {
   const { t } = useTranslation();
+  const reducedMotion = usePrefersReducedMotion();
   const [exiting, setExiting] = useState(false);
   const [paused, setPaused] = useState(false);
   const dismissTimerRef = useRef(null);
   const exitTimerRef = useRef(null);
   const dismissingRef = useRef(false);
   const onDismissRef = useRef(onDismiss);
+  const bodyId = `flash-body-${toast.id}`;
+  const hintId = `flash-hint-${toast.id}`;
 
   useEffect(() => {
     onDismissRef.current = onDismiss;
@@ -93,36 +118,45 @@ function FlashToastItem({ toast, onDismiss }) {
       if (dismissingRef.current) return;
       dismissingRef.current = true;
       clearTimers();
-      if (immediate) {
+      if (immediate || reducedMotion) {
         finishDismiss();
         return;
       }
       setExiting(true);
       exitTimerRef.current = setTimeout(finishDismiss, EXIT_MS);
     },
-    [clearTimers, finishDismiss]
+    [clearTimers, finishDismiss, reducedMotion]
   );
+
+  const durationMs = toast.durationMs ?? FLASH_DISMISS_MS;
 
   useEffect(() => {
     dismissingRef.current = false;
     setExiting(false);
     setPaused(false);
     clearTimers();
-    dismissTimerRef.current = setTimeout(() => dismiss(false), FLASH_DISMISS_MS);
+    dismissTimerRef.current = setTimeout(() => dismiss(false), durationMs);
     return clearTimers;
-  }, [toast.id, dismiss, clearTimers]);
+  }, [toast.id, dismiss, clearTimers, durationMs]);
 
   const variant = VARIANTS[toast.variant] ?? VARIANTS.success;
   const { Icon } = variant;
   const showSubtitle = Boolean(toast.subtitle);
+  const showAction = Boolean(toast.action?.label);
+  const showHint = Boolean(toast.actionHint);
+  const isUrgent = Boolean(toast.urgent);
+  const describedBy = [showSubtitle ? bodyId : null, showHint ? hintId : null].filter(Boolean).join(' ') || undefined;
 
   return (
     <div
-      role="status"
+      role={isUrgent ? 'alert' : 'status'}
+      aria-live={isUrgent ? 'assertive' : 'polite'}
+      aria-atomic="true"
+      aria-describedby={describedBy}
       className={[
         'flash-toast pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-xl border p-3.5 pr-3 shadow-lg shadow-slate-900/8 ring-1 ring-slate-900/5 backdrop-blur-md dark:shadow-black/40 dark:ring-white/5',
         variant.surface,
-        exiting ? 'flash-toast-out' : 'flash-toast-in',
+        reducedMotion ? '' : exiting ? 'flash-toast-out' : 'flash-toast-in',
       ].join(' ')}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -133,10 +167,29 @@ function FlashToastItem({ toast, onDismiss }) {
         <Icon className="h-4 w-4" aria-hidden />
       </div>
 
-      <div className="min-w-0 flex-1 pt-0.5 pr-1">
+      <div id={bodyId} className="min-w-0 flex-1 pt-0.5 pr-1">
         <p className={`text-sm font-semibold leading-snug tracking-tight ${variant.title}`}>{toast.title}</p>
         {showSubtitle ? (
           <p className={`mt-0.5 text-[13px] leading-snug ${variant.subtitle}`}>{toast.subtitle}</p>
+        ) : null}
+        {showAction ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toast.action.onClick();
+              dismiss(true);
+            }}
+            className={`mt-2.5 inline-flex items-center rounded-lg border px-2.5 py-1 text-[13px] font-semibold transition-colors ${variant.actionBtn}`}
+            aria-label={t('flash.undoActionLabel', { action: toast.action.label })}
+          >
+            {toast.action.label}
+          </button>
+        ) : null}
+        {showHint ? (
+          <p id={hintId} className={`mt-1.5 text-[11px] leading-snug ${variant.hint}`}>
+            {toast.actionHint}
+          </p>
         ) : null}
       </div>
 
@@ -147,19 +200,21 @@ function FlashToastItem({ toast, onDismiss }) {
           dismiss(true);
         }}
         className={`relative z-10 shrink-0 cursor-pointer rounded-md p-1.5 transition-colors ${variant.close}`}
-        aria-label={t('aria.dismiss')}
+        aria-label={showAction ? t('flash.dismissPending') : t('aria.dismiss')}
       >
         <X className="h-4 w-4 pointer-events-none" />
       </button>
 
-      <span
-        className={`flash-toast-progress pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left ${variant.progress}`}
-        style={{
-          animationDuration: `${FLASH_DISMISS_MS}ms`,
-          animationPlayState: paused ? 'paused' : 'running',
-        }}
-        aria-hidden
-      />
+      {!reducedMotion ? (
+        <span
+          className={`flash-toast-progress pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left ${variant.progress}`}
+          style={{
+            animationDuration: `${durationMs}ms`,
+            animationPlayState: paused ? 'paused' : 'running',
+          }}
+          aria-hidden
+        />
+      ) : null}
     </div>
   );
 }
@@ -171,8 +226,7 @@ export default function FlashToaster({ toasts, onDismiss }) {
   return (
     <div
       className="pointer-events-none fixed top-4 right-4 z-[70] flex w-[min(100vw-2rem,380px)] flex-col gap-2 safe-top"
-      aria-live="polite"
-      aria-atomic="false"
+      aria-relevant="additions"
     >
       {toasts.map((toast) => (
         <FlashToastItem key={toast.id} toast={toast} onDismiss={onDismiss} />

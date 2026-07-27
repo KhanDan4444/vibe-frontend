@@ -12,7 +12,9 @@ import PageHeader from '../../components/PageHeader';
 import { formatAuditAction, formatAuditDetails, formatActorRole } from '../../utils/activityLabels';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatDisplayDateTime } from '../../utils/date';
-import { tableRowHover } from '../../utils/surfaceClasses';
+import { tableRowHover, selectSurface } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -77,15 +79,10 @@ export default function Activity() {
         title={t('pages.activity.title')}
         subtitle={t('pages.activity.subtitle')}
         actions={
-          <button
-            type="button"
-            onClick={loadActivity}
-            disabled={loading}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
-          >
+          <Button variant="secondary" onClick={loadActivity} disabled={loading}>
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             {t('common.refresh')}
-          </button>
+          </Button>
         }
       />
 
@@ -97,7 +94,7 @@ export default function Activity() {
           id="actor-filter"
           value={actorFilter}
           onChange={(e) => setActorFilter(e.target.value)}
-          className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+          className={`ui-select ${selectSurface} min-w-[10rem]`}
         >
           {ACTOR_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{t(opt.labelKey)}</option>
@@ -111,7 +108,7 @@ export default function Activity() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
+      <Card className="overflow-hidden">
         {loading && items.length === 0 ? (
           <>
             <div className="lg:hidden">
@@ -228,7 +225,7 @@ export default function Activity() {
             />
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

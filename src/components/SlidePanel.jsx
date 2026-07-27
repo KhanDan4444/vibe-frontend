@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { overlayBackdrop } from '../utils/surfaceClasses';
+import Button from './ui/Button';
 
 /**
  * Right-side slide-over shell used across the gym owner platform.
@@ -219,15 +220,10 @@ export function SlidePanelActionButton({
 }) {
   if (variant === 'hero') {
     return (
-      <button
-        type="button"
-        onClick={onClick}
-        className={`flex w-full min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-teal-700 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
-        {...props}
-      >
+      <Button onClick={onClick} className={`w-full ${className}`} {...props}>
         {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
         <span>{children}</span>
-      </button>
+      </Button>
     );
   }
 
@@ -236,7 +232,7 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex min-h-[40px] cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-teal-600/40 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 dark:border-app-border-subtle dark:bg-app-raised dark:hover:border-teal-500/40 dark:hover:bg-app-surface disabled:opacity-50 ${className}`}
+        className={`flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-teal-600/40 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 dark:border-app-border-subtle dark:bg-app-raised dark:hover:border-teal-500/40 dark:hover:bg-app-surface disabled:opacity-50 ${className}`}
         {...props}
       >
         {Icon && <Icon className="h-4 w-4 shrink-0 text-slate-500 dark:text-app-muted" aria-hidden />}
@@ -252,7 +248,7 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex w-full min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
+        className={`flex w-full min-h-[40px] cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-600 px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
         {...props}
       >
         {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
@@ -266,7 +262,7 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-rose-200/90 bg-white text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 dark:border-rose-500/30 dark:bg-app-raised dark:text-rose-400 dark:hover:bg-rose-500/10 disabled:opacity-50 ${className}`}
+        className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-rose-200/90 bg-white text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 dark:border-rose-500/30 dark:bg-app-raised dark:text-rose-400 dark:hover:bg-rose-500/10 disabled:opacity-50 ${className}`}
         {...props}
       >
         {Icon && <Icon className="h-4 w-4" aria-hidden />}
@@ -275,26 +271,42 @@ export function SlidePanelActionButton({
     );
   }
 
-  const variants = {
-    primary:
-      'min-h-[44px] bg-teal-700 text-white shadow-sm shadow-teal-700/20 hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-400',
-    secondary:
-      'min-h-[44px] border border-slate-200 bg-white text-slate-700 hover:border-teal-200 hover:bg-teal-50 hover:text-teal-800 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text dark:hover:border-teal-600/30 dark:hover:bg-teal-600/10 dark:hover:text-teal-200',
-    success:
-      'min-h-[44px] bg-emerald-600 text-white shadow-sm shadow-emerald-600/20 hover:bg-emerald-500',
-    danger:
-      'min-h-[44px] border border-rose-200 bg-white text-rose-600 hover:bg-rose-50 dark:border-rose-500/30 dark:bg-app-raised dark:text-rose-400 dark:hover:bg-rose-500/10',
-  };
+  if (variant === 'secondary') {
+    return (
+      <Button variant="secondary" onClick={onClick} className={className} {...props}>
+        {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
+        {children}
+      </Button>
+    );
+  }
+
+  if (variant === 'danger') {
+    return (
+      <Button variant="danger" onClick={onClick} className={className} {...props}>
+        {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
+        {children}
+      </Button>
+    );
+  }
+
+  if (variant === 'success') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 disabled:opacity-50 ${className}`}
+        {...props}
+      >
+        {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
+        {children}
+      </button>
+    );
+  }
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 cursor-pointer disabled:opacity-50 ${variants[variant] || variants.primary} ${className}`}
-      {...props}
-    >
+    <Button onClick={onClick} className={className} {...props}>
       {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
       {children}
-    </button>
+    </Button>
   );
 }

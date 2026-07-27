@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ResponsiveModal from './ResponsiveModal';
+import Button from './ui/Button';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -29,11 +30,6 @@ export default function ConfirmDialog({
     return () => window.removeEventListener('keydown', onKey);
   }, [isOpen, onCancel]);
 
-  const typeStyles = {
-    danger: 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500',
-    primary: 'bg-teal-700 hover:bg-teal-700 text-white focus:ring-teal-600',
-  };
-
   return (
     <ResponsiveModal open={isOpen} onClose={onCancel} size="md" zIndexClass="z-[100]" labelledBy="confirm-dialog-title">
       <div className={modalBody}>
@@ -50,20 +46,17 @@ export default function ConfirmDialog({
         </div>
       </div>
       <div className={modalFooter}>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none dark:border-app-border dark:bg-app-raised dark:text-app-text dark:hover:bg-app-surface/80 sm:w-auto"
-        >
+        <Button type="button" variant="secondary" onClick={onCancel} className="w-full sm:w-auto">
           {resolvedCancel}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant={type === 'danger' ? 'danger' : 'primary'}
           onClick={onConfirm}
-          className={`w-full rounded-lg px-4 py-2.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 sm:w-auto ${typeStyles[type]}`}
+          className="w-full sm:w-auto"
         >
           {resolvedConfirm}
-        </button>
+        </Button>
       </div>
     </ResponsiveModal>
   );

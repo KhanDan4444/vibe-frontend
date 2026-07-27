@@ -35,6 +35,9 @@ import { mapGymFromApi } from '../../utils/apiMappers';
 import { useTranslation } from 'react-i18next';
 import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../../i18n/helpers';
 import { AdminTableRowsSkeleton, AdminListSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
+import { selectSurface } from '../../utils/surfaceClasses';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -281,21 +284,12 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <button
-            type="button"
-            onClick={fetchPayments}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 cursor-pointer"
-          >
+          <Button variant="secondary" onClick={fetchPayments}>
             <RefreshCw className="h-4 w-4 shrink-0" /> {t('common.refresh')}
-          </button>
-          <button
-            type="button"
-            onClick={handleExportCsv}
-            disabled={transactionCount === 0}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50 cursor-pointer"
-          >
+          </Button>
+          <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
             <Download className="h-4 w-4 shrink-0" /> {t('common.exportCsv')}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -312,11 +306,11 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         </div>
       )}
 
-      <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-4 shadow-sm flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <Card className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <label className="text-sm font-medium text-slate-700 dark:text-app-text">{t('period.reportPeriod')}</label>
           <select
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm cursor-pointer focus:border-teal-600 focus:outline-none"
+            className={`ui-select ${selectSurface}`}
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value)}
           >
@@ -343,7 +337,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
             />
           </div>
         )}
-      </div>
+      </Card>
 
       {attentionGyms.length > 0 && (
         <div className="admin-alert-amber">
@@ -391,7 +385,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           Array.from({ length: 3 }).map((_, i) => <SummaryCardSkeleton key={i} />)
         ) : (
         <>
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
+        <Card className="p-6">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-slate-500">{t('metrics.periodRevenue', { period: periodLabel })}</span>
             <TrendingUp className="h-5 w-5 text-emerald-600" />
@@ -399,23 +393,23 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">
             {formatMoney(periodRevenue)}
           </p>
-        </div>
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
+        </Card>
+        <Card className="p-6">
           <span className="text-sm font-medium text-slate-500">{t('metrics.transactions')}</span>
           <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">{transactionCount}</p>
-        </div>
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised p-6 shadow-sm">
+        </Card>
+        <Card className="p-6">
           <span className="text-sm font-medium text-slate-500">{t('metrics.averagePayment')}</span>
           <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">
             {formatMoney(averagePayment)}
           </p>
-        </div>
+        </Card>
         </>
         )}
       </div>
 
       {!initialLoading && Object.keys(byMethod).length > 0 && (
-        <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm">
+        <Card className="p-4">
           <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {Object.entries(byMethod)
@@ -429,12 +423,12 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
               </div>
             ))}
           </div>
-        </div>
+        </Card>
       )}
 
       <p className="text-xs text-slate-400 -mt-2">{t('admin.paymentsEditHint')}</p>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm">
+      <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-md">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
           <input
@@ -447,7 +441,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
         <select
-          className="admin-field min-w-[10rem] cursor-pointer"
+          className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`}
           value={gymSort}
           onChange={(e) => {
             setPage(1);
@@ -459,22 +453,22 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
             <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
           ))}
         </select>
-        <select className="admin-field min-w-[10rem] cursor-pointer" value={gymFilter} onChange={(e) => setGymFilter(e.target.value)}>
+        <select className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`} value={gymFilter} onChange={(e) => setGymFilter(e.target.value)}>
           <option value="All">{t('filters.allGyms')}</option>
           {gymOptions.map(([id, name]) => (
             <option key={id} value={String(id)}>{name}</option>
           ))}
         </select>
-        <select className="admin-field min-w-[10rem] cursor-pointer" value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)}>
+        <select className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`} value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)}>
           <option value="All">{t('filters.allMethods')}</option>
           {PAYMENT_METHOD_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>{t(opt.labelKey)}</option>
           ))}
         </select>
         </div>
-      </div>
+      </Card>
 
-      <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {initialLoading ? (
             <AdminListSkeleton rows={6} />
@@ -620,7 +614,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           onPageChange={setPage}
           disabled={loading}
         />
-      </div>
+      </Card>
 
       <AdminPaymentModal
         isOpen={editState.isOpen}

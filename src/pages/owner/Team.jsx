@@ -11,6 +11,8 @@ import PageHeader from '../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { tableRowHover } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 export default function Team() {
@@ -123,17 +125,15 @@ export default function Team() {
         subtitle={t('pages.team.subtitle')}
         actions={
           !readOnly ? (
-            <button
-              type="button"
+            <Button
               onClick={() => {
                 setModalError('');
                 setModalState({ isOpen: true, member: null });
               }}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800"
             >
               <UserPlus className="h-4 w-4" />
               {t('pages.team.add')}
-            </button>
+            </Button>
           ) : null
         }
       />
@@ -144,7 +144,7 @@ export default function Team() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised shadow-sm">
+      <Card className="overflow-hidden">
         <div className="admin-panel-header">
           <h2 className="text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('pages.team.sectionTitle')}</h2>
         </div>
@@ -289,7 +289,7 @@ export default function Team() {
           </div>
           </>
         )}
-      </div>
+      </Card>
 
       <StaffModal
         isOpen={modalState.isOpen}

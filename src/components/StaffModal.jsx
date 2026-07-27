@@ -6,6 +6,7 @@ import { DEFAULT_STAFF_ROLE } from '../utils/staffRoles';
 import { validateStaffForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
+import Button from './ui/Button';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -254,20 +255,12 @@ export default function StaffModal({
         </div>
 
         <div className={modalFooter}>
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 sm:w-auto"
-          >
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-          >
+          </Button>
+          <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
             {saving ? t('common.processing') : isEdit ? t('modals.staff.saveUpdate') : t('modals.staff.saveCreate')}
-          </button>
+          </Button>
         </div>
       </form>
     </ResponsiveModal>

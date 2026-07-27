@@ -325,6 +325,8 @@
     "noData": "Daataan ammaaf hin jiru.",
     "viewAll": "Hunda ilaali",
     "dismiss": "Dhiisi",
+    "undo": "Deebi'i",
+    "error": "Dogoggorri uumameera",
     "signOut": "Ba'i",
     "month_one": "Ji'a {{count}}",
     "month_other": "Ji'oota {{count}}",
@@ -1182,6 +1184,14 @@
       "title": "Miseensi haqameera",
       "subtitle": "{{name}} fi seenaan kaffaltii isaa haqameera."
     },
+    "memberDeletePending": {
+      "title": "Miseensi haquu jira…",
+      "subtitle": "Yoo hin deebi'in {{name}} ni haqama."
+    },
+    "memberDeleteCancelled": {
+      "title": "Haquun dhaabbateera",
+      "subtitle": "{{name}} eegameera."
+    },
     "transferred": {
       "title": "Miseensi darbeera",
       "subtitle": "{{name}} amma {{branch}} irratti jira."
@@ -1193,6 +1203,14 @@
     "paymentDeleted": {
       "title": "Kaffaltiin haqameera",
       "subtitle": "Kaffaltiin kun galii irraa haqameera."
+    },
+    "paymentDeletePending": {
+      "title": "Kaffaltiin haquu jira…",
+      "subtitle": "Yoo hin deebi'in kaffaltiin kun ni haqama."
+    },
+    "paymentDeleteCancelled": {
+      "title": "Haquun dhaabbateera",
+      "subtitle": "Kaffaltiin eegameera."
     },
     "branchCreated": {
       "title": "Dameen uumameera",
@@ -1265,6 +1283,9 @@
     "gymRemoved": {
       "title": "Jimii haqameera",
       "subtitle": "{{name}} fi odeeffannoon walqabatu hundi haqameera."
-    }
+    },
+    "undoHint": "Eeguuf Deebi'i tuqi — kana cufuun haquu hin dhaabu.",
+    "undoActionLabel": "{{action}} — jijjiirama kana haqi",
+    "dismissPending": "Beeksisa dhoksi — gochi itti fufa"
   }
 }

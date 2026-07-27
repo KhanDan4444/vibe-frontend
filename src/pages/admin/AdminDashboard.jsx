@@ -49,7 +49,9 @@ import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes'
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover, selectSurface } from '../../utils/surfaceClasses';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 
 const UNPAID = 'Unpaid';
 const DUE_SOON = 'Due Soon';
@@ -739,16 +741,15 @@ export default function AdminDashboard() {
                   <h1 className="text-2xl font-bold text-slate-900 dark:text-app-text-strong">{t('admin.gymsTitle')}</h1>
                   <p className="text-sm text-slate-500">{t('admin.gymsSubtitle')}</p>
                 </div>
-                <button
+                <Button
                   onClick={() => {
                     loadSaasPlansForForms();
                     setIsRegisterOpen(true);
                   }}
                   disabled={saasPlans.length === 0}
-                  className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
                 >
                   <Plus className="h-4 w-4" /> {t('admin.registerGym')}
-                </button>
+                </Button>
               </div>
 
               {error && (
@@ -817,8 +818,7 @@ export default function AdminDashboard() {
                 />
               </FilterChipBar>
 
-              {/* Filters and Search */}
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised p-4 shadow-sm mb-6">
+              <Card className="mb-6 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
                   <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                     <Search className="h-5 w-5" />
@@ -834,7 +834,7 @@ export default function AdminDashboard() {
 
                 <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                   <select
-                    className="admin-field min-w-[10rem] cursor-pointer"
+                    className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`}
                     value={gymSort}
                     onChange={(e) => {
                       setGymPage(1);
@@ -847,9 +847,9 @@ export default function AdminDashboard() {
                     ))}
                   </select>
                 </div>
-              </div>
+              </Card>
 
-              <section className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm overflow-hidden">
+              <Card className="overflow-hidden">
                 <div className="border-b border-slate-100 bg-slate-50/50 dark:border-app-border-subtle dark:bg-app-surface/80 px-4 py-4 flex items-center justify-between sm:px-6">
                   <h2 className="text-base font-bold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.gymsSection')}</h2>
                   <button onClick={fetchGyms} className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-slate-600 dark:text-app-text sm:hover:bg-slate-100 sm:hover:text-slate-600 dark:text-app-text">
@@ -1091,7 +1091,7 @@ export default function AdminDashboard() {
                 <p className="px-6 py-3 text-xs text-slate-400 border-t border-slate-100 dark:border-app-border-subtle">
                   {t('admin.rowActionsHint')}
                 </p>
-              </section>
+              </Card>
             </>
           
           )}

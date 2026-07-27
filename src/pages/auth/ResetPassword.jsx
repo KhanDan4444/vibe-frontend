@@ -19,7 +19,7 @@ export default function ResetPassword() {
   const [loading, setLoading] = useState(false);
 
   const baseInputClass =
-    'mt-1 block w-full rounded-lg border border-slate-600 bg-slate-900/40 px-3 py-2 text-white focus:border-teal-600 focus:outline-none dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+    'mt-1 block w-full rounded-md border border-slate-600 bg-slate-900/40 px-3 py-2.5 text-white focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
   const fc = (field) => fieldInputClass(baseInputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
 
@@ -93,7 +93,7 @@ export default function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
           >
             {loading ? t('auth.saving') : t('auth.updatePassword')}
           </button>

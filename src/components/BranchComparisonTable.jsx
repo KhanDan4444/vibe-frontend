@@ -2,15 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { tableRowHover } from '../utils/surfaceClasses';
 import { formatMoneyShort as formatMoney } from '../utils/formatMoney';
+import Card from './ui/Card';
 
 export default function BranchComparisonTable({ branches = [], loading = false }) {
   const { t } = useTranslation();
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-4 py-10 text-center text-sm text-slate-400 shadow-sm sm:px-6">
+      <Card className="px-4 py-10 text-center text-sm text-slate-400 sm:px-6">
         {t('common.loading')}
-      </div>
+      </Card>
     );
   }
 
@@ -22,7 +23,7 @@ export default function BranchComparisonTable({ branches = [], loading = false }
         <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('branchCompare.title')}</h2>
         <p className="text-sm text-slate-500">{t('branchCompare.subtitle')}</p>
       </div>
-      <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised shadow-sm">
+      <Card className="overflow-hidden">
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
           {branches.map((row) => (
             <div
@@ -109,7 +110,7 @@ export default function BranchComparisonTable({ branches = [], loading = false }
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
     </section>
   );
 }

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { validatePassword, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../utils/validation';
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
+import Button from './ui/Button';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -112,21 +113,12 @@ export default function ResetPasswordModal({
         </div>
 
         <div className={modalFooter}>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={saving}
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60"
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={saving} className="w-full sm:w-auto">
             {t('common.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            className="rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
+          </Button>
+          <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
             {saving ? t('common.saving') : t('modals.resetPassword.submit')}
-          </button>
+          </Button>
         </div>
       </form>
     </ResponsiveModal>
