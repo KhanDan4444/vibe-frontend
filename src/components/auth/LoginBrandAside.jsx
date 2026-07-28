@@ -27,9 +27,13 @@ export default function LoginBrandAside() {
         className="absolute inset-0 bg-gradient-to-t from-[#0b1220] via-[#0b1220]/50 to-transparent"
         aria-hidden
       />
-      {/* Soft join into the form column */}
+      {/* Wide soft join into the form column — same teal-dark palette, not a hard cut */}
       <div
-        className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-[#0b1220] to-transparent"
+        className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#0b1220] via-[#0b1220]/70 to-transparent lg:w-48 xl:w-56"
+        aria-hidden
+      />
+      <div
+        className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-teal-950/35 via-teal-900/10 to-transparent lg:w-64 xl:w-72"
         aria-hidden
       />
 

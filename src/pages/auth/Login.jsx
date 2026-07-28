@@ -66,8 +66,17 @@ export default function Login() {
       <div className="flex min-h-[100dvh] flex-1 flex-col lg:flex-row">
         <LoginBrandAside />
 
-        <div className="relative flex flex-1 items-center justify-center bg-[#0b1220] px-4 py-10 sm:px-6 lg:px-12 xl:px-16">
-          <div className="relative w-full max-w-[22rem]">
+        <div className="relative flex flex-1 items-center justify-center overflow-hidden bg-[#0b1220] px-4 py-10 sm:px-6 lg:px-12 xl:px-16">
+          {/* Pull photo-side teal into the form — one continuous field */}
+          <div
+            className="pointer-events-none absolute inset-y-0 left-0 hidden w-[min(42%,22rem)] bg-gradient-to-r from-teal-900/30 via-teal-950/12 to-transparent lg:block"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 hidden bg-gradient-to-br from-teal-950/10 via-transparent to-[#0b1220] lg:block"
+            aria-hidden
+          />
+          <div className="relative z-10 w-full max-w-[22rem]">
             <LoginBrandPanel />
 
             {successMessage && (
