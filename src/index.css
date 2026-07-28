@@ -159,7 +159,7 @@
 
 @layer components {
   .auth-hero-bg {
-    background: #020617;
+    background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
   }
 
   .auth-login-input {
