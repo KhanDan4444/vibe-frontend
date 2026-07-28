@@ -43,6 +43,7 @@ function DatePickerPopover({
   onSelect,
   locale,
 }) {
+  const { t } = useTranslation();
   const [position, setPosition] = useState({ top: 0, left: 0, width: POPOVER_MIN_WIDTH });
   const [viewDate, setViewDate] = useState(() => parseLocalDate(value || todayString()) || new Date());
 
@@ -113,7 +114,7 @@ function DatePickerPopover({
             type="button"
             className="date-picker-nav"
             onClick={() => shiftMonth(-1)}
-            aria-label="Previous month"
+            aria-label={t('aria.previousMonth')}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -122,7 +123,7 @@ function DatePickerPopover({
             type="button"
             className="date-picker-nav"
             onClick={() => shiftMonth(1)}
-            aria-label="Next month"
+            aria-label={t('aria.nextMonth')}
           >
             <ChevronRight className="h-4 w-4" />
           </button>

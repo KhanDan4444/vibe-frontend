@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Brand mark for web chrome — icon + ንቁ + slogan.
@@ -10,6 +11,7 @@ export default function BrandLogo({
   onClick,
   className = '',
 }) {
+  const { t } = useTranslation();
   const img =
     variant === 'icon' ? (
       <img
@@ -32,7 +34,7 @@ export default function BrandLogo({
       to={to}
       onClick={onClick}
       className="inline-flex rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-      aria-label="ንቁ — Dashboard"
+      aria-label={t('aria.brandHome')}
     >
       {img}
     </Link>

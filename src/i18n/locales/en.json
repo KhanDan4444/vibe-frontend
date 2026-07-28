@@ -1131,7 +1131,10 @@
     "dismiss": "Dismiss",
     "sortByGymName": "Sort by gym name",
     "memberPhoto": "{{name}} photo",
-    "memberPhotoDefault": "Member photo"
+    "memberPhotoDefault": "Member photo",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "brandHome": "ንቁ — Dashboard"
   },
   "charts": {
     "revenue": "Revenue"

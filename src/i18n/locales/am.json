@@ -29,14 +29,14 @@
   },
   "actions": {
     "activate": "አንቃ",
-    "addBranch": "ቅርንጫፍ ጨምር",
-    "addMember": "አባል ጨምር",
-    "addPlan": "ዕቅድ ጨምር",
-    "addStaff": "ሰራተኛ ጨምር",
+    "addBranch": "ቅርንጫፍ መዝግብ",
+    "addMember": "አባል መዝግብ",
+    "addPlan": "ዕቅድ መዝግብ",
+    "addStaff": "ሰራተኛ መዝግብ",
     "changePlan": "ዕቅድ ቀይር",
     "collect": "ሰብስብ",
     "collectPayment": "ክፍያ ይቀበሉ",
-    "createPlan": "አዲስ ዕቅድ ፍጠር",
+    "createPlan": "ዕቅድ መዝግብ",
     "deactivate": "አሰናክል",
     "disable": "አሰናክል",
     "enable": "አንቃ",
@@ -236,7 +236,10 @@
     "dismiss": "አስወግድ",
     "sortByGymName": "በጂም ስም ደርድር",
     "memberPhoto": "የ{{name}} ፎቶ",
-    "memberPhotoDefault": "የአባል ፎቶ"
+    "memberPhotoDefault": "የአባል ፎቶ",
+    "previousMonth": "ያለፈው ወር",
+    "nextMonth": "ቀጣይ ወር",
+    "brandHome": "ንቁ — ዳሽቦርድ"
   },
   "auth": {
     "backToSignIn": "ወደ መግቢያ ተመለስ",
@@ -707,7 +710,7 @@
       "save": "ክፍያ ይመዝግቡ"
     },
     "plan": {
-      "createTitle": "ዕቅድ ፍጠር",
+      "createTitle": "ዕቅድ መዝግብ",
       "description": "መግለጫ",
       "descriptionPlaceholder": "አማራጭ መግለጫ…",
       "duration": "ቆይታ (በወራት)",
@@ -715,7 +718,7 @@
       "name": "የዕቅድ ስም",
       "namePlaceholder": "ለምሳሌ፦ ወርሃዊ",
       "price": "ዋጋ",
-      "saveCreate": "ዕቅድ ፍጠር",
+      "saveCreate": "ዕቅድ መዝግብ",
       "saveUpdate": "ዕቅድ አስቀምጥ"
     },
     "reassignStaff": {
@@ -769,7 +772,7 @@
     },
     "staff": {
       "branch": "ቅርንጫፍ",
-      "createTitle": "ሰራተኛ ጨምር",
+      "createTitle": "ሰራተኛ መዝግብ",
       "editTitle": "ሰራተኛ አርትዕ",
       "email": "ኢሜይል",
       "emailOptional": "አማራጭ — ለእውቂያ እና የይለፍ ቃል ማስተካከያ።",
@@ -782,7 +785,7 @@
       "password": "የይለፍ ቃል",
       "passwordHint": "ቢያንስ 8 ቁምፊዎች",
       "passwordKeepHint": "(የአሁኑን ለማቆየት ባዶ ይተውት)",
-      "saveCreate": "መለያ ፍጠር",
+      "saveCreate": "ሰራተኛ መዝግብ",
       "saveUpdate": "ለውጦችን አስቀምጥ",
       "showPassword": "የይለፍ ቃል አሳይ"
     },
@@ -815,7 +818,7 @@
     "members": "አባላት",
     "payments": "ገቢ",
     "plans": "ዕቅዶች",
-    "reports": "ሪፖርቶች",
+    "reports": "ሪፖርት",
     "revenue": "ገቢ",
     "saasPlans": "የSaaS ዕቅዶች",
     "team": "ሰራተኞች"
@@ -900,10 +903,10 @@
       "loadError": "የSMS መዝገብ መጫን አልተሳካም።"
     },
     "branches": {
-      "add": "ቅርንጫፍ ጨምር",
+      "add": "ቅርንጫፍ መዝግብ",
       "defaultBranch": "ነባሪ ቅርንጫፍ",
       "empty": "ምንም ቅርንጫፍ የለም። እባክዎ የመጀመሪያ ቦታዎን ይጨምሩ።",
-      "formAdd": "ቅርንጫፍ ጨምር",
+      "formAdd": "ቅርንጫፍ መዝግብ",
       "formEdit": "ቅርንጫፍ አርትዕ",
       "inactiveBranch": "ያልነቃ ቅርንጫፍ",
       "nameLabel": "የቅርንጫፍ ስም",
@@ -925,7 +928,7 @@
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",
-      "addMemberFab": "አዲስ አባል ጨምር",
+      "addMemberFab": "አባል መዝግብ",
       "chartRevenue": "ገቢ",
       "customPlan": "ብጁ ዕቅድ",
       "dueSoonHintCritical": "አስቸኳይ",
@@ -978,9 +981,9 @@
     },
     "noChartData": "ለዚህ እይታ የሚሆን ውሂብ የለም",
     "plans": {
-      "add": "አዲስ ዕቅድ ፍጠር",
+      "add": "ዕቅድ መዝግብ",
       "cannotDelete": "\"{{name}}\"ን መሰረዝ አይቻልም። በአሁኑ ጊዜ {{count}} አባል(ዎች) ከዚህ ደረጃ ጋር ተያይዘዋል። ይህንን ዕቅድ ከማስወገድዎ በፊት እነዚያን መለያዎች እንደገና ይመድቡ።",
-      "createFirst": "የመጀመሪያውን ደረጃዎን ይፍጠሩ",
+      "createFirst": "ዕቅድ መዝግብ",
       "deleteConfirmMessage": "የ\"{{name}}\" የአባልነት ዕቅድን ለዘለዓለም መሰረዝ ይፈልጋሉ? ይህ ድርጊት ሊመለስ አይችልም።",
       "deleteMessage": "በዚህ ዕቅድ ላይ ያሉ አባላት ከመሰረዙ በፊት ወደ ሌላ ዕቅድ መዛወር አለባቸው።",
       "deletePlanTitle": "ዕቅድ ሰርዝ",
@@ -996,7 +999,7 @@
       "memberFilter": "የአባል ማጣሪያ",
       "memberOverviewSubtitle": "ንቁ፣ ያልተከፈለ፣ በቅርብ የሚያልቅ እና ጊዜው ያለፈ — እያንዳንዱ አባል አንድ ጊዜ።",
       "subtitle": "የአባላት አዝማሚያዎች፣ የገቢ ሁኔታዎች እና ሪፖርቶች።",
-      "title": "ሪፖርቶች"
+      "title": "ሪፖርት"
     },
     "revenue": {
       "amountReceived": "የተቀበለው መጠን",
@@ -1027,7 +1030,7 @@
       "emptyBody": "አባላት ሲመዘገቡ ወይም ሲያድሱ ክፍያዎች እዚህ ይታያሉ።"
     },
     "team": {
-      "add": "ሰራተኛ ጨምር",
+      "add": "ሰራተኛ መዝግብ",
       "disableMessage": "{{name}} እንደገና እስኪነቃ ድረስ መግባት አይችሉም።",
       "disableTitle": "የሰራተኛ መለያ ይሰናከል?",
       "empty": "ምንም የሰራተኛ መለያ የለም።",
