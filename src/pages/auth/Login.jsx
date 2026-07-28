@@ -1,6 +1,7 @@
 // src/pages/auth/Login.jsx — cardless glass login matching mobile brand treatment
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getRememberMePreference } from '../../utils/authStorage';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -26,6 +27,7 @@ export default function Login() {
   const successMessage = location.state?.message || '';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(() => getRememberMePreference());
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
@@ -33,6 +35,7 @@ export default function Login() {
 
   const inputBase =
     'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -102,19 +105,29 @@ export default function Login() {
               <label htmlFor="login-password" className="sr-only">
                 {t('auth.password')}
               </label>
-              <input
-                id="login-password"
-                type="password"
-                required
-                autoComplete="current-password"
-                className={inputClass(inputBase, fieldErrors, 'password')}
-                placeholder={t('auth.password')}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  clearFieldError(setFieldErrors, 'password');
-                }}
-              />
+              <div className="relative">
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  autoComplete="current-password"
+                  className={inputClass(`${inputBase} pr-12`, fieldErrors, 'password')}
+                  placeholder={t('auth.password')}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    clearFieldError(setFieldErrors, 'password');
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/45 transition-colors hover:text-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-400/30"
+                  aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
             </div>
 
