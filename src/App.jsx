@@ -39,7 +39,11 @@ function RouteFallback() {
 }
 
 function ProtectedRoute({ children, requirePlatformAdmin, requireGymPortal, requireGymOwner }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <RouteFallback />;
+  }
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -61,7 +65,11 @@ function ProtectedRoute({ children, requirePlatformAdmin, requireGymPortal, requ
 }
 
 function RootRedirect() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <RouteFallback />;
+  }
 
   if (!user) return <Navigate to="/login" replace />;
 

@@ -1,22 +1,16 @@
 // src/context/AuthContext.jsx (Live API & FormData Optimized)
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
-import { API_BASE_URL } from '../config/api';
-import { decodeToken } from '../utils/jwt';
-import { resolveUserFromToken } from '../utils/authSession';
+import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
 import { isGymOwner } from '../utils/roles';
-import {
-  clearStoredToken,
-  getStoredToken,
-  setStoredToken,
-} from '../utils/authStorage';
+import { clearLegacyStoredToken, setRememberMePreference } from '../utils/authStorage';
 import { cacheRead, getCachedRead, clearReadCacheForUser } from '../offline/readCache';
 import { queueableJob, bodyHasPhoto, enqueueJob } from '../offline/writeQueue';
 import { clearMemberPhotoCache } from '../utils/memberPhotoCache';
 
 function apiUnreachableMessage() {
   if (import.meta.env.DEV) {
-    return `Cannot reach the API at ${API_BASE_URL}. Start the backend: cd vibe && npm start`;
+    return `Cannot reach the API at ${API_BASE_URL || '/api (proxy)'}. Start the backend: cd vibe && npm start`;
   }
   return 'Cannot reach the server. Please try again later.';
 }
@@ -36,65 +30,73 @@ const jsonResponse = (body, { status = 200, cached = false, queued = false } = {
 
 const AuthContext = createContext(null);
 
-function readInitialSession() {
-  const storedToken = getStoredToken();
-  const user = resolveUserFromToken(storedToken);
-  if (storedToken && !user) {
-    clearStoredToken();
-    return { token: null, user: null };
-  }
-  return { token: user ? storedToken : null, user };
-}
-
 export const AuthProvider = ({ children }) => {
-  const [initialSession] = useState(readInitialSession);
-  const [user, setUser] = useState(initialSession.user);
-  const [token, setToken] = useState(initialSession.token);
+  const [user, setUser] = useState(null);
   const [gymSubscription, setGymSubscription] = useState(null);
-  // Offline cache/queue keys derive from the token (stable per session),
-  // so apiFetch identity doesn't churn when profile details load.
-  const tokenUserId = useMemo(() => resolveUserFromToken(token)?.id ?? null, [token]);
-  const tokenUserIdRef = useRef(tokenUserId);
-  useEffect(() => {
-    tokenUserIdRef.current = tokenUserId;
-  }, [tokenUserId]);
+  const [loading, setLoading] = useState(true);
+  const userIdRef = useRef(null);
 
-  const logout = useCallback(() => {
-    const userId = tokenUserIdRef.current;
+  useEffect(() => {
+    userIdRef.current = user?.id ?? null;
+  }, [user?.id]);
+
+  const logout = useCallback(async () => {
+    const userId = userIdRef.current;
     if (userId) {
       void clearReadCacheForUser(userId);
     }
     clearMemberPhotoCache();
-    clearStoredToken();
+    clearLegacyStoredToken();
+
+    try {
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: API_FETCH_CREDENTIALS,
+      });
+    } catch {
+      /* cookie clear is best-effort when offline */
+    }
+
     setUser(null);
-    setToken(null);
     setGymSubscription(null);
   }, []);
 
   useEffect(() => {
-    if (!token) {
-      setUser(null);
-      return;
-    }
+    clearLegacyStoredToken();
 
-    const resolved = resolveUserFromToken(token);
-    if (resolved) {
-      setUser(resolved);
-      return;
-    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/session`, {
+          credentials: API_FETCH_CREDENTIALS,
+        });
+        if (!response.ok) return;
+        const data = await parseApiResponse(response);
+        if (!cancelled && data.user) {
+          setUser(data.user);
+          setGymSubscription(data.subscription || null);
+        }
+      } catch {
+        /* not signed in */
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
 
-    logout();
-  }, [token, logout]);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
-    if (!token || !user?.id || user.name) return undefined;
+    if (!user?.id || user.name) return undefined;
     if (!isGymOwner(user.role)) return undefined;
 
     let cancelled = false;
     (async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/gym/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
+          credentials: API_FETCH_CREDENTIALS,
         });
         const data = await parseApiResponse(response);
         if (cancelled || !response.ok) return;
@@ -115,12 +117,14 @@ export const AuthProvider = ({ children }) => {
     return () => {
       cancelled = true;
     };
-  }, [token, user?.id, user?.name, user?.role]);
+  }, [user?.id, user?.name, user?.role]);
 
   const login = useCallback(async (email, password, rememberMe = true) => {
     try {
+      setRememberMePreference(rememberMe);
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
+        credentials: API_FETCH_CREDENTIALS,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, rememberMe: Boolean(rememberMe) }),
       });
@@ -128,9 +132,8 @@ export const AuthProvider = ({ children }) => {
       const data = await parseApiResponse(response);
       if (!response.ok) throw apiErrorFromResponse(data, response.status);
 
-      setStoredToken(data.token, rememberMe);
-      setToken(data.token);
-      const profile = data.user || decodeToken(data.token);
+      clearLegacyStoredToken();
+      const profile = data.user;
       if (profile) setUser(profile);
       setGymSubscription(data.subscription || null);
       return profile;
@@ -146,14 +149,10 @@ export const AuthProvider = ({ children }) => {
   const apiFetch = useCallback(async (endpoint, options = {}) => {
     const headers = { ...options.headers };
     const method = (options.method || 'GET').toUpperCase();
-    const userId = tokenUserId;
+    const userId = user?.id ?? null;
 
     if (!(options.body instanceof FormData)) {
       headers['Content-Type'] = headers['Content-Type'] || 'application/json';
-    }
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
     }
 
     /** Offline fallback: serve cached GETs, queue allowlisted writes. */
@@ -184,8 +183,7 @@ export const AuthProvider = ({ children }) => {
       });
     };
 
-    // Skip a doomed network round-trip when the browser knows it is offline.
-    if (typeof navigator !== 'undefined' && navigator.onLine === false && token) {
+    if (typeof navigator !== 'undefined' && navigator.onLine === false && user) {
       const fallback = await offlineFallback();
       if (fallback) return fallback;
       throw new Error(apiUnreachableMessage());
@@ -195,10 +193,11 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch(`${API_BASE_URL}/api${endpoint}`, {
         ...options,
         headers,
+        credentials: API_FETCH_CREDENTIALS,
       });
 
       if (response.status === 401) {
-        logout();
+        await logout();
         throw new Error('Session expired');
       }
 
@@ -208,7 +207,6 @@ export const AuthProvider = ({ children }) => {
         userId &&
         (response.headers.get('Content-Type') || '').includes('application/json')
       ) {
-        // Cache a copy for offline reads; never block or fail the live response.
         response
           .clone()
           .json()
@@ -219,7 +217,7 @@ export const AuthProvider = ({ children }) => {
       return response;
     } catch (error) {
       if (isNetworkError(error)) {
-        if (token) {
+        if (user) {
           const fallback = await offlineFallback();
           if (fallback) return fallback;
         }
@@ -228,7 +226,7 @@ export const AuthProvider = ({ children }) => {
       console.error(`API Request Failed [${endpoint}]:`, error.message);
       throw error;
     }
-  }, [token, tokenUserId, logout]);
+  }, [user, logout]);
 
   const updateUser = useCallback((patch) => {
     setUser((prev) => (prev ? { ...prev, ...patch } : prev));
@@ -236,14 +234,14 @@ export const AuthProvider = ({ children }) => {
 
   const contextValue = useMemo(() => ({
     user,
-    token,
     gymSubscription,
     login,
     logout,
     updateUser,
     apiFetch,
-    loading: false,
-  }), [user, token, gymSubscription, login, logout, updateUser, apiFetch]);
+    loading,
+    isAuthenticated: Boolean(user),
+  }), [user, gymSubscription, login, logout, updateUser, apiFetch, loading]);
 
   return (
     <AuthContext.Provider value={contextValue}>

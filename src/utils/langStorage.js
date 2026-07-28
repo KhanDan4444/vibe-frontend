@@ -1,5 +1,3 @@
-import { userFromStoredToken } from './authSession';
-
 export const LANGUAGE_STORAGE_KEY = 'vibe-lang';
 export const GUEST_LANGUAGE_KEY = 'vibe-lang:guest';
 
@@ -65,7 +63,7 @@ export function readStoredLanguage(user) {
 }
 
 export function readBootstrapLanguage() {
-  return readStoredLanguage(userFromStoredToken());
+  return readGuestLanguage();
 }
 
 export function persistLanguage(code, user) {

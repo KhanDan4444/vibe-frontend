@@ -1,8 +1,7 @@
 import { ROLES } from './roles';
 import { decodeToken } from './jwt';
-import { getStoredToken } from './authStorage';
 
-/** Restore the user from a stored JWT (sync, UX-only — API re-validates every request). */
+/** Decode a JWT for UX-only checks — API re-validates every request. */
 export function resolveUserFromToken(token) {
   if (!token) return null;
 
@@ -16,10 +15,4 @@ export function resolveUserFromToken(token) {
   const decoded = decodeToken(token);
   if (decoded && decoded.exp * 1000 > Date.now()) return decoded;
   return null;
-}
-
-export function userFromStoredToken() {
-  const token = getStoredToken();
-  if (!token) return null;
-  return resolveUserFromToken(token);
 }

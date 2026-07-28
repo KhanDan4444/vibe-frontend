@@ -1,5 +1,3 @@
-import { userFromStoredToken } from './authSession';
-
 const LEGACY_THEME_STORAGE_KEY = 'vibe-theme';
 export function themeStorageKey(user) {
   if (!user) return null;
@@ -22,13 +20,8 @@ export function readStoredTheme(user) {
   return 'light';
 }
 
-function userFromStoredTokenForTheme() {
-  return userFromStoredToken();
-}
-
-/** Gym portal users share preferences per gym; platform admins use their own account key. */
 export function readBootstrapTheme() {
-  return readStoredTheme(userFromStoredTokenForTheme());
+  return readStoredTheme(null);
 }
 
 export function applyThemeClass(theme) {

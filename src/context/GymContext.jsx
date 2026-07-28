@@ -42,7 +42,7 @@ const BRANCH_READ_ONLY_MESSAGE =
 const GymContext = createContext(null);
 
 export const GymProvider = ({ children }) => {
-  const { apiFetch, token, gymSubscription: loginSubscription, user } = useAuth();
+  const { apiFetch, gymSubscription: loginSubscription, user } = useAuth();
   const [plans, setPlans] = useState([]);
   const [summary, setSummary] = useState(EMPTY_SUMMARY);
   const [subscription, setSubscription] = useState(null);
@@ -108,8 +108,8 @@ export const GymProvider = ({ children }) => {
   }, [user?.gym_id]);
 
   useEffect(() => {
-    if (token) reloadBranches();
-  }, [token, reloadBranches]);
+    if (user) reloadBranches();
+  }, [user, reloadBranches]);
 
   // Drop stale branch selection (e.g. after DB reset or branch deleted).
   useEffect(() => {
@@ -221,7 +221,7 @@ export const GymProvider = ({ children }) => {
 
   // Initial boot + subscription — plans + summary.
   useEffect(() => {
-    if (!token) {
+    if (!user) {
       setSubscriptionLoading(false);
       setLoading(false);
       bootDoneRef.current = false;
@@ -253,11 +253,11 @@ export const GymProvider = ({ children }) => {
     };
     // Intentionally omit fetchCoreData — branch changes handled below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token, loadSubscription]);
+  }, [user, loadSubscription]);
 
   // Branch switch only needs dashboard metrics (plans are gym-wide).
   useEffect(() => {
-    if (!token || !bootDoneRef.current) return;
+    if (!user || !bootDoneRef.current) return;
     fetchCoreData({ includePlans: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBranchId]);

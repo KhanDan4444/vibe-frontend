@@ -3,13 +3,14 @@
  * @description Auth API — password reset (OTP + email), gym signup, SaaS plans.
  */
 
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
 import { normalizeEthiopianPhone } from '../utils/validation/phone';
 
 async function postJson(path, body) {
   const res = await fetch(`${API_BASE_URL}/api${path}`, {
     method: 'POST',
+    credentials: API_FETCH_CREDENTIALS,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
@@ -41,7 +42,9 @@ export async function resetPassword(token, password) {
 }
 
 export async function getPublicSaasPlans() {
-  const res = await fetch(`${API_BASE_URL}/api/auth/saas-plans`);
+  const res = await fetch(`${API_BASE_URL}/api/auth/saas-plans`, {
+    credentials: API_FETCH_CREDENTIALS,
+  });
   const data = await parseApiResponse(res);
   if (!res.ok) throw new Error(data.error || 'Could not load plans');
   return data.plans || [];

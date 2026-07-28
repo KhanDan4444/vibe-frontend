@@ -3,7 +3,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
 import { listJobs, updateJob, removeJob, onQueueChanged, MAX_ATTEMPTS } from './writeQueue';
 import { SYNCED_EVENT } from './events';
 
@@ -12,16 +12,12 @@ const OfflineContext = createContext(null);
 const SYNC_INTERVAL_MS = 60 * 1000;
 
 export const OfflineProvider = ({ children }) => {
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const userId = user?.id ?? null;
   const [online, setOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
   const [jobs, setJobs] = useState([]);
   const [syncing, setSyncing] = useState(false);
   const syncingRef = useRef(false);
-  const tokenRef = useRef(token);
-  useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
 
   const refreshJobs = useCallback(async () => {
     const next = await (userId ? listJobs(userId) : Promise.resolve([]));
@@ -29,7 +25,6 @@ export const OfflineProvider = ({ children }) => {
   }, [userId]);
 
   useEffect(() => {
-    // Async IndexedDB load — defer past the effect body so state settles off-render.
     queueMicrotask(refreshJobs);
     return onQueueChanged(refreshJobs);
   }, [refreshJobs]);
@@ -46,7 +41,7 @@ export const OfflineProvider = ({ children }) => {
   }, []);
 
   const syncNow = useCallback(async () => {
-    if (syncingRef.current || !userId || !tokenRef.current) return;
+    if (syncingRef.current || !userId || !user) return;
     if (typeof navigator !== 'undefined' && !navigator.onLine) return;
 
     const run = async () => {
@@ -60,14 +55,13 @@ export const OfflineProvider = ({ children }) => {
           try {
             res = await fetch(`${API_BASE_URL}/api${job.endpoint}`, {
               method: job.method,
+              credentials: API_FETCH_CREDENTIALS,
               headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${tokenRef.current}`,
               },
               body: job.body,
             });
           } catch {
-            // Still offline / server unreachable — stop, try again later.
             break;
           }
 
@@ -77,7 +71,6 @@ export const OfflineProvider = ({ children }) => {
             continue;
           }
           if (res.status === 401) {
-            // Session problem — leave the queue intact for after re-login.
             break;
           }
           if (res.status >= 500) {
@@ -89,7 +82,6 @@ export const OfflineProvider = ({ children }) => {
             }
             continue;
           }
-          // Business rejection (validation, read-only, conflict) — won't succeed by retrying.
           let message = `Request failed (${res.status})`;
           try {
             const data = await res.json();
@@ -109,7 +101,6 @@ export const OfflineProvider = ({ children }) => {
       }
     };
 
-    // Prevent two tabs from replaying the same queue simultaneously.
     if (navigator.locks?.request) {
       await navigator.locks.request('vibe-offline-sync', { ifAvailable: true }, async (lock) => {
         if (lock) await run();
@@ -117,9 +108,8 @@ export const OfflineProvider = ({ children }) => {
     } else {
       await run();
     }
-  }, [userId, refreshJobs]);
+  }, [userId, user, refreshJobs]);
 
-  // Sync on reconnect, and periodically while pending jobs exist.
   const pendingCount = jobs.filter((j) => j.status === 'pending').length;
 
   useEffect(() => {

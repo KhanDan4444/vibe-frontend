@@ -43,34 +43,9 @@
           var theme = localStorage.getItem('vibe-theme');
           if (theme !== 'dark' && theme !== 'light') theme = 'light';
 
-          var lang = localStorage.getItem('vibe-lang');
-          if (lang === 'am' || lang === 'en') {
+          var lang = localStorage.getItem('vibe-lang:guest') || localStorage.getItem('vibe-lang');
+          if (lang === 'am' || lang === 'en' || lang === 'om') {
             document.documentElement.lang = lang;
-          }
-
-          var token = sessionStorage.getItem('token') || localStorage.getItem('token');
-          if (token) {
-            var parts = token.split('.');
-            if (parts.length === 3) {
-              var payload = JSON.parse(
-                atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
-              );
-              if (payload.exp * 1000 > Date.now()) {
-                var key = payload.gym_id
-                  ? 'vibe-theme:gym:' + payload.gym_id
-                  : 'vibe-theme:user:' + payload.id;
-                var scoped = localStorage.getItem(key);
-                if (scoped === 'dark' || scoped === 'light') theme = scoped;
-
-                var langKey = payload.gym_id
-                  ? 'vibe-lang:gym:' + payload.gym_id
-                  : 'vibe-lang:user:' + payload.id;
-                var scopedLang = localStorage.getItem(langKey);
-                if (scopedLang === 'am' || scopedLang === 'en') {
-                  document.documentElement.lang = scopedLang;
-                }
-              }
-            }
           }
 
           if (theme === 'dark') {

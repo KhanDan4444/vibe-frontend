@@ -1,5 +1,5 @@
-const TOKEN_KEY = 'token';
 const REMEMBER_PREF_KEY = 'vibe-remember-me';
+const LEGACY_TOKEN_KEY = 'token';
 
 export function getRememberMePreference() {
   if (typeof window === 'undefined') return true;
@@ -14,25 +14,9 @@ export function setRememberMePreference(rememberMe) {
   localStorage.setItem(REMEMBER_PREF_KEY, rememberMe ? '1' : '0');
 }
 
-export function getStoredToken() {
-  if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
-}
-
-export function setStoredToken(token, rememberMe) {
+/** Drop JWT from browser storage — web auth uses httpOnly cookies now. */
+export function clearLegacyStoredToken() {
   if (typeof window === 'undefined') return;
-  sessionStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(TOKEN_KEY);
-  if (rememberMe) {
-    localStorage.setItem(TOKEN_KEY, token);
-  } else {
-    sessionStorage.setItem(TOKEN_KEY, token);
-  }
-  setRememberMePreference(rememberMe);
-}
-
-export function clearStoredToken() {
-  if (typeof window === 'undefined') return;
-  sessionStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(LEGACY_TOKEN_KEY);
+  localStorage.removeItem(LEGACY_TOKEN_KEY);
 }
