@@ -45,10 +45,8 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       const data = await requestForgotPasswordOtp(identifier);
-      if (data.sessionId) {
-        setSessionId(data.sessionId);
-        setStep('reset');
-      }
+      setSessionId(data.sessionId);
+      setStep('reset');
       setMessage(data.message || t('auth.otpSent'));
     } catch (err) {
       setError(err.message);
