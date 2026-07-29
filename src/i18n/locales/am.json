@@ -43,7 +43,7 @@
     "enroll": "አባል መዝግብ",
     "goToPlans": "ወደ ዕቅዶች ይሂዱ",
     "renew": "ያድሱ",
-    "setDefault": "ነባሪ አድርግ",
+    "setDefault": "Default አድርግ",
     "skipPayLater": "ዝለል (በኋላ ይክፈሉ)",
     "transfer": "አስተላልፍ"
   },
@@ -301,7 +301,7 @@
   },
   "branch": {
     "allBranches": "ሁሉም ቅርንጫፎች",
-    "defaultSuffix": " (ነባሪ)",
+    "defaultSuffix": " (Default)",
     "inactiveGroup": "ያልነቃ (ለማየት ብቻ)",
     "inactiveSuffix": " (ያልነቃ)",
     "label": "ቅርንጫፍ"
@@ -328,7 +328,7 @@
     "close": "ዝጋ",
     "confirm": "አረጋግጥ",
     "create": "ፍጠር",
-    "default": "ነባሪ",
+    "default": "Default",
     "delete": "ሰርዝ",
     "disabled": "ተሰናክሏል",
     "dismiss": "ዝጋ",
@@ -904,7 +904,7 @@
     },
     "branches": {
       "add": "ቅርንጫፍ መዝግብ",
-      "defaultBranch": "ነባሪ ቅርንጫፍ",
+      "defaultBranch": "Default ቅርንጫፍ",
       "empty": "ምንም ቅርንጫፍ የለም። እባክዎ የመጀመሪያ ቦታዎን ይጨምሩ።",
       "formAdd": "ቅርንጫፍ መዝግብ",
       "formEdit": "ቅርንጫፍ አርትዕ",

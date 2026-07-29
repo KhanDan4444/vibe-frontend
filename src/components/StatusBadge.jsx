@@ -17,6 +17,7 @@ const LABEL_KEYS = {
   expired: 'status.expired',
   trialing: 'status.trialing',
   'due soon': 'status.dueSoon',
+  unpaid: 'status.unpaid',
 };
 
 export default function StatusBadge({ status, showDot = true }) {
