@@ -81,10 +81,9 @@ export default function MemberModal({
   const resolvedDefaultBranch = String(defaultBranchId || activeBranches.find((b) => b.is_default)?.id || activeBranches[0]?.id || '');
 
   const initEnrollDefaults = useCallback(() => {
-    const defaultPlanId = plans[0]?.id || '';
     setName('');
     setPhone('');
-    setPlanId(String(defaultPlanId));
+    setPlanId('');
     setStartDate(todayString());
     setBranchId(resolvedDefaultBranch);
     setPaymentDate(todayString());
@@ -97,9 +96,8 @@ export default function MemberModal({
     });
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
-    const plan = plans[0];
-    setAmount(plan ? String(plan.price) : '');
-  }, [plans, resolvedDefaultBranch]);
+    setAmount('');
+  }, [resolvedDefaultBranch]);
 
   const initializeForm = useCallback(() => {
     if (member) {
@@ -206,7 +204,7 @@ export default function MemberModal({
   useEffect(() => {
     if (!isOpen || isEdit || skipPayment) return;
     const plan = plans.find((p) => p.id === parseInt(planId, 10));
-    if (plan) setAmount(String(plan.price));
+    setAmount(plan ? String(plan.price) : '');
   }, [planId, plans, isOpen, isEdit, skipPayment]);
 
   if (!isOpen) return null;
@@ -298,6 +296,16 @@ export default function MemberModal({
       return;
     }
 
+    if (!planId) {
+      showValidationError(
+        { ok: false, key: 'validation.planNotSelected', field: 'planId' },
+        setValidationError,
+        t,
+        { setFieldErrors: setLocalFieldErrors }
+      );
+      return;
+    }
+
     const base = {
       name: name.trim(),
       phone: trimmedPhone,
@@ -369,16 +377,8 @@ export default function MemberModal({
   const memberFieldsReady = validateMemberForm({ name, phone }).ok;
   const enrollExtrasReady =
     plans.length > 0 &&
-    Boolean(planId) &&
     Boolean(startDate) &&
-    (!showBranchPicker || Boolean(branchId)) &&
-    (skipPayment ||
-      validateMemberEnrollPayment({
-        amount: enrollAmount,
-        paymentDate,
-        startDate,
-        skipPayment,
-      }).ok);
+    (!showBranchPicker || Boolean(branchId));
   const canSubmit = !isBusy && memberFieldsReady && (isEdit || enrollExtrasReady);
 
   return (
@@ -517,7 +517,6 @@ export default function MemberModal({
             <div>
               <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
               <select
-                required
                 className={`${fc('planId')} cursor-pointer`}
                 value={planId}
                 onChange={(e) => {
@@ -525,8 +524,9 @@ export default function MemberModal({
                   clearFieldError(setLocalFieldErrors, 'planId');
                   markEnrollTouched();
                 }}
+                aria-invalid={Boolean(fieldErrors.planId)}
               >
-                <option value="" disabled>{t('modals.renew.selectPlan')}</option>
+                <option value="">{t('modals.renew.selectPlan')}</option>
                 {plans.map((p) => (
                   <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
                 ))}
