@@ -14,6 +14,7 @@ import {
   validateMemberForm,
   validateMemberEnrollPayment,
   validateMemberPhotoFile,
+  validateRequiredEthiopianPhone,
   showValidationError,
   parseMoneyAmount,
   inputClass,
@@ -68,6 +69,8 @@ export default function MemberModal({
   const [photoRemoved, setPhotoRemoved] = useState(false);
   const [hadExistingPhoto, setHadExistingPhoto] = useState(false);
   const lastModalModeRef = useRef(null);
+  const phoneInputRef = useRef(null);
+  const phoneRefocusLockRef = useRef(false);
 
   const isEdit = !!member;
   const fieldErrors = { ...externalFieldErrors, ...localFieldErrors };
@@ -130,6 +133,44 @@ export default function MemberModal({
 
   const markEnrollTouched = () => {
     if (!isEdit) markTouched();
+  };
+
+  /** Keep focus on phone and show the field error until the number is valid. */
+  const ensurePhoneValid = useCallback(() => {
+    const result = validateRequiredEthiopianPhone(phone);
+    if (result.ok) {
+      clearFieldError(setLocalFieldErrors, 'phone');
+      return true;
+    }
+    showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
+    return false;
+  }, [phone, t]);
+
+  const handlePhoneBlur = (e) => {
+    if (phoneRefocusLockRef.current) return;
+    if (ensurePhoneValid()) return;
+
+    const next = e.relatedTarget;
+    // Allow Cancel / close / leaving the modal; still keep the field error visible.
+    if (!next || next.matches('button, [type="submit"], [type="button"]')) return;
+    const form = e.currentTarget.form;
+    if (form && !form.contains(next)) return;
+
+    phoneRefocusLockRef.current = true;
+    requestAnimationFrame(() => {
+      phoneInputRef.current?.focus();
+      phoneRefocusLockRef.current = false;
+    });
+  };
+
+  const handlePhoneKeyDown = (e) => {
+    // Block Tab (forward) / Enter from leaving an invalid phone field.
+    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
+      if (!ensurePhoneValid()) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
   };
 
   useEffect(() => {
@@ -389,6 +430,7 @@ export default function MemberModal({
           <div>
             <label className={modalFieldLabel}>{t('modals.member.phone')}</label>
             <input
+              ref={phoneInputRef}
               type="tel"
               required
               inputMode="tel"
@@ -401,6 +443,9 @@ export default function MemberModal({
                 clearFieldError(setLocalFieldErrors, 'phone');
                 markEnrollTouched();
               }}
+              onBlur={handlePhoneBlur}
+              onKeyDown={handlePhoneKeyDown}
+              aria-invalid={Boolean(fieldErrors.phone)}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
             <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">{t('modals.member.phoneHint')}</p>
