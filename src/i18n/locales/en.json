@@ -770,6 +770,7 @@
       "startDate": "New start date",
       "termPreview": "{{duration}} month term ending {{date}}",
       "unpaidWarning": "Previous term had no payment recorded.",
+      "useTodayAsStart": "Use today as start",
       "save": "Renew membership"
     },
     "changePlan": {
@@ -1035,7 +1036,8 @@
     "paymentForTermStart": "Enter the payment collected for this new term start date.",
     "paymentForLicenseStart": "Enter the payment collected for this new license start date.",
     "paymentDateBeforeTermStart": "Payment date cannot be before the term start date.",
-    "dateRangeInvalid": "No valid dates for this field right now. Adjust the term start or come back when payment can be recorded.",
+    "dateRangeInvalid": "Start date is in the future, so payment can't be recorded yet. Set start to today or earlier, or come back on that day.",
+    "paymentDateFutureStart": "Start date ({{date}}) is in the future, so payment can't be recorded yet. Set start to today or earlier if allowed, or come back on that day.",
     "paymentDateBeforeLicenseStart": "Payment date cannot be before the license start date.",
     "changePlanDuplicate": "A plan-change payment is already recorded on this date. Edit it in Revenue or pick another date.",
     "selectPlanAndAmount": "Select a plan and enter a valid payment amount and dates.",

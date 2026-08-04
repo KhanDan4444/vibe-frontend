@@ -439,9 +439,20 @@ export default function MemberModal({
               className={fc('phone')}
               value={phone}
               onChange={(e) => {
-                setPhone(e.target.value);
-                clearFieldError(setLocalFieldErrors, 'phone');
+                const next = e.target.value;
+                setPhone(next);
                 markEnrollTouched();
+                const trimmed = next.trim();
+                if (!trimmed) {
+                  clearFieldError(setLocalFieldErrors, 'phone');
+                  return;
+                }
+                const result = validateRequiredEthiopianPhone(trimmed);
+                if (result.ok) {
+                  clearFieldError(setLocalFieldErrors, 'phone');
+                } else {
+                  showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
+                }
               }}
               onBlur={handlePhoneBlur}
               onKeyDown={handlePhoneKeyDown}

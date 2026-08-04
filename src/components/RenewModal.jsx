@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { todayString, formatDisplayDate } from '../utils/date';
+import { todayString, formatDisplayDate, isDateRangeValid } from '../utils/date';
 import {
   boundsForPaymentOnTerm,
   boundsForRenewStart,
@@ -76,6 +76,16 @@ export default function RenewModal({
   if (!isOpen || !member) return null;
 
   const selectedPlan = plans.find((p) => p.id === parseInt(planId, 10));
+  const renewStartBounds = boundsForRenewStart(member);
+  const paymentBounds = boundsForPaymentOnTerm(startDate);
+  const paymentRangeValid = isDateRangeValid(paymentBounds.min, paymentBounds.max);
+  const today = todayString();
+  const minStartIso = defaultRenewStartDate(member);
+  const canSetStartToToday = !paymentRangeValid && today >= minStartIso;
+  const showEarlyRenewNote =
+    canRenewMember(member) && member.status === DISPLAY_STATUS.DUE_SOON;
+  const newEndDate = selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : null;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting || saving) return;
@@ -83,6 +93,12 @@ export default function RenewModal({
     clearAllFieldErrors(setLocalFieldErrors);
     const renewResult = validateRenewPayment({ planId, startDate, paymentDate, amount });
     if (!showValidationError(renewResult, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
+    if (!paymentRangeValid) {
+      setValidationError(
+        t('validation.paymentDateFutureStart', { date: formatDisplayDate(startDate) })
+      );
+      return;
+    }
     setValidationError('');
     setSubmitting(true);
     try {
@@ -100,12 +116,6 @@ export default function RenewModal({
 
   const isBusy = saving || submitting;
   const displayError = validationError || error;
-  const renewStartBounds = boundsForRenewStart(member);
-  const paymentBounds = boundsForPaymentOnTerm(startDate);
-  const showEarlyRenewNote =
-    canRenewMember(member) && member.status === DISPLAY_STATUS.DUE_SOON;
-  const newEndDate = selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : null;
-  const today = todayString();
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
@@ -188,8 +198,23 @@ export default function RenewModal({
                   setPaymentDate(v);
                   clearFieldError(setLocalFieldErrors, 'paymentDate');
                 }}
+                rangeInvalidMessage={t('validation.paymentDateFutureStart', {
+                  date: formatDisplayDate(startDate),
+                })}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
+              {canSetStartToToday ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStartDate(today);
+                    setPaymentDate(clampPaymentToTerm(today, paymentDate));
+                  }}
+                  className="mt-2 text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
+                >
+                  {t('modals.renew.useTodayAsStart')}
+                </button>
+              ) : null}
             </div>
           </div>
 
@@ -245,7 +270,7 @@ export default function RenewModal({
             <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={isBusy || member.isUnpaid || plans.length === 0} className="w-full sm:w-auto">
+            <Button type="submit" disabled={isBusy || member.isUnpaid || plans.length === 0 || !paymentRangeValid} className="w-full sm:w-auto">
               {isBusy ? t('common.processing') : t('modals.renew.save')}
             </Button>
           </div>

@@ -770,6 +770,7 @@
       "startDate": "Guyyaa jalqabaa haarawa",
       "termPreview": "Yeroo ji'a {{duration}} kan {{date}} irratti dhumu",
       "unpaidWarning": "Yeroo darbe keessatti kaffaltiin galmeeffame hin jiru.",
+      "useTodayAsStart": "Guyyaa har'a akka jalqabaatti fayyadamii",
       "save": "Miseensummaa haaromsi"
     },
     "changePlan": {
@@ -1035,7 +1036,8 @@
     "paymentForTermStart": "Kaffaltii guyyaa jalqaba yeroo haarawa kanaaf sassaabame galchi.",
     "paymentForLicenseStart": "Kaffaltii guyyaa jalqaba eeyyama haarawa kanaaf sassaabame galchi.",
     "paymentDateBeforeTermStart": "Guyyaan kaffaltii guyyaa jalqaba yeroo dura ta'uu hin danda'u.",
-    "dateRangeInvalid": "Ammatti dirree kanaaf guyyoonni sirrii ta'an hin jiran. Jalqaba yeroo sirreessi ykn yeroo kaffaltiin galmeeffamuu danda'utti deebi'i.",
+    "dateRangeInvalid": "Guyyaan jalqabaa gara fuulduraati, kanaaf kaffaltiin amma galmeeffamuu hin danda'u. Jalqaba har'atti ykn duraatti jijjiiri, ykn guyyaa sanaatti deebi'i.",
+    "paymentDateFutureStart": "Guyyaan jalqabaa ({{date}}) gara fuulduraati, kanaaf kaffaltiin amma galmeeffamuu hin danda'u. Jalqaba har'atti jijjiiri yoo danda'ame, ykn guyyaa sanaatti deebi'i.",
     "paymentDateBeforeLicenseStart": "Guyyaan kaffaltii guyyaa jalqaba eeyyamaa dura ta'uu hin danda'u.",
     "changePlanDuplicate": "Kaffaltiin jijjiirama karooraa guyyaa kana irratti kanaan dura galmeeffameera. Galii keessatti gulaali ykn guyyaa biraa filadhu.",
     "selectPlanAndAmount": "Karoora filadhu fi hanga kaffaltii akkasumas guyyoota sirrii galchi.",

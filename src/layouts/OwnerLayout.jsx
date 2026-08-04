@@ -1,5 +1,5 @@
 // src/layouts/OwnerLayout.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -34,6 +34,29 @@ export default function OwnerLayout() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [dismissedIds, setDismissedIds] = useState([]);
   const [readIds, setReadIds] = useState([]);
+  const [retrying, setRetrying] = useState(false);
+  const lastErrorRef = useRef(error);
+
+  useEffect(() => {
+    if (error) lastErrorRef.current = error;
+  }, [error]);
+
+  const displayError = error || (retrying ? lastErrorRef.current : null);
+
+  const handleRetryBoot = async () => {
+    if (retrying) return;
+    setRetrying(true);
+    try {
+      const sub = await loadSubscription();
+      if (!sub?.accessDenied) await fetchCoreData();
+    } catch (err) {
+      // fetchCoreData sets error; subscription failures still need a visible message
+      if (!err?.message) return;
+      lastErrorRef.current = err.message;
+    } finally {
+      setRetrying(false);
+    }
+  };
 
   const dueSoonCount = summary.dueSoonMembers ?? 0;
   const expiredCount = summary.expiredMembers ?? 0;
@@ -231,19 +254,21 @@ export default function OwnerLayout() {
 
         <main className="safe-bottom app-page p-4 sm:p-6 lg:p-8">
           <OfflineStatusBar />
-          {error && (
+          {displayError && (
             <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-              <p>{error}</p>
+              <p>{displayError}</p>
               <button
                 type="button"
-                onClick={() => {
-                  loadSubscription().then((sub) => {
-                    if (!sub?.accessDenied) fetchCoreData();
-                  });
-                }}
-                className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+                disabled={retrying}
+                onClick={() => void handleRetryBoot()}
+                aria-busy={retrying}
+                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                {t('common.retry')}
+                {retrying ? (
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                ) : (
+                  t('common.retry')
+                )}
               </button>
             </div>
           )}

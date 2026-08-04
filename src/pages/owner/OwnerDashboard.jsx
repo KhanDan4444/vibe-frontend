@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import StatusBadge from '../../components/StatusBadge';
 import RenewModal from '../../components/RenewModal';
+import MemberPhoto from '../../components/MemberPhoto';
 import BranchComparisonTable from '../../components/BranchComparisonTable';
 import { canRenewMember } from '../../utils/memberRenew';
 import { mapMemberFromApi } from '../../utils/apiMappers';
@@ -79,14 +80,6 @@ export default function OwnerDashboard() {
     date: formatDisplayDate(r.date),
     amount: Number(r.amount),
   }));
-
-  const getInitials = (name) => {
-    if (!name) return '?';
-    const parts = name.trim().split(/\s+/);
-    return parts.length >= 2
-      ? (parts[0][0] + parts[1][0]).toUpperCase()
-      : parts[0].substring(0, 2).toUpperCase();
-  };
 
   const handleRenewSubmit = async (data) => {
     if (!renewState.member) return;
@@ -209,9 +202,15 @@ export default function OwnerDashboard() {
                   <div key={member.id} className="flex items-start justify-between gap-3 p-4">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600">
-                          {getInitials(member.name)}
-                        </div>
+                        <MemberPhoto
+                          memberId={member.id}
+                          apiFetch={apiFetch}
+                          name={member.name}
+                          hasPhoto={member.hasPhoto}
+                          expandable={false}
+                          className="h-8 w-8 rounded-full object-cover"
+                          fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
+                        />
                         <span className="font-semibold text-slate-900 dark:text-app-text-strong truncate">{member.name}</span>
                       </div>
                       <p className="mt-1 text-sm text-teal-700">
@@ -263,9 +262,15 @@ export default function OwnerDashboard() {
                       <tr key={member.id} className={tableRowHover}>
                         <td>
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600">
-                              {getInitials(member.name)}
-                            </div>
+                            <MemberPhoto
+                              memberId={member.id}
+                              apiFetch={apiFetch}
+                              name={member.name}
+                              hasPhoto={member.hasPhoto}
+                              expandable={false}
+                              className="h-8 w-8 rounded-full object-cover"
+                              fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
+                            />
                             <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
                           </div>
                         </td>

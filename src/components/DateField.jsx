@@ -182,6 +182,7 @@ export function DateField({
   id,
   name,
   className = DEFAULT_CLASS,
+  rangeInvalidMessage,
 }) {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -237,7 +238,9 @@ export function DateField({
       </button>
 
       {!rangeValid ? (
-        <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-300">{t('validation.dateRangeInvalid')}</p>
+        <p className="mt-1.5 text-xs text-amber-700 dark:text-amber-300">
+          {rangeInvalidMessage || t('validation.dateRangeInvalid')}
+        </p>
       ) : null}
 
       {name ? <input type="hidden" name={name} value={clampedValue} /> : null}
