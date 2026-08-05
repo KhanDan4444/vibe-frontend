@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
-import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare, RefreshCw } from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
