@@ -8,15 +8,15 @@ const METHOD_ICONS = {
   'Bank Transfer': ArrowLeftRight,
 };
 
-/** Tinted method chip with icon so Cash / Card / Bank read as labels, not muted text. */
+/** Icon + label chip — method identity from glyph, not color coding. */
 export default function PaymentMethodBadge({ method, className = '' }) {
   const key = String(method || '').trim();
   const Icon = METHOD_ICONS[key] || Wallet;
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-semibold ${paymentMethodStyle(method)} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-semibold ${paymentMethodStyle(method)} ${className}`}
     >
-      <Icon className="h-3 w-3 shrink-0 opacity-90" aria-hidden />
+      <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500 dark:text-app-muted" aria-hidden />
       {translatePaymentMethod(method)}
     </span>
   );
