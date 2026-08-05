@@ -12,6 +12,7 @@ import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { cardSurface, selectSurface } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
@@ -452,18 +453,7 @@ export default function Members() {
         }
       />
 
-      {error && (
-        <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-          <p>{error}</p>
-          <button
-            type="button"
-            onClick={() => fetchMembers()}
-            className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
-          >
-            {t('common.retry')}
-          </button>
-        </div>
-      )}
+      {error ? <ErrorRetryBanner message={error} onRetry={() => fetchMembers()} /> : null}
 
       {!readOnly && !gymLoading && plans.length === 0 && (
         <div className="admin-alert-amber flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

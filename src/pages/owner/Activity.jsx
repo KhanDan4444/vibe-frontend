@@ -15,6 +15,7 @@ import { formatDisplayDate, formatDisplayDateTime } from '../../utils/date';
 import { tableRowHover, selectSurface } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -102,14 +103,7 @@ export default function Activity() {
         </select>
       </div>
 
-      {error && (
-        <div className="flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-          <p>{error}</p>
-          <Button variant="danger" size="sm" onClick={() => void loadActivity()}>
-            {t('common.retry')}
-          </Button>
-        </div>
-      )}
+      {error ? <ErrorRetryBanner message={error} onRetry={() => void loadActivity()} /> : null}
 
       <Card className="overflow-hidden">
         {loading && items.length === 0 ? (

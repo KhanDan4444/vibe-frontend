@@ -1,4 +1,5 @@
 import React from 'react';
+import { RefreshCw } from 'lucide-react';
 
 const VARIANTS = {
   primary:
@@ -20,6 +21,7 @@ const SIZES = {
  * @param {object} props
  * @param {'primary'|'secondary'|'ghost'|'danger'} [props.variant]
  * @param {'sm'|'md'} [props.size]
+ * @param {boolean} [props.loading]
  */
 export default function Button({
   variant = 'primary',
@@ -27,13 +29,16 @@ export default function Button({
   type = 'button',
   className = '',
   disabled,
+  loading = false,
   children,
   ...rest
 }) {
+  const busy = Boolean(loading);
   return (
     <button
       type={type}
-      disabled={disabled}
+      disabled={disabled || busy}
+      aria-busy={busy || undefined}
       className={[
         'inline-flex cursor-pointer items-center justify-center gap-2 rounded-md font-medium transition-colors',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-app-bg',
@@ -44,7 +49,7 @@ export default function Button({
       ].join(' ')}
       {...rest}
     >
-      {children}
+      {busy ? <RefreshCw className="h-4 w-4 animate-spin" aria-hidden /> : children}
     </button>
   );
 }

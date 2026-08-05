@@ -15,7 +15,8 @@ import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
 import { parseApiResponse } from '../../utils/api';
 import { runInBackground } from '../../utils/runInBackground';
 import { mapPaymentFromApi } from '../../utils/apiMappers';
-import { paymentMethodStyle, paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
+import { paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
+import PaymentMethodBadge from '../../components/PaymentMethodBadge';
 import { exportColumn, translatePaymentMethod } from '../../i18n/helpers';
 import { getPayments } from '../../services/paymentService';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } from '../../utils/listSort';
@@ -31,19 +32,10 @@ import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
 import { tableRowHover, selectSurface } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
-
-const PAYMENT_METHOD_LABEL_KEYS = {
-  Cash: 'paymentMethod.cash',
-  Card: 'paymentMethod.card',
-  'Bank Transfer': 'paymentMethod.bankTransfer',
-};
-
-function paymentMethodLabel(method, t) {
-  return PAYMENT_METHOD_LABEL_KEYS[method] ? t(PAYMENT_METHOD_LABEL_KEYS[method]) : method;
-}
 
 export default function Revenue() {
   const { t } = useTranslation();
@@ -231,14 +223,7 @@ export default function Revenue() {
         }
       />
 
-      {error && (
-        <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-          <p>{error}</p>
-          <Button variant="danger" size="sm" onClick={() => fetchPayments()}>
-            {t('common.retry')}
-          </Button>
-        </div>
-      )}
+      {error ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
 
       <Card className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -367,8 +352,8 @@ export default function Revenue() {
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {Object.entries(byMethod).map(([method, amount]) => (
               <div key={method} className="admin-method-chip">
-                <p className="text-xs font-medium text-slate-500 dark:text-app-muted">{paymentMethodLabel(method, t)}</p>
-                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-app-text-strong">
+                <PaymentMethodBadge method={method} />
+                <p className="mt-2 text-lg font-bold text-slate-900 dark:text-app-text-strong">
                   {formatMoney(amount)}
                 </p>
               </div>
@@ -447,11 +432,7 @@ export default function Revenue() {
                       >
                         {paymentSourceLabel(payment.source)}
                       </span>
-                      <span
-                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold border ${paymentMethodStyle(payment.method)}`}
-                      >
-                        {paymentMethodLabel(payment.method, t)}
-                      </span>
+                      <PaymentMethodBadge method={payment.method} />
                     </div>
                   </div>
                   <p className="shrink-0 text-lg font-bold text-slate-900 dark:text-app-text-strong">
@@ -533,11 +514,7 @@ export default function Revenue() {
                       </span>
                     </td>
                     <td>
-                      <span
-                        className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold border ${paymentMethodStyle(payment.method)}`}
-                      >
-                        {paymentMethodLabel(payment.method, t)}
-                      </span>
+                      <PaymentMethodBadge method={payment.method} />
                     </td>
                     <td className="font-bold whitespace-nowrap text-slate-900 dark:text-app-text-strong">
                       {formatMoney(payment.amount)}

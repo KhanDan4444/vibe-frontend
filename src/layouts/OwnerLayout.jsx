@@ -6,12 +6,13 @@ import { useAuth } from '../context/AuthContext';
 import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
-import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, RefreshCw, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare } from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import BranchSwitcher from '../components/BranchSwitcher';
 import BrandLogo from '../components/BrandLogo';
+import ErrorRetryBanner from '../components/ErrorRetryBanner';
 import { SlidePanel, SlidePanelEmpty } from '../components/SlidePanel';
 import { localizeNotification } from '../utils/notificationText';
 
@@ -50,7 +51,6 @@ export default function OwnerLayout() {
       const sub = await loadSubscription();
       if (!sub?.accessDenied) await fetchCoreData();
     } catch (err) {
-      // fetchCoreData sets error; subscription failures still need a visible message
       if (!err?.message) return;
       lastErrorRef.current = err.message;
     } finally {
@@ -254,24 +254,14 @@ export default function OwnerLayout() {
 
         <main className="safe-bottom app-page p-4 sm:p-6 lg:p-8">
           <OfflineStatusBar />
-          {displayError && (
-            <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-              <p>{displayError}</p>
-              <button
-                type="button"
-                disabled={retrying}
-                onClick={() => void handleRetryBoot()}
-                aria-busy={retrying}
-                className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {retrying ? (
-                  <RefreshCw className="h-3.5 w-3.5 animate-spin" aria-hidden />
-                ) : (
-                  t('common.retry')
-                )}
-              </button>
-            </div>
-          )}
+          {displayError ? (
+            <ErrorRetryBanner
+              message={displayError}
+              onRetry={async () => {
+                await handleRetryBoot();
+              }}
+            />
+          ) : null}
           {readOnly && !branchReadOnly && (
             <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
               <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />

@@ -14,6 +14,7 @@ import { formatDisplayDateTime } from '../../utils/date';
 import { formatSmsMessageType, SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
@@ -105,14 +106,7 @@ export default function MemberMessages() {
         </select>
       </div>
 
-      {error && (
-        <div className="ui-alert-rose flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p>{error}</p>
-          <Button variant="danger" size="sm" onClick={() => void loadMessages()}>
-            {t('common.retry')}
-          </Button>
-        </div>
-      )}
+      {error ? <ErrorRetryBanner message={error} onRetry={() => void loadMessages()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
         <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">

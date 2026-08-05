@@ -19,7 +19,7 @@ import {
   KeyRound,
 } from 'lucide-react';
 import { paymentSourceLabel } from '../utils/paymentSources';
-import { translatePaymentMethod } from '../i18n/helpers.js';
+import PaymentMethodBadge from './PaymentMethodBadge';
 import { toDateString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
 import StatusBadge from './StatusBadge';
@@ -401,11 +401,7 @@ export default function GymDetailsModal({
                                 {sourceLabel}
                               </>
                             }
-                            trailing={
-                              <span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-app-muted">
-                                {translatePaymentMethod(p.method)}
-                              </span>
-                            }
+                            trailing={<PaymentMethodBadge method={p.method} />}
                           />
                         );
                       })}

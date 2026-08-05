@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
 import { pageTitle, mutedText, panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
-import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
@@ -189,9 +188,13 @@ export default function OwnerDashboard() {
         <Card quiet className="md:col-span-3 overflow-hidden">
           <div className="admin-panel-header">
             <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('pages.dashboard.expiringSection')}</h2>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}>
+            <button
+              type="button"
+              onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
+              className="min-h-9 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15 dark:hover:text-teal-200"
+            >
               {t('common.viewAll')}
-            </Button>
+            </button>
           </div>
 
           <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">

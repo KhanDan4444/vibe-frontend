@@ -21,12 +21,13 @@ import { canRenewMember, canChangePlan } from '../utils/memberRenew';
 import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
-import { translatePaymentMethod } from '../i18n/helpers';
+import PaymentMethodBadge from './PaymentMethodBadge';
 import { formatDisplayDate } from '../utils/date';
 import { getMemberPayments } from '../services/memberService';
 import ConfirmDialog from './ConfirmDialog';
 import MemberModal from './MemberModal';
 import MemberPhoto from './MemberPhoto';
+import Button from './ui/Button';
 import { formatMoney } from '../utils/formatMoney';
 import {
   SlidePanel,
@@ -74,12 +75,12 @@ export default function MemberDetailDrawer({
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
     setPaymentsLoading(true);
-    setPaymentsError('');
     try {
       const res = await getMemberPayments(apiFetch, member.id);
       const data = await parseApiResponse(res);
       if (res.ok && Array.isArray(data)) {
         setMemberPayments(data.map(mapPaymentFromApi).filter(Boolean));
+        setPaymentsError('');
       } else {
         setPaymentsError(data?.error || t('drawer.paymentsLoadError'));
         setMemberPayments([]);
@@ -308,19 +309,22 @@ export default function MemberDetailDrawer({
           </SlidePanelSection>
 
           <SlidePanelSection title={t('drawer.paymentHistory')}>
-            {paymentsLoading ? (
-              <p className="py-8 text-center text-sm text-slate-400">{t('drawer.loadingPayments')}</p>
-            ) : paymentsError ? (
+            {paymentsError ? (
               <div className="py-6 text-center">
-                <p className="text-sm text-rose-600 mb-2">{paymentsError}</p>
-                <button
+                <p className="mb-2 text-sm text-rose-600">{paymentsError}</p>
+                <Button
                   type="button"
-                  onClick={loadPayments}
-                  className="text-sm font-medium text-teal-700 hover:text-teal-800"
+                  variant="secondary"
+                  size="sm"
+                  loading={paymentsLoading}
+                  disabled={paymentsLoading}
+                  onClick={() => void loadPayments()}
                 >
                   {t('drawer.retry')}
-                </button>
+                </Button>
               </div>
+            ) : paymentsLoading ? (
+              <p className="py-8 text-center text-sm text-slate-400">{t('drawer.loadingPayments')}</p>
             ) : memberPayments.length > 0 ? (
               <div className="space-y-3">
                 <SlidePanelCard>
@@ -374,11 +378,7 @@ export default function MemberDetailDrawer({
                               {sourceLabel}
                             </>
                           }
-                          trailing={
-                            <span className="shrink-0 text-xs font-semibold text-slate-500 dark:text-app-muted">
-                              {translatePaymentMethod(p.method)}
-                            </span>
-                          }
+                          trailing={<PaymentMethodBadge method={p.method} />}
                         />
                       );
                     })}

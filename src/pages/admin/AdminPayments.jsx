@@ -22,6 +22,7 @@ import { toDateString, formatDisplayDate } from '../../utils/date';
 import { DateField } from '../../components/DateField';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
+import PaymentMethodBadge from '../../components/PaymentMethodBadge';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import InitialsAvatar from '../../components/InitialsAvatar';
 import AdminPaymentModal from '../../components/AdminPaymentModal';
@@ -33,7 +34,7 @@ import { getSaasPayments, updateSaasPayment, getGyms, collectGymPayment } from '
 import { getSaasPlans } from '../../services/saasPlanService';
 import { mapGymFromApi } from '../../utils/apiMappers';
 import { useTranslation } from 'react-i18next';
-import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../../i18n/helpers';
+import { PAYMENT_METHOD_OPTIONS } from '../../i18n/helpers';
 import { AdminTableRowsSkeleton, AdminListSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
@@ -416,8 +417,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
               .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
               .map(([method, amount]) => (
               <div key={method} className="admin-method-chip">
-                <p className="text-xs font-medium text-slate-500 dark:text-app-muted">{translatePaymentMethod(method)}</p>
-                <p className="mt-1 text-lg font-bold text-slate-900 dark:text-app-text-strong">
+                <PaymentMethodBadge method={method} />
+                <p className="mt-2 text-lg font-bold text-slate-900 dark:text-app-text-strong">
                   {formatMoney(amount)}
                 </p>
               </div>
@@ -488,9 +489,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       >
                         {paymentSourceLabel(payment.source)}
                       </span>
-                      <span className="inline-flex rounded-md border border-slate-200 dark:border-app-border-subtle bg-slate-50 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:text-app-text">
-                        {translatePaymentMethod(payment.method)}
-                      </span>
+                      <PaymentMethodBadge method={payment.method} />
                     </div>
                     {payment.planName && (
                       <p className="mt-1 text-sm font-semibold text-teal-700">{payment.planName}</p>
@@ -567,7 +566,9 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                         {paymentSourceLabel(payment.source)}
                       </span>
                     </td>
-                    <td className="truncate text-slate-600 dark:text-app-text">{translatePaymentMethod(payment.method)}</td>
+                    <td>
+                      <PaymentMethodBadge method={payment.method} />
+                    </td>
                     <td>
                       {payment.planName && <div className="truncate font-semibold text-teal-700">{payment.planName}</div>}
                       {payment.notes && <div className="truncate text-xs text-slate-500">{payment.notes}</div>}

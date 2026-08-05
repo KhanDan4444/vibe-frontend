@@ -203,7 +203,6 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
       return;
     }
     setLoading(true);
-    setError('');
     try {
       const res = await Promise.race([
         getGymProfile(apiFetch),
@@ -213,6 +212,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
       ]);
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to load profile');
+      setError('');
       applyProfile(data);
     } catch (err) {
       setError(err.message || 'Failed to load profile');
@@ -284,7 +284,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
             : t('account.platformEmailDesc')
       }
     >
-      {loading ? (
+      {loading && !error && !savedProfile ? (
         <ProfileSkeleton />
       ) : showGymProfile && !savedProfile ? (
         <div className="space-y-4">
@@ -292,7 +292,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
           <p className="text-sm text-slate-500 dark:text-app-muted">
             {t('account.profileLoadFailed')}
           </p>
-          <Button type="button" variant="secondary" onClick={() => void loadProfile()}>
+          <Button type="button" variant="secondary" loading={loading} disabled={loading} onClick={() => void loadProfile()}>
             {t('common.retry')}
           </Button>
         </div>
