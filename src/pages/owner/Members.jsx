@@ -13,7 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionSuccess, iconActionDanger, renewActionBtn } from '../../utils/surfaceClasses';
+import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionDanger, renewActionBtn } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -639,10 +639,10 @@ export default function Members() {
                           setError('');
                           openRenewModal(member);
                         }}
-                        className={iconActionSuccess}
+                        className={renewActionBtn}
                         title={t('actions.renew')}
                       >
-                        <RefreshCw className="h-4 w-4" />
+                        <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                       </button>
                     )}
                     <button
@@ -788,10 +788,10 @@ export default function Members() {
                               setError('');
                               openRenewModal(member);
                             }}
-                            className={iconActionSuccess}
+                            className={renewActionBtn}
                             title={t('actions.renew')}
                           >
-                            <RefreshCw className="h-4 w-4" />
+                            <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                           </button>
                         )}
                         {!readOnly && (
