@@ -5,16 +5,16 @@
 /* Shared app palette — light defaults (warm ink paper); html.dark overrides below */
 @theme {
   /* Light: bg < surface < raised — cards lift off paper */
-  --color-app-bg: #F5F7F6;
-  --color-app-surface: #fafcfb;
+  --color-app-bg: #f1f5f9;
+  --color-app-surface: #f8fafc;
   --color-app-raised: #ffffff;
   --color-app-sidebar: #121c1a;
-  --color-app-border: #c5d0cb;
-  --color-app-border-subtle: #e3e9e6;
-  --color-app-text: #2a3532;
-  --color-app-text-strong: #0c1211;
-  --color-app-muted: #5c6b66;
-  --color-app-input: #fafcfb;
+  --color-app-border: #cbd5e1;
+  --color-app-border-subtle: #e2e8f0;
+  --color-app-text: #334155;
+  --color-app-text-strong: #0f172a;
+  --color-app-muted: #64748b;
+  --color-app-input: #f8fafc;
   /* Athletic ink + teal brand */
   --color-brand: #0f766e;
   --color-brand-hover: #0d9488;
@@ -52,16 +52,16 @@
 
 @layer base {
   :root {
-    --color-app-bg: #F5F7F6;
-    --color-app-surface: #fafcfb;
+    --color-app-bg: #f1f5f9;
+    --color-app-surface: #f8fafc;
     --color-app-raised: #ffffff;
     --color-app-sidebar: #121c1a;
-    --color-app-border: #c5d0cb;
-    --color-app-border-subtle: #e3e9e6;
-    --color-app-text: #2a3532;
-    --color-app-text-strong: #0c1211;
-    --color-app-muted: #5c6b66;
-    --color-app-input: #fafcfb;
+    --color-app-border: #cbd5e1;
+    --color-app-border-subtle: #e2e8f0;
+    --color-app-text: #334155;
+    --color-app-text-strong: #0f172a;
+    --color-app-muted: #64748b;
+    --color-app-input: #f8fafc;
     --color-brand: #0f766e;
     --color-brand-hover: #0d9488;
     --color-brand-soft: #d5f5f0;
