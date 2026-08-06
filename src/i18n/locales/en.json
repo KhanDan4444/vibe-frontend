@@ -225,13 +225,15 @@
     "types": {
       "dueSoon": "Due soon reminder",
       "expiresToday": "Expires today",
-      "expired": "Expired notice"
+      "expired": "Expired notice",
+      "renewed": "Renewal confirmed"
     },
     "gymTypes": {
       "dueSoon": "License due soon (3 days)",
       "dueIn3Days": "License due in 3 days",
       "expiresToday": "License expires today",
-      "expired": "License expired"
+      "expired": "License expired",
+      "renewed": "License renewed"
     },
     "otpTypes": {
       "forgotPassword": "Password reset code",

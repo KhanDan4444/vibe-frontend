@@ -225,13 +225,15 @@
     "types": {
       "dueSoon": "Yaadachiisa dhiyeenyatti dhumu",
       "expiresToday": "Har'a dhumata",
-      "expired": "Beeksisa dhumuu"
+      "expired": "Beeksisa dhumuu",
+      "renewed": "Haaromsa mirkanaa'e"
     },
     "gymTypes": {
       "dueSoon": "Hayyamni dhiyeenyatti dhumata (guyyaa 3)",
       "dueIn3Days": "Hayyamni guyyaa 3 keessatti dhumata",
       "expiresToday": "Hayyamni har'a dhumata",
-      "expired": "Hayyamni dhumateera"
+      "expired": "Hayyamni dhumateera",
+      "renewed": "Hayyamni haaromfame"
     },
     "otpTypes": {
       "forgotPassword": "Koodii jecha iccitii haaromsaa",

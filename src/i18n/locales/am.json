@@ -847,13 +847,15 @@
     "types": {
       "dueSoon": "በቅርብ ጊዜ የሚያልቅ ማስታወሻ",
       "expiresToday": "ዛሬ የሚያልቅ",
-      "expired": "ጊዜው ያለፈበት ማስታወሻ"
+      "expired": "ጊዜው ያለፈበት ማስታወሻ",
+      "renewed": "እድሳት ተረጋግጧል"
     },
     "gymTypes": {
       "dueSoon": "ፈቃድ በ3 ቀናት ውስጥ ያበቃል",
       "dueIn3Days": "ፈቃድ በ3 ቀናት ውስጥ ያበቃል",
       "expiresToday": "ፈቃድ ዛሬ ያበቃል",
-      "expired": "የፈቃድ ጊዜ አልፏል"
+      "expired": "የፈቃድ ጊዜ አልፏል",
+      "renewed": "ፈቃድ ተደሰዷል"
     },
     "otpTypes": {
       "forgotPassword": "የይለፍ ቃል መቀየሪያ ኮድ",
