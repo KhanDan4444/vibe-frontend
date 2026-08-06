@@ -5,7 +5,7 @@
 /* Shared app palette — light defaults (warm ink paper); html.dark overrides below */
 @theme {
   /* Light: bg < surface < raised — cards lift off paper */
-  --color-app-bg: #f4f7f5;
+  --color-app-bg: #F5F7F6;
   --color-app-surface: #fafcfb;
   --color-app-raised: #ffffff;
   --color-app-sidebar: #121c1a;
@@ -52,7 +52,7 @@
 
 @layer base {
   :root {
-    --color-app-bg: #f4f7f5;
+    --color-app-bg: #F5F7F6;
     --color-app-surface: #fafcfb;
     --color-app-raised: #ffffff;
     --color-app-sidebar: #121c1a;
