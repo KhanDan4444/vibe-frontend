@@ -566,8 +566,7 @@ export default function AdminDashboard() {
                 <MetricCard 
                   label={t('metrics.dueSoon')} 
                   value={dueSoonGyms} 
-                  hint={dueSoonGyms > 0 ? t('metrics.critical') : t('admin.noImmediateRenewals')} 
-                  hintColor={dueSoonGyms > 0 ? 'text-rose-500' : undefined}
+                  hint={dueSoonGyms > 0 ? null : t('admin.noImmediateRenewals')} 
                   icon={AlertTriangle} 
                   color="rose" 
                   badge={dueSoonGyms > 0 ? t('metrics.critical') : null}
@@ -575,7 +574,7 @@ export default function AdminDashboard() {
                 <MetricCard 
                   label={t('admin.suspendedExpired')} 
                   value={suspendedGyms} 
-                  hint={suspendedGyms > 0 ? t('admin.requiresAttention') : t('admin.healthy')} 
+                  hint={suspendedGyms > 0 ? null : t('admin.healthy')} 
                   icon={X} 
                   color="rose" 
                   badge={suspendedGyms > 0 ? t('metrics.actionRequired') : null}
