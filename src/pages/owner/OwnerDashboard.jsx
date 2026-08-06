@@ -18,7 +18,7 @@ import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { pageTitle, mutedText, panelQuiet, tableRowHover } from '../../utils/surfaceClasses';
+import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, iconActionSuccess } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
@@ -97,13 +97,13 @@ export default function OwnerDashboard() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <h1 className={pageTitle}>{gymName || t('pages.dashboard.title')}</h1>
         <p className={`mt-1.5 text-sm ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 app-metric-grid">
         {gymBooting ? (
           Array.from({ length: 5 }).map((_, i) => <MetricCardSkeleton key={i} />)
         ) : (
@@ -112,9 +112,6 @@ export default function OwnerDashboard() {
           label={t('metrics.activeMembers')}
           value={`${activeMembersCount}`}
           subValue={`/${totalMembersCount}`}
-          hint={t('pages.dashboard.activePercent', {
-            percent: totalMembersCount > 0 ? ((activeMembersCount / totalMembersCount) * 100).toFixed(0) : 0,
-          })}
           icon={Users}
           color="emerald"
           showProgressBar
@@ -123,19 +120,14 @@ export default function OwnerDashboard() {
         <MetricCard
           label={t('metrics.dueSoon')}
           value={dueSoonMembersCount}
-          hint={dueSoonMembersCount > 0 ? t('pages.dashboard.dueSoonHintCritical') : t('pages.dashboard.dueSoonHintOk')}
-          hintColor={dueSoonMembersCount > 0 ? 'text-rose-500' : undefined}
           icon={AlertTriangle}
-          color="rose"
-          badge={dueSoonMembersCount > 0 ? t('metrics.critical') : null}
+          color="sky"
         />
         <MetricCard
           label={t('metrics.expired')}
           value={expiredMembersCount}
-          hint={expiredMembersCount > 0 ? t('pages.dashboard.expiredHintAction') : t('pages.dashboard.expiredHintOk')}
           icon={XCircle}
           color="rose"
-          badge={expiredMembersCount > 0 ? t('metrics.actionRequired') : null}
         />
         <MetricCard
           label={t('pages.dashboard.newMembersThisMonth')}
@@ -187,7 +179,7 @@ export default function OwnerDashboard() {
         <>
         <Card quiet className="md:col-span-3 overflow-hidden">
           <div className="admin-panel-header">
-            <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('pages.dashboard.expiringSection')}</h2>
+            <h2 className="text-base font-semibold text-app-text-strong sm:text-lg">{t('pages.dashboard.expiringSection')}</h2>
             <button
               type="button"
               onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
@@ -197,12 +189,12 @@ export default function OwnerDashboard() {
             </button>
           </div>
 
-          <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+          <div className="lg:hidden divide-y divide-app-border-subtle">
             {alertMembers.length > 0 ? (
               alertMembers.map((member) => {
                 const matchingPlan = plans.find((p) => p.id === member.planId);
                 return (
-                  <div key={member.id} className="flex items-start justify-between gap-3 p-4">
+                  <div key={member.id} className="flex items-center justify-between gap-3 px-4 py-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <MemberPhoto
@@ -214,13 +206,16 @@ export default function OwnerDashboard() {
                           className="h-8 w-8 rounded-full object-cover"
                           fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
                         />
-                        <span className="font-semibold text-slate-900 dark:text-app-text-strong truncate">{member.name}</span>
+                        <div className="min-w-0">
+                          <span className="block font-semibold text-app-text-strong truncate">{member.name}</span>
+                          <p className="text-xs text-app-muted truncate">
+                            {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                            {' · '}
+                            {formatDisplayDate(member.endDate)}
+                          </p>
+                        </div>
                       </div>
-                      <p className="mt-1 text-sm text-teal-700">
-                        {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
-                      </p>
-                      <p className="mt-0.5 text-xs text-slate-500">{t('pages.dashboard.expires', { date: formatDisplayDate(member.endDate) })}</p>
-                      <div className="mt-2">
+                      <div className="mt-1.5 pl-10">
                         <StatusBadge status={member.status} />
                       </div>
                     </div>
@@ -229,7 +224,7 @@ export default function OwnerDashboard() {
                         <button
                           type="button"
                           onClick={() => setRenewState({ isOpen: true, member })}
-                          className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                          className={iconActionSuccess}
                           title={t('actions.renew')}
                         >
                           <RefreshCw className="h-4 w-4" />
@@ -274,13 +269,13 @@ export default function OwnerDashboard() {
                               className="h-8 w-8 rounded-full object-cover"
                               fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
                             />
-                            <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
+                            <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
                           </div>
                         </td>
                         <td className="truncate font-medium text-teal-700">
                           {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                         </td>
-                        <td className="whitespace-nowrap text-slate-600 dark:text-app-text">{formatDisplayDate(member.endDate)}</td>
+                        <td className="whitespace-nowrap text-app-text">{formatDisplayDate(member.endDate)}</td>
                         <td>
                           <StatusBadge status={member.status} />
                         </td>
@@ -289,7 +284,7 @@ export default function OwnerDashboard() {
                           {!readOnly && canRenewMember(member) && (
                             <button
                               onClick={() => setRenewState({ isOpen: true, member })}
-                              className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-400 cursor-pointer"
+                              className="inline-flex items-center gap-1 rounded-lg bg-[color:var(--color-status-active)]/10 px-2.5 py-1 text-xs font-semibold text-[color:var(--color-status-active)] hover:bg-[color:var(--color-status-active)]/20 cursor-pointer"
                             >
                               <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                             </button>
@@ -312,11 +307,11 @@ export default function OwnerDashboard() {
         </Card>
 
         <Card quiet className="md:col-span-2 flex flex-col p-4 sm:p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-app-text-strong sm:mb-5 sm:text-lg">{t('pages.dashboard.revenueThisMonth')}</h2>
+          <h2 className={`mb-4 text-base font-semibold ${headingText} sm:mb-5 sm:text-lg`}>{t('pages.dashboard.revenueThisMonth')}</h2>
           <div className="flex-1 min-h-[220px] sm:min-h-[260px]">
             <Suspense
               fallback={
-                <div className="flex h-full items-center justify-center text-sm text-slate-400">
+                <div className="flex h-full items-center justify-center text-sm text-app-muted">
                   {t('common.loading')}
                 </div>
               }

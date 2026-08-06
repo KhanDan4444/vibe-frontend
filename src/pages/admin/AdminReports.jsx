@@ -178,8 +178,8 @@ export default function AdminReports({ onBootingChange }) {
     <div className="space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{t('admin.reportsTitle')}</h1>
-          <p className="text-sm text-slate-500 mt-1 max-w-xl">
+          <h1 className="text-2xl font-bold tracking-tight text-app-text-strong">{t('admin.reportsTitle')}</h1>
+          <p className="text-sm text-app-muted mt-1 max-w-xl">
             {t('admin.reportsChartsSubtitle')}
           </p>
         </div>
@@ -249,8 +249,8 @@ export default function AdminReports({ onBootingChange }) {
               <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong">{t('admin.gymRegistryOverview')}</h2>
-              <p className="text-xs text-slate-500">{t('admin.gymRegistrySubtitle')}</p>
+              <h2 className="text-lg font-semibold text-app-text-strong">{t('admin.gymRegistryOverview')}</h2>
+              <p className="text-xs text-app-muted">{t('admin.gymRegistrySubtitle')}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -321,13 +321,13 @@ export default function AdminReports({ onBootingChange }) {
               <DollarSign className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong">{t('admin.revenueOverview')}</h2>
-              <p className="text-xs text-slate-500">{t('admin.revenueChartsSubtitle')}</p>
+              <h2 className="text-lg font-semibold text-app-text-strong">{t('admin.revenueOverview')}</h2>
+              <p className="text-xs text-app-muted">{t('admin.revenueChartsSubtitle')}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-end gap-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-500">{t('period.reportPeriod')}</label>
+              <label className="mb-1 block text-xs font-medium text-app-muted">{t('period.reportPeriod')}</label>
               <select
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value)}
@@ -341,22 +341,22 @@ export default function AdminReports({ onBootingChange }) {
             {periodPreset === 'custom' && (
               <>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.from')}</label>
+                  <label className="mb-1 block text-xs font-medium text-app-muted">{t('common.from')}</label>
                   <DateField
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
+                    className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.to')}</label>
+                  <label className="mb-1 block text-xs font-medium text-app-muted">{t('common.to')}</label>
                   <DateField
                     value={customEnd}
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
+                    className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
               </>
@@ -430,8 +430,8 @@ export default function AdminReports({ onBootingChange }) {
         )}
       </section>
 
-      <p className="text-center text-xs text-slate-400 pb-2">
-        <strong className="font-medium text-slate-500">PDF / CSV</strong> exports are landscape A–Z tables with revenue totals by method (Card, Bank Transfer, Cash).
+      <p className="text-center text-xs text-app-muted pb-2">
+        <strong className="font-medium text-app-muted">PDF / CSV</strong> exports are landscape A–Z tables with revenue totals by method (Card, Bank Transfer, Cash).
         Live gym and payment lists use the same alphabetical order.
       </p>
     </div>

@@ -1,52 +1,60 @@
-/** Color palettes aligned with vibe-mobile member filter chips. */
+/** Color palettes aligned with vibe-mobile member filter chips + --color-status-*. */
 export const FILTER_CHIP_THEMES = {
   all: {
-    dot: 'bg-slate-400',
-    active: 'bg-slate-400/15 border-slate-400 text-slate-700 dark:text-slate-200',
+    dot: 'bg-app-muted',
+    active: 'bg-app-muted/15 border-app-muted text-app-text-strong',
     inactive:
-      'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-app-raised dark:border-app-border-subtle dark:text-app-text dark:hover:bg-app-surface/60',
-    badgeActive: 'bg-slate-400 text-white',
-    badgeInactive: 'bg-slate-100 text-slate-500 dark:bg-app-surface dark:text-app-muted',
+      'bg-app-raised border-app-border-subtle text-app-text hover:bg-app-surface/60',
+    badgeActive: 'bg-app-muted text-white',
+    badgeInactive: 'bg-app-surface text-app-muted',
   },
   active: {
-    dot: 'bg-emerald-400',
-    active: 'bg-emerald-400/15 border-emerald-400 text-emerald-700 dark:text-emerald-300',
+    dot: 'bg-[color:var(--color-status-active)]',
+    active:
+      'bg-[color:var(--color-status-active)]/15 border-[color:var(--color-status-active)] text-[color:var(--color-status-active)]',
     inactive:
-      'bg-white border-emerald-200 text-emerald-700 hover:bg-emerald-50 dark:bg-app-raised dark:border-emerald-500/30 dark:text-emerald-300 dark:hover:bg-emerald-500/10',
-    badgeActive: 'bg-emerald-400 text-white',
-    badgeInactive: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+      'bg-app-raised border-[color:var(--color-status-active)]/30 text-[color:var(--color-status-active)] hover:bg-[color:var(--color-status-active)]/10',
+    badgeActive: 'bg-[color:var(--color-status-active)] text-white',
+    badgeInactive:
+      'bg-[color:var(--color-status-active)]/15 text-[color:var(--color-status-active)]',
   },
   unpaid: {
-    dot: 'bg-orange-400',
-    active: 'bg-orange-400/15 border-orange-400 text-orange-700 dark:text-orange-300',
+    dot: 'bg-[color:var(--color-status-unpaid)]',
+    active:
+      'bg-[color:var(--color-status-unpaid)]/15 border-[color:var(--color-status-unpaid)] text-[color:var(--color-status-unpaid)]',
     inactive:
-      'bg-white border-orange-200 text-orange-700 hover:bg-orange-50 dark:bg-app-raised dark:border-orange-500/30 dark:text-orange-300 dark:hover:bg-orange-500/10',
-    badgeActive: 'bg-orange-400 text-white',
-    badgeInactive: 'bg-orange-50 text-orange-600 dark:bg-orange-500/15 dark:text-orange-300',
+      'bg-app-raised border-[color:var(--color-status-unpaid)]/30 text-[color:var(--color-status-unpaid)] hover:bg-[color:var(--color-status-unpaid)]/10',
+    badgeActive: 'bg-[color:var(--color-status-unpaid)] text-white',
+    badgeInactive:
+      'bg-[color:var(--color-status-unpaid)]/15 text-[color:var(--color-status-unpaid)]',
   },
   due_soon: {
-    dot: 'bg-sky-500',
-    active: 'bg-sky-500/15 border-sky-500 text-sky-700 dark:text-sky-300',
+    dot: 'bg-[color:var(--color-status-due-soon)]',
+    active:
+      'bg-[color:var(--color-status-due-soon)]/15 border-[color:var(--color-status-due-soon)] text-[color:var(--color-status-due-soon)]',
     inactive:
-      'bg-white border-sky-200 text-sky-700 hover:bg-sky-50 dark:bg-app-raised dark:border-sky-500/30 dark:text-sky-300 dark:hover:bg-sky-500/10',
-    badgeActive: 'bg-sky-500 text-white',
-    badgeInactive: 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300',
+      'bg-app-raised border-[color:var(--color-status-due-soon)]/30 text-[color:var(--color-status-due-soon)] hover:bg-[color:var(--color-status-due-soon)]/10',
+    badgeActive: 'bg-[color:var(--color-status-due-soon)] text-white',
+    badgeInactive:
+      'bg-[color:var(--color-status-due-soon)]/15 text-[color:var(--color-status-due-soon)]',
   },
   expired: {
-    dot: 'bg-red-400',
-    active: 'bg-red-400/15 border-red-400 text-red-700 dark:text-red-300',
+    dot: 'bg-[color:var(--color-status-expired)]',
+    active:
+      'bg-[color:var(--color-status-expired)]/15 border-[color:var(--color-status-expired)] text-[color:var(--color-status-expired)]',
     inactive:
-      'bg-white border-red-200 text-red-700 hover:bg-red-50 dark:bg-app-raised dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10',
-    badgeActive: 'bg-red-400 text-white',
-    badgeInactive: 'bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-300',
+      'bg-app-raised border-[color:var(--color-status-expired)]/30 text-[color:var(--color-status-expired)] hover:bg-[color:var(--color-status-expired)]/10',
+    badgeActive: 'bg-[color:var(--color-status-expired)] text-white',
+    badgeInactive:
+      'bg-[color:var(--color-status-expired)]/15 text-[color:var(--color-status-expired)]',
   },
 };
 
-/** Hex colors matching FILTER_CHIP_THEMES / status badge dots (for charts). */
+/** Hex colors matching status tokens (for charts — light defaults). */
 export const MEMBER_FILTER_CHART_COLORS = {
-  Active: '#34d399', // emerald-400
-  Unpaid: '#fb923c', // orange-400
-  'Due Soon': '#0ea5e9', // sky-500
-  Expired: '#f87171', // red-400
-  Suspended: '#fb7185', // rose-400 (gym subscription)
+  Active: '#059669',
+  Unpaid: '#ea580c',
+  'Due Soon': '#0284c7',
+  Expired: '#e11d48',
+  Suspended: '#e11d48',
 };

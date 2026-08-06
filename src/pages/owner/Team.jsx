@@ -35,7 +35,7 @@ export default function Team() {
     try {
       const res = await listTeam(apiFetch);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to load team');
+      if (!res.ok) throw new Error(data.error || t('errors.loadTeam'));
       setStaff(data.staff || []);
     } catch (err) {
       setError(err.message);
@@ -59,7 +59,7 @@ export default function Team() {
     try {
       const res = await createStaff(apiFetch, payload);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to create staff account');
+      if (!res.ok) throw new Error(data.error || t('errors.createStaff'));
       setModalState({ isOpen: false, member: null });
       showFlash(flashFromKey(t, 'staffCreated', { subtitleParams: { name: data.staff.name } }));
       loadTeam();
@@ -83,7 +83,7 @@ export default function Team() {
       if (!body.password) delete body.password;
       const res = await updateStaff(apiFetch, modalState.member.id, body);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to update staff account');
+      if (!res.ok) throw new Error(data.error || t('errors.updateStaff'));
       setModalState({ isOpen: false, member: null });
       showFlash(flashFromKey(t, 'staffUpdated'));
       loadTeam();
@@ -105,7 +105,7 @@ export default function Team() {
     try {
       const res = await updateStaff(apiFetch, toggleTarget.id, { is_active: nextActive });
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to update staff account');
+      if (!res.ok) throw new Error(data.error || t('errors.updateStaff'));
       showFlash(
         flashFromKey(t, nextActive ? 'staffEnabled' : 'staffDisabled', {
           subtitleParams: { name: toggleTarget.name },
@@ -143,7 +143,7 @@ export default function Team() {
 
       <Card className="overflow-hidden">
         <div className="admin-panel-header">
-          <h2 className="text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('pages.team.sectionTitle')}</h2>
+          <h2 className="text-sm font-semibold text-app-text-strong">{t('pages.team.sectionTitle')}</h2>
         </div>
 
         {loading ? (
@@ -167,22 +167,22 @@ export default function Team() {
           />
         ) : (
           <>
-            <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+            <div className="lg:hidden divide-y divide-app-border-subtle">
               {staff.map((member) => (
                 <div key={member.id} className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="font-medium text-slate-900 dark:text-app-text-strong">{member.name}</p>
-                      <p className="mt-0.5 text-sm text-slate-500">{member.email}</p>
+                      <p className="font-medium text-app-text-strong">{member.name}</p>
+                      <p className="mt-0.5 text-sm text-app-muted">{member.email}</p>
                       {member.username && (
-                        <p className="mt-0.5 text-xs text-slate-400">@{member.username}</p>
+                        <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
                       )}
-                      <p className="mt-0.5 text-xs text-slate-400">{member.branch_name || t('pages.team.noBranch')}</p>
+                      <p className="mt-0.5 text-xs text-app-muted">{member.branch_name || t('pages.team.noBranch')}</p>
                       <span
                         className={`mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
                           member.is_active
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                            : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-app-surface dark:text-app-muted dark:border-app-border-subtle'
+                            : 'bg-app-surface text-app-muted border-app-border-subtle'
                         }`}
                       >
                         {member.is_active ? t('status.active') : t('common.disabled')}
@@ -197,7 +197,7 @@ export default function Team() {
                           setModalError('');
                           setModalState({ isOpen: true, member });
                         }}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                        className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
                         title={t('common.edit')}
                       >
                         <Edit className="h-4 w-4" />
@@ -207,8 +207,8 @@ export default function Team() {
                         onClick={() => setToggleTarget(member)}
                         className={
                           member.is_active
-                            ? 'text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer'
-                            : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                            ? 'text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer'
+                            : 'text-app-muted hover:bg-app-surface/80 hover:text-emerald-600 cursor-pointer'
                         }
                         title={member.is_active ? t('actions.disable') : t('actions.enable')}
                       >
@@ -235,16 +235,16 @@ export default function Team() {
               <tbody>
                 {staff.map((member) => (
                   <tr key={member.id} className={tableRowHover}>
-                    <td className="truncate font-medium text-slate-900 dark:text-app-text-strong">{member.name}</td>
-                    <td className="truncate text-slate-600 dark:text-app-text">{member.branch_name || '—'}</td>
-                    <td className="truncate text-slate-600 dark:text-app-text">{member.email}</td>
-                    <td className="truncate text-slate-600 dark:text-app-text">{member.username || '—'}</td>
+                    <td className="truncate font-medium text-app-text-strong">{member.name}</td>
+                    <td className="truncate text-app-text">{member.branch_name || '—'}</td>
+                    <td className="truncate text-app-text">{member.email}</td>
+                    <td className="truncate text-app-text">{member.username || '—'}</td>
                     <td>
                       <span
                         className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
                           member.is_active
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                            : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-app-surface dark:text-app-muted dark:border-app-border-subtle'
+                            : 'bg-app-surface text-app-muted border-app-border-subtle'
                         }`}
                       >
                         {member.is_active ? t('status.active') : t('common.disabled')}
@@ -259,7 +259,7 @@ export default function Team() {
                               setModalError('');
                               setModalState({ isOpen: true, member });
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                            className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
                             title={t('common.edit')}
                           >
                             <Edit className="h-4 w-4" />
@@ -269,8 +269,8 @@ export default function Team() {
                             onClick={() => setToggleTarget(member)}
                             className={
                               member.is_active
-                                ? 'text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer'
-                                : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                                ? 'text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer'
+                                : 'text-app-muted hover:bg-app-surface/80 hover:text-emerald-600 cursor-pointer'
                             }
                             title={member.is_active ? t('actions.disable') : t('actions.enable')}
                           >

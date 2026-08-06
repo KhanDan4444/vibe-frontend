@@ -256,7 +256,7 @@ export default function GymDetailsModal({
         )}
 
         {detailLoading ? (
-          <p className="py-12 text-center text-sm text-slate-400 dark:text-app-muted">{t('common.loading')}</p>
+          <p className="py-12 text-center text-sm text-app-muted">{t('common.loading')}</p>
         ) : !gymDetail && detailError ? (
           <div className="space-y-4 py-8 text-center">
             <p className="text-sm text-rose-600 dark:text-rose-400">{detailError}</p>
@@ -303,19 +303,19 @@ export default function GymDetailsModal({
                   icon={Calendar}
                   label={isFutureLicense ? t('modals.gymDetails.nextLicenseStarts') : t('modals.gymDetails.licenseStarts')}
                   value={formatDisplayDate(licenseStart)}
-                  valueClassName="text-sm font-medium text-slate-700 dark:text-app-text-strong"
+                  valueClassName="text-sm font-medium text-app-text-strong"
                 />
                 <SlidePanelRow
                   icon={CalendarRange}
                   label={t('modals.gymDetails.licenseEnds')}
                   value={formatDisplayDate(gymDetail.saas_subscription?.end_date)}
-                  valueClassName="text-sm font-semibold text-slate-900 dark:text-app-text-strong"
+                  valueClassName="text-sm font-semibold text-app-text-strong"
                 />
                 <SlidePanelRow
                   icon={Building2}
                   label={t('modals.gymDetails.gymRegistered')}
                   value={formatDisplayDate(gymDetail.created_at)}
-                  valueClassName="text-sm font-medium text-slate-700 dark:text-app-text-strong"
+                  valueClassName="text-sm font-medium text-app-text-strong"
                 />
               </SlidePanelCard>
             </SlidePanelSection>
@@ -334,11 +334,11 @@ export default function GymDetailsModal({
                     key={stat.label}
                     className={stat.highlight ? 'ui-stat-card-highlight' : 'ui-stat-card'}
                   >
-                    <p className="text-xs text-slate-500 dark:text-app-muted">{stat.label}</p>
+                    <p className="text-xs text-app-muted">{stat.label}</p>
                     <p
-                      className={`text-xl font-bold ${
-                        stat.highlight ? 'text-orange-700 dark:text-orange-300' : 'text-slate-900 dark:text-app-text-strong'
-                      }`}
+                      className={`text-xl font-bold${
+ stat.highlight ? 'text-orange-700 dark:text-orange-300' : 'text-app-text-strong'
+ }`}
                     >
                       {stat.value}
                     </p>
@@ -368,7 +368,7 @@ export default function GymDetailsModal({
                         <>
                           {currency(termPaid)}
                           {termPaymentCount > 1 && (
-                            <span className="ml-1 text-xs font-normal text-slate-400">
+                            <span className="ml-1 text-xs font-normal text-app-muted">
                               {t('drawer.paymentCount', { count: termPaymentCount })}
                             </span>
                           )}
@@ -383,7 +383,7 @@ export default function GymDetailsModal({
                   </SlidePanelCard>
 
                   <div>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-app-muted">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-app-muted">
                       {t('drawer.recentPayments')}
                     </p>
                     <SlidePanelList>
@@ -397,7 +397,7 @@ export default function GymDetailsModal({
                             subtitle={
                               <>
                                 {formatDisplayDate(p.date)}
-                                <span className="mx-1.5 text-slate-300 dark:text-app-border">·</span>
+                                <span className="mx-1.5 text-app-border">·</span>
                                 {sourceLabel}
                               </>
                             }
@@ -407,7 +407,7 @@ export default function GymDetailsModal({
                       })}
                     </SlidePanelList>
                     {olderPaymentCount > 0 && (
-                      <p className="mt-2 text-right text-xs text-slate-400 dark:text-app-muted">
+                      <p className="mt-2 text-right text-xs text-app-muted">
                         {t('drawer.olderPayments', { count: olderPaymentCount, amount: currency(totalPaid) })}
                       </p>
                     )}

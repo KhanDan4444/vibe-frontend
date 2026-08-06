@@ -36,16 +36,16 @@ function FieldLabel({ htmlFor, icon: Icon, children, hint }) {
   return (
     <label htmlFor={htmlFor} className="form-label">
       <span className="inline-flex items-center gap-1.5">
-        {Icon && <Icon className="h-3.5 w-3.5 text-slate-400" aria-hidden />}
+        {Icon && <Icon className="h-3.5 w-3.5 text-app-muted" aria-hidden />}
         {children}
       </span>
-      {hint && <span className="mt-0.5 block text-xs font-normal text-slate-400">{hint}</span>}
+      {hint && <span className="mt-0.5 block text-xs font-normal text-app-muted">{hint}</span>}
     </label>
   );
 }
 
 const inputClass =
-  'mt-1.5 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2.5 text-sm text-slate-900 dark:text-app-text-strong shadow-sm transition-colors placeholder:text-slate-400 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:bg-slate-50 disabled:text-slate-500';
+  'mt-1.5 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2.5 text-sm text-app-text-strong shadow-sm transition-colors placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:bg-app-surface disabled:text-app-muted';
 
 function PasswordField({ id, label, value, onChange, show, onToggleShow, autoComplete, fieldErrors, field, onClearError }) {
   const { t } = useTranslation();
@@ -70,7 +70,7 @@ function PasswordField({ id, label, value, onChange, show, onToggleShow, autoCom
         <button
           type="button"
           onClick={onToggleShow}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface/80 hover:text-app-text"
           aria-label={show ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
         >
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -89,15 +89,15 @@ function PasswordChecklist({ password, confirm }) {
   ];
   if (!password && !confirm) return null;
   return (
-    <ul className="space-y-1.5 rounded-lg bg-slate-50 px-3 py-2.5 text-xs">
+    <ul className="space-y-1.5 rounded-lg bg-app-surface px-3 py-2.5 text-xs">
       {rules.map((rule) => (
         <li key={rule.label} className="flex items-center gap-2">
           {rule.ok ? (
             <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
           ) : (
-            <XIcon className="h-3.5 w-3.5 shrink-0 text-slate-300" aria-hidden />
+            <XIcon className="h-3.5 w-3.5 shrink-0 text-app-muted/40" aria-hidden />
           )}
-          <span className={rule.ok ? 'text-emerald-700' : 'text-slate-500'}>{rule.label}</span>
+          <span className={rule.ok ? 'text-emerald-700' : 'text-app-muted'}>{rule.label}</span>
         </li>
       ))}
     </ul>
@@ -107,9 +107,9 @@ function PasswordChecklist({ password, confirm }) {
 function ProfileSkeleton() {
   return (
     <div className="animate-pulse space-y-4" aria-hidden>
-      <div className="h-12 rounded-lg bg-slate-200/80 dark:bg-app-surface" />
-      <div className="h-12 rounded-lg bg-slate-200/80 dark:bg-app-surface" />
-      <div className="h-12 rounded-lg bg-slate-200/80 dark:bg-app-surface" />
+      <div className="h-12 rounded-lg bg-app-surface" />
+      <div className="h-12 rounded-lg bg-app-surface" />
+      <div className="h-12 rounded-lg bg-app-surface" />
     </div>
   );
 }
@@ -120,15 +120,15 @@ function AccountModal({ open, title, description, onClose, children }) {
     <ResponsiveModal open={open} onClose={onClose} size="lg" zIndexClass="z-[100]" labelledBy="account-modal-title">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
-          <h2 id="account-modal-title" className="text-lg font-bold text-slate-900 dark:text-app-text-strong">
+          <h2 id="account-modal-title" className="text-lg font-bold text-app-text-strong">
             {title}
           </h2>
-          {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
+          {description && <p className="mt-0.5 text-sm text-app-muted">{description}</p>}
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface/80 hover:text-app-text"
           aria-label={t('aria.close')}
         >
           <XIcon className="h-5 w-5" />
@@ -289,7 +289,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
       ) : showGymProfile && !savedProfile ? (
         <div className="space-y-4">
           {error ? <Alert>{error}</Alert> : null}
-          <p className="text-sm text-slate-500 dark:text-app-muted">
+          <p className="text-sm text-app-muted">
             {t('account.profileLoadFailed')}
           </p>
           <Button type="button" variant="secondary" loading={loading} disabled={loading} onClick={() => void loadProfile()}>
@@ -399,7 +399,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
               <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-app-border-subtle pt-4">
+          <div className="flex flex-wrap items-center gap-3 border-t border-app-border-subtle pt-4">
             <Button type="submit" disabled={saving || !profileDirty}>
               {saving ? t('auth.saving') : t('common.save')}
             </Button>
@@ -420,7 +420,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
             type="email"
             readOnly
             value={accountEmail || user?.email || ''}
-            className={`${inputClass} cursor-not-allowed border-slate-100 bg-slate-50 text-slate-500`}
+            className={`${inputClass} cursor-not-allowed border-app-border-subtle bg-app-surface text-app-muted`}
           />
         </div>
       )}
@@ -537,7 +537,7 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
 
         <PasswordChecklist password={newPassword} confirm={confirm} />
 
-        <div className="flex flex-wrap items-center gap-3 border-t border-slate-100 dark:border-app-border-subtle pt-4">
+        <div className="flex flex-wrap items-center gap-3 border-t border-app-border-subtle pt-4">
           <Button type="submit" disabled={loading || !passwordReady}>
             {loading ? t('account.updating') : t('auth.updatePassword')}
           </Button>

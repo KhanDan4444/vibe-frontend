@@ -337,6 +337,19 @@
     "gymSubscribed_one": "{{count}} gym subscribed",
     "gymSubscribed_other": "{{count}} gyms subscribed"
   },
+  "errors": {
+    "loadPayments": "Failed to load payments",
+    "exportFailed": "Export failed",
+    "loadBranches": "Failed to load branches",
+    "saveBranch": "Failed to save branch",
+    "loadActivity": "Failed to load activity",
+    "loadTeam": "Failed to load team",
+    "createStaff": "Failed to create staff account",
+    "updateStaff": "Failed to update staff account",
+    "loadMembers": "Failed to load members",
+    "loadMemberReport": "Failed to load member report",
+    "loadRevenueReport": "Failed to load revenue report"
+  },
   "pagination": {
     "showing": "Showing {{from}}–{{to}} of {{total}}",
     "prev": "Prev",

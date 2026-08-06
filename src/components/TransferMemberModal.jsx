@@ -41,12 +41,12 @@ export default function TransferMemberModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
-      <div className={`${modalHeader} flex items-center justify-between gap-3`}>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('modals.transfer.title')}</h2>
+      <div className={`${modalHeader}flex items-center justify-between gap-3`}>
+        <h2 className="text-lg font-bold text-app-text-strong">{t('modals.transfer.title')}</h2>
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface"
           aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
@@ -61,14 +61,14 @@ export default function TransferMemberModal({
         }}
         onChangeCapture={markTouched}
       >
-        <div className={`${modalBody} space-y-4`}>
+        <div className={`${modalBody}space-y-4`}>
           {error && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
               {error}
             </div>
           )}
 
-          <p className="text-sm text-slate-600 dark:text-app-text">
+          <p className="text-sm text-app-text">
             {t('modals.transfer.body', { name: member.name })}
             {member.branchName ? (
               <>
@@ -88,13 +88,13 @@ export default function TransferMemberModal({
                 {t('modals.transfer.targetBranch')}
               </label>
               <div className="relative mt-1.5">
-                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-muted" />
                 <select
                   id="transfer-branch"
                   required
                   value={branchId}
                   onChange={(e) => setBranchId(e.target.value)}
-                  className="block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised py-2.5 pl-9 pr-3 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+                  className="block w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 pl-9 pr-3 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
                 >
                   {activeBranches.map((branch) => (
                     <option key={branch.id} value={branch.id}>

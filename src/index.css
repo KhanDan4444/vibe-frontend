@@ -2,27 +2,34 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Eye-friendly dark palette — lower glare, muted text, subtle borders */
+/* Shared app palette — light defaults (warm ink paper); html.dark overrides below */
 @theme {
-  --color-app-bg: #13161c;
-  --color-app-surface: #1a1e26;
-  --color-app-raised: #22262f;
-  --color-app-sidebar: #171a21;
-  --color-app-border: #343a46;
-  --color-app-border-subtle: #2a2f3a;
-  --color-app-text: #c4c9d4;
-  --color-app-text-strong: #e4e7ee;
-  --color-app-muted: #8b93a3;
-  --color-app-input: #1e222b;
+  /* Light: bg < surface < raised — cards lift off paper */
+  --color-app-bg: #eef1ef;
+  --color-app-surface: #f6f8f7;
+  --color-app-raised: #ffffff;
+  --color-app-sidebar: #121c1a;
+  --color-app-border: #c5d0cb;
+  --color-app-border-subtle: #dce3df;
+  --color-app-text: #2a3532;
+  --color-app-text-strong: #0c1211;
+  --color-app-muted: #5c6b66;
+  --color-app-input: #f6f8f7;
   /* Athletic ink + teal brand */
   --color-brand: #0f766e;
   --color-brand-hover: #0d9488;
-  --color-brand-soft: #ccfbf1;
+  --color-brand-soft: #d5f5f0;
   --color-brand-text: #115e59;
   /* Warm signature accent — identity only, not primary CTAs */
   --color-accent-warm: #b45309;
   --color-accent-warm-soft: rgb(180 83 9 / 0.12);
   --color-accent-warm-text: #92400e;
+  /* Member / subscription status — aligned with mobile ThemeColors */
+  --color-status-active: #059669;
+  --color-status-due-soon: #0284c7;
+  --color-status-expired: #e11d48;
+  --color-status-unpaid: #ea580c;
+  --color-status-trialing: #d97706;
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
@@ -45,18 +52,33 @@
 
 @layer base {
   :root {
+    --color-app-bg: #eef1ef;
+    --color-app-surface: #f6f8f7;
+    --color-app-raised: #ffffff;
+    --color-app-sidebar: #121c1a;
+    --color-app-border: #c5d0cb;
+    --color-app-border-subtle: #dce3df;
+    --color-app-text: #2a3532;
+    --color-app-text-strong: #0c1211;
+    --color-app-muted: #5c6b66;
+    --color-app-input: #f6f8f7;
     --color-brand: #0f766e;
     --color-brand-hover: #0d9488;
-    --color-brand-soft: #ccfbf1;
+    --color-brand-soft: #d5f5f0;
     --color-brand-text: #115e59;
     --color-accent-warm: #b45309;
     --color-accent-warm-soft: rgb(180 83 9 / 0.12);
     --color-accent-warm-text: #92400e;
+    --color-status-active: #059669;
+    --color-status-due-soon: #0284c7;
+    --color-status-expired: #e11d48;
+    --color-status-unpaid: #ea580c;
+    --color-status-trialing: #d97706;
   }
 
   html {
     color-scheme: light;
-    background-color: #f8fafc;
+    background-color: var(--color-app-bg);
     font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
 
@@ -70,6 +92,16 @@
   }
 
   html.dark {
+    --color-app-bg: #13161c;
+    --color-app-surface: #1a1e26;
+    --color-app-raised: #22262f;
+    --color-app-sidebar: #171a21;
+    --color-app-border: #343a46;
+    --color-app-border-subtle: #2a2f3a;
+    --color-app-text: #c4c9d4;
+    --color-app-text-strong: #e4e7ee;
+    --color-app-muted: #8b93a3;
+    --color-app-input: #1e222b;
     --color-brand: #2dd4bf;
     --color-brand-hover: #5eead4;
     --color-brand-soft: rgb(45 212 191 / 0.16);
@@ -77,8 +109,13 @@
     --color-accent-warm: #fbbf24;
     --color-accent-warm-soft: rgb(251 191 36 / 0.14);
     --color-accent-warm-text: #fcd34d;
+    --color-status-active: #34d399;
+    --color-status-due-soon: #38bdf8;
+    --color-status-expired: #f87171;
+    --color-status-unpaid: #fb923c;
+    --color-status-trialing: #fbbf24;
     color-scheme: dark;
-    background-color: #13161c;
+    background-color: var(--color-app-bg);
   }
 
   body {
@@ -216,11 +253,11 @@
   }
 
   .admin-data-table thead tr {
-    @apply border-b border-slate-100 bg-slate-50/50 dark:border-app-border-subtle dark:bg-app-surface/80;
+    @apply border-b border-app-border-subtle bg-app-surface;
   }
 
   .admin-data-table th {
-    @apply px-4 py-3 text-sm font-medium leading-snug text-slate-500 align-middle dark:text-app-muted;
+    @apply px-4 py-3 text-sm font-medium leading-snug text-app-muted align-middle;
   }
 
   .admin-data-table td {
@@ -228,7 +265,7 @@
   }
 
   .admin-data-table tbody {
-    @apply divide-y divide-slate-100 dark:divide-app-border-subtle;
+    @apply divide-y divide-app-border-subtle;
   }
 
   .admin-gyms-table th,
@@ -435,11 +472,11 @@
   }
 
   .admin-panel-header {
-    @apply flex items-center justify-between border-b border-slate-100 bg-slate-50/50 px-4 py-4 sm:px-6 dark:border-app-border-subtle dark:bg-app-surface/80;
+    @apply flex items-center justify-between border-b border-app-border-subtle bg-app-surface/80 px-4 py-4 sm:px-6;
   }
 
   .admin-panel-empty {
-    @apply py-6 text-center text-sm font-medium text-slate-400 dark:text-app-muted sm:py-8;
+    @apply py-6 text-center text-sm font-medium text-app-muted sm:py-8;
   }
 
   .admin-filter-pill {
@@ -485,15 +522,15 @@
   }
 
   .admin-field {
-    @apply h-10 cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text-strong disabled:cursor-not-allowed;
+    @apply h-10 cursor-pointer rounded-lg border border-app-border-subtle bg-app-raised px-3 text-sm text-app-text-strong focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:cursor-not-allowed;
   }
 
   .form-label {
-    @apply mb-1.5 block text-sm font-semibold leading-snug text-slate-700 dark:text-app-text-strong;
+    @apply mb-1.5 block text-sm font-semibold leading-snug text-app-text-strong;
   }
 
   .form-label-inline {
-    @apply text-sm font-semibold leading-snug text-slate-700 dark:text-app-text-strong;
+    @apply text-sm font-semibold leading-snug text-app-text-strong;
   }
 
   /* Date field + calendar popover */
@@ -502,19 +539,19 @@
   }
 
   .date-picker-popover {
-    @apply rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-app-border-subtle dark:bg-app-raised;
+    @apply rounded-xl border border-app-border-subtle bg-app-raised p-3 shadow-xl;
   }
 
   .date-picker-nav {
-    @apply flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-app-muted dark:hover:bg-app-surface;
+    @apply flex h-8 w-8 items-center justify-center rounded-lg text-app-muted hover:bg-app-surface;
   }
 
   .date-picker-weekday {
-    @apply flex h-8 items-center justify-center text-xs font-medium text-slate-400 dark:text-app-muted;
+    @apply flex h-8 items-center justify-center text-xs font-medium text-app-muted;
   }
 
   .date-picker-day {
-    @apply flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium text-slate-700 hover:bg-teal-50 dark:text-app-text dark:hover:bg-teal-600/10;
+    @apply flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium text-app-text hover:bg-teal-50 dark:hover:bg-teal-600/10;
   }
 
   .date-picker-day--selected {
@@ -526,7 +563,7 @@
   }
 
   .date-picker-day--disabled {
-    @apply cursor-not-allowed text-slate-300 hover:bg-transparent dark:text-app-muted/40 dark:hover:bg-transparent;
+    @apply cursor-not-allowed text-app-muted/40 hover:bg-transparent;
   }
 
   .ui-alert-rose {
@@ -546,17 +583,17 @@
   }
 
   .ui-info-panel {
-    @apply rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 dark:border-app-border-subtle dark:bg-app-raised/80 dark:text-app-text;
+    @apply rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text;
   }
 
   .ui-info-panel strong,
   .ui-info-panel .font-medium,
   .ui-info-panel .font-semibold {
-    @apply text-slate-800 dark:text-app-text-strong;
+    @apply text-app-text-strong;
   }
 
   .ui-stat-card {
-    @apply rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-app-border-subtle dark:bg-app-raised/80;
+    @apply rounded-lg border border-app-border-subtle bg-app-surface p-3;
   }
 
   .ui-stat-card-highlight {
@@ -568,7 +605,7 @@
   }
 
   .admin-row-actions button {
-    @apply rounded-md p-2 transition-colors active:bg-slate-100 dark:active:bg-app-surface/80;
+    @apply rounded-md p-2 transition-colors active:bg-app-surface/80;
   }
 
   .admin-row-unpaid {
@@ -648,17 +685,7 @@
   }
 
   .admin-method-chip {
-    @apply rounded-lg border px-4 py-3;
-  }
-
-  html:not(.dark) .admin-method-chip {
-    border-color: rgb(226 232 240);
-    background-color: rgb(248 250 252);
-  }
-
-  html.dark .admin-method-chip {
-    border-color: rgb(42 47 58);
-    background-color: rgb(26 30 38);
+    @apply rounded-md border border-app-border-subtle bg-transparent px-3 py-2.5;
   }
 
   @keyframes app-boot-slide {
@@ -677,14 +704,58 @@
   @keyframes app-page-in {
     from {
       opacity: 0;
+      transform: translateY(4px);
     }
     to {
       opacity: 1;
+      transform: translateY(0);
     }
   }
 
   .app-page {
-    animation: app-page-in 0.25s ease-out;
+    animation: app-page-in 0.28s ease-out;
+  }
+
+  @keyframes app-metric-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .app-metric-grid > * {
+    animation: app-metric-in 0.36s ease-out both;
+  }
+
+  .app-metric-grid > *:nth-child(1) { animation-delay: 0.02s; }
+  .app-metric-grid > *:nth-child(2) { animation-delay: 0.05s; }
+  .app-metric-grid > *:nth-child(3) { animation-delay: 0.08s; }
+  .app-metric-grid > *:nth-child(4) { animation-delay: 0.11s; }
+  .app-metric-grid > *:nth-child(5) { animation-delay: 0.14s; }
+
+  /* Light-only: soft lift on interactive cards */
+  html:not(.dark) .app-card-lift {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  html:not(.dark) .app-card-lift:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgb(12 18 17 / 0.06);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .app-page,
+    .app-metric-grid > *,
+    html:not(.dark) .app-card-lift,
+    html:not(.dark) .app-card-lift:hover {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
   }
 
   @keyframes flash-toast-in {
@@ -733,7 +804,7 @@
   }
 
   .app-skeleton {
-    @apply animate-pulse rounded-md bg-slate-200 dark:bg-app-border-subtle;
+    @apply animate-pulse rounded-md bg-app-border-subtle;
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -95,7 +95,7 @@ export default function UserProfileMenu({ compact = false }) {
         <button
           type="button"
           onClick={() => setMenuOpen((open) => !open)}
-          className={`flex items-center gap-2 rounded-full transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:hover:bg-app-raised ${
+          className={`flex items-center gap-2 rounded-full transition-colors hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 dark:hover:bg-app-raised ${
             compact ? 'p-1' : 'py-1 pl-1 pr-2'
           }`}
           aria-expanded={menuOpen}
@@ -107,15 +107,15 @@ export default function UserProfileMenu({ compact = false }) {
           {!compact && (
             <>
               <div className="hidden text-left sm:block">
-                <div className="max-w-[140px] truncate text-sm font-semibold leading-tight text-slate-800 dark:text-app-text-strong">
+                <div className="max-w-[140px] truncate text-sm font-semibold leading-tight text-app-text-strong">
                   {displayName}
                 </div>
-                <div className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                <div className="text-[10px] font-medium uppercase tracking-wider text-app-muted">
                   {subtitle}
                 </div>
               </div>
               <ChevronDown
-                className={`hidden h-4 w-4 text-slate-400 transition-transform sm:block ${
+                className={`hidden h-4 w-4 text-app-muted transition-transform sm:block ${
                   menuOpen ? 'rotate-180' : ''
                 }`}
                 aria-hidden
@@ -129,13 +129,13 @@ export default function UserProfileMenu({ compact = false }) {
             role="menu"
             className={`absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl py-1 shadow-lg animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
           >
-            <div className="border-b border-slate-100 px-4 py-3 dark:border-app-border-subtle">
-              <p className="truncate text-sm font-semibold text-slate-900 dark:text-app-text-strong">{displayName}</p>
-              <p className="truncate text-xs text-slate-500 dark:text-app-muted">{user?.email}</p>
+            <div className="border-b px-4 py-3 border-app-border-subtle">
+              <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
+              <p className="truncate text-xs text-app-muted">{user?.email}</p>
             </div>
 
-            <div className="border-b border-slate-100 py-1.5 dark:border-app-border-subtle">
-              <p className="mb-1 px-4 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <div className="border-b py-1.5 border-app-border-subtle">
+              <p className="mb-1 px-4 text-[10px] font-bold uppercase tracking-wider text-app-muted">
                 {t('profile.appearance')}
               </p>
               <button
@@ -144,7 +144,7 @@ export default function UserProfileMenu({ compact = false }) {
                 onClick={cycleTheme}
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
               >
-                <ThemeIcon className="h-4 w-4 text-slate-400" aria-hidden />
+                <ThemeIcon className="h-4 w-4 text-app-muted" aria-hidden />
                 {themeLabel(theme, t)}
               </button>
             </div>
@@ -155,7 +155,7 @@ export default function UserProfileMenu({ compact = false }) {
               onClick={openProfile}
               className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
             >
-              <User className="h-4 w-4 text-slate-400" aria-hidden />
+              <User className="h-4 w-4 text-app-muted" aria-hidden />
               {profileLabel}
             </button>
 
@@ -165,11 +165,11 @@ export default function UserProfileMenu({ compact = false }) {
               onClick={openPassword}
               className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
             >
-              <KeyRound className="h-4 w-4 text-slate-400" aria-hidden />
+              <KeyRound className="h-4 w-4 text-app-muted" aria-hidden />
               {t('profile.changePassword')}
             </button>
 
-            <div className="my-1 border-t border-slate-100 dark:border-app-border-subtle" />
+            <div className="my-1 border-t border-app-border-subtle" />
 
             <button
               type="button"

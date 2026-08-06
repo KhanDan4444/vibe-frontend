@@ -366,6 +366,19 @@
     "error": "ስህተት ተፈጥሯል",
     "yes": "አዎ"
   },
+  "errors": {
+    "loadPayments": "ክፍያዎችን መጫን አልተሳካም",
+    "exportFailed": "ወደ ውጭ መላክ አልተሳካም",
+    "loadBranches": "ቅርንጫፎችን መጫን አልተሳካም",
+    "saveBranch": "ቅርንጫፍ ማስቀመጥ አልተሳካም",
+    "loadActivity": "እንቅስቃሴን መጫን አልተሳካም",
+    "loadTeam": "ቡድንን መጫን አልተሳካም",
+    "createStaff": "የሰራተኛ መለያ መፍጠር አልተሳካም",
+    "updateStaff": "የሰራተኛ መለያ ማዘመን አልተሳካም",
+    "loadMembers": "አባላትን መጫን አልተሳካም",
+    "loadMemberReport": "የአባል ሪፖርት መጫን አልተሳካም",
+    "loadRevenueReport": "የገቢ ሪፖርት መጫን አልተሳካም"
+  },
   "drawer": {
     "alertPaidChangeOrRenew": "እስከ {{date}} ተከፍሏል። በጊዜያት መካከል ለመቀየር \"ዕቅድ ቀይር\"ን ይጠቀሙ፣ ወይም ጊዜው ሲያልቅ ያድሱ።",
     "alertPaidRenew": "እስከ {{date}} ተከፍሏል። ዕቅዱ ሲያልቅ \"ያድሱ\" የሚለውን ይጠቀሙ።",

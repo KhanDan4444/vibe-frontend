@@ -15,13 +15,13 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
   if (!termStart) return null;
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-app-border-subtle bg-slate-50/80 dark:bg-app-surface/40 p-4">
-      <p className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-app-muted mb-3">
+    <div className="rounded-xl border border-app-border-subtle bg-app-surface p-4">
+      <p className="text-xs font-bold uppercase tracking-wide text-app-muted mb-3">
         {t('modals.changePlan.termPaymentSummaryTitle')}
       </p>
 
       {termPayments.length === 0 ? (
-        <p className="text-sm text-slate-500 dark:text-app-muted mb-3">
+        <p className="text-sm text-app-muted mb-3">
           {t('modals.changePlan.termPaymentSummaryEmpty')}
         </p>
       ) : (
@@ -29,10 +29,10 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
           {termPayments.map((p) => (
             <li key={p.id} className="flex items-start justify-between gap-3 text-sm">
               <div className="min-w-0">
-                <p className="font-medium text-slate-800 dark:text-app-text">{paymentSourceLabel(p.source)}</p>
-                <p className="text-xs text-slate-500 dark:text-app-muted">{formatDisplayDate(p.date)}</p>
+                <p className="font-medium text-app-text">{paymentSourceLabel(p.source)}</p>
+                <p className="text-xs text-app-muted">{formatDisplayDate(p.date)}</p>
               </div>
-              <span className="font-semibold text-slate-800 dark:text-app-text shrink-0">
+              <span className="font-semibold text-app-text shrink-0">
                 {formatMoney(p.amount)}
               </span>
             </li>
@@ -40,30 +40,30 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
         </ul>
       )}
 
-      <div className="flex items-center justify-between gap-3 border-t border-slate-200 dark:border-app-border-subtle pt-3 text-sm">
-        <span className="font-medium text-slate-700 dark:text-app-text">
+      <div className="flex items-center justify-between gap-3 border-t border-app-border-subtle pt-3 text-sm">
+        <span className="font-medium text-app-text">
           {t('modals.changePlan.termPaymentAlreadyCollected')}
         </span>
-        <span className="font-semibold text-slate-800 dark:text-app-text">{formatMoney(alreadyCollected)}</span>
+        <span className="font-semibold text-app-text">{formatMoney(alreadyCollected)}</span>
       </div>
 
       {pending > 0 ? (
         <div className="flex items-center justify-between gap-3 pt-2 text-sm">
-          <span className="font-medium text-slate-700 dark:text-app-text">
+          <span className="font-medium text-app-text">
             {t('modals.changePlan.termPaymentThisChange')}
           </span>
           <span className="font-semibold text-emerald-600 dark:text-emerald-400">+{formatMoney(pending)}</span>
         </div>
       ) : null}
 
-      <div className="flex items-center justify-between gap-3 border-t border-slate-200 dark:border-app-border-subtle mt-3 pt-3">
-        <span className="text-sm font-bold text-slate-800 dark:text-app-text">
+      <div className="flex items-center justify-between gap-3 border-t border-app-border-subtle mt-3 pt-3">
+        <span className="text-sm font-bold text-app-text">
           {t('modals.changePlan.termPaymentTotalAfter')}
         </span>
         <span className="text-base font-bold text-teal-700 dark:text-teal-400">{formatMoney(totalAfter)}</span>
       </div>
 
-      <p className="mt-3 text-xs leading-relaxed text-slate-500 dark:text-app-muted">
+      <p className="mt-3 text-xs leading-relaxed text-app-muted">
         {t('modals.changePlan.termPaymentRevenueNote')}
       </p>
     </div>

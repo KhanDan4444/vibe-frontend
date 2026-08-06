@@ -279,8 +279,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{t('admin.paymentsTitle')}</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-bold tracking-tight text-app-text-strong">{t('admin.paymentsTitle')}</h1>
+          <p className="text-sm text-app-muted">
             {t('admin.paymentsSubtitle')}
           </p>
         </div>
@@ -309,7 +309,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
 
       <Card className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="text-sm font-medium text-slate-700 dark:text-app-text">{t('period.reportPeriod')}</label>
+          <label className="text-sm font-medium text-app-text">{t('period.reportPeriod')}</label>
           <select
             className={`ui-select ${selectSurface}`}
             value={periodPreset}
@@ -323,14 +323,14 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         {periodPreset === 'custom' && (
           <div className="flex flex-wrap items-center gap-2">
             <DateField
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
+              className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
               value={customStart}
               onChange={setCustomStart}
               max={boundsForCustomRangeFrom(customEnd).max}
             />
-            <span className="text-slate-400">{t('common.to')}</span>
+            <span className="text-app-muted">{t('common.to')}</span>
             <DateField
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
+              className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
               value={customEnd}
               onChange={setCustomEnd}
               min={boundsForCustomRangeTo(customStart).min}
@@ -356,9 +356,9 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
               <li key={gym.id} className="admin-alert-amber-item">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <InitialsAvatar name={gym.name} size="sm" />
-                  <span className="min-w-0 truncate font-medium text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                  <span className="min-w-0 truncate font-medium text-app-text-strong">{gym.name}</span>
                 </div>
-                <span className="text-xs leading-snug text-slate-500 dark:text-app-muted sm:text-right">
+                <span className="text-xs leading-snug text-app-muted sm:text-right">
                   {gym.subscription_status}
                   {gym.saasEndDate ? t('admin.endsOn', { date: formatDisplayDate(gym.saasEndDate) }) : ''}
                 </span>
@@ -388,20 +388,20 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         <>
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">{t('metrics.periodRevenue', { period: periodLabel })}</span>
+            <span className="text-sm font-medium text-app-muted">{t('metrics.periodRevenue', { period: periodLabel })}</span>
             <TrendingUp className="h-5 w-5 text-emerald-600" />
           </div>
-          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">
+          <p className="mt-2 text-3xl font-bold text-app-text-strong">
             {formatMoney(periodRevenue)}
           </p>
         </Card>
         <Card className="p-6">
-          <span className="text-sm font-medium text-slate-500">{t('metrics.transactions')}</span>
-          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">{transactionCount}</p>
+          <span className="text-sm font-medium text-app-muted">{t('metrics.transactions')}</span>
+          <p className="mt-2 text-3xl font-bold text-app-text-strong">{transactionCount}</p>
         </Card>
         <Card className="p-6">
-          <span className="text-sm font-medium text-slate-500">{t('metrics.averagePayment')}</span>
-          <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-app-text-strong">
+          <span className="text-sm font-medium text-app-muted">{t('metrics.averagePayment')}</span>
+          <p className="mt-2 text-3xl font-bold text-app-text-strong">
             {formatMoney(averagePayment)}
           </p>
         </Card>
@@ -411,14 +411,14 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
 
       {!initialLoading && Object.keys(byMethod).length > 0 && (
         <Card className="p-4">
-          <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
+          <h3 className="mb-3 text-sm font-semibold text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {Object.entries(byMethod)
               .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
               .map(([method, amount]) => (
               <div key={method} className="admin-method-chip">
                 <PaymentMethodBadge method={method} />
-                <p className="mt-2 text-lg font-bold text-slate-900 dark:text-app-text-strong">
+                <p className="mt-2 text-lg font-bold text-app-text-strong">
                   {formatMoney(amount)}
                 </p>
               </div>
@@ -427,14 +427,14 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         </Card>
       )}
 
-      <p className="text-xs text-slate-400 -mt-2">{t('admin.paymentsEditHint')}</p>
+      <p className="text-xs text-app-muted -mt-2">{t('admin.paymentsEditHint')}</p>
 
       <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-app-muted" />
           <input
             type="text"
-            className="admin-field block w-full pl-10 pr-4 placeholder-slate-400"
+            className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
             placeholder={t('admin.searchByGym')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -470,7 +470,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       </Card>
 
       <Card className="overflow-hidden">
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="lg:hidden divide-y divide-app-border-subtle">
           {initialLoading ? (
             <AdminListSkeleton rows={6} />
           ) : filteredPayments.length > 0 ? (
@@ -478,8 +478,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
               <div key={payment.id} className="p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-app-text-strong">{payment.gymName}</p>
-                    <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
+                    <p className="font-semibold text-app-text-strong">{payment.gymName}</p>
+                    <p className="mt-1 flex items-center gap-1.5 text-sm text-app-muted">
                       <Calendar className="h-3.5 w-3.5 shrink-0" />
                       {formatDate(payment.date)}
                     </p>
@@ -494,9 +494,9 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                     {payment.planName && (
                       <p className="mt-1 text-sm font-semibold text-teal-700">{payment.planName}</p>
                     )}
-                    {payment.notes && <p className="mt-0.5 text-xs text-slate-500">{payment.notes}</p>}
+                    {payment.notes && <p className="mt-0.5 text-xs text-app-muted">{payment.notes}</p>}
                   </div>
-                  <p className="shrink-0 text-lg font-bold text-slate-900 dark:text-app-text-strong">
+                  <p className="shrink-0 text-lg font-bold text-app-text-strong">
                     {formatMoney(payment.amount)}
                   </p>
                 </div>
@@ -504,7 +504,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                   <button
                     type="button"
                     onClick={() => setEditState({ isOpen: true, payment, error: '' })}
-                    className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                    className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
                     title={t('common.edit')}
                   >
                     <Edit className="h-4 w-4" />
@@ -512,7 +512,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                   <button
                     type="button"
                     onClick={() => setPaymentToDelete(payment)}
-                    className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                    className="text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer"
                     title={t('common.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -521,8 +521,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
               </div>
             ))
           ) : (
-            <div className="py-16 text-center text-slate-400">
-              <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+            <div className="py-16 text-center text-app-muted">
+              <AlertCircle className="mx-auto mb-2 h-8 w-8 text-app-muted/40" />
               <p className="text-sm font-medium">{t('admin.noTransactions')}</p>
             </div>
           )}
@@ -546,16 +546,16 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                 <AdminTableRowsSkeleton rows={8} cols={7} />
               ) : filteredPayments.length > 0 ? (
                 filteredPayments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-slate-50 dark:hover:bg-app-surface/60">
-                    <td className="font-semibold text-slate-900 dark:text-app-text-strong">
+                  <tr key={payment.id} className="hover:bg-app-surface/60">
+                    <td className="font-semibold text-app-text-strong">
                       <span className="inline-flex items-center gap-1.5 min-w-0">
-                        <Building2 className="h-4 w-4 shrink-0 text-slate-400" />
+                        <Building2 className="h-4 w-4 shrink-0 text-app-muted" />
                         <span className="truncate">{payment.gymName}</span>
                       </span>
                     </td>
-                    <td className="text-slate-500">
+                    <td className="text-app-muted">
                       <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                        <Calendar className="h-4 w-4 shrink-0 text-slate-400" />
+                        <Calendar className="h-4 w-4 shrink-0 text-app-muted" />
                         {formatDate(payment.date)}
                       </span>
                     </td>
@@ -571,7 +571,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                     </td>
                     <td>
                       {payment.planName && <div className="truncate font-semibold text-teal-700">{payment.planName}</div>}
-                      {payment.notes && <div className="truncate text-xs text-slate-500">{payment.notes}</div>}
+                      {payment.notes && <div className="truncate text-xs text-app-muted">{payment.notes}</div>}
                     </td>
                     <td className="font-bold whitespace-nowrap">{formatMoney(payment.amount)}</td>
                     <td>
@@ -579,7 +579,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       <button
                         type="button"
                         onClick={() => setEditState({ isOpen: true, payment, error: '' })}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                        className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
                         title={t('admin.editPaymentTitle')}
                       >
                         <Edit className="h-4 w-4" />
@@ -587,7 +587,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       <button
                         type="button"
                         onClick={() => setPaymentToDelete(payment)}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                        className="text-app-muted hover:bg-app-surface hover:text-rose-600 cursor-pointer"
                         title={t('admin.deletePaymentCorrection')}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -598,8 +598,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center py-16 text-slate-400">
-                    <AlertCircle className="h-8 w-8 mx-auto mb-2 text-slate-300" />
+                  <td colSpan="7" className="text-center py-16 text-app-muted">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2 text-app-muted/40" />
                     {t('admin.noTransactions')}
                   </td>
                 </tr>

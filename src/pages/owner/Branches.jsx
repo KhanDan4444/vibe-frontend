@@ -53,7 +53,7 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[100]">
       <div className={modalHeader}>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">
+        <h2 className="text-lg font-bold text-app-text-strong">
           {isEdit ? t('pages.branches.formEdit') : t('pages.branches.formAdd')}
         </h2>
       </div>
@@ -150,7 +150,7 @@ export default function Branches() {
     try {
       const res = await listBranches(apiFetch);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to load branches');
+      if (!res.ok) throw new Error(data.error || t('errors.loadBranches'));
       setBranches(data.branches || []);
     } catch (err) {
       setError(err.message);
@@ -176,7 +176,7 @@ export default function Branches() {
         ? await updateBranch(apiFetch, modal.branch.id, payload)
         : await createBranch(apiFetch, payload);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to save branch');
+      if (!res.ok) throw new Error(data.error || t('errors.saveBranch'));
       setModal({ open: false, branch: null });
       showFlash(flashFromKey(t, modal.branch ? 'branchUpdated' : 'branchCreated'));
       runInBackground(Promise.all([load(), reloadBranches()]));
@@ -295,27 +295,27 @@ export default function Branches() {
           />
         ) : (
           <>
-            <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+            <div className="lg:hidden divide-y divide-app-border-subtle">
               {branches.map((branch) => (
                 <div key={branch.id} className="p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="font-medium text-slate-900 dark:text-app-text-strong">
+                      <p className="font-medium text-app-text-strong">
                         {branch.name}
                         {branch.is_default && (
-                          <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:bg-app-surface dark:text-app-muted">
+                          <span className="ml-2 rounded-full px-2 py-0.5 text-xs bg-app-surface text-app-muted">
                             {t('common.default')}
                           </span>
                         )}
                       </p>
-                      <p className="mt-1 text-sm text-slate-500">
+                      <p className="mt-1 text-sm text-app-muted">
                         {branch.member_count ?? 0} {t('table.members')} · {branch.staff_count ?? 0} {t('nav.team')}
                       </p>
                       <span
                         className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${
                           branch.is_active
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                            : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-app-surface dark:text-app-muted dark:border-app-border-subtle'
+                            : 'bg-app-surface text-app-muted border-app-border-subtle'
                         }`}
                       >
                         {branch.is_active ? t('status.active') : t('common.inactive')}
@@ -330,7 +330,7 @@ export default function Branches() {
                           setModalError('');
                           setModal({ open: true, branch });
                         }}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                        className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
                         title={t('common.edit')}
                       >
                         <Edit className="h-4 w-4" />
@@ -339,7 +339,7 @@ export default function Branches() {
                         <button
                           type="button"
                           onClick={() => setAsDefault(branch)}
-                          className="text-slate-400 hover:bg-slate-100 hover:text-amber-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                          className="text-app-muted hover:bg-app-surface/80 hover:text-amber-600 cursor-pointer"
                           title={t('actions.setDefault')}
                         >
                           <Star className="h-4 w-4" />
@@ -351,8 +351,8 @@ export default function Branches() {
                           onClick={() => toggleActive(branch)}
                           className={
                             branch.is_active
-                              ? 'text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer'
-                              : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                              ? 'text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer'
+                              : 'text-app-muted hover:bg-app-surface/80 hover:text-emerald-600 cursor-pointer'
                           }
                           title={branch.is_active ? t('actions.deactivate') : t('actions.activate')}
                         >
@@ -379,10 +379,10 @@ export default function Branches() {
               <tbody>
                 {branches.map((branch) => (
                   <tr key={branch.id} className={tableRowHover}>
-                    <td className="font-medium text-slate-900 dark:text-app-text-strong">
+                    <td className="font-medium text-app-text-strong">
                       <span className="truncate">{branch.name}</span>
                       {branch.is_default && (
-                        <span className="ml-2 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-xs text-slate-500 dark:border-app-border-subtle dark:bg-app-surface dark:text-app-muted">
+                        <span className="ml-2 rounded-full border px-2 py-0.5 text-xs border-app-border-subtle bg-app-surface text-app-muted">
                           {t('common.default')}
                         </span>
                       )}
@@ -394,7 +394,7 @@ export default function Branches() {
                         className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-medium ${
                           branch.is_active
                             ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                            : 'bg-slate-100 text-slate-500 border-slate-200 dark:bg-app-surface dark:text-app-muted dark:border-app-border-subtle'
+                            : 'bg-app-surface text-app-muted border-app-border-subtle'
                         }`}
                       >
                         {branch.is_active ? t('status.active') : t('common.inactive')}
@@ -409,7 +409,7 @@ export default function Branches() {
                               setModalError('');
                               setModal({ open: true, branch });
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                            className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
                             title={t('common.edit')}
                           >
                             <Edit className="h-4 w-4" />
@@ -418,7 +418,7 @@ export default function Branches() {
                             <button
                               type="button"
                               onClick={() => setAsDefault(branch)}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-amber-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                              className="text-app-muted hover:bg-app-surface/80 hover:text-amber-600 cursor-pointer"
                               title={t('actions.setDefault')}
                             >
                               <Star className="h-4 w-4" />
@@ -430,8 +430,8 @@ export default function Branches() {
                               onClick={() => toggleActive(branch)}
                               className={
                                 branch.is_active
-                                  ? 'text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer'
-                                  : 'text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer'
+                                  ? 'text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer'
+                                  : 'text-app-muted hover:bg-app-surface/80 hover:text-emerald-600 cursor-pointer'
                               }
                               title={branch.is_active ? t('actions.deactivate') : t('actions.activate')}
                             >

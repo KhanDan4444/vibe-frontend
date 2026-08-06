@@ -32,7 +32,7 @@ export default function StaffModal({
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
-  const fc = (field) => inputClass('mt-1.5 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, field);
+  const fc = (field) => inputClass('mt-1.5 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, field);
 
   const activeBranches = branches.filter((b) => b.is_active !== false);
   const defaultBranchId = activeBranches.find((b) => b.is_default)?.id ?? activeBranches[0]?.id ?? '';
@@ -112,14 +112,14 @@ export default function StaffModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[100]">
-      <div className={`${modalHeader} flex items-center justify-between gap-3`}>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">
+      <div className={`${modalHeader}flex items-center justify-between gap-3`}>
+        <h2 className="text-lg font-bold text-app-text-strong">
           {isEdit ? t('modals.staff.editTitle') : t('modals.staff.createTitle')}
         </h2>
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
           aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
@@ -127,7 +127,7 @@ export default function StaffModal({
       </div>
 
       <form onSubmit={handleSubmit} onChangeCapture={markTouched} autoComplete="off">
-        <div className={`${modalBody} space-y-4`}>
+        <div className={`${modalBody}space-y-4`}>
           {displayError && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
               {displayError}
@@ -146,7 +146,7 @@ export default function StaffModal({
                 setBranchId(e.target.value);
                 clearFieldError(setLocalFieldErrors, 'branchId');
               }}
-              className={`${fc('branchId')} cursor-pointer`}
+              className={`${fc('branchId')}cursor-pointer`}
             >
               {activeBranches.map((branch) => (
                 <option key={branch.id} value={branch.id}>
@@ -178,7 +178,7 @@ export default function StaffModal({
           <div>
             <label htmlFor="staff-email" className="form-label">
               {t('modals.staff.email')}
-              <span className="ml-1 text-xs font-normal text-slate-400">({t('account.optional')})</span>
+              <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
             </label>
             <input
               id="staff-email"
@@ -191,7 +191,7 @@ export default function StaffModal({
               className={fc('email')}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
-            <p className="mt-1 text-xs text-slate-400">{t('modals.staff.emailOptional')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.staff.emailOptional')}</p>
           </div>
 
           <div>
@@ -215,14 +215,14 @@ export default function StaffModal({
               }}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
-            <p className="mt-1 text-xs text-slate-400">{t('modals.staff.usernameHint')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.staff.usernameHint')}</p>
           </div>
 
           <div>
             <label htmlFor="staff-password" className="form-label">
               {t('modals.staff.password')}
               {isEdit && (
-                <span className="ml-1 text-xs font-normal text-slate-400">{t('modals.staff.passwordKeepHint')}</span>
+                <span className="ml-1 text-xs font-normal text-app-muted">{t('modals.staff.passwordKeepHint')}</span>
               )}
             </label>
             <div className="relative mt-1.5">
@@ -238,19 +238,19 @@ export default function StaffModal({
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
+                className={inputClass('block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface"
                 aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-            <p className="mt-1 text-xs text-slate-400">{t('modals.staff.passwordHint')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.staff.passwordHint')}</p>
           </div>
         </div>
 

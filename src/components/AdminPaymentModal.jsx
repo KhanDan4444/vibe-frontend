@@ -32,7 +32,7 @@ export default function AdminPaymentModal({
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const fieldErrors = localFieldErrors;
-  const inputBase = 'w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none';
+  const inputBase = 'w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 text-sm text-app-text focus:border-teal-600 focus:outline-none';
   const fc = (field, extra = '') => inputClass(`${inputBase} ${extra}`, fieldErrors, field);
 
   const isEdit = !!payment;
@@ -131,25 +131,25 @@ export default function AdminPaymentModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+      <div className={`${modalHeader}flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">
+          <h2 className="text-lg font-bold text-app-text-strong">
             {isEdit ? t('modals.adminPayment.editTitle') : t('modals.adminPayment.collectTitle')}
           </h2>
-          <p className="text-xs text-slate-500 dark:text-app-muted">
+          <p className="text-xs text-app-muted">
             {isEdit ? t('modals.adminPayment.editSubtitle') : t('modals.adminPayment.collectSubtitle')}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/60 dark:text-app-muted"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface"
         >
           <X className="h-5 w-5" />
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className={`${modalBody} flex-1 space-y-5`}>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className={`${modalBody}flex-1 space-y-5`}>
           {displayError && (
             <div className="ui-alert-rose">
               {displayError}
@@ -158,13 +158,13 @@ export default function AdminPaymentModal({
 
           {displayGym && (
             <div className="ui-info-panel flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-slate-400 dark:text-app-muted" />
+              <Building2 className="h-4 w-4 text-app-muted" />
               <span className="font-semibold">{displayGym.name}</span>
             </div>
           )}
 
           {termStart && (
-            <p className="text-xs text-slate-500 dark:text-app-muted -mt-3">
+            <p className="text-xs text-app-muted -mt-3">
               {t('modals.adminPayment.licenseTermStarted', { date: formatDisplayDate(termStart) })}
             </p>
           )}
@@ -173,7 +173,7 @@ export default function AdminPaymentModal({
             <div>
               <label className="form-label">{t('modals.payment.amount')}</label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-slate-400" />
+                <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-app-muted" />
                 <input
                   type="number"
                   required
@@ -192,7 +192,7 @@ export default function AdminPaymentModal({
             <div>
               <label className="form-label">{t('modals.payment.date')}</label>
               <div className="relative">
-                <Calendar className="pointer-events-none absolute left-3 top-2.5 z-10 h-5 w-5 text-slate-400" />
+                <Calendar className="pointer-events-none absolute left-3 top-2.5 z-10 h-5 w-5 text-app-muted" />
                 <DateField
                   required
                   min={paymentBounds.min}
@@ -212,7 +212,7 @@ export default function AdminPaymentModal({
           <div>
             <label className="form-label">{t('modals.payment.method')}</label>
             <select
-              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 px-4 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
+              className="w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={method}
               onChange={(e) => setMethod(e.target.value)}
             >
@@ -228,7 +228,7 @@ export default function AdminPaymentModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <textarea
               rows="2"
-              className="w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised py-2.5 px-4 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
+              className="w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />

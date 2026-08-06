@@ -59,12 +59,12 @@ export default function ResetPasswordModal({
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <form onSubmit={handleSubmit} onChangeCapture={markTouched}>
-        <div className={`${modalHeader} flex items-center justify-between gap-3`}>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{title}</h2>
+        <div className={`${modalHeader}flex items-center justify-between gap-3`}>
+          <h2 className="text-lg font-bold text-app-text-strong">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-surface/80"
+            className="rounded-lg p-1.5 text-app-muted hover:bg-app-surface hover:text-app-text"
             aria-label={t('common.close')}
           >
             <X className="h-5 w-5" />
@@ -72,7 +72,7 @@ export default function ResetPasswordModal({
         </div>
 
         <div className={modalBody}>
-          {subtitle && <p className="mb-4 text-sm text-slate-500">{subtitle}</p>}
+          {subtitle && <p className="mb-4 text-sm text-app-muted">{subtitle}</p>}
 
           {displayError && (
             <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
@@ -96,19 +96,19 @@ export default function ResetPasswordModal({
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
+                className={inputClass('block w-full rounded-lg border border-app-border-subtle px-3 py-2.5 pr-10 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-400 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-app-muted hover:text-app-text"
                 aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-            <p className="mt-1 text-xs text-slate-400">{t('modals.resetPassword.passwordHint')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.resetPassword.passwordHint')}</p>
           </div>
         </div>
 

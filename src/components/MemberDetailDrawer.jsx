@@ -284,7 +284,7 @@ export default function MemberDetailDrawer({
                   icon={MapPin}
                   label={t('table.branch')}
                   value={member.branchName}
-                  valueClassName="text-sm font-medium text-slate-700 dark:text-app-text-strong"
+                  valueClassName="text-sm font-medium text-app-text-strong"
                 />
               )}
               <SlidePanelRow
@@ -297,13 +297,13 @@ export default function MemberDetailDrawer({
                 icon={Calendar}
                 label={t('table.startDate')}
                 value={formatDisplayDate(member.startDate)}
-                valueClassName="text-sm font-medium text-slate-700 dark:text-app-text"
+                valueClassName="text-sm font-medium text-app-text"
               />
               <SlidePanelRow
                 icon={CalendarRange}
                 label={t('table.endDate')}
                 value={formatDisplayDate(member.endDate)}
-                valueClassName="text-sm font-semibold text-slate-900 dark:text-app-text-strong"
+                valueClassName="text-sm font-semibold text-app-text-strong"
               />
             </SlidePanelCard>
           </SlidePanelSection>
@@ -324,7 +324,7 @@ export default function MemberDetailDrawer({
                 </Button>
               </div>
             ) : paymentsLoading ? (
-              <p className="py-8 text-center text-sm text-slate-400">{t('drawer.loadingPayments')}</p>
+              <p className="py-8 text-center text-sm text-app-muted">{t('drawer.loadingPayments')}</p>
             ) : memberPayments.length > 0 ? (
               <div className="space-y-3">
                 <SlidePanelCard>
@@ -345,7 +345,7 @@ export default function MemberDetailDrawer({
                       <>
                         {currency(termPaid)}
                         {termPaymentCount > 1 && (
-                          <span className="ml-1 text-xs font-normal text-slate-400">
+                          <span className="ml-1 text-xs font-normal text-app-muted">
                             {t('drawer.paymentCount', { count: termPaymentCount })}
                           </span>
                         )}
@@ -360,7 +360,7 @@ export default function MemberDetailDrawer({
                 </SlidePanelCard>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-app-muted">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-app-muted">
                     {t('drawer.recentPayments')}
                   </p>
                   <SlidePanelList>
@@ -374,7 +374,7 @@ export default function MemberDetailDrawer({
                           subtitle={
                             <>
                               {formatDisplayDate(p.date)}
-                              <span className="mx-1.5 text-slate-300 dark:text-app-border">·</span>
+                              <span className="mx-1.5 text-app-border">·</span>
                               {sourceLabel}
                             </>
                           }
@@ -384,7 +384,7 @@ export default function MemberDetailDrawer({
                     })}
                   </SlidePanelList>
                   {olderPaymentCount > 0 && (
-                    <p className="mt-2 text-right text-xs text-slate-400 dark:text-app-muted">
+                    <p className="mt-2 text-right text-xs text-app-muted">
                       {t('drawer.olderPayments', { count: olderPaymentCount, amount: currency(totalPaid) })}
                     </p>
                   )}

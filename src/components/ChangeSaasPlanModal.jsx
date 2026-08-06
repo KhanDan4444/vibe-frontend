@@ -39,7 +39,7 @@ export default function ChangeSaasPlanModal({
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
-  const fc = (field) => inputClass(`${FORM_INPUT_CLASS} dark:bg-app-raised dark:text-app-text cursor-pointer`, fieldErrors, field);
+  const fc = (field) => inputClass(`${FORM_INPUT_CLASS} cursor-pointer`, fieldErrors, field);
   const [amountEdited, setAmountEdited] = useState(false);
   const [customTermStart, setCustomTermStart] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -154,20 +154,20 @@ export default function ChangeSaasPlanModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalBody}relative`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="flex items-center gap-2 mb-1 pr-8">
           <ArrowLeftRight className="h-5 w-5 text-teal-700" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('modals.changeSaasPlan.title')}</h2>
+          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changeSaasPlan.title')}</h2>
         </div>
-        <p className="text-sm text-slate-500 dark:text-app-muted mb-4">
+        <p className="text-sm text-app-muted mb-4">
           {t('modals.changeSaasPlan.subtitle', { name: gymName })}
         </p>
 
@@ -213,7 +213,7 @@ export default function ChangeSaasPlanModal({
             <select
               required
               disabled={otherPlans.length === 0}
-              className={`${fc('planId')} disabled:bg-slate-50 disabled:dark:bg-app-surface disabled:dark:text-app-muted`}
+              className={`${fc('planId')}disabled:bg-app-surface disabled:text-app-muted`}
               value={planId}
               onChange={(e) => {
                 setPlanId(e.target.value);
@@ -256,7 +256,7 @@ export default function ChangeSaasPlanModal({
               <p className="font-medium">
                 {gym.isUnpaid ? t('modals.changeSaasPlan.switchBeforePayment') : t('modals.changeSaasPlan.switchOnCurrentLicense')}
               </p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">
+              <p className="mt-1 text-xs text-app-muted">
                 {t('modals.changeSaasPlan.licenseStarted', { date: formatDisplayDate(licenseStart) })}
                 {gym.isUnpaid
                   ? ` ${t('modals.changeSaasPlan.unpaidPickPlan')}`
@@ -285,7 +285,7 @@ export default function ChangeSaasPlanModal({
                 }}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
-              <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">
+              <p className="mt-1 text-xs text-app-muted">
                 {t('modals.changeSaasPlan.freshLicenseHint')}
               </p>
             </div>
@@ -305,7 +305,7 @@ export default function ChangeSaasPlanModal({
               }}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
-            <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">
+            <p className="mt-1 text-xs text-app-muted">
               {t('modals.changeSaasPlan.paymentCollectedHint')}
             </p>
           </div>
@@ -342,7 +342,7 @@ export default function ChangeSaasPlanModal({
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
               {upgradeHint?.freshTerm ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedFreshTermLicense', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
@@ -350,14 +350,14 @@ export default function ChangeSaasPlanModal({
                   })}
                 </p>
               ) : upgradeHint?.prePayment ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedPrePayment', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
                   })}
                 </p>
               ) : upgradeHint?.isDowngrade ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedDowngradeLicense', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     endDate: formatDisplayDate(gym.saasEndDate) || '—',
@@ -365,7 +365,7 @@ export default function ChangeSaasPlanModal({
                   })}
                 </p>
               ) : upgradeHint ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedUpgradeLicense', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     newPrice: formatMoney(upgradeHint.newPlanPrice),
@@ -392,7 +392,7 @@ export default function ChangeSaasPlanModal({
             <div>
               <label className="form-label">{t('modals.member.method')}</label>
               <select
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
+                className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -409,7 +409,7 @@ export default function ChangeSaasPlanModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <input
               type="text"
-              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none"
+              className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none"
               placeholder={t('modals.changeSaasPlan.referencePlaceholder')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

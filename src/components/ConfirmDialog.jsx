@@ -38,10 +38,10 @@ export default function ConfirmDialog({
             <AlertTriangle className="h-5 w-5" />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 id="confirm-dialog-title" className="text-base font-bold text-slate-900 dark:text-app-text-strong">
+            <h3 id="confirm-dialog-title" className="text-base font-bold text-app-text-strong">
               {title}
             </h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-app-muted">{message}</p>
+            <p className="mt-2 text-sm text-app-muted">{message}</p>
           </div>
         </div>
       </div>

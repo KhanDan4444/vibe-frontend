@@ -16,7 +16,7 @@ export function paymentSourceLabel(source) {
 
 /** Quiet outline for all sources — text carries meaning, not color. */
 export function paymentSourceStyle(_source) {
-  return 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-app-surface dark:text-app-muted dark:border-app-border-subtle';
+  return 'bg-app-surface text-app-muted border-app-border-subtle';
 }
 
 /**
@@ -24,5 +24,5 @@ export function paymentSourceStyle(_source) {
  * not competing color codes.
  */
 export function paymentMethodStyle(_method) {
-  return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-app-surface dark:text-app-text dark:border-app-border-subtle';
+  return 'bg-app-surface text-app-text border-app-border-subtle';
 }

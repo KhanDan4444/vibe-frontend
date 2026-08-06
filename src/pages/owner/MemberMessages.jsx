@@ -80,7 +80,7 @@ export default function MemberMessages() {
             type="button"
             onClick={loadMessages}
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-app-border-subtle bg-app-raised px-4 py-2.5 text-sm font-semibold text-app-text hover:bg-app-surface/60 disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             {t('common.refresh')}
@@ -89,14 +89,14 @@ export default function MemberMessages() {
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <label htmlFor="sms-type-filter" className="text-sm font-medium text-slate-600 dark:text-app-text">
+        <label htmlFor="sms-type-filter" className="text-sm font-medium text-app-text">
           {t('smsLog.filterLabel')}
         </label>
         <select
           id="sms-type-filter"
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+          className="rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
         >
           {SMS_TYPE_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -109,7 +109,7 @@ export default function MemberMessages() {
       {error ? <ErrorRetryBanner message={error} onRetry={() => void loadMessages()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="lg:hidden divide-y divide-app-border-subtle">
           {loading && items.length === 0 ? (
             <AdminListSkeleton rows={5} />
           ) : items.length > 0 ? (
@@ -118,21 +118,21 @@ export default function MemberMessages() {
                 key={row.id}
                 type="button"
                 onClick={() => openMember(row.member_id)}
-                className="flex w-full gap-3 p-4 text-left active:bg-slate-50 dark:active:bg-app-surface/60"
+                className="flex w-full gap-3 p-4 text-left active:bg-app-surface/60"
               >
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                   <MessageSquare className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-slate-900 dark:text-app-text-strong">{row.member_name}</p>
-                  <p className="mt-0.5 text-sm text-slate-600 dark:text-app-text">
+                  <p className="font-semibold text-app-text-strong">{row.member_name}</p>
+                  <p className="mt-0.5 text-sm text-app-text">
                     {formatSmsMessageType(t, row.message_type)}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">
+                  <p className="mt-1 text-xs text-app-muted">
                     {row.recipient_phone || row.member_phone || '—'} · {formatDisplayDateTime(row.sent_at)}
                   </p>
                   {showBranchColumn && row.branch_name && (
-                    <span className="mt-2 inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-app-surface dark:text-app-text">
+                    <span className="mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold bg-app-surface text-app-text">
                       {row.branch_name}
                     </span>
                   )}
@@ -170,17 +170,17 @@ export default function MemberMessages() {
                     className={`cursor-pointer ${tableRowHover}`}
                     onClick={() => openMember(row.member_id)}
                   >
-                    <td className="font-medium text-slate-900 dark:text-app-text-strong">{row.member_name}</td>
-                    <td className="text-slate-600 dark:text-app-text">{row.recipient_phone || row.member_phone || '—'}</td>
+                    <td className="font-medium text-app-text-strong">{row.member_name}</td>
+                    <td className="text-app-text">{row.recipient_phone || row.member_phone || '—'}</td>
                     <td>
                       <span className="inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                         {formatSmsMessageType(t, row.message_type)}
                       </span>
                     </td>
                     {showBranchColumn && (
-                      <td className="text-slate-600 dark:text-app-text">{row.branch_name || '—'}</td>
+                      <td className="text-app-text">{row.branch_name || '—'}</td>
                     )}
-                    <td className="whitespace-nowrap text-slate-600 dark:text-app-text">
+                    <td className="whitespace-nowrap text-app-text">
                       {formatDisplayDateTime(row.sent_at)}
                     </td>
                   </tr>

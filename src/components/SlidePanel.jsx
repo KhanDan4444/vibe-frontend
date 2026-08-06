@@ -40,22 +40,22 @@ export function SlidePanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="slide-panel-title"
-        className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-slate-200 dark:border-app-border-subtle bg-white shadow-2xl animate-in slide-in-from-right duration-200  dark:bg-app-surface`}
+        className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-app-border-subtle bg-app-surface shadow-2xl animate-in slide-in-from-right duration-200`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-100 px-4 py-4 dark:border-app-border-subtle sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b px-4 py-4 border-app-border-subtle sm:px-6">
           <div className="min-w-0 flex-1">
-            <h2 id="slide-panel-title" className="text-lg font-bold text-slate-900 dark:text-app-text-strong">
+            <h2 id="slide-panel-title" className="text-lg font-bold text-app-text-strong">
               {title}
             </h2>
-            {subtitle && <p className="mt-0.5 text-xs text-slate-500 dark:text-app-muted">{subtitle}</p>}
+            {subtitle && <p className="mt-0.5 text-xs text-app-muted">{subtitle}</p>}
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {headerAction}
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-app-text-strong"
+              className="rounded-lg p-1.5 text-app-muted hover:bg-app-raised hover:text-app-text-strong"
               aria-label={t('aria.closePanel')}
             >
               <X className="h-5 w-5" />
@@ -66,7 +66,7 @@ export function SlidePanel({
         <div className="safe-bottom flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">{children}</div>
 
         {footer && (
-          <div className="safe-bottom shrink-0 border-t border-slate-200 bg-white px-4 py-3 dark:border-app-border-subtle dark:bg-app-surface sm:px-6 sm:py-3.5">
+          <div className="safe-bottom shrink-0 border-t bg-app-surface px-4 py-3 border-app-border-subtle sm:px-6 sm:py-3.5">
             {footer}
           </div>
         )}
@@ -87,10 +87,10 @@ export function SlidePanelProfileHeader({ name, lines = [], badge, avatar }) {
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-xl font-bold text-slate-900 dark:text-app-text-strong">{name}</h3>
+        <h3 className="truncate text-xl font-bold text-app-text-strong">{name}</h3>
         {lines.map((line) => (
-          <div key={line.key || line.text} className="mt-1 flex items-center gap-2 text-sm text-slate-500 dark:text-app-muted">
-            {line.icon && <line.icon className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />}
+          <div key={line.key || line.text} className="mt-1 flex items-center gap-2 text-sm text-app-muted">
+            {line.icon && <line.icon className="h-3.5 w-3.5 shrink-0 text-app-muted" aria-hidden />}
             <span className={line.mono ? 'font-mono' : ''}>{line.text}</span>
           </div>
         ))}
@@ -104,7 +104,7 @@ export function SlidePanelSection({ title, action, children, className = '' }) {
   return (
     <section className={className}>
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-app-muted">{title}</h4>
+        <h4 className="text-xs font-bold uppercase tracking-wider text-app-muted">{title}</h4>
         {action}
       </div>
       {children}
@@ -114,19 +114,19 @@ export function SlidePanelSection({ title, action, children, className = '' }) {
 
 export function SlidePanelCard({ children }) {
   return (
-    <div className="space-y-0.5 border-t border-slate-100 pt-1 dark:border-app-border-subtle">
+    <div className="space-y-0.5 border-t pt-1 border-app-border-subtle">
       {children}
     </div>
   );
 }
 
 /** Label / value row — bare icon, no pastel tile. */
-export function SlidePanelRow({ icon: Icon, label, value, valueClassName = 'text-sm font-medium text-slate-900 dark:text-app-text-strong' }) {
+export function SlidePanelRow({ icon: Icon, label, value, valueClassName = 'text-sm font-medium text-app-text-strong' }) {
   return (
     <div className="flex items-center justify-between gap-4 px-0 py-2">
       <div className="flex min-w-0 items-center gap-2">
-        <Icon className="h-4 w-4 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />
-        <span className="text-sm font-medium text-slate-600 dark:text-app-text">{label}</span>
+        <Icon className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />
+        <span className="text-sm font-medium text-app-text">{label}</span>
       </div>
       <span className={`shrink-0 text-right ${valueClassName}`}>{value}</span>
     </div>
@@ -135,7 +135,7 @@ export function SlidePanelRow({ icon: Icon, label, value, valueClassName = 'text
 
 export function SlidePanelEmpty({ children }) {
   return (
-    <p className="rounded-xl border border-dashed border-slate-200 py-8 text-center text-sm text-slate-400 dark:border-app-border-subtle dark:text-app-muted">
+    <p className="rounded-xl border border-dashed py-8 text-center text-sm border-app-border-subtle text-app-muted">
       {children}
     </p>
   );
@@ -151,7 +151,7 @@ export function SlidePanelTotalBadge({ children }) {
 
 export function SlidePanelList({ children }) {
   return (
-    <ul className="divide-y divide-slate-100 dark:divide-app-border-subtle">
+    <ul className="divide-y divide-app-border-subtle">
       {children}
     </ul>
   );
@@ -161,10 +161,10 @@ export function SlidePanelListItem({ icon: Icon, title, subtitle, trailing }) {
   return (
     <li className="flex items-center justify-between gap-3 px-0 py-3">
       <div className="flex min-w-0 items-center gap-2.5">
-        {Icon && <Icon className="h-4 w-4 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />}
+        {Icon && <Icon className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />}
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-slate-900 dark:text-app-text-strong">{title}</p>
-          {subtitle && <p className="text-xs text-slate-500 dark:text-app-muted">{subtitle}</p>}
+          <p className="text-sm font-semibold text-app-text-strong">{title}</p>
+          {subtitle && <p className="text-xs text-app-muted">{subtitle}</p>}
         </div>
       </div>
       {trailing}
@@ -232,11 +232,11 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-teal-600/40 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 dark:border-app-border-subtle dark:bg-app-raised dark:hover:border-teal-500/40 dark:hover:bg-app-surface disabled:opacity-50 ${className}`}
+        className={`flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border bg-app-raised px-3 py-2 text-left transition hover:border-teal-600/40 hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 border-app-border-subtle dark:hover:border-teal-500/40 disabled:opacity-50 ${className}`}
         {...props}
       >
-        {Icon && <Icon className="h-4 w-4 shrink-0 text-slate-500 dark:text-app-muted" aria-hidden />}
-        <span className="text-sm font-semibold leading-tight text-slate-800 dark:text-app-text-strong">
+        {Icon && <Icon className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />}
+        <span className="text-sm font-semibold leading-tight text-app-text-strong">
           {children}
         </span>
       </button>
@@ -262,7 +262,7 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-rose-200/90 bg-white text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 dark:border-rose-500/30 dark:bg-app-raised dark:text-rose-400 dark:hover:bg-rose-500/10 disabled:opacity-50 ${className}`}
+        className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-md border border-rose-200/90 bg-app-raised text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 dark:border-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-500/10 disabled:opacity-50 ${className}`}
         {...props}
       >
         {Icon && <Icon className="h-4 w-4" aria-hidden />}

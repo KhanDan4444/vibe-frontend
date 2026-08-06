@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString, clampIsoDate, isDateRangeValid } from '../utils/date';
 
 const DEFAULT_CLASS =
-  'block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text';
+  'block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text-strong focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20';
 
 const POPOVER_MIN_WIDTH = 288;
 const POPOVER_EST_HEIGHT = 320;
@@ -118,7 +118,7 @@ function DatePickerPopover({
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <p className="text-sm font-semibold text-slate-800 dark:text-app-text-strong">{monthLabel}</p>
+          <p className="text-sm font-semibold text-app-text-strong">{monthLabel}</p>
           <button
             type="button"
             className="date-picker-nav"
@@ -153,9 +153,9 @@ function DatePickerPopover({
                 type="button"
                 disabled={disabled}
                 onClick={() => onSelect(iso)}
-                className={`date-picker-day ${selected ? 'date-picker-day--selected' : ''} ${
-                  today && !selected ? 'date-picker-day--today' : ''
-                } ${disabled ? 'date-picker-day--disabled' : ''}`}
+                className={`date-picker-day${selected ? 'date-picker-day--selected' : ''} ${
+ today && !selected ? 'date-picker-day--today' : ''
+ } ${disabled ? 'date-picker-day--disabled' : ''}`}
               >
                 {parseLocalDate(iso)?.getDate()}
               </button>
@@ -229,12 +229,12 @@ export function DateField({
         onClick={() => {
           if (!pickerDisabled) setOpen((current) => !current);
         }}
-        className={`flex w-full min-h-[42px] items-center justify-between gap-2 text-left ${
-          pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-        } ${className}`}
+        className={`flex w-full min-h-[42px] items-center justify-between gap-2 text-left${
+ pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+ } ${className}`}
       >
-        <span className={!clampedValue ? 'text-slate-400 dark:text-app-muted' : ''}>{display}</span>
-        <Calendar className="h-4 w-4 shrink-0 text-slate-400 dark:text-app-muted" aria-hidden />
+        <span className={!clampedValue ? 'text-app-muted' : ''}>{display}</span>
+        <Calendar className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />
       </button>
 
       {!rangeValid ? (

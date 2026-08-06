@@ -84,15 +84,15 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-50">
-      <div className={`${modalBody} relative sm:min-h-[280px]`}>
+      <div className={`${modalBody}relative sm:min-h-[280px]`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-app-text dark:hover:bg-app-surface/80 sm:right-0 sm:top-0"
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text sm:right-0 sm:top-0"
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong mb-6 pr-8">{modalTitle}</h2>
+        <h2 className="text-lg font-bold text-app-text-strong mb-6 pr-8">{modalTitle}</h2>
 
         {validationError && (
           <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
@@ -157,7 +157,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
             <div>
               <label className="form-label">{t('modals.plan.description')}</label>
               <textarea
-                className="mt-1 block w-full h-20 resize-none rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-teal-600 focus:outline-none"
+                className="mt-1 block w-full h-20 resize-none rounded-lg border border-app-border-subtle px-3 py-2 text-sm text-app-text-strong focus:border-teal-600 focus:outline-none"
                 placeholder={t('modals.plan.descriptionPlaceholder')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

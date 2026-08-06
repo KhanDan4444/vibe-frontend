@@ -16,7 +16,7 @@ export default function BranchSwitcher({ branches, selectedBranchId, onChange, c
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <MapPin className="hidden h-4 w-4 shrink-0 text-slate-400 sm:block dark:text-app-muted" aria-hidden />
+      <MapPin className="hidden h-4 w-4 shrink-0 text-app-muted sm:block" aria-hidden />
       <label className="sr-only" htmlFor="branch-switcher">
         {t('branch.label')}
       </label>

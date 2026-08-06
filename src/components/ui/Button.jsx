@@ -5,9 +5,9 @@ const VARIANTS = {
   primary:
     'bg-teal-700 text-white hover:bg-teal-800 focus-visible:ring-teal-600/30 dark:bg-teal-600 dark:hover:bg-teal-500',
   secondary:
-    'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-300/40 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text dark:hover:bg-app-surface',
+    'border border-app-border-subtle bg-app-raised text-app-text hover:bg-app-surface focus-visible:ring-app-border/40',
   ghost:
-    'text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-300/40 dark:text-app-muted dark:hover:bg-app-raised',
+    'text-app-muted hover:bg-app-raised focus-visible:ring-app-border/40',
   danger:
     'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500/30',
 };

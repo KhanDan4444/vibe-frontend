@@ -337,6 +337,19 @@
     "gymSubscribed_one": "Jimii {{count}} galmaa'era",
     "gymSubscribed_other": "Jimiilee {{count}} galmaa'aniiru"
   },
+  "errors": {
+    "loadPayments": "Kaffaltiiwwan fe'uun hin milkoofne",
+    "exportFailed": "Gadi baasuu hin milkoofne",
+    "loadBranches": "Dameewwan fe'uun hin milkoofne",
+    "saveBranch": "Damee kuusuu hin milkoofne",
+    "loadActivity": "Sochii fe'uun hin milkoofne",
+    "loadTeam": "Garee fe'uun hin milkoofne",
+    "createStaff": "Akkaawuntii hojjettootaa uumuu hin milkoofne",
+    "updateStaff": "Akkaawuntii hojjettootaa haaromsuu hin milkoofne",
+    "loadMembers": "Miseensota fe'uun hin milkoofne",
+    "loadMemberReport": "Gabaasa miseensaa fe'uun hin milkoofne",
+    "loadRevenueReport": "Gabaasa galii fe'uun hin milkoofne"
+  },
   "pagination": {
     "showing": "{{from}}–{{to}} kan {{total}} irraa argarsiisaa jira",
     "prev": "Duraa",

@@ -46,7 +46,7 @@ export default function ChangePlanModal({
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
-  const fc = (field) => inputClass(`${FORM_INPUT_CLASS} dark:bg-app-raised dark:text-app-text cursor-pointer`, fieldErrors, field);
+  const fc = (field) => inputClass(`${FORM_INPUT_CLASS} cursor-pointer`, fieldErrors, field);
   const [amountEdited, setAmountEdited] = useState(false);
   const [customTermStart, setCustomTermStart] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -178,20 +178,20 @@ export default function ChangePlanModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalBody}relative`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="flex items-center gap-2 mb-1 pr-8">
           <ArrowLeftRight className="h-5 w-5 text-teal-700" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong">{t('modals.changePlan.title')}</h2>
+          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changePlan.title')}</h2>
         </div>
-        <p className="text-sm text-slate-500 dark:text-app-muted mb-4">
+        <p className="text-sm text-app-muted mb-4">
           {t('modals.changePlan.subtitle', { name: member.name })}
         </p>
 
@@ -237,7 +237,7 @@ export default function ChangePlanModal({
             <select
               required
               disabled={otherPlans.length === 0}
-              className={`${fc('planId')} disabled:bg-slate-50 disabled:dark:bg-app-surface disabled:dark:text-app-muted`}
+              className={`${fc('planId')}disabled:bg-app-surface disabled:text-app-muted`}
               value={planId}
               onChange={(e) => {
                 setPlanId(e.target.value);
@@ -280,7 +280,7 @@ export default function ChangePlanModal({
               <p className="font-medium">
                 {member.isUnpaid ? t('modals.changePlan.switchBeforePayment') : t('modals.changePlan.switchOnCurrentTerm')}
               </p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">
+              <p className="mt-1 text-xs text-app-muted">
                 {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
                 {member.isUnpaid
                   ? ` ${t('modals.changePlan.unpaidPickPlan')}`
@@ -309,7 +309,7 @@ export default function ChangePlanModal({
                 }}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
-              <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">
+              <p className="mt-1 text-xs text-app-muted">
                 {t('modals.changePlan.freshTermHint')}
               </p>
             </div>
@@ -329,7 +329,7 @@ export default function ChangePlanModal({
               }}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
-            <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">
+            <p className="mt-1 text-xs text-app-muted">
               {t('modals.changePlan.paymentCollectedHint')}
             </p>
             {hasChangePlanPaymentOnDate ? (
@@ -371,7 +371,7 @@ export default function ChangePlanModal({
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
               {upgradeHint?.freshTerm ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedFreshTerm', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
@@ -379,14 +379,14 @@ export default function ChangePlanModal({
                   })}
                 </p>
               ) : upgradeHint?.prePayment ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedPrePayment', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
                   })}
                 </p>
               ) : upgradeHint?.isDowngrade ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedDowngradeTerm', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     endDate: formatDisplayDate(member.endDate),
@@ -394,7 +394,7 @@ export default function ChangePlanModal({
                   })}
                 </p>
               ) : upgradeHint ? (
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+                <p className="mt-1.5 text-xs text-app-muted">
                   {t('modals.billing.suggestedUpgradeTerm', {
                     amount: formatMoney(upgradeHint.suggestedAmount),
                     newPrice: formatMoney(upgradeHint.newPlanPrice),
@@ -406,11 +406,11 @@ export default function ChangePlanModal({
                     planName: currentPlan?.name || '—',
                   })}
                   {!amountEdited && (
-                    <span className="text-slate-400 dark:text-app-muted"> {t('modals.billing.suggestedUpgradeAdjust')}</span>
+                    <span className="text-app-muted"> {t('modals.billing.suggestedUpgradeAdjust')}</span>
                   )}
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">{t('modals.changePlan.amountCollectedHint')}</p>
+                <p className="mt-1 text-xs text-app-muted">{t('modals.changePlan.amountCollectedHint')}</p>
               )}
               {upgradeHint && amountEdited && (
                 <button
@@ -430,7 +430,7 @@ export default function ChangePlanModal({
             <div>
               <label className="form-label">{t('modals.member.method')}</label>
               <select
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >

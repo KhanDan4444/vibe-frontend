@@ -16,7 +16,7 @@ export default function PaymentMethodBadge({ method, className = '' }) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-semibold ${paymentMethodStyle(method)} ${className}`}
     >
-      <Icon className="h-3.5 w-3.5 shrink-0 text-slate-500 dark:text-app-muted" aria-hidden />
+      <Icon className="h-3.5 w-3.5 shrink-0 text-app-muted" aria-hidden />
       {translatePaymentMethod(method)}
     </span>
   );

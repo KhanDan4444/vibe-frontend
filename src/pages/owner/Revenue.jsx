@@ -29,7 +29,7 @@ import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
-import { tableRowHover, selectSurface } from '../../utils/surfaceClasses';
+import { tableRowHover, selectSurface, iconActionIdle, iconActionDanger } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
@@ -115,7 +115,7 @@ export default function Revenue() {
     try {
       const res = await getPayments(apiFetch, buildQueryParams());
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to load payments');
+      if (!res.ok) throw new Error(data.error || t('errors.loadPayments'));
       setPayments((data.items || []).map(mapPaymentFromApi).filter(Boolean));
       setTotal(data.total ?? 0);
       setTotalPages(data.totalPages ?? 1);
@@ -194,7 +194,7 @@ export default function Revenue() {
     try {
       const res = await getPayments(apiFetch, buildQueryParams({ page: 1, limit: 5000 }));
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Export failed');
+      if (!res.ok) throw new Error(data.error || t('errors.exportFailed'));
       const rows = (data.items || []).map(mapPaymentFromApi).filter(Boolean);
       const header = [exportColumn('date'), exportColumn('member'), exportColumn('amount'), exportColumn('source'), exportColumn('method')].join(',');
       const csvRows = rows.map((p) =>
@@ -227,7 +227,7 @@ export default function Revenue() {
 
       <Card className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="text-sm font-medium text-slate-700 dark:text-app-text">{t('period.reportPeriod')}</label>
+          <label className="text-sm font-medium text-app-text">{t('period.reportPeriod')}</label>
           <select
             className={`ui-select ${selectSurface}`}
             value={periodPreset}
@@ -241,14 +241,14 @@ export default function Revenue() {
         {periodPreset === 'custom' && (
           <div className="flex flex-wrap items-center gap-2">
             <DateField
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
+              className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
               value={customStart}
               onChange={setCustomStart}
               max={boundsForCustomRangeFrom(customEnd).max}
             />
-            <span className="text-slate-400">{t('common.to')}</span>
+            <span className="text-app-muted">{t('common.to')}</span>
             <DateField
-              className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm"
+              className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
               value={customEnd}
               onChange={setCustomEnd}
               min={boundsForCustomRangeTo(customStart).min}
@@ -272,9 +272,9 @@ export default function Revenue() {
           <ul className="space-y-2">
             {attentionMembers.map((member) => (
               <li key={member.id} className="admin-alert-amber-item sm:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
-                <span className="min-w-0 truncate font-medium text-slate-900 dark:text-app-text-strong">{member.name}</span>
+                <span className="min-w-0 truncate font-medium text-app-text-strong">{member.name}</span>
                 <StatusBadge status={member.status} />
-                <span className="text-xs text-slate-500 dark:text-app-muted">{t('pages.revenue.endsOn', { date: formatDisplayDate(member.endDate) })}</span>
+                <span className="text-xs text-app-muted">{t('pages.revenue.endsOn', { date: formatDisplayDate(member.endDate) })}</span>
                 <button
                   type="button"
                   onClick={() =>
@@ -299,13 +299,13 @@ export default function Revenue() {
           <>
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">{t('pages.revenue.periodRevenue', { period: periodLabel })}</span>
+            <span className="text-sm font-medium text-app-muted">{t('pages.revenue.periodRevenue', { period: periodLabel })}</span>
             <span className="rounded-lg bg-emerald-50 p-2 text-emerald-600 dark:bg-emerald-500/12 dark:text-emerald-400">
               <TrendingUp className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-2 flex items-baseline">
-            <span className="text-3xl font-bold text-slate-900 dark:text-app-text-strong">
+            <span className="text-3xl font-bold text-app-text-strong">
               {formatMoney(periodRevenue)}
             </span>
             {trendStr && (
@@ -318,26 +318,26 @@ export default function Revenue() {
 
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">{t('metrics.transactions')}</span>
+            <span className="text-sm font-medium text-app-muted">{t('metrics.transactions')}</span>
             <span className="rounded-lg bg-teal-50 p-2 text-teal-700 dark:bg-teal-600/12 dark:text-teal-400">
               <CreditCard className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-2">
-            <span className="text-3xl font-bold text-slate-900 dark:text-app-text-strong">{transactionCount}</span>
-            <span className="ml-2 text-xs text-slate-400 font-medium">{t('pages.revenue.inSelectedPeriod')}</span>
+            <span className="text-3xl font-bold text-app-text-strong">{transactionCount}</span>
+            <span className="ml-2 text-xs text-app-muted font-medium">{t('pages.revenue.inSelectedPeriod')}</span>
           </div>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-slate-500">{t('metrics.averagePayment')}</span>
-            <span className="rounded-lg bg-slate-50 p-2 text-slate-600 dark:bg-app-surface dark:text-app-muted">
+            <span className="text-sm font-medium text-app-muted">{t('metrics.averagePayment')}</span>
+            <span className="rounded-lg p-2 text-app-muted bg-app-surface">
               <DollarSign className="h-5 w-5" />
             </span>
           </div>
           <div className="mt-2">
-            <span className="text-3xl font-bold text-slate-900 dark:text-app-text-strong">
+            <span className="text-3xl font-bold text-app-text-strong">
               {formatMoney(averagePayment)}
             </span>
           </div>
@@ -348,12 +348,12 @@ export default function Revenue() {
 
       {Object.keys(byMethod).length > 0 && (
         <Card className="p-4">
-          <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          <h3 className="mb-2.5 text-sm font-semibold text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
+          <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
             {Object.entries(byMethod).map(([method, amount]) => (
               <div key={method} className="admin-method-chip">
                 <PaymentMethodBadge method={method} />
-                <p className="mt-2 text-lg font-bold text-slate-900 dark:text-app-text-strong">
+                <p className="mt-1.5 text-lg font-bold text-app-text-strong">
                   {formatMoney(amount)}
                 </p>
               </div>
@@ -364,12 +364,12 @@ export default function Revenue() {
 
       <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-md">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
             <Search className="h-5 w-5" />
           </span>
           <input
             type="text"
-            className="admin-field block w-full pl-10 pr-4 placeholder-slate-400"
+            className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
             placeholder={t('pages.revenue.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -405,49 +405,48 @@ export default function Revenue() {
       </Card>
 
       {canManageRevenue && (
-        <p className="text-xs text-slate-400 -mt-2">
+        <p className="text-xs text-app-muted -mt-2">
           {t('pages.revenue.editDeleteHint')}
         </p>
       )}
       <Card className="overflow-hidden">
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="lg:hidden divide-y divide-app-border-subtle">
           {listLoading ? (
             <AdminListSkeleton rows={5} />
           ) : displayedPayments.length > 0 ? (
             displayedPayments.map((payment) => (
-              <div key={payment.id} className="p-4">
+              <div key={payment.id} className="p-3.5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</p>
+                    <p className="font-semibold text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</p>
                     {showBranchColumn && payment.branchName && (
-                      <p className="text-xs text-slate-400">{payment.branchName}</p>
+                      <p className="text-xs text-app-muted">{payment.branchName}</p>
                     )}
-                    <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
-                      <Calendar className="h-3.5 w-3.5 shrink-0" />
-                      {formatDisplayDate(payment.date)}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      <span
-                        className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-semibold border ${paymentSourceStyle(payment.source)}`}
-                      >
-                        {paymentSourceLabel(payment.source)}
+                    <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-app-muted">
+                      <span className="inline-flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5 shrink-0" />
+                        {formatDisplayDate(payment.date)}
                       </span>
+                      <span aria-hidden>·</span>
+                      <span>{paymentSourceLabel(payment.source)}</span>
+                    </p>
+                    <div className="mt-1.5">
                       <PaymentMethodBadge method={payment.method} />
                     </div>
                   </div>
-                  <p className="shrink-0 text-lg font-bold text-slate-900 dark:text-app-text-strong">
+                  <p className="shrink-0 text-base font-bold text-app-text-strong">
                     {formatMoney(payment.amount)}
                   </p>
                 </div>
                 {canManageRevenue && (
-                  <div className="admin-row-actions mt-3">
+                  <div className="admin-row-actions mt-2">
                     <button
                       type="button"
                       onClick={() => {
                         setError('');
                         setModalState({ isOpen: true, payment });
                       }}
-                      className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                      className={iconActionIdle}
                       title={t('pages.revenue.editTransaction')}
                     >
                       <Edit className="h-4 w-4" />
@@ -455,7 +454,7 @@ export default function Revenue() {
                     <button
                       type="button"
                       onClick={() => setPaymentToDelete(payment)}
-                      className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                      className={iconActionDanger}
                       title={t('pages.revenue.deleteTransaction')}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -496,13 +495,13 @@ export default function Revenue() {
               ) : displayedPayments.length > 0 ? (
                 displayedPayments.map((payment) => (
                   <tr key={payment.id} className={tableRowHover}>
-                    <td className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</td>
+                    <td className="truncate font-semibold text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</td>
                     {showBranchColumn && (
-                      <td className="truncate text-slate-600 dark:text-app-text">{payment.branchName || '—'}</td>
+                      <td className="truncate text-app-text">{payment.branchName || '—'}</td>
                     )}
-                    <td className="whitespace-nowrap text-slate-500">
+                    <td className="whitespace-nowrap text-app-muted">
                       <span className="inline-flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4 shrink-0 text-slate-400" />
+                        <Calendar className="h-4 w-4 shrink-0 text-app-muted" />
                         {formatDisplayDate(payment.date)}
                       </span>
                     </td>
@@ -516,7 +515,7 @@ export default function Revenue() {
                     <td>
                       <PaymentMethodBadge method={payment.method} />
                     </td>
-                    <td className="font-bold whitespace-nowrap text-slate-900 dark:text-app-text-strong">
+                    <td className="font-bold whitespace-nowrap text-app-text-strong">
                       {formatMoney(payment.amount)}
                     </td>
                     {canManageRevenue && (
@@ -527,14 +526,14 @@ export default function Revenue() {
                               setError('');
                               setModalState({ isOpen: true, payment });
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                            className={iconActionIdle}
                             title={t('pages.revenue.editTransaction')}
                           >
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => setPaymentToDelete(payment)}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                            className={iconActionDanger}
                             title={t('pages.revenue.deleteTransaction')}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -559,7 +558,7 @@ export default function Revenue() {
             </tbody>
           </table>
         </div>
-        <div className="border-t border-slate-100 px-4 py-3 dark:border-app-border-subtle">
+        <div className="border-t px-4 py-3 border-app-border-subtle">
         <PaginationControls
           page={page}
           totalPages={totalPages}

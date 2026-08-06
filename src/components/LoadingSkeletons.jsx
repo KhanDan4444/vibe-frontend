@@ -19,7 +19,7 @@ export function AdminTableRowsSkeleton({ rows = 6, cols = 5 }) {
 
 export function AdminListSkeleton({ rows = 5 }) {
   return (
-    <div className="divide-y divide-slate-100 dark:divide-app-border-subtle">
+    <div className="divide-y divide-app-border-subtle">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex items-start gap-3 p-4">
           <div className="app-skeleton h-8 w-8 shrink-0 rounded-full" />
@@ -45,7 +45,7 @@ export function PlanCardSkeleton() {
         <div className="app-skeleton h-3 w-full" />
         <div className="app-skeleton h-3 w-48" />
       </div>
-      <div className="mt-6 flex items-baseline justify-between border-t border-slate-100 pt-6 dark:border-app-border-subtle">
+      <div className="mt-6 flex items-baseline justify-between border-t border-app-border-subtle pt-6 dark:border-app-border-subtle">
         <div className="app-skeleton h-8 w-24" />
         <div className="app-skeleton h-6 w-16 rounded-full" />
       </div>

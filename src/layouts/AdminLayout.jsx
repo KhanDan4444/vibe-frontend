@@ -66,7 +66,7 @@ function SidebarLink({ active, to, onClick, icon: Icon, label, badge }) {
 
 function AdminRouteFallback() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-500 dark:text-app-muted">
+    <div className="flex min-h-[40vh] items-center justify-center text-sm text-app-muted">
       Loading…
     </div>
   );
@@ -122,7 +122,7 @@ export default function AdminLayout() {
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="-ml-1 rounded-lg p-2.5 text-slate-600 dark:text-app-text active:bg-slate-100 dark:text-app-text dark:active:bg-app-raised"
+          className="-ml-1 rounded-lg p-2.5 text-app-text active:bg-app-raised"
           aria-label={t('common.openMenu')}
         >
           <Menu className="h-6 w-6" />
@@ -160,7 +160,7 @@ export default function AdminLayout() {
         </div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-slate-200 p-6 lg:flex ${sidebarSurface}`}>
+      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col p-6 lg:flex ${sidebarSurface}`}>
         <div className="mb-7">
           <BrandLogo to="/admin/dashboard" />
         </div>

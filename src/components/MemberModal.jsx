@@ -383,18 +383,18 @@ export default function MemberModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalBody}relative`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-surface dark:hover:text-app-text-strong sm:right-3 sm:top-3"
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text dark:hover:text-app-text-strong sm:right-3 sm:top-3"
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="pr-10 text-lg font-bold text-slate-900 dark:text-app-text-strong mb-1">
+        <h2 className="pr-10 text-lg font-bold text-app-text-strong mb-1">
           {isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle')}
         </h2>
-        <p className="text-sm text-slate-500 dark:text-app-muted mb-5">
+        <p className="text-sm text-app-muted mb-5">
           {isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle')}
         </p>
 
@@ -459,14 +459,14 @@ export default function MemberModal({
               aria-invalid={Boolean(fieldErrors.phone)}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
-            <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">{t('modals.member.phoneHint')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.member.phoneHint')}</p>
           </div>
           {showBranchPicker && activeBranches.length > 0 && (
             <div>
               <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
               <select
                 required={!isEdit}
-                className={`${fc('branchId')} cursor-pointer`}
+                className={`${fc('branchId')}cursor-pointer`}
                 value={branchId}
                 onChange={(e) => setBranchId(e.target.value)}
               >
@@ -482,7 +482,7 @@ export default function MemberModal({
           {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
             <div>
               <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
-              <p className="mt-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 dark:border-app-border-subtle dark:bg-app-surface/70 dark:text-app-text">
+              <p className="mt-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text-strong">
                 {member.branchName || activeBranches.find((b) => b.id === member.branchId)?.name || '—'}
               </p>
             </div>
@@ -491,15 +491,15 @@ export default function MemberModal({
             <div>
               <label className={modalFieldLabel}>{t('modals.member.photo')}</label>
               <div className="mt-2 flex items-center gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-app-border-subtle dark:bg-app-surface">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-app-border-subtle bg-app-surface">
                   {photoPreview ? (
                     <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
                   ) : (
-                    <User className="h-7 w-7 text-slate-300 dark:text-app-muted" />
+                    <User className="h-7 w-7 text-app-muted" />
                   )}
                 </div>
                 <div className="min-w-0 flex-1 space-y-2">
-                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-app-border-subtle dark:text-app-text dark:hover:bg-app-surface/60">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-app-border-subtle px-3 py-2 text-sm font-medium text-app-text-strong hover:bg-app-surface">
                     <Upload className="h-4 w-4" />
                     {t('modals.member.uploadPhoto')}
                     <input
@@ -513,12 +513,12 @@ export default function MemberModal({
                     <button
                       type="button"
                       onClick={clearPhoto}
-                      className="block text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-app-muted dark:hover:text-app-text"
+                      className="block text-xs font-medium text-app-muted hover:text-app-text-strong"
                     >
                       {t('modals.member.removePhoto')}
                     </button>
                   )}
-                  <p className="text-xs text-slate-400 dark:text-app-muted">{t('modals.member.photoHint')}</p>
+                  <p className="text-xs text-app-muted">{t('modals.member.photoHint')}</p>
                 </div>
               </div>
             </div>
@@ -528,7 +528,7 @@ export default function MemberModal({
             <div>
               <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
               <select
-                className={`${fc('planId')} cursor-pointer`}
+                className={`${fc('planId')}cursor-pointer`}
                 value={planId}
                 onChange={(e) => {
                   setPlanId(e.target.value);
@@ -548,7 +548,7 @@ export default function MemberModal({
               <label className={modalFieldLabel}>{t('modals.member.startDate')}</label>
               <DateField
                 required
-                className={`${fc('startDate')} cursor-pointer`}
+                className={`${fc('startDate')}cursor-pointer`}
                 value={startDate}
                 max={boundsForEnrollStart(skipPayment).max}
                 onChange={(v) => {
@@ -564,23 +564,23 @@ export default function MemberModal({
           )}
 
           {isEdit && member && (
-            <div className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 dark:border-app-border-subtle dark:bg-app-surface/70 dark:text-app-text">
+            <div className="rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text">
               <p>
-                <span className="font-medium text-slate-700 dark:text-app-text-strong">{t('table.plan')}:</span>{' '}
+                <span className="font-medium text-app-text-strong">{t('table.plan')}:</span>{' '}
                 {plans.find((p) => p.id === member.planId)?.name || member.planName || '—'}
               </p>
               <p className="mt-1">
-                <span className="font-medium text-slate-700 dark:text-app-text-strong">{t('modals.member.term')}:</span> {formatDisplayDate(member.startDate)} → {formatDisplayDate(member.endDate)}
+                <span className="font-medium text-app-text-strong">{t('modals.member.term')}:</span> {formatDisplayDate(member.startDate)} → {formatDisplayDate(member.endDate)}
               </p>
             </div>
           )}
 
           {!isEdit && (
             <>
-              <div className="border-t border-slate-100 pt-4 dark:border-app-border-subtle">
+              <div className="border-t border-app-border-subtle pt-4">
                 <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <h3 className="text-sm font-semibold text-slate-800 dark:text-app-text-strong">{t('modals.member.paymentSection')}</h3>
-                  <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-slate-600 dark:text-app-text-strong">
+                  <h3 className="text-sm font-semibold text-app-text-strong">{t('modals.member.paymentSection')}</h3>
+                  <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-app-text-strong">
                     <input
                       type="checkbox"
                       checked={skipPayment}
@@ -588,7 +588,7 @@ export default function MemberModal({
                         setSkipPayment(e.target.checked);
                         markEnrollTouched();
                       }}
-                      className="rounded border-slate-300 dark:border-app-border-subtle dark:bg-app-raised"
+                      className="rounded border-app-border-subtle bg-app-raised"
                     />
                     {t('actions.skipPayLater')}
                   </label>
@@ -605,16 +605,16 @@ export default function MemberModal({
                           step="0.01"
                           required
                           readOnly
-                          className={`${fc('amount')} cursor-default bg-slate-50 text-slate-600 dark:bg-app-surface dark:text-app-muted`}
+                          className={`${fc('amount')}cursor-default bg-app-surface text-app-muted`}
                           value={amount}
                         />
-                        <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">{t('modals.member.amountFromPlan')}</p>
+                        <p className="mt-1 text-xs text-app-muted">{t('modals.member.amountFromPlan')}</p>
                         <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
                       </div>
                       <div>
                         <label className={modalFieldLabel}>{t('modals.member.method')}</label>
                         <select
-                          className={`${fc('method')} cursor-pointer`}
+                          className={`${fc('method')}cursor-pointer`}
                           value={method}
                           onChange={(e) => setMethod(e.target.value)}
                         >
@@ -632,7 +632,7 @@ export default function MemberModal({
                         required
                         min={boundsForPaymentOnTerm(startDate).min}
                         max={boundsForPaymentOnTerm(startDate).max}
-                        className={`${fc('paymentDate')} cursor-pointer`}
+                        className={`${fc('paymentDate')}cursor-pointer`}
                         value={paymentDate}
                         onChange={(v) => {
                           setPaymentDate(v);
@@ -642,7 +642,7 @@ export default function MemberModal({
                       />
                       <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
                       {startDate && (
-                        <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">
+                        <p className="mt-1 text-xs text-app-muted">
                           {t('modals.member.paymentDateHint', { date: formatDisplayDate(startDate) })}
                         </p>
                       )}

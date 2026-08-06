@@ -21,8 +21,8 @@ export default function OfflineStatusBar() {
   return (
     <div className="mb-6 space-y-3">
       {showOfflineBanner && (
-        <div className="flex items-start gap-3 rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm text-slate-700 dark:border-app-border-subtle dark:bg-app-raised dark:text-app-text">
-          <WifiOff className="mt-0.5 h-5 w-5 shrink-0 text-slate-500 dark:text-app-muted" />
+        <div className="flex items-start gap-3 rounded-xl border border-app-border-subtle bg-app-raised px-4 py-3 text-sm text-app-text">
+          <WifiOff className="mt-0.5 h-5 w-5 shrink-0 text-app-muted" />
           <div>
             <p className="font-semibold">{t('offline.bannerTitle')}</p>
             <p className="mt-0.5">{t('offline.bannerBody')}</p>

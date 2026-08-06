@@ -67,10 +67,10 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
 
   const renderGymCell = (row) => {
     if (!row.gym_name) {
-      return <span className="text-slate-500 dark:text-app-muted">—</span>;
+      return <span className="text-app-muted">—</span>;
     }
     if (!row.gym_id) {
-      return <span className="font-medium text-slate-900 dark:text-app-text-strong">{row.gym_name}</span>;
+      return <span className="font-medium text-app-text-strong">{row.gym_name}</span>;
     }
     return (
       <button
@@ -87,10 +87,10 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">
+          <h1 className="text-xl font-bold tracking-tight text-app-text-strong sm:text-2xl">
             {t('pages.adminGymMessages.title')}
           </h1>
-          <p className="text-sm text-slate-500 dark:text-app-muted">
+          <p className="text-sm text-app-muted">
             {t('pages.adminGymMessages.subtitle')}
           </p>
         </div>
@@ -98,7 +98,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
           type="button"
           onClick={loadMessages}
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-app-text hover:bg-slate-50 dark:hover:bg-app-surface/60 disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-app-border-subtle bg-app-raised px-4 py-2.5 text-sm font-semibold text-app-text hover:bg-app-surface/60 disabled:opacity-50"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           {t('common.refresh')}
@@ -107,14 +107,14 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
 
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex flex-wrap items-center gap-3">
-          <label htmlFor="admin-sms-gym-filter" className="text-sm font-medium text-slate-600 dark:text-app-text">
+          <label htmlFor="admin-sms-gym-filter" className="text-sm font-medium text-app-text">
             {t('table.gym')}
           </label>
           <select
             id="admin-sms-gym-filter"
             value={gymFilter}
             onChange={(e) => setGymFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
           >
             <option value="all">{t('filters.allGyms')}</option>
             {gyms.map((gym) => (
@@ -125,14 +125,14 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
           </select>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <label htmlFor="admin-sms-type-filter" className="text-sm font-medium text-slate-600 dark:text-app-text">
+          <label htmlFor="admin-sms-type-filter" className="text-sm font-medium text-app-text">
             {t('smsLog.filterLabel')}
           </label>
           <select
             id="admin-sms-type-filter"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+            className="rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
           >
             {ADMIN_SMS_TYPE_FILTER_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -153,7 +153,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
       )}
 
       <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+        <div className="lg:hidden divide-y divide-app-border-subtle">
           {loading && items.length === 0 ? (
             <p className="admin-panel-empty">{t('common.loading')}</p>
           ) : items.length > 0 ? (
@@ -163,13 +163,13 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                   <MessageSquare className="h-4 w-4" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-slate-900 dark:text-app-text-strong">
+                  <div className="font-semibold text-app-text-strong">
                     {row.gym_name || '—'}
                   </div>
-                  <p className="mt-0.5 text-sm text-slate-700 dark:text-app-text">
+                  <p className="mt-0.5 text-sm text-app-text">
                     {row.owner_name || '—'}
                   </p>
-                  <p className="mt-0.5 text-sm text-slate-600 dark:text-app-text">
+                  <p className="mt-0.5 text-sm text-app-text">
                     {formatAdminSmsMessageType(t, row.message_type)}
                   </p>
                   {row.otp_code && (
@@ -177,7 +177,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                       {t('smsLog.code')}: {row.otp_code}
                     </p>
                   )}
-                  <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">
+                  <p className="mt-1 text-xs text-app-muted">
                     {row.recipient_phone || row.gym_phone || '—'} · {formatDisplayDateTime(row.sent_at)}
                   </p>
                 </div>
@@ -211,8 +211,8 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                 items.map((row) => (
                   <tr key={row.id} className={tableRowHover}>
                     <td>{renderGymCell(row)}</td>
-                    <td className="text-slate-600 dark:text-app-text">{row.owner_name || '—'}</td>
-                    <td className="text-slate-600 dark:text-app-text">{row.recipient_phone || row.gym_phone || '—'}</td>
+                    <td className="text-app-text">{row.owner_name || '—'}</td>
+                    <td className="text-app-text">{row.recipient_phone || row.gym_phone || '—'}</td>
                     <td>
                       <span className="inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                         {formatAdminSmsMessageType(t, row.message_type)}
@@ -221,7 +221,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                     <td className="font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
                       {row.otp_code || '—'}
                     </td>
-                    <td className="whitespace-nowrap text-slate-600 dark:text-app-text">
+                    <td className="whitespace-nowrap text-app-text">
                       {formatDisplayDateTime(row.sent_at)}
                     </td>
                   </tr>

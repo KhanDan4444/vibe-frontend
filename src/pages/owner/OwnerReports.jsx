@@ -97,7 +97,7 @@ export default function OwnerReports() {
       const res = await getMemberReport(apiFetch, { ...memberFilterMeta.query, ...getBranchQueryParams() });
       const data = await parseApiResponse(res);
       if (!memberReportGuard.isLatest(requestId)) return;
-      if (!res.ok) throw new Error(data.error || 'Failed to load member report');
+      if (!res.ok) throw new Error(data.error || t('errors.loadMemberReport'));
       setMembers(data.members || []);
       setMemberLoaded(true);
     } catch (err) {
@@ -115,7 +115,7 @@ export default function OwnerReports() {
     try {
       const res = await getOwnerRevenueReport(apiFetch, { ...buildRevenueParams(), ...getBranchQueryParams() });
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to load revenue report');
+      if (!res.ok) throw new Error(data.error || t('errors.loadRevenueReport'));
       setPayments(data.payments || []);
       setRevenueSummary(data.summary || null);
       setRevenueLoaded(true);
@@ -176,8 +176,8 @@ export default function OwnerReports() {
     <div className="space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong sm:text-2xl">{t('pages.reports.title')}</h1>
-          <p className="text-sm text-slate-500 mt-1 max-w-xl">
+          <h1 className="text-xl font-bold tracking-tight text-app-text-strong sm:text-2xl">{t('pages.reports.title')}</h1>
+          <p className="text-sm text-app-muted mt-1 max-w-xl">
             {t('pages.reports.subtitle')}
           </p>
         </div>
@@ -228,8 +228,8 @@ export default function OwnerReports() {
               <Users className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong">{t('nav.members')}</h2>
-              <p className="text-xs text-slate-500">{t('pages.reports.exportNote')}</p>
+              <h2 className="text-lg font-semibold text-app-text-strong">{t('nav.members')}</h2>
+              <p className="text-xs text-app-muted">{t('pages.reports.exportNote')}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -297,13 +297,13 @@ export default function OwnerReports() {
               <DollarSign className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong">{t('nav.revenue')}</h2>
-              <p className="text-xs text-slate-500">{t('pages.reports.exportNote')}</p>
+              <h2 className="text-lg font-semibold text-app-text-strong">{t('nav.revenue')}</h2>
+              <p className="text-xs text-app-muted">{t('pages.reports.exportNote')}</p>
             </div>
           </div>
           <div className="flex flex-wrap items-end gap-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-slate-500">{t('period.reportPeriod')}</label>
+              <label className="mb-1 block text-xs font-medium text-app-muted">{t('period.reportPeriod')}</label>
               <select
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value)}
@@ -317,22 +317,22 @@ export default function OwnerReports() {
             {periodPreset === 'custom' && (
               <>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-500">{t('table.startDate')}</label>
+                  <label className="mb-1 block text-xs font-medium text-app-muted">{t('table.startDate')}</label>
                   <DateField
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
+                    className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-slate-500">{t('common.to')}</label>
+                  <label className="mb-1 block text-xs font-medium text-app-muted">{t('common.to')}</label>
                   <DateField
                     value={customEnd}
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="rounded-lg border border-slate-200 dark:border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
+                    className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
               </>
@@ -389,7 +389,7 @@ export default function OwnerReports() {
         </div>
       </section>
 
-      <p className="text-center text-xs text-slate-400 pb-2">
+      <p className="text-center text-xs text-app-muted pb-2">
         {t('pages.reports.exportNote')}
       </p>
     </div>

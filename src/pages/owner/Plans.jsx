@@ -122,14 +122,14 @@ export default function Plans() {
           {plans.map((plan) => (
             <Card
               key={plan.id}
-              className="group relative flex flex-col justify-between p-6 transition-colors hover:ring-slate-300/80 dark:hover:ring-app-border"
+              className="group relative flex flex-col justify-between p-6 transition-colors hover:ring-app-border"
             >
               {canManagePlans && (
                 <div className="absolute right-3 top-3 flex gap-1 sm:right-4 sm:top-4">
                   <button
                     type="button"
                     onClick={() => handleEditClick(plan)}
-                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-teal-700 dark:active:bg-app-surface/60 sm:p-1.5 sm:hover:bg-slate-50 dark:sm:hover:bg-app-surface/60 sm:hover:text-teal-700"
+                    className="rounded-lg p-2.5 text-app-muted active:bg-app-surface/60 active:text-teal-700 sm:p-1.5 sm:hover:bg-app-surface/60 sm:hover:text-teal-700"
                     title={t('pages.plans.editPlanTitle')}
                     aria-label={t('pages.plans.editPlanTitle')}
                   >
@@ -138,7 +138,7 @@ export default function Plans() {
                   <button
                     type="button"
                     onClick={() => handleDeletePlanClick(plan)}
-                    className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-rose-600 dark:active:bg-app-surface/60 sm:p-1.5 sm:hover:bg-slate-50 dark:sm:hover:bg-app-surface/60 sm:hover:text-rose-600"
+                    className="rounded-lg p-2.5 text-app-muted active:bg-app-surface/60 active:text-rose-600 sm:p-1.5 sm:hover:bg-app-surface/60 sm:hover:text-rose-600"
                     title={t('pages.plans.deletePlanTitle')}
                     aria-label={t('pages.plans.deletePlanTitle')}
                   >
@@ -152,22 +152,22 @@ export default function Plans() {
                   <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300">
                     <Dumbbell className="h-6 w-6" />
                   </span>
-                  <h3 className="font-bold text-slate-900 dark:text-app-text-strong text-lg pr-16 truncate" title={plan.name}>
+                  <h3 className="font-bold text-app-text-strong text-lg pr-16 truncate" title={plan.name}>
                     {plan.name}
                   </h3>
                 </div>
                 {plan.description && (
-                  <p className="text-sm text-slate-500 leading-relaxed min-h-[40px] line-clamp-3">
+                  <p className="text-sm text-app-muted leading-relaxed min-h-[40px] line-clamp-3">
                     {plan.description}
                   </p>
                 )}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-slate-100 dark:border-app-border-subtle flex items-baseline justify-between">
-                <span className="text-2xl font-black text-slate-900 dark:text-app-text-strong">
+              <div className="mt-6 pt-6 border-t border-app-border-subtle flex items-baseline justify-between">
+                <span className="text-2xl font-black text-app-text-strong">
                   {formatMoney(plan.price)}
                 </span>
-                <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:border-app-border-subtle dark:bg-app-surface dark:text-app-muted">
+                <span className="rounded-full border px-2.5 py-1 text-xs font-semibold text-app-muted border-app-border-subtle bg-app-surface">
                   {t('common.month', { count: plan.duration })}
                 </span>
               </div>

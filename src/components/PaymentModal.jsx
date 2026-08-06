@@ -124,24 +124,24 @@ export default function PaymentModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`} onClick={(e) => e.stopPropagation()}>
+      <div className={`${modalBody}relative`} onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-app-surface/80 hover:text-slate-600 dark:text-app-text"
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong mb-1 pr-8">
+        <h2 className="text-lg font-bold text-app-text-strong mb-1 pr-8">
           {payment ? t('modals.payment.editTitle') : t('modals.payment.collectTitle')}
         </h2>
         {!payment && selectedMember && (
-          <p className="text-xs text-slate-500 mb-5">
+          <p className="text-xs text-app-muted mb-5">
             {t('modals.payment.collectSubtitle', { name: selectedMember.name })}
           </p>
         )}
         {payment && (
-          <p className="text-xs text-slate-500 mb-5">{t('modals.payment.editSubtitle')}</p>
+          <p className="text-xs text-app-muted mb-5">{t('modals.payment.editSubtitle')}</p>
         )}
         {!payment && !selectedMember && <div className="mb-5" />}
 
@@ -158,7 +158,7 @@ export default function PaymentModal({
               id="payment-member"
               required
               disabled={!!payment || !!defaultMemberId}
-              className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
+              className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer disabled:bg-app-surface disabled:text-app-muted disabled:cursor-not-allowed"
               value={selectedMemberId}
               onChange={(e) => handleMemberChange(e.target.value)}
             >
@@ -170,7 +170,7 @@ export default function PaymentModal({
           </div>
 
           {selectedMember?.startDate && selectedMember.startDate !== '—' && (
-            <p className="text-xs text-slate-500 -mt-2 dark:text-app-muted">
+            <p className="text-xs text-app-muted -mt-2">
               {t('modals.payment.termStartHint', {
                 date: formatDisplayDate(selectedMember.startDate),
               })}
@@ -181,7 +181,7 @@ export default function PaymentModal({
             <div>
               <label htmlFor="payment-amount" className="form-label">{t('modals.payment.amount')}</label>
               <div className="relative mt-1">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                   <DollarSign className="h-4 w-4" />
                 </span>
                 <input
@@ -190,7 +190,7 @@ export default function PaymentModal({
                   required
                   min="0.01"
                   step="0.01"
-                  className={inputClass('block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle pl-8 pr-3 py-2 text-sm text-slate-900 dark:text-app-text-strong focus:border-teal-600 focus:outline-none', fieldErrors, 'amount')}
+                  className={inputClass('block w-full rounded-lg border border-app-border-subtle pl-8 pr-3 py-2 text-sm text-app-text-strong focus:border-teal-600 focus:outline-none', fieldErrors, 'amount')}
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
@@ -206,7 +206,7 @@ export default function PaymentModal({
               <label htmlFor="payment-method" className="form-label">{t('modals.payment.method')}</label>
               <select
                 id="payment-method"
-                className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white  dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >

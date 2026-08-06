@@ -24,59 +24,63 @@ const EXIT_MS = 200;
 const VARIANTS = {
   success: {
     Icon: CheckCircle2,
-    accent: 'bg-emerald-500',
-    iconWrap: 'bg-emerald-500/12 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400',
+    accent: 'bg-[color:var(--color-status-active)]',
+    iconWrap:
+      'bg-[color:var(--color-status-active)]/12 text-[color:var(--color-status-active)]',
     surface:
-      'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
-    title: 'text-slate-900 dark:text-slate-50',
-    subtitle: 'text-slate-600 dark:text-slate-400',
-    hint: 'text-slate-500 dark:text-slate-500',
-    progress: 'bg-emerald-500/80 dark:bg-emerald-400/80',
-    close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+      'border-[color:var(--color-status-active)]/20 bg-app-raised/95',
+    title: 'text-app-text-strong',
+    subtitle: 'text-app-text',
+    hint: 'text-app-muted',
+    progress: 'bg-[color:var(--color-status-active)]/80',
+    close: 'text-app-muted hover:bg-app-surface',
     actionBtn:
-      'border-emerald-500/35 bg-emerald-500/8 text-emerald-700 hover:bg-emerald-500/15 dark:text-emerald-400 dark:hover:bg-emerald-500/20',
+      'border-[color:var(--color-status-active)]/35 bg-[color:var(--color-status-active)]/8 text-[color:var(--color-status-active)] hover:bg-[color:var(--color-status-active)]/15',
   },
   danger: {
     Icon: XCircle,
-    accent: 'bg-rose-500',
-    iconWrap: 'bg-rose-500/12 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400',
+    accent: 'bg-[color:var(--color-status-expired)]',
+    iconWrap:
+      'bg-[color:var(--color-status-expired)]/12 text-[color:var(--color-status-expired)]',
     surface:
-      'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
-    title: 'text-slate-900 dark:text-slate-50',
-    subtitle: 'text-slate-600 dark:text-slate-400',
-    hint: 'text-slate-500 dark:text-slate-500',
-    progress: 'bg-rose-500/80 dark:bg-rose-400/80',
-    close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+      'border-[color:var(--color-status-expired)]/20 bg-app-raised/95',
+    title: 'text-app-text-strong',
+    subtitle: 'text-app-text',
+    hint: 'text-app-muted',
+    progress: 'bg-[color:var(--color-status-expired)]/80',
+    close: 'text-app-muted hover:bg-app-surface',
     actionBtn:
-      'border-rose-500/35 bg-rose-500/8 text-rose-700 hover:bg-rose-500/15 dark:text-rose-400 dark:hover:bg-rose-500/20',
+      'border-[color:var(--color-status-expired)]/35 bg-[color:var(--color-status-expired)]/8 text-[color:var(--color-status-expired)] hover:bg-[color:var(--color-status-expired)]/15',
   },
   warning: {
     Icon: AlertTriangle,
-    accent: 'bg-amber-500',
-    iconWrap: 'bg-amber-500/12 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
+    accent: 'bg-[color:var(--color-status-trialing)]',
+    iconWrap:
+      'bg-[color:var(--color-status-trialing)]/12 text-[color:var(--color-status-trialing)]',
     surface:
-      'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
-    title: 'text-slate-900 dark:text-slate-50',
-    subtitle: 'text-slate-600 dark:text-slate-400',
-    hint: 'text-slate-500 dark:text-slate-500',
-    progress: 'bg-amber-500/80 dark:bg-amber-400/80',
-    close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+      'border-[color:var(--color-status-trialing)]/25 bg-app-raised/95',
+    title: 'text-app-text-strong',
+    subtitle: 'text-app-text',
+    hint: 'text-app-muted',
+    progress: 'bg-[color:var(--color-status-trialing)]/80',
+    close: 'text-app-muted hover:bg-app-surface',
     actionBtn:
-      'border-amber-500/35 bg-amber-500/8 text-amber-800 hover:bg-amber-500/15 dark:text-amber-400 dark:hover:bg-amber-500/20',
+      'border-[color:var(--color-status-trialing)]/35 bg-[color:var(--color-status-trialing)]/8 text-[color:var(--color-status-trialing)] hover:bg-[color:var(--color-status-trialing)]/15',
   },
   offline: {
     Icon: CloudOff,
-    accent: 'bg-amber-500',
-    iconWrap: 'bg-amber-500/12 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
+    accent: 'bg-[color:var(--color-status-trialing)]',
+    iconWrap:
+      'bg-[color:var(--color-status-trialing)]/12 text-[color:var(--color-status-trialing)]',
     surface:
-      'border-slate-200/90 bg-white/95 dark:border-slate-700/60 dark:bg-slate-900/95',
-    title: 'text-slate-900 dark:text-slate-50',
-    subtitle: 'text-slate-600 dark:text-slate-400',
-    hint: 'text-slate-500 dark:text-slate-500',
-    progress: 'bg-amber-500/80 dark:bg-amber-400/80',
-    close: 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800',
+      'border-[color:var(--color-status-trialing)]/25 bg-app-raised/95',
+    title: 'text-app-text-strong',
+    subtitle: 'text-app-text',
+    hint: 'text-app-muted',
+    progress: 'bg-[color:var(--color-status-trialing)]/80',
+    close: 'text-app-muted hover:bg-app-surface',
     actionBtn:
-      'border-amber-500/35 bg-amber-500/8 text-amber-800 hover:bg-amber-500/15 dark:text-amber-400 dark:hover:bg-amber-500/20',
+      'border-[color:var(--color-status-trialing)]/35 bg-[color:var(--color-status-trialing)]/8 text-[color:var(--color-status-trialing)] hover:bg-[color:var(--color-status-trialing)]/15',
   },
 };
 
@@ -154,7 +158,7 @@ function FlashToastItem({ toast, onDismiss }) {
       aria-atomic="true"
       aria-describedby={describedBy}
       className={[
-        'flash-toast pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-xl border p-3.5 pr-3 shadow-lg shadow-slate-900/8 ring-1 ring-slate-900/5 backdrop-blur-md dark:shadow-black/40 dark:ring-white/5',
+        'flash-toast pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-xl border p-3.5 pr-3 shadow-lg shadow-black/[0.08] ring-1 ring-black/5 backdrop-blur-md dark:shadow-black/40 dark:ring-white/5',
         variant.surface,
         reducedMotion ? '' : exiting ? 'flash-toast-out' : 'flash-toast-in',
       ].join(' ')}

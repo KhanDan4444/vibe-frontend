@@ -38,7 +38,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
   const [error, setError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
-  const fc = (field) => inputClass(`${FORM_INPUT_CLASS} dark:bg-app-raised`, fieldErrors, field);
+  const fc = (field) => inputClass(`${FORM_INPUT_CLASS}`, fieldErrors, field);
 
   const initDefaults = useCallback(() => {
     setGymName('');
@@ -136,16 +136,16 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl" zIndexClass="z-[60]">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalBody}relative`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:text-app-text"
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="text-lg font-bold text-slate-900 dark:text-app-text-strong mb-1 pr-8">{t('modals.registerGym.title')}</h2>
-        <p className="text-xs text-slate-500 dark:text-app-muted mb-5">{t('modals.registerGym.subtitle')}</p>
+        <h2 className="text-lg font-bold text-app-text-strong mb-1 pr-8">{t('modals.registerGym.title')}</h2>
+        <p className="text-xs text-app-muted mb-5">{t('modals.registerGym.subtitle')}</p>
 
         {saasPlans.length === 0 && (
           <div className="ui-alert-amber mb-4">
@@ -192,7 +192,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
           <div>
             <label className="form-label">
               {t('modals.registerGym.ownerEmail')}
-              <span className="ml-1 text-xs font-normal text-slate-400">({t('account.optional')})</span>
+              <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
             </label>
             <input
               type="email"
@@ -204,7 +204,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
               }}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
-            <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">{t('modals.registerGym.ownerEmailHint')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.registerGym.ownerEmailHint')}</p>
           </div>
           <div>
             <label className="form-label">
@@ -225,7 +225,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
               }}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
-            <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">{t('modals.registerGym.usernameHint')}</p>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.registerGym.usernameHint')}</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -264,7 +264,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
             <label className="form-label">{t('modals.registerGym.saasPlan')} *</label>
             <select
               required
-              className={`${fc('saasPlanId')} cursor-pointer`}
+              className={`${fc('saasPlanId')}cursor-pointer`}
               value={saasPlanId}
               onChange={(e) => {
                 setSaasPlanId(e.target.value);
@@ -281,15 +281,15 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
             <FieldError message={fieldErrorMessage(fieldErrors, 'saasPlanId')} />
           </div>
 
-          <div className="border-t border-slate-100 dark:border-app-border-subtle pt-4">
+          <div className="border-t border-app-border-subtle pt-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-app-text-strong">{t('modals.registerGym.initialPayment')}</h3>
-              <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-app-text cursor-pointer">
+              <h3 className="text-sm font-semibold text-app-text-strong">{t('modals.registerGym.initialPayment')}</h3>
+              <label className="flex items-center gap-2 text-xs text-app-text cursor-pointer">
                 <input
                   type="checkbox"
                   checked={skipPayment}
                   onChange={(e) => setSkipPayment(e.target.checked)}
-                  className="rounded border-slate-300"
+                  className="rounded border-app-border-subtle"
                 />
                 {t('modals.registerGym.skipPayment')}
               </label>
@@ -317,7 +317,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                   <div>
                     <label className="form-label">{t('modals.member.method')}</label>
                     <select
-                      className="mt-1 block w-full rounded-lg border border-slate-200 dark:border-app-border-subtle bg-white dark:bg-app-raised px-3 py-2 text-sm text-slate-700 dark:text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
+                      className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
                       value={method}
                       onChange={(e) => setMethod(e.target.value)}
                     >
@@ -343,7 +343,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                     }}
                   />
                   <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
-                  <p className="mt-1 text-xs text-slate-400 dark:text-app-muted">
+                  <p className="mt-1 text-xs text-app-muted">
                     {t('modals.registerGym.licenseStartHint')}
                   </p>
                 </div>

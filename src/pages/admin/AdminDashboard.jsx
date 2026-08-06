@@ -522,8 +522,8 @@ export default function AdminDashboard() {
 
             <>
               <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-app-text-strong">{t('nav.dashboard')}</h1>
-                <p className="text-sm text-slate-500">{t('admin.dashboardSubtitle')}</p>
+                <h1 className="text-2xl font-bold tracking-tight text-app-text-strong">{t('nav.dashboard')}</h1>
+                <p className="text-sm text-app-muted">{t('admin.dashboardSubtitle')}</p>
               </div>
 
               {saasPlansLoaded && saasPlans.length === 0 && (
@@ -621,35 +621,35 @@ export default function AdminDashboard() {
               <div className="grid gap-6 md:grid-cols-5">
                 <div className={`md:col-span-3 overflow-hidden ${cardSurface}`}>
                   <div className="admin-panel-header">
-                    <h2 className="text-base font-semibold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.recentExpiringGyms')}</h2>
+                    <h2 className="text-base font-semibold text-app-text-strong sm:text-lg">{t('admin.recentExpiringGyms')}</h2>
                     <button
                       onClick={() => {
                         setGymPage(1);
                         setStatusFilter(DUE_SOON);
                         navigate(ADMIN_SECTION_PATH.gyms);
                       }}
-                      className="shrink-0 text-sm font-medium text-slate-500 transition-colors hover:text-teal-700 dark:text-app-muted dark:hover:text-teal-400 cursor-pointer"
+                      className="shrink-0 text-sm font-medium text-app-muted transition-colors hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
                     >
                       {t('admin.viewAll')}
                     </button>
                   </div>
 
-                  <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                  <div className="lg:hidden divide-y divide-app-border-subtle">
                     {alertGyms.length > 0 ? (
                       alertGyms.map((gym) => (
                         <button
                           key={gym.id}
                           type="button"
                           onClick={() => openGymDetail(gym.id)}
-                          className="flex w-full items-start justify-between gap-3 p-4 text-left active:bg-slate-50 dark:active:bg-app-surface/60"
+                          className="flex w-full items-start justify-between gap-3 p-4 text-left active:bg-app-surface/60"
                         >
                           <div className="min-w-0">
                             <div className="flex items-center gap-3">
                               <InitialsAvatar name={gym.name} size="sm" />
-                              <span className="font-semibold text-slate-900 dark:text-app-text-strong truncate">{gym.name}</span>
+                              <span className="font-semibold text-app-text-strong truncate">{gym.name}</span>
                             </div>
-                            <p className="mt-1 text-sm text-slate-500">{gym.saas_plan_name || '—'}</p>
-                            <p className="mt-0.5 text-xs text-slate-500">
+                            <p className="mt-1 text-sm text-app-muted">{gym.saas_plan_name || '—'}</p>
+                            <p className="mt-0.5 text-xs text-app-muted">
                               {t('admin.expiresOn', { date: formatDisplayDate(gym.saas_end_date) })}
                             </p>
                             <div className="mt-2">
@@ -686,13 +686,13 @@ export default function AdminDashboard() {
                               <td>
                                 <div className="flex items-center gap-3 min-w-0">
                                   <InitialsAvatar name={gym.name} size="sm" />
-                                  <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                                  <span className="truncate font-semibold text-app-text-strong">{gym.name}</span>
                                 </div>
                               </td>
-                              <td className="truncate text-slate-500 dark:text-app-muted">
+                              <td className="truncate text-app-muted">
                                 {gym.saas_plan_name || '—'}
                               </td>
-                              <td className="whitespace-nowrap text-slate-600 dark:text-app-text">
+                              <td className="whitespace-nowrap text-app-text">
                                 {formatDisplayDate(gym.saas_end_date)}
                               </td>
                               <td>
@@ -715,11 +715,11 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className={`md:col-span-2 flex flex-col p-6 ${cardSurface}`}>
-                  <h2 className="text-lg font-semibold text-slate-900 dark:text-app-text-strong mb-5">{t('admin.topGymsByMembers')}</h2>
+                  <h2 className="text-lg font-semibold text-app-text-strong mb-5">{t('admin.topGymsByMembers')}</h2>
                   <div className="flex-1 min-h-[250px]">
                     <Suspense
                       fallback={
-                        <p className="flex h-full items-center justify-center text-sm text-slate-400">
+                        <p className="flex h-full items-center justify-center text-sm text-app-muted">
                           {t('common.loading')}
                         </p>
                       }
@@ -738,8 +738,8 @@ export default function AdminDashboard() {
             <>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-slate-900 dark:text-app-text-strong">{t('admin.gymsTitle')}</h1>
-                  <p className="text-sm text-slate-500">{t('admin.gymsSubtitle')}</p>
+                  <h1 className="text-2xl font-bold text-app-text-strong">{t('admin.gymsTitle')}</h1>
+                  <p className="text-sm text-app-muted">{t('admin.gymsSubtitle')}</p>
                 </div>
                 <Button
                   onClick={() => {
@@ -820,12 +820,12 @@ export default function AdminDashboard() {
 
               <Card className="mb-6 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full sm:max-w-md">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                     <Search className="h-5 w-5" />
                   </span>
                   <input
                     type="text"
-                    className="admin-field block w-full pl-10 pr-4 placeholder-slate-400"
+                    className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
                     placeholder={t('admin.searchGymsPlaceholder')}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -850,14 +850,14 @@ export default function AdminDashboard() {
               </Card>
 
               <Card className="overflow-hidden">
-                <div className="border-b border-slate-100 bg-slate-50/50 dark:border-app-border-subtle dark:bg-app-surface/80 px-4 py-4 flex items-center justify-between sm:px-6">
-                  <h2 className="text-base font-bold text-slate-900 dark:text-app-text-strong sm:text-lg">{t('admin.gymsSection')}</h2>
-                  <button onClick={fetchGyms} className="rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-slate-600 dark:text-app-text sm:hover:bg-slate-100 sm:hover:text-slate-600 dark:text-app-text">
+                <div className="border-b border-app-border-subtle bg-app-surface/80 px-4 py-4 flex items-center justify-between sm:px-6">
+                  <h2 className="text-base font-bold text-app-text-strong sm:text-lg">{t('admin.gymsSection')}</h2>
+                  <button onClick={fetchGyms} className="rounded-lg p-2.5 text-app-muted active:bg-app-surface active:text-app-text sm:hover:bg-app-surface sm:hover:text-app-text">
                     <RefreshCw className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+                <div className="lg:hidden divide-y divide-app-border-subtle">
                   {loading && gyms.length === 0 ? (
                     <AdminListSkeleton rows={5} />
                   ) : displayedGyms.length > 0 ? (
@@ -877,13 +877,13 @@ export default function AdminDashboard() {
                               <InitialsAvatar name={gym.name} size="md" />
                               <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <span className="font-bold text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                                  <span className="font-bold text-app-text-strong">{gym.name}</span>
                                   {isUnpaid && <UnpaidBadge compact />}
                                   <StatusBadge status={gym.subscription_status} />
                                 </div>
-                                <p className="mt-1 text-sm text-slate-600 dark:text-app-text">{gym.owner_name}</p>
+                                <p className="mt-1 text-sm text-app-text">{gym.owner_name}</p>
                                 <p className="mt-0.5 text-sm text-teal-700">{gym.saas_plan_name || '—'}</p>
-                                <p className="mt-1 text-xs text-slate-500">
+                                <p className="mt-1 text-xs text-app-muted">
                                   {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
                                 </p>
                               </div>
@@ -905,7 +905,7 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => openChangePlanModal(gym)}
-                                className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                                className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
                                 title={t('admin.changeSaasPlanTitle')}
                               >
                                 <ArrowLeftRight className="h-4 w-4" />
@@ -915,7 +915,7 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => openRenewGymModal(gym)}
-                                className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface cursor-pointer"
+                                className="text-app-muted hover:bg-app-surface hover:text-emerald-600 cursor-pointer"
                                 title={t('admin.renewLicenseTitle')}
                               >
                                 <RefreshCw className="h-4 w-4" />
@@ -924,7 +924,7 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setGymEditState({ isOpen: true, gym, error: '' })}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                              className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
                               title={t('common.edit')}
                             >
                               <Edit className="h-4 w-4" />
@@ -932,7 +932,7 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setGymToDelete(gym)}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                              className="text-app-muted hover:bg-app-surface hover:text-rose-600 cursor-pointer"
                               title={t('common.delete')}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -942,8 +942,8 @@ export default function AdminDashboard() {
                       );
                     })
                   ) : (
-                    <div className="py-16 text-center text-slate-400">
-                      <AlertCircle className="mx-auto mb-2 h-8 w-8 text-slate-300" />
+                    <div className="py-16 text-center text-app-muted">
+                      <AlertCircle className="mx-auto mb-2 h-8 w-8 text-app-muted/40" />
                       <p className="text-sm font-medium">{t('admin.noGymsMatch')}</p>
                     </div>
                   )}
@@ -979,18 +979,18 @@ export default function AdminDashboard() {
                               <div className="flex items-center gap-3 min-w-0">
                                 <InitialsAvatar name={gym.name} size="md" />
                                 <div className="flex min-w-0 flex-wrap items-center gap-2">
-                                  <span className="truncate font-bold text-slate-900 dark:text-app-text-strong">{gym.name}</span>
+                                  <span className="truncate font-bold text-app-text-strong">{gym.name}</span>
                                   {isUnpaid && <UnpaidBadge compact />}
                                 </div>
                               </div>
                             </td>
-                            <td className="truncate text-slate-700 dark:text-app-text">{gym.owner_name}</td>
-                            <td className="truncate text-slate-600 dark:text-app-text">
+                            <td className="truncate text-app-text">{gym.owner_name}</td>
+                            <td className="truncate text-app-text">
                               {gym.saas_plan_name || '—'}
                             </td>
                             <td>
-                              <span className="inline-flex items-center gap-1.5 text-sm text-slate-600 dark:text-app-text">
-                                <Users className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-app-muted" />
+                              <span className="inline-flex items-center gap-1.5 text-sm text-app-text">
+                                <Users className="h-3.5 w-3.5 shrink-0 text-app-muted" />
                                 {Number(gym.active_member_count ?? 0)}
                               </span>
                             </td>
@@ -1023,7 +1023,7 @@ export default function AdminDashboard() {
                                     e.stopPropagation();
                                     openChangePlanModal(gym);
                                   }}
-                                  className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                                  className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
                                   title={t('admin.changeSaasPlanTitle')}
                                 >
                                   <ArrowLeftRight className="h-4 w-4" />
@@ -1036,7 +1036,7 @@ export default function AdminDashboard() {
                                     e.stopPropagation();
                                     openRenewGymModal(gym);
                                   }}
-                                  className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface cursor-pointer"
+                                  className="text-app-muted hover:bg-app-surface hover:text-emerald-600 cursor-pointer"
                                   title={t('admin.renewLicenseTitle')}
                                 >
                                   <RefreshCw className="h-4 w-4" />
@@ -1048,7 +1048,7 @@ export default function AdminDashboard() {
                                   e.stopPropagation();
                                   setGymEditState({ isOpen: true, gym, error: '' });
                                 }}
-                                className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface cursor-pointer"
+                                className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
                                 title={t('admin.editGymDetailsTitle')}
                               >
                                 <Edit className="h-4 w-4" />
@@ -1059,7 +1059,7 @@ export default function AdminDashboard() {
                                   e.stopPropagation();
                                   setGymToDelete(gym);
                                 }}
-                                className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface cursor-pointer"
+                                className="text-app-muted hover:bg-app-surface hover:text-rose-600 cursor-pointer"
                                 title={t('admin.deleteGymActionTitle')}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -1071,8 +1071,8 @@ export default function AdminDashboard() {
                         })
                       ) : (
                         <tr>
-                          <td colSpan={6} className="text-center py-16 text-slate-400 font-medium">
-                            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-slate-300" />
+                          <td colSpan={6} className="text-center py-16 text-app-muted font-medium">
+                            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-app-muted/40" />
                             {t('admin.noGymsMatch')}
                           </td>
                         </tr>
@@ -1088,7 +1088,7 @@ export default function AdminDashboard() {
                   onPageChange={setGymPage}
                   disabled={loading}
                 />
-                <p className="px-6 py-3 text-xs text-slate-400 border-t border-slate-100 dark:border-app-border-subtle">
+                <p className="px-6 py-3 text-xs text-app-muted border-t border-app-border-subtle">
                   {t('admin.rowActionsHint')}
                 </p>
               </Card>

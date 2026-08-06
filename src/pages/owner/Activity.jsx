@@ -54,7 +54,7 @@ export default function Activity() {
         ...getBranchQueryParams(),
       });
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || 'Failed to load activity');
+      if (!res.ok) throw new Error(data.error || t('errors.loadActivity'));
       setItems(data.items || []);
       setTotal(data.total ?? 0);
       setTotalPages(data.totalPages ?? 1);
@@ -88,7 +88,7 @@ export default function Activity() {
       />
 
       <div className="flex flex-wrap items-center gap-3">
-        <label htmlFor="actor-filter" className="text-sm font-medium text-slate-600 dark:text-app-text">
+        <label htmlFor="actor-filter" className="text-sm font-medium text-app-text">
           {t('table.who')}
         </label>
         <select
@@ -127,15 +127,15 @@ export default function Activity() {
           />
         ) : (
           <>
-            <div className="lg:hidden divide-y divide-slate-100 dark:divide-app-border-subtle">
+            <div className="lg:hidden divide-y divide-app-border-subtle">
               {items.map((entry) => {
                 const detailText = formatAuditDetails(entry);
                 const isStaff = entry.actor_role !== 'Gym Owner';
                 return (
                   <div key={entry.id} className="p-4">
-                    <p className="text-xs text-slate-400">{formatTimestamp(entry.created_at)}</p>
+                    <p className="text-xs text-app-muted">{formatTimestamp(entry.created_at)}</p>
                     <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-slate-900 dark:text-app-text-strong">{entry.actor_name}</span>
+                      <span className="font-medium text-app-text-strong">{entry.actor_name}</span>
                       <span
                         className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
                           isStaff ? 'bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20' : 'bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-600/10 dark:text-teal-400 dark:border-teal-600/20'
@@ -145,16 +145,16 @@ export default function Activity() {
                       </span>
                     </div>
                     {showBranchColumn && entry.branch_name && (
-                      <p className="mt-1 text-xs text-slate-400">{entry.branch_name}</p>
+                      <p className="mt-1 text-xs text-app-muted">{entry.branch_name}</p>
                     )}
-                    <p className="mt-2 text-sm font-medium text-slate-800">
+                    <p className="mt-2 text-sm font-medium text-app-text-strong">
                       {formatAuditAction(entry.action)}
                     </p>
                     {entry.entity_label && (
-                      <p className="mt-0.5 text-sm text-slate-600 dark:text-app-text">{entry.entity_label}</p>
+                      <p className="mt-0.5 text-sm text-app-text">{entry.entity_label}</p>
                     )}
                     {detailText && (
-                      <p className="mt-1 text-xs text-slate-500">{detailText}</p>
+                      <p className="mt-1 text-xs text-app-muted">{detailText}</p>
                     )}
                   </div>
                 );
@@ -179,11 +179,11 @@ export default function Activity() {
                     const isStaff = entry.actor_role !== 'Gym Owner';
                     return (
                       <tr key={entry.id} className={tableRowHover}>
-                        <td className="whitespace-nowrap text-slate-500 dark:text-app-muted">
+                        <td className="whitespace-nowrap text-app-muted">
                           {formatTimestamp(entry.created_at)}
                         </td>
                         <td>
-                          <div className="font-medium text-slate-900 dark:text-app-text-strong">{entry.actor_name}</div>
+                          <div className="font-medium text-app-text-strong">{entry.actor_name}</div>
                           <span
                             className={`mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
                               isStaff
@@ -195,15 +195,15 @@ export default function Activity() {
                           </span>
                         </td>
                         {showBranchColumn && (
-                          <td className="truncate text-slate-600 dark:text-app-text">{entry.branch_name || '—'}</td>
+                          <td className="truncate text-app-text">{entry.branch_name || '—'}</td>
                         )}
-                        <td className="font-medium text-slate-800 dark:text-app-text">
+                        <td className="font-medium text-app-text">
                           {formatAuditAction(entry.action)}
                         </td>
-                        <td className="truncate text-slate-700 dark:text-app-text">
+                        <td className="truncate text-app-text">
                           {entry.entity_label || '—'}
                         </td>
-                        <td className="truncate text-slate-500 dark:text-app-muted">
+                        <td className="truncate text-app-muted">
                           {detailText || '—'}
                         </td>
                       </tr>

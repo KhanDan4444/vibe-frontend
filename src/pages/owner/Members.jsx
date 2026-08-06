@@ -13,7 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { cardSurface, selectSurface } from '../../utils/surfaceClasses';
+import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionSuccess, iconActionDanger } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -37,7 +37,6 @@ import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
-import { tableRowHover } from '../../utils/surfaceClasses';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const UNPAID = 'Unpaid';
@@ -139,7 +138,7 @@ export default function Members() {
       });
       const data = await parseApiResponse(res);
       if (!membersRequestGuard.isLatest(requestId)) return;
-      if (!res.ok) throw new Error(data.error || 'Failed to load members');
+      if (!res.ok) throw new Error(data.error || t('errors.loadMembers'));
       setMembers((data.items || []).map(mapMemberFromApi).filter(Boolean));
       setTotal(data.total ?? 0);
       setTotalPages(data.totalPages ?? 1);
@@ -433,7 +432,7 @@ export default function Members() {
   };
 
   return (
-    <div className="space-y-5 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-5">
       <PageHeader
         title={t('pages.members.title')}
         subtitle={t('pages.members.subtitle')}
@@ -525,14 +524,14 @@ export default function Members() {
         />
       </FilterChipBar>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 dark:border-app-border-subtle pb-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-app-border-subtle pb-4">
         <div className="relative w-full sm:max-w-md">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
             <Search className="h-5 w-5" />
           </span>
           <input
             type="text"
-            className="admin-field block w-full pl-10 pr-4 placeholder-slate-400"
+            className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
             placeholder={t('pages.members.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -576,11 +575,11 @@ export default function Members() {
                     openMemberRow(member);
                   }
                 }}
-                className={`${cardSurface} p-4 active:bg-slate-50 dark:active:bg-app-surface/60 ${
+                className={`${cardSurface} p-3.5 active:bg-app-surface/60 ${
                   member.isUnpaid ? 'admin-row-unpaid' : ''
                 }`}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-center gap-3">
                   <MemberPhoto
                     memberId={member.id}
                     apiFetch={apiFetch}
@@ -592,24 +591,24 @@ export default function Members() {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
+                      <span className="font-semibold text-app-text-strong">{member.name}</span>
                       {member.isUnpaid && <UnpaidBadge compact />}
                       <StatusBadge status={member.status} />
                     </div>
-                    <p className="mt-1 font-mono text-sm text-slate-500">{member.phone}</p>
-                    <p className="mt-1 text-sm font-medium text-teal-700">
+                    <p className="mt-0.5 text-xs text-app-muted truncate">
+                      {member.phone || '—'}
+                      {' · '}
                       {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                      {showBranchColumn && member.branchName ? ` · ${member.branchName}` : ''}
                     </p>
-                    {showBranchColumn && member.branchName && (
-                      <p className="mt-0.5 text-xs text-slate-400">{member.branchName}</p>
-                    )}
-                    <p className="mt-1 text-xs text-slate-500">
-                      {formatDisplayDate(member.startDate)} → <span className="font-semibold text-slate-700 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
+                    <p className="mt-0.5 text-xs text-app-muted">
+                      {formatDisplayDate(member.startDate)} →{' '}
+                      <span className="font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
                     </p>
                   </div>
                 </div>
                 {!readOnly && (
-                  <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
+                  <div className="admin-row-actions mt-2" onClick={(e) => e.stopPropagation()}>
                     {member.isUnpaid && (
                       <button
                         type="button"
@@ -627,7 +626,7 @@ export default function Members() {
                       <button
                         type="button"
                         onClick={() => openChangePlanModal(member)}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                        className={iconActionIdle}
                         title={t('actions.changePlan')}
                       >
                         <ArrowLeftRight className="h-4 w-4" />
@@ -640,7 +639,7 @@ export default function Members() {
                           setError('');
                           openRenewModal(member);
                         }}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                        className={iconActionSuccess}
                         title={t('actions.renew')}
                       >
                         <RefreshCw className="h-4 w-4" />
@@ -652,7 +651,7 @@ export default function Members() {
                         setError('');
                         setModalState({ isOpen: true, member, error: '' });
                       }}
-                      className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                      className={iconActionIdle}
                       title={t('common.edit')}
                     >
                       <Edit className="h-4 w-4" />
@@ -661,7 +660,7 @@ export default function Members() {
                       <button
                         type="button"
                         onClick={() => setMemberToDelete(member)}
-                        className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                        className={iconActionDanger}
                         title={t('common.delete')}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -732,22 +731,22 @@ export default function Members() {
                             fallbackClassName={LIST_AVATAR_FALLBACK_CLASS}
                           />
                           <div className="flex min-w-0 flex-wrap items-center gap-2">
-                            <span className="truncate font-semibold text-slate-900 dark:text-app-text-strong">{member.name}</span>
+                            <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
                             {member.isUnpaid && <UnpaidBadge compact />}
                           </div>
                         </div>
                       </td>
                       {showBranchColumn && (
-                        <td className="truncate text-slate-600 dark:text-app-text">{member.branchName || '—'}</td>
+                        <td className="truncate text-app-text">{member.branchName || '—'}</td>
                       )}
-                      <td className="truncate font-mono text-sm text-slate-500 dark:text-app-muted">{member.phone}</td>
+                      <td className="truncate font-mono text-sm text-app-muted">{member.phone}</td>
                       <td className="truncate font-semibold text-teal-700">
                         {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
                       </td>
-                      <td className="owner-members-col-duration text-slate-500">
+                      <td className="owner-members-col-duration text-app-muted">
                         <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
-                        <span className="mx-1 text-xs text-slate-400">{t('common.to')}</span>
-                        <span className="whitespace-nowrap font-semibold text-slate-800 dark:text-app-text">{formatDisplayDate(member.endDate)}</span>
+                        <span className="mx-1 text-xs text-app-muted">{t('common.to')}</span>
+                        <span className="whitespace-nowrap font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
                       </td>
                       <td className="owner-members-col-status">
                         <div>
@@ -776,7 +775,7 @@ export default function Members() {
                               e.stopPropagation();
                               openChangePlanModal(member);
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                            className={iconActionIdle}
                             title={t('actions.changePlan')}
                           >
                             <ArrowLeftRight className="h-4 w-4" />
@@ -789,7 +788,7 @@ export default function Members() {
                               setError('');
                               openRenewModal(member);
                             }}
-                            className="text-slate-400 hover:bg-slate-100 hover:text-emerald-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                            className={iconActionSuccess}
                             title={t('actions.renew')}
                           >
                             <RefreshCw className="h-4 w-4" />
@@ -803,7 +802,7 @@ export default function Members() {
                                 setError('');
                                 setModalState({ isOpen: true, member, error: '' });
                               }}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-teal-700 dark:hover:bg-app-surface/80 cursor-pointer"
+                              className={iconActionIdle}
                               title={t('common.edit')}
                             >
                               <Edit className="h-4 w-4" />
@@ -814,7 +813,7 @@ export default function Members() {
                                 e.stopPropagation();
                                 setMemberToDelete(member);
                               }}
-                              className="text-slate-400 hover:bg-slate-100 hover:text-rose-600 dark:hover:bg-app-surface/80 cursor-pointer"
+                              className={iconActionDanger}
                               title={t('common.delete')}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -850,7 +849,7 @@ export default function Members() {
             </tbody>
           </table>
         </div>
-        <div className="border-t border-slate-100 px-4 py-3 dark:border-app-border-subtle">
+        <div className="border-t px-4 py-3 border-app-border-subtle">
           <PaginationControls
             page={page}
             totalPages={totalPages}

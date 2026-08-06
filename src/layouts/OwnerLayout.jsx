@@ -152,7 +152,7 @@ export default function OwnerLayout() {
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className="-ml-1 shrink-0 rounded-lg p-2.5 text-slate-600 focus:outline-none active:bg-slate-100 dark:text-app-text dark:active:bg-app-raised"
+            className="-ml-1 shrink-0 rounded-lg p-2.5 focus:outline-none active:bg-app-raised text-app-text"
             aria-label={t('common.openMenu')}
           >
             <Menu className="h-6 w-6" />
@@ -170,7 +170,7 @@ export default function OwnerLayout() {
           <button
             type="button"
             onClick={() => setNotificationsOpen(true)}
-            className="relative rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-slate-600 dark:active:bg-app-raised"
+            className="relative rounded-lg p-2.5 text-app-muted active:bg-app-raised active:text-app-text"
             aria-label={t('common.notifications')}
           >
             <Bell className="h-6 w-6" />
@@ -213,14 +213,14 @@ export default function OwnerLayout() {
 
       <div className="lg:pl-64">
         {gymBooting && (
-          <div className="sticky top-0 z-20 h-0.5 overflow-hidden bg-slate-200 dark:bg-app-border-subtle">
+          <div className="sticky top-0 z-20 h-0.5 overflow-hidden bg-app-border-subtle">
             <div className="app-boot-bar h-full w-1/3 bg-teal-600" />
           </div>
         )}
         <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
           <div className="flex items-center gap-3">
             {staffBranchLabel && !ownerAccount && (
-              <span className="hidden text-sm font-medium text-slate-600 dark:text-app-text sm:inline">
+              <span className="hidden text-sm font-medium text-app-text sm:inline">
                 {staffBranchLabel}
               </span>
             )}
@@ -236,18 +236,18 @@ export default function OwnerLayout() {
             <button
               type="button"
               onClick={() => setNotificationsOpen(true)}
-              className="relative rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-app-text"
+              className="relative rounded-full p-2 text-app-muted transition-colors hover:bg-app-raised hover:text-app-text"
               aria-label={t('common.notifications')}
             >
               <Bell className="h-5 w-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex h-4.5 w-4.5 items-center justify-center rounded-full border-2 border-white bg-rose-500 text-[10px] font-bold text-white dark:border-slate-900">
+                <span className="absolute top-0 right-0 inline-flex h-4.5 w-4.5 items-center justify-center rounded-full border-2 border-app-raised bg-rose-500 text-[10px] font-bold text-white">
                   {unreadCount}
                 </span>
               )}
             </button>
             <LanguageSwitcher />
-            <div className="h-8 w-px bg-slate-200 dark:bg-app-border-subtle" />
+            <div className="h-8 w-px bg-app-border-subtle" />
             <UserProfileMenu />
           </div>
         </div>
@@ -272,8 +272,8 @@ export default function OwnerLayout() {
             </div>
           )}
           {branchReadOnly && selectedBranch && (
-            <div className="mb-6 flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-app-border-subtle dark:bg-app-surface/70 dark:text-app-text">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-slate-500 dark:text-app-muted" />
+            <div className="mb-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm text-app-text border-app-border-subtle bg-app-surface/70">
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-app-muted" />
               <div>
                 <p className="font-semibold">{t('alerts.branchReadOnlyTitle')}</p>
                 <p className="mt-0.5">{t('alerts.branchReadOnlyBody', { name: selectedBranch.name })}</p>
@@ -315,11 +315,11 @@ export default function OwnerLayout() {
                   key={n.id}
                   onClick={() => markAsRead(n.id)}
                   className={`relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-all ${
-                    !isRead ? 'border-teal-100 bg-teal-50/30 dark:border-teal-900 dark:bg-teal-950/30' : 'border-slate-100 bg-white dark:border-app-border-subtle dark:bg-app-raised'
+                    !isRead ? 'border-teal-100 bg-teal-50/30 dark:border-teal-900 dark:bg-teal-950/30' : 'border-app-border-subtle bg-app-raised'
                   }`}
                 >
                   <span
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border bg-white dark:bg-app-surface ${
+                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border bg-app-surface ${
                       n.type === 'warning'
                         ? 'border-amber-100 text-amber-500'
                         : n.type === 'danger'
@@ -334,15 +334,15 @@ export default function OwnerLayout() {
 
                   <div className="min-w-0 flex-1 space-y-1 pr-6">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-bold text-slate-900 dark:text-app-text-strong">{localized.title}</span>
-                      <span className="shrink-0 text-[10px] text-slate-400 dark:text-app-muted">{localized.date}</span>
+                      <span className="text-sm font-bold text-app-text-strong">{localized.title}</span>
+                      <span className="shrink-0 text-[10px] text-app-muted">{localized.date}</span>
                     </div>
                     {selectedBranchId === 'all' && n.branchName && (
-                      <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                      <span className="inline-flex rounded-full bg-app-surface px-2 py-0.5 text-[10px] font-semibold text-app-text">
                         {n.branchName}
                       </span>
                     )}
-                    <p className="text-xs leading-relaxed text-slate-600 dark:text-app-text">{localized.message}</p>
+                    <p className="text-xs leading-relaxed text-app-text">{localized.message}</p>
 
                     {n.memberId && !readOnly && n.suggestedAction === 'payment' && (
                       <button
@@ -388,7 +388,7 @@ export default function OwnerLayout() {
                       e.stopPropagation();
                       deleteNotification(n.id);
                     }}
-                    className="absolute right-3 top-3 rounded-md p-1 text-slate-300 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-surface/80 dark:hover:text-slate-200"
+                    className="absolute right-3 top-3 rounded-md p-1 text-app-muted/40 hover:bg-app-surface/80 hover:text-app-text"
                     aria-label={t('notifications.dismiss')}
                   >
                     <X className="h-3.5 w-3.5" />
