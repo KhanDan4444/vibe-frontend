@@ -4,6 +4,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
+import { authHeaderFromStorage } from '../utils/authStorage';
 import { listJobs, updateJob, removeJob, onQueueChanged, MAX_ATTEMPTS } from './writeQueue';
 import { SYNCED_EVENT } from './events';
 
@@ -58,6 +59,7 @@ export const OfflineProvider = ({ children }) => {
               credentials: API_FETCH_CREDENTIALS,
               headers: {
                 'Content-Type': 'application/json',
+                ...authHeaderFromStorage(),
               },
               body: job.body,
             });

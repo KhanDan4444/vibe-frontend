@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
 import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
 import { isGymOwner } from '../utils/roles';
-import { clearLegacyStoredToken, setRememberMePreference } from '../utils/authStorage';
+import { clearAccessToken, getAccessToken, setAccessToken, setRememberMePreference } from '../utils/authStorage';
 import { cacheRead, getCachedRead, clearReadCacheForUser } from '../offline/readCache';
 import { queueableJob, bodyHasPhoto, enqueueJob } from '../offline/writeQueue';
 import { clearMemberPhotoCache } from '../utils/memberPhotoCache';
@@ -28,6 +28,11 @@ const jsonResponse = (body, { status = 200, cached = false, queued = false } = {
     },
   });
 
+function withAuthHeaders(headers = {}) {
+  const token = getAccessToken();
+  if (!token) return { ...headers };
+  return { ...headers, Authorization: `Bearer ${token}` };
+}
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -46,7 +51,7 @@ export const AuthProvider = ({ children }) => {
       void clearReadCacheForUser(userId);
     }
     clearMemberPhotoCache();
-    clearLegacyStoredToken();
+    clearAccessToken();
 
     try {
       await fetch(`${API_BASE_URL}/api/auth/logout`, {
@@ -62,15 +67,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    clearLegacyStoredToken();
-
     let cancelled = false;
     (async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/session`, {
           credentials: API_FETCH_CREDENTIALS,
+          headers: withAuthHeaders(),
         });
-        if (!response.ok) return;
+        if (!response.ok) {
+          if (response.status === 401) clearAccessToken();
+          return;
+        }
         const data = await parseApiResponse(response);
         if (!cancelled && data.user) {
           setUser(data.user);
@@ -97,6 +104,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/gym/profile`, {
           credentials: API_FETCH_CREDENTIALS,
+          headers: withAuthHeaders(),
         });
         const data = await parseApiResponse(response);
         if (cancelled || !response.ok) return;
@@ -132,7 +140,11 @@ export const AuthProvider = ({ children }) => {
       const data = await parseApiResponse(response);
       if (!response.ok) throw apiErrorFromResponse(data, response.status);
 
-      clearLegacyStoredToken();
+      if (data.token) {
+        setAccessToken(data.token, Boolean(rememberMe));
+      } else {
+        clearAccessToken();
+      }
       const profile = data.user;
       if (profile) setUser(profile);
       setGymSubscription(data.subscription || null);
@@ -147,7 +159,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const apiFetch = useCallback(async (endpoint, options = {}) => {
-    const headers = { ...options.headers };
+    const headers = withAuthHeaders({ ...options.headers });
     const method = (options.method || 'GET').toUpperCase();
     const userId = user?.id ?? null;
 
