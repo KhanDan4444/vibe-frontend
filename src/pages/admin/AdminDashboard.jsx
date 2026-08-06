@@ -548,7 +548,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <section className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-8">
+              <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6">
                 {adminBooting ? (
                   Array.from({ length: 6 }).map((_, i) => <MetricCardSkeleton key={i} />)
                 ) : (

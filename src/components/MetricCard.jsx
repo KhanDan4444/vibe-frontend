@@ -56,17 +56,24 @@ export default function MetricCard({
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
 
   return (
-    <Card quiet className="app-card-lift relative p-4 sm:p-5">
-      {badge && (
-        <span className={`absolute top-3 right-3 sm:top-4 sm:right-4 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${badgeClass}`}>
-          {badge}
+    <Card quiet className="app-card-lift p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-2 min-w-0">
+        <span className={`min-w-0 flex-1 text-xs font-medium leading-snug break-words ${mutedText}`}>
+          {label}
         </span>
-      )}
-
-      <div className="flex items-center justify-between gap-2">
-        <span className={`text-xs font-medium leading-snug ${mutedText}`}>{label}</span>
-        {Icon && !badge && (
-          <Icon className={`h-4 w-4 shrink-0 ${mutedText}`} aria-hidden />
+        {(badge || Icon) && (
+          <div className="flex shrink-0 flex-col items-end gap-1">
+            {badge ? (
+              <span
+                className={`inline-flex max-w-[9rem] items-center justify-end rounded-full border px-2 py-0.5 text-center text-[10px] font-semibold leading-tight ${badgeClass}`}
+              >
+                {badge}
+              </span>
+            ) : null}
+            {Icon && !badge ? (
+              <Icon className={`h-4 w-4 shrink-0 ${mutedText}`} aria-hidden />
+            ) : null}
+          </div>
         )}
       </div>
 
