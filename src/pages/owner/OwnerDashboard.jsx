@@ -18,7 +18,7 @@ import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, iconActionSuccess } from '../../utils/surfaceClasses';
+import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
@@ -224,10 +224,10 @@ export default function OwnerDashboard() {
                         <button
                           type="button"
                           onClick={() => setRenewState({ isOpen: true, member })}
-                          className={iconActionSuccess}
+                          className={renewActionBtn}
                           title={t('actions.renew')}
                         >
-                          <RefreshCw className="h-4 w-4" />
+                          <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                         </button>
                       </div>
                     )}
@@ -284,7 +284,7 @@ export default function OwnerDashboard() {
                           {!readOnly && canRenewMember(member) && (
                             <button
                               onClick={() => setRenewState({ isOpen: true, member })}
-                              className="inline-flex items-center gap-1 rounded-lg bg-[color:var(--color-status-active)]/10 px-2.5 py-1 text-xs font-semibold text-[color:var(--color-status-active)] hover:bg-[color:var(--color-status-active)]/20 cursor-pointer"
+                              className={renewActionBtn}
                             >
                               <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                             </button>

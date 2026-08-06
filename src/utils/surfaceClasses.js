@@ -69,3 +69,7 @@ export const iconActionSuccess =
 
 export const iconActionDanger =
   'text-app-muted hover:bg-app-surface hover:text-[color:var(--color-status-expired)] cursor-pointer';
+
+/** Solid renew CTA — reads as an action, not decorative chrome. */
+export const renewActionBtn =
+  'inline-flex items-center gap-1 rounded-lg bg-brand px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-brand/15 hover:bg-brand-hover cursor-pointer';

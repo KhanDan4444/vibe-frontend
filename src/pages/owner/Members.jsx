@@ -13,7 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionSuccess, iconActionDanger } from '../../utils/surfaceClasses';
+import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionSuccess, iconActionDanger, renewActionBtn } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -575,7 +575,7 @@ export default function Members() {
                     openMemberRow(member);
                   }
                 }}
-                className={`${cardSurface} p-3.5 active:bg-app-surface/60 ${
+                className={`${cardSurface} p-4 active:bg-app-surface/60 ${
                   member.isUnpaid ? 'admin-row-unpaid' : ''
                 }`}
               >
