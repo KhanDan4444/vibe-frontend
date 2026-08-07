@@ -17,6 +17,8 @@ export default defineConfig({
         navigateFallback: '/index.html',
         // Never serve the SPA shell for API calls.
         navigateFallbackDenylist: [/^\/api/],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
