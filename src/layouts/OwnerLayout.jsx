@@ -307,9 +307,7 @@ export default function OwnerLayout() {
           <div className="space-y-3">
             {notifications.map((n) => {
               const isRead = readIds.includes(n.id);
-              const localized = localizeNotification(n, t, {
-                showBranchLabel: selectedBranchId === 'all',
-              });
+              const localized = localizeNotification(n, t);
               return (
                 <div
                   key={n.id}

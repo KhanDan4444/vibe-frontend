@@ -44,9 +44,9 @@ function parseAmount(notification) {
   return match ? Number(match[1]) : null;
 }
 
-function branchPrefix(t, branchName, showBranchLabel) {
-  if (!showBranchLabel || !branchName) return '';
-  return t('notifications.branchPrefix', { branch: branchName });
+/** Drop leading `[Branch] ` from API/raw messages (legacy). */
+function stripBranchBracketPrefix(message) {
+  return String(message || '').replace(/^\[[^\]]+\]\s*/, '');
 }
 
 function localizedDate(t, notification) {
@@ -58,18 +58,17 @@ function localizedDate(t, notification) {
 
 /**
  * Localize dashboard notification title/message from structured API fields.
- * Falls back to raw title/message when kind is unknown.
+ * Branch is shown as a badge in the UI — not repeated in the message body.
  */
-export function localizeNotification(notification, t, { showBranchLabel = false } = {}) {
+export function localizeNotification(notification, t) {
   const kind = notificationKind(notification);
-  const prefix = branchPrefix(t, notification.branchName, showBranchLabel);
   const memberName = parseMemberName(notification, kind);
 
   if (kind === 'unpaid' && memberName) {
     return {
       title: t('notifications.items.unpaid.title'),
       message: t('notifications.items.unpaid.message', {
-        prefix,
+        prefix: '',
         name: memberName,
       }),
       date: localizedDate(t, notification),
@@ -82,7 +81,7 @@ export function localizeNotification(notification, t, { showBranchLabel = false 
     return {
       title: t('notifications.items.dueSoon.title'),
       message: t('notifications.items.dueSoon.message', {
-        prefix,
+        prefix: '',
         name: memberName,
         plan: planName,
         date: formatDate(endDate),
@@ -97,7 +96,7 @@ export function localizeNotification(notification, t, { showBranchLabel = false 
     return {
       title: t('notifications.items.expired.title'),
       message: t('notifications.items.expired.message', {
-        prefix,
+        prefix: '',
         name: memberName,
         plan: planName,
         date: formatDate(endDate),
@@ -111,7 +110,7 @@ export function localizeNotification(notification, t, { showBranchLabel = false 
     return {
       title: t('notifications.items.paymentRecorded.title'),
       message: t('notifications.items.paymentRecorded.message', {
-        prefix,
+        prefix: '',
         amount: formatMoney(amount),
         name: memberName,
       }),
@@ -121,7 +120,7 @@ export function localizeNotification(notification, t, { showBranchLabel = false 
 
   return {
     title: notification.title,
-    message: notification.message,
+    message: stripBranchBracketPrefix(notification.message),
     date: localizedDate(t, notification),
   };
 }
