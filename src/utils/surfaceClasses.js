@@ -70,6 +70,6 @@ export const iconActionSuccess =
 export const iconActionDanger =
   'text-app-muted hover:bg-app-surface hover:text-[color:var(--color-status-expired)] cursor-pointer';
 
-/** Solid renew CTA — reads as an action, not decorative chrome. */
+/** Solid renew CTA — deep teal + white in both themes (avoid dark-mode bright brand fill). */
 export const renewActionBtn =
-  'inline-flex items-center gap-1 rounded-lg bg-brand px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-brand/15 hover:bg-brand-hover cursor-pointer';
+  'inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-black/10 hover:bg-[#0d9488] cursor-pointer dark:bg-teal-600 dark:hover:bg-teal-500 dark:shadow-none';
