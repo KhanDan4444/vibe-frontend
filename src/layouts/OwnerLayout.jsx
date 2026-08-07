@@ -336,7 +336,7 @@ export default function OwnerLayout() {
                       <span className="shrink-0 text-[10px] text-app-muted">{localized.date}</span>
                     </div>
                     {selectedBranchId === 'all' && n.branchName && (
-                      <span className="inline-flex rounded-full bg-app-surface px-2 py-0.5 text-[10px] font-semibold text-app-text">
+                      <span className="inline-flex rounded-full border border-teal-600/25 bg-teal-600/10 px-2 py-0.5 text-[10px] font-semibold text-teal-800 dark:border-teal-600/30 dark:bg-teal-600/15 dark:text-teal-300">
                         {n.branchName}
                       </span>
                     )}
