@@ -18,6 +18,7 @@ import { defaultGymRenewStartDate } from '../utils/saasRenew';
 import { calculateEndDate } from '../utils/memberDates';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
 
 export default function RenewGymModal({
@@ -150,7 +151,10 @@ export default function RenewGymModal({
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('modals.registerGym.saasPlan')}</label>
+            <label className="form-label">
+              {t('modals.registerGym.saasPlan')}
+              <RequiredMark />
+            </label>
             <select
               required
               className={fc('planId')}
@@ -172,7 +176,10 @@ export default function RenewGymModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.renewGym.licenseStartDate')}</label>
+              <label className="form-label">
+              {t('modals.renewGym.licenseStartDate')}
+              <RequiredMark />
+            </label>
               <DateField
                 required
                 min={renewStartBounds.min}
@@ -187,7 +194,10 @@ export default function RenewGymModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
             </div>
             <div>
-              <label className="form-label">{t('modals.renewGym.paymentDate')}</label>
+              <label className="form-label">
+              {t('modals.renewGym.paymentDate')}
+              <RequiredMark />
+            </label>
               <DateField
                 required
                 min={paymentBounds.min}
@@ -214,7 +224,10 @@ export default function RenewGymModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.member.amount')}</label>
+              <label className="form-label">
+              {t('modals.member.amount')}
+              <RequiredMark />
+            </label>
               <input
                 type="number"
                 min="0.01"
@@ -230,7 +243,10 @@ export default function RenewGymModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
             </div>
             <div>
-              <label className="form-label">{t('modals.member.method')}</label>
+              <label className="form-label">
+              {t('modals.member.method')}
+              <RequiredMark />
+            </label>
               <select
                 className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
                 value={method}

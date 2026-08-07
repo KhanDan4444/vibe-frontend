@@ -11,6 +11,7 @@ import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
 
 /**
@@ -153,7 +154,10 @@ export default function PaymentModal({
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label htmlFor="payment-member" className="form-label">{t('table.member')}</label>
+            <label htmlFor="payment-member" className="form-label">
+              {t('table.member')}
+              <RequiredMark />
+            </label>
             <select
               id="payment-member"
               required
@@ -179,7 +183,10 @@ export default function PaymentModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="payment-amount" className="form-label">{t('modals.payment.amount')}</label>
+              <label htmlFor="payment-amount" className="form-label">
+                {t('modals.payment.amount')}
+                <RequiredMark />
+              </label>
               <div className="relative mt-1">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                   <DollarSign className="h-4 w-4" />
@@ -203,7 +210,10 @@ export default function PaymentModal({
             </div>
 
             <div>
-              <label htmlFor="payment-method" className="form-label">{t('modals.payment.method')}</label>
+              <label htmlFor="payment-method" className="form-label">
+                {t('modals.payment.method')}
+                <RequiredMark />
+              </label>
               <select
                 id="payment-method"
                 className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
@@ -220,7 +230,10 @@ export default function PaymentModal({
           </div>
 
           <div>
-            <label htmlFor="payment-date" className="form-label">{t('modals.payment.date')}</label>
+            <label htmlFor="payment-date" className="form-label">
+              {t('modals.payment.date')}
+              <RequiredMark />
+            </label>
             <DateField
               id="payment-date"
               required

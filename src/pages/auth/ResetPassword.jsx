@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { resetPassword } from '../../services/authService';
 import { validatePassword, validatePasswordMatch, showValidationError, inputClass as fieldInputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 
 export default function ResetPassword() {
@@ -61,7 +62,10 @@ export default function ResetPassword() {
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.newPassword')}</label>
+            <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              {t('auth.newPassword')}
+              <RequiredMark />
+            </label>
             <input
               type="password"
               required
@@ -76,7 +80,10 @@ export default function ResetPassword() {
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.confirmPassword')}</label>
+            <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              {t('auth.confirmPassword')}
+              <RequiredMark />
+            </label>
             <input
               type="password"
               required

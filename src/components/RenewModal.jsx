@@ -19,6 +19,7 @@ import { defaultRenewStartDate, canRenewMember } from '../utils/memberRenew';
 import { calculateEndDate } from '../utils/memberDates';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
 
 /**
@@ -156,7 +157,10 @@ export default function RenewModal({
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('modals.member.plan')}</label>
+            <label className="form-label">
+              {t('modals.member.plan')}
+              <RequiredMark />
+            </label>
             <select
               required
               className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
@@ -174,7 +178,10 @@ export default function RenewModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.renew.startDate')}</label>
+              <label className="form-label">
+                {t('modals.renew.startDate')}
+                <RequiredMark />
+              </label>
               <DateField
                 required
                 min={renewStartBounds.min}
@@ -187,7 +194,10 @@ export default function RenewModal({
               />
             </div>
             <div>
-              <label className="form-label">{t('modals.member.paymentDate')}</label>
+              <label className="form-label">
+                {t('modals.member.paymentDate')}
+                <RequiredMark />
+              </label>
               <DateField
                 required
                 min={paymentBounds.min}
@@ -235,7 +245,10 @@ export default function RenewModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.member.amount')}</label>
+              <label className="form-label">
+                {t('modals.member.amount')}
+                <RequiredMark />
+              </label>
               <input
                 type="number"
                 min="0.01"
@@ -251,7 +264,10 @@ export default function RenewModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
             </div>
             <div>
-              <label className="form-label">{t('modals.member.method')}</label>
+              <label className="form-label">
+                {t('modals.member.method')}
+                <RequiredMark />
+              </label>
               <select
                 className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}

@@ -7,6 +7,7 @@ import { formatPhoneForInput, validateGymProfileEdit, showValidationError, input
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
 
 /**
@@ -96,7 +97,10 @@ export default function GymEditModal({
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('modals.gymEdit.gymName')}</label>
+            <label className="form-label">
+              {t('modals.gymEdit.gymName')}
+              <RequiredMark />
+            </label>
             <input
               type="text"
               required
@@ -110,7 +114,10 @@ export default function GymEditModal({
             <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
           </div>
           <div>
-            <label className="form-label">{t('modals.registerGym.ownerName')}</label>
+            <label className="form-label">
+              {t('modals.registerGym.ownerName')}
+              <RequiredMark />
+            </label>
             <input
               type="text"
               required
@@ -124,7 +131,10 @@ export default function GymEditModal({
             <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
           </div>
           <div>
-            <label className="form-label">{t('modals.gymEdit.phone')}</label>
+            <label className="form-label">
+              {t('modals.gymEdit.phone')}
+              <RequiredMark />
+            </label>
             <input
               type="tel"
               required
@@ -152,7 +162,10 @@ export default function GymEditModal({
           </div>
 
           <div>
-            <label className="form-label">{t('modals.gymEdit.subscriptionStatus')}</label>
+            <label className="form-label">
+              {t('modals.gymEdit.subscriptionStatus')}
+              <RequiredMark />
+            </label>
             <select
               className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={subscriptionStatus}

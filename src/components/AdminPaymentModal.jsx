@@ -11,6 +11,7 @@ import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 export default function AdminPaymentModal({
@@ -171,7 +172,10 @@ export default function AdminPaymentModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.payment.amount')}</label>
+              <label className="form-label">
+              {t('modals.payment.amount')}
+              <RequiredMark />
+            </label>
               <div className="relative">
                 <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-app-muted" />
                 <input
@@ -190,7 +194,10 @@ export default function AdminPaymentModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
             </div>
             <div>
-              <label className="form-label">{t('modals.payment.date')}</label>
+              <label className="form-label">
+              {t('modals.payment.date')}
+              <RequiredMark />
+            </label>
               <div className="relative">
                 <Calendar className="pointer-events-none absolute left-3 top-2.5 z-10 h-5 w-5 text-app-muted" />
                 <DateField
@@ -210,7 +217,10 @@ export default function AdminPaymentModal({
           </div>
 
           <div>
-            <label className="form-label">{t('modals.payment.method')}</label>
+            <label className="form-label">
+              {t('modals.payment.method')}
+              <RequiredMark />
+            </label>
             <select
               className="w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={method}

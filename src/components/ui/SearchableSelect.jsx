@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import RequiredMark from './RequiredMark';
 
 /**
  * Filterable single-select for growing option lists (branch, plan, etc.).
@@ -14,6 +15,7 @@ export default function SearchableSelect({
   placeholder,
   disabled = false,
   error = false,
+  required = false,
   className = '',
 }) {
   const { t } = useTranslation();
@@ -53,6 +55,7 @@ export default function SearchableSelect({
       {label ? (
         <label htmlFor={fieldId} className="form-label">
           {label}
+          {required ? <RequiredMark /> : null}
         </label>
       ) : null}
       <button

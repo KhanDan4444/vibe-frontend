@@ -4,6 +4,7 @@ import { X, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -86,6 +87,7 @@ export default function TransferMemberModal({
             <div>
               <label htmlFor="transfer-branch" className="form-label">
                 {t('modals.transfer.targetBranch')}
+                <RequiredMark />
               </label>
               <div className="relative mt-1.5">
                 <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-app-muted" />

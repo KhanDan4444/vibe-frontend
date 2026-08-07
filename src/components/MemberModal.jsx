@@ -1,6 +1,6 @@
 // src/components/MemberModal.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Upload, User, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { X, Upload, User, ArrowLeft, CheckCircle2, Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
@@ -31,6 +31,7 @@ import Button from './ui/Button';
 import Card from './ui/Card';
 import PageHeader from './PageHeader';
 import SearchableSelect from './ui/SearchableSelect';
+import RequiredMark from './ui/RequiredMark';
 import EnrollStepProgress from './EnrollStepProgress';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalFieldLabel } from '../utils/modalLayout';
@@ -469,40 +470,52 @@ export default function MemberModal({
 
   const photoBlock = showPhotoUpload ? (
     isPage && !isEdit ? (
-      <div className="rounded-lg border border-dashed border-app-border-subtle bg-app-surface/60 px-3 py-3">
-        <div className="flex items-center gap-3">
-          {photoPreview ? (
-            <div className="flex h-12 w-12 shrink-0 overflow-hidden rounded-full border border-app-border-subtle">
-              <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
-            </div>
-          ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-app-border-subtle bg-app-raised">
-              <User className="h-5 w-5 text-app-muted" />
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <label className="inline-flex cursor-pointer text-sm font-medium text-teal-800 hover:text-teal-900 dark:text-teal-300 dark:hover:text-teal-200">
-              {photoPreview ? t('modals.member.changePhoto') : t('modals.member.addPhotoOptional')}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                onChange={handlePhotoChange}
-              />
-            </label>
+      <div>
+        <label className={modalFieldLabel}>{t('modals.member.photo')}</label>
+        <label
+          className={`mt-2 flex cursor-pointer items-center gap-4 rounded-xl border border-dashed px-4 py-4 transition-colors ${
+            photoPreview
+              ? 'border-teal-600/40 bg-teal-50/50 dark:border-teal-500/30 dark:bg-teal-500/5'
+              : 'border-app-border bg-gradient-to-br from-app-raised to-app-surface hover:border-teal-600/50 hover:from-teal-50/40 hover:to-app-surface dark:hover:from-teal-500/10'
+          }`}
+        >
+          <div
+            className={`relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-app-bg ${
+              photoPreview
+                ? 'ring-teal-600/50 dark:ring-teal-400/40'
+                : 'bg-app-raised ring-app-border-subtle'
+            }`}
+          >
             {photoPreview ? (
-              <button
-                type="button"
-                onClick={clearPhoto}
-                className="mt-0.5 block text-xs font-medium text-app-muted hover:text-app-text-strong"
-              >
-                {t('modals.member.removePhoto')}
-              </button>
+              <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
             ) : (
-              <p className="mt-0.5 text-xs text-app-muted">{t('modals.member.photoHintShort')}</p>
+              <Camera className="h-6 w-6 text-teal-700 dark:text-teal-400" aria-hidden />
             )}
           </div>
-        </div>
+          <div className="min-w-0 flex-1">
+            <span className="block text-sm font-semibold text-app-text-strong">
+              {photoPreview ? t('modals.member.changePhoto') : t('modals.member.addPhotoOptional')}
+            </span>
+            <span className="mt-0.5 block text-xs text-app-muted">
+              {t('modals.member.photoHintShort')}
+            </span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="sr-only"
+              onChange={handlePhotoChange}
+            />
+          </div>
+        </label>
+        {photoPreview ? (
+          <button
+            type="button"
+            onClick={clearPhoto}
+            className="mt-2 text-xs font-medium text-app-muted hover:text-rose-700 dark:hover:text-rose-400"
+          >
+            {t('modals.member.removePhoto')}
+          </button>
+        ) : null}
       </div>
     ) : (
       <div>
@@ -566,7 +579,10 @@ export default function MemberModal({
             {!isEdit && isPage && !useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
             {useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
             <div>
-              <label className={modalFieldLabel}>{t('modals.member.name')}</label>
+              <label className={modalFieldLabel}>
+                {t('modals.member.name')}
+                <RequiredMark />
+              </label>
               <input
                 type="text"
                 required={!useSteps}
@@ -582,7 +598,10 @@ export default function MemberModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
             </div>
             <div>
-              <label className={modalFieldLabel}>{t('modals.member.phone')}</label>
+              <label className={modalFieldLabel}>
+                {t('modals.member.phone')}
+                <RequiredMark />
+              </label>
               <input
                 ref={phoneInputRef}
                 type="tel"
@@ -628,10 +647,14 @@ export default function MemberModal({
                   options={branchOptions}
                   placeholder={t('modals.member.branch')}
                   error={Boolean(fieldErrors.branchId)}
+                  required
                 />
               ) : (
               <div>
-                <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
+                <label className={modalFieldLabel}>
+                  {t('modals.member.branch')}
+                  <RequiredMark />
+                </label>
                 <select
                   required={!isEdit}
                   className={`${fc('branchId')}cursor-pointer`}
@@ -677,10 +700,14 @@ export default function MemberModal({
                       options={planOptions}
                       placeholder={t('modals.renew.selectPlan')}
                       error={Boolean(fieldErrors.planId)}
+                      required
                     />
                   ) : (
                     <>
-                      <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
+                      <label className={modalFieldLabel}>
+                        {t('modals.member.plan')}
+                        <RequiredMark />
+                      </label>
                       <select
                         className={`${fc('planId')}cursor-pointer`}
                         value={planId}
@@ -701,7 +728,10 @@ export default function MemberModal({
                   <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />
                 </div>
                 <div>
-                  <label className={modalFieldLabel}>{t('modals.member.startDate')}</label>
+                  <label className={modalFieldLabel}>
+                    {t('modals.member.startDate')}
+                    <RequiredMark />
+                  </label>
                   <DateField
                     required={!useSteps}
                     className={`${fc('startDate')}cursor-pointer`}
@@ -756,7 +786,10 @@ export default function MemberModal({
                 <div className="space-y-4">
                   <div className={`grid grid-cols-1 gap-4 ${useSteps ? '' : 'sm:grid-cols-2'}`}>
                     <div>
-                      <p className={modalFieldLabel}>{t('modals.member.amount')}</p>
+                      <p className={modalFieldLabel}>
+                        {t('modals.member.amount')}
+                        <RequiredMark />
+                      </p>
                       <p className="mt-1.5 text-base font-semibold text-app-text-strong">
                         {selectedPlan ? formatMoney(selectedPlan.price) : t('modals.member.amountPickPlan')}
                       </p>
@@ -764,7 +797,10 @@ export default function MemberModal({
                       <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
                     </div>
                     <div>
-                      <label className={modalFieldLabel}>{t('modals.member.method')}</label>
+                      <label className={modalFieldLabel}>
+                        {t('modals.member.method')}
+                        <RequiredMark />
+                      </label>
                       <select
                         className={`${fc('method')}cursor-pointer`}
                         value={method}
@@ -779,7 +815,10 @@ export default function MemberModal({
                     </div>
                   </div>
                   <div>
-                    <label className={modalFieldLabel}>{t('modals.member.paymentDate')}</label>
+                    <label className={modalFieldLabel}>
+                      {t('modals.member.paymentDate')}
+                      <RequiredMark />
+                    </label>
                     <DateField
                       required={!useSteps}
                       min={boundsForPaymentOnTerm(startDate).min}

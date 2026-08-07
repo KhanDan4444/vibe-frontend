@@ -14,6 +14,7 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 
 export default function ForgotPassword() {
@@ -101,6 +102,7 @@ export default function ForgotPassword() {
             <div>
               <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
                 {t('auth.forgotIdentifierLabel')}
+                <RequiredMark />
               </label>
               <input
                 type="text"
@@ -139,6 +141,7 @@ export default function ForgotPassword() {
             <div>
               <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
                 {t('auth.otpCode')}
+                <RequiredMark />
               </label>
               <input
                 type="text"
@@ -157,6 +160,7 @@ export default function ForgotPassword() {
             <div>
               <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
                 {t('auth.newPassword')}
+                <RequiredMark />
               </label>
               <input
                 type="password"
@@ -174,6 +178,7 @@ export default function ForgotPassword() {
             <div>
               <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
                 {t('auth.confirmPassword')}
+                <RequiredMark />
               </label>
               <input
                 type="password"

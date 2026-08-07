@@ -19,6 +19,7 @@ import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { formatMoney } from '../utils/formatMoney';
 import { modalBody } from '../utils/modalLayout';
 
@@ -161,7 +162,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('modals.registerGym.gymName')} *</label>
+            <label className="form-label">{t('modals.registerGym.gymName')}
+              <RequiredMark /></label>
             <input
               type="text"
               required
@@ -176,7 +178,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
             <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
           </div>
           <div>
-            <label className="form-label">{t('modals.registerGym.ownerName')} *</label>
+            <label className="form-label">{t('modals.registerGym.ownerName')}
+              <RequiredMark /></label>
             <input
               type="text"
               required
@@ -208,7 +211,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
           </div>
           <div>
             <label className="form-label">
-              {t('modals.registerGym.username')} *
+              {t('modals.registerGym.username')}
+              <RequiredMark />
             </label>
             <input
               type="text"
@@ -229,7 +233,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Password *</label>
+              <label className="form-label">{t('auth.password')}
+                <RequiredMark /></label>
               <input
                 type="password"
                 required
@@ -243,7 +248,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
             </div>
             <div>
-              <label className="form-label">{t('modals.registerGym.phone')} *</label>
+              <label className="form-label">{t('modals.registerGym.phone')}
+              <RequiredMark /></label>
               <input
                 type="tel"
                 required
@@ -261,7 +267,8 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
             </div>
           </div>
           <div>
-            <label className="form-label">{t('modals.registerGym.saasPlan')} *</label>
+            <label className="form-label">{t('modals.registerGym.saasPlan')}
+              <RequiredMark /></label>
             <select
               required
               className={`${fc('saasPlanId')}cursor-pointer`}
@@ -299,7 +306,10 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="form-label">{t('modals.member.amount')}</label>
+                    <label className="form-label">
+                    {t('modals.member.amount')}
+                    <RequiredMark />
+                  </label>
                     <input
                       type="number"
                       min="0.01"
@@ -315,7 +325,10 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                     <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
                   </div>
                   <div>
-                    <label className="form-label">{t('modals.member.method')}</label>
+                    <label className="form-label">
+                    {t('modals.member.method')}
+                    <RequiredMark />
+                  </label>
                     <select
                       className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text cursor-pointer focus:border-teal-600 focus:outline-none"
                       value={method}
@@ -330,7 +343,10 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                   </div>
                 </div>
                 <div>
-                  <label className="form-label">{t('modals.member.paymentDate')}</label>
+                  <label className="form-label">
+                    {t('modals.member.paymentDate')}
+                    <RequiredMark />
+                  </label>
                   <DateField
                     required
                     min={boundsForLicensePayment().min}

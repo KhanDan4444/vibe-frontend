@@ -22,6 +22,7 @@ import { formatMoney } from '../utils/formatMoney';
 import ChangePlanPaymentSummary from './ChangePlanPaymentSummary';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
 
 /**
@@ -233,7 +234,10 @@ export default function ChangePlanModal({
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('modals.changePlan.newPlan')}</label>
+            <label className="form-label">
+              {t('modals.changePlan.newPlan')}
+              <RequiredMark />
+            </label>
             <select
               required
               disabled={otherPlans.length === 0}
@@ -296,7 +300,10 @@ export default function ChangePlanModal({
                   })}
                 </div>
               ) : null}
-              <label className="form-label">{t('modals.changePlan.effectiveDate')}</label>
+              <label className="form-label">
+              {t('modals.changePlan.effectiveDate')}
+              <RequiredMark />
+            </label>
               <DateField
                 required
                 max={termStartBounds.max}
@@ -316,7 +323,10 @@ export default function ChangePlanModal({
           )}
 
           <div>
-            <label className="form-label">{t('modals.changePlan.paymentDateReceived')}</label>
+            <label className="form-label">
+              {t('modals.changePlan.paymentDateReceived')}
+              <RequiredMark />
+            </label>
             <DateField
               required
               min={paymentBounds.min}
@@ -355,7 +365,10 @@ export default function ChangePlanModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.changePlan.amountDue')}</label>
+              <label className="form-label">
+              {t('modals.changePlan.amountDue')}
+              <RequiredMark />
+            </label>
               <input
                 type="number"
                 min="0"
@@ -428,7 +441,10 @@ export default function ChangePlanModal({
               )}
             </div>
             <div>
-              <label className="form-label">{t('modals.member.method')}</label>
+              <label className="form-label">
+              {t('modals.member.method')}
+              <RequiredMark />
+            </label>
               <select
                 className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}

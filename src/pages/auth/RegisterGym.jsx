@@ -17,6 +17,7 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import { formatMoney } from '../../utils/formatMoney';
 
@@ -173,7 +174,8 @@ export default function RegisterGym() {
           <form className="space-y-4" onSubmit={handleRequestOtp}>
             <div>
               <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
-                {t('auth.ownerPhone')} *
+                {t('auth.ownerPhone')}
+                <RequiredMark />
               </label>
               <input
                 type="tel"
@@ -200,7 +202,8 @@ export default function RegisterGym() {
         ) : (
           <form className="space-y-4" onSubmit={handleComplete}>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.otpCode')} *</label>
+              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.otpCode')}
+                <RequiredMark /></label>
               <input
                 type="text"
                 required
@@ -217,21 +220,24 @@ export default function RegisterGym() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
-                  {t('modals.registerGym.gymName')} *
+                  {t('modals.registerGym.gymName')}
+                  <RequiredMark />
                 </label>
                 <input type="text" required value={gymName} onChange={(e) => { setGymName(e.target.value); clearFieldError(setFieldErrors, 'gymName'); }} className={fc('gymName')} />
                 <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
-                  {t('modals.registerGym.ownerName')} *
+                  {t('modals.registerGym.ownerName')}
+                  <RequiredMark />
                 </label>
                 <input type="text" required value={ownerName} onChange={(e) => { setOwnerName(e.target.value); clearFieldError(setFieldErrors, 'ownerName'); }} className={fc('ownerName')} />
                 <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
-                  {t('modals.registerGym.username')} *
+                  {t('modals.registerGym.username')}
+                  <RequiredMark />
                 </label>
                 <input
                   type="text"
@@ -251,7 +257,8 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('table.plan')} *</label>
+                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('table.plan')}
+                  <RequiredMark /></label>
                 <select
                   required
                   value={saasPlanId}
@@ -267,7 +274,8 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'saasPlanId')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.password')} *</label>
+                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.password')}
+                  <RequiredMark /></label>
                 <input
                   type="password"
                   required
@@ -280,7 +288,8 @@ export default function RegisterGym() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
-                  {t('auth.confirmPassword')} *
+                  {t('auth.confirmPassword')}
+                  <RequiredMark />
                 </label>
                 <input
                   type="password"

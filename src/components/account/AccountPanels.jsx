@@ -7,6 +7,7 @@ import { getGymProfile, updateGymProfile } from '../../services/gymProfileServic
 import { parseApiResponse } from '../../utils/api';
 import { formatPhoneForInput, validateOwnerProfile, validatePasswordChange, showValidationError, inputClass as fieldInputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../../utils/validation';
 import FieldError from '../FieldError';
+import RequiredMark from '../ui/RequiredMark';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { isGymOwner, isGymStaff } from '../../utils/roles';
 import {
@@ -32,12 +33,13 @@ function Alert({ children }) {
   );
 }
 
-function FieldLabel({ htmlFor, icon: Icon, children, hint }) {
+function FieldLabel({ htmlFor, icon: Icon, children, hint, required = false }) {
   return (
     <label htmlFor={htmlFor} className="form-label">
       <span className="inline-flex items-center gap-1.5">
         {Icon && <Icon className="h-3.5 w-3.5 text-app-muted" aria-hidden />}
         {children}
+        {required ? <RequiredMark /> : null}
       </span>
       {hint && <span className="mt-0.5 block text-xs font-normal text-app-muted">{hint}</span>}
     </label>
@@ -52,7 +54,9 @@ function PasswordField({ id, label, value, onChange, show, onToggleShow, autoCom
   const cls = field && fieldErrors ? fieldInputClass(inputClass, fieldErrors, field) : inputClass;
   return (
     <div>
-      <FieldLabel htmlFor={id}>{label}</FieldLabel>
+      <FieldLabel htmlFor={id} required>
+        {label}
+      </FieldLabel>
       <div className="relative mt-1.5">
         <input
           id={id}
@@ -300,7 +304,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
         <form className="space-y-4" onSubmit={handleSubmit} onChangeCapture={markTouched}>
           {error && !Object.keys(fieldErrors).length && <Alert>{error}</Alert>}
           <div>
-            <FieldLabel htmlFor="modal-gym-name" icon={Building2}>
+            <FieldLabel htmlFor="modal-gym-name" icon={Building2} required>
               {t('account.gymName')}
             </FieldLabel>
             <input
@@ -318,7 +322,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <FieldLabel htmlFor="modal-owner-name" icon={User}>
+              <FieldLabel htmlFor="modal-owner-name" icon={User} required>
                 {t('account.yourName')}
               </FieldLabel>
               <input
@@ -335,7 +339,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
               <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
             </div>
             <div>
-              <FieldLabel htmlFor="modal-gym-phone" icon={Phone}>
+              <FieldLabel htmlFor="modal-gym-phone" icon={Phone} required>
                 {t('account.gymPhone')}
               </FieldLabel>
               <input
@@ -360,6 +364,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
               <FieldLabel
                 htmlFor="modal-login-username"
                 icon={AtSign}
+                required
                 hint={currentUsername ? t('account.currentUsername', { username: currentUsername }) : undefined}
               >
                 {t('account.username')}
@@ -381,7 +386,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
               <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
             </div>
             <div>
-              <FieldLabel htmlFor="modal-login-email" icon={Mail}>
+              <FieldLabel htmlFor="modal-login-email" icon={Mail} required>
                 {t('account.loginEmail')}
               </FieldLabel>
               <input

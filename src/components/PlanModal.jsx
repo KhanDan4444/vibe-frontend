@@ -7,6 +7,7 @@ import { validatePlanForm, showValidationError, inputClass, fieldErrorMessage, c
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
 
 /**
@@ -102,7 +103,10 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
 
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">{t('modals.plan.name')}</label>
+            <label className="form-label">
+              {t('modals.plan.name')}
+              <RequiredMark />
+            </label>
             <input
               type="text"
               required
@@ -119,7 +123,10 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">{t('modals.plan.duration')}</label>
+              <label className="form-label">
+                {t('modals.plan.duration')}
+                <RequiredMark />
+              </label>
               <input
                 type="number"
                 required
@@ -135,7 +142,10 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
               <FieldError message={fieldErrorMessage(fieldErrors, 'duration')} />
             </div>
             <div>
-              <label className="form-label">{t('modals.plan.price')}</label>
+              <label className="form-label">
+                {t('modals.plan.price')}
+                <RequiredMark />
+              </label>
               <input
                 type="number"
                 required

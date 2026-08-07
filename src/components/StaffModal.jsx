@@ -7,6 +7,7 @@ import { validateStaffForm, showValidationError, inputClass, fieldErrorMessage, 
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -137,6 +138,7 @@ export default function StaffModal({
           <div>
             <label htmlFor="staff-branch" className="form-label">
               {t('modals.staff.branch')}
+              <RequiredMark />
             </label>
             <select
               id="staff-branch"
@@ -160,6 +162,7 @@ export default function StaffModal({
           <div>
             <label htmlFor="staff-role" className="form-label">
               {t('modals.staff.role')}
+              <RequiredMark />
             </label>
             <select
               id="staff-role"
@@ -180,6 +183,7 @@ export default function StaffModal({
           <div>
             <label htmlFor="staff-name" className="form-label">
               {t('modals.staff.name')}
+              <RequiredMark />
             </label>
             <input
               id="staff-name"
@@ -216,7 +220,8 @@ export default function StaffModal({
 
           <div>
             <label htmlFor="staff-username" className="form-label">
-              {t('modals.staff.username')} *
+              {t('modals.staff.username')}
+              <RequiredMark />
             </label>
             <input
               id="staff-username"
@@ -241,6 +246,7 @@ export default function StaffModal({
           <div>
             <label htmlFor="staff-password" className="form-label">
               {t('modals.staff.password')}
+              {!isEdit ? <RequiredMark /> : null}
               {isEdit && (
                 <span className="ml-1 text-xs font-normal text-app-muted">{t('modals.staff.passwordKeepHint')}</span>
               )}

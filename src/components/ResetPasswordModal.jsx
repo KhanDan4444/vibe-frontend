@@ -6,6 +6,7 @@ import { validatePassword, showValidationError, inputClass, fieldErrorMessage, c
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -83,6 +84,7 @@ export default function ResetPasswordModal({
           <div>
             <label htmlFor="reset-password" className="form-label">
               {t('modals.resetPassword.password')}
+              <RequiredMark />
             </label>
             <div className="relative mt-1.5">
               <input

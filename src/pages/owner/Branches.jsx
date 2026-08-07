@@ -17,6 +17,7 @@ import FieldError from '../../components/FieldError';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { tableRowHover } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
+import RequiredMark from '../../components/ui/RequiredMark';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
@@ -80,7 +81,10 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
             </div>
           )}
           <div>
-            <label className="form-label">{t('pages.branches.nameLabel')}</label>
+            <label className="form-label">
+              {t('pages.branches.nameLabel')}
+              <RequiredMark />
+            </label>
             <input
               required
               value={name}
