@@ -18,7 +18,6 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
-import RequiredMark from '../../components/ui/RequiredMark';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -84,9 +83,8 @@ export default function Login() {
 
           <form className="space-y-3" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-white/70">
+              <label htmlFor="login-email" className="sr-only">
                 {t('auth.emailOrUsername')}
-                <RequiredMark />
               </label>
               <input
                 id="login-email"
@@ -104,9 +102,8 @@ export default function Login() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
             </div>
             <div>
-              <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-white/70">
+              <label htmlFor="login-password" className="sr-only">
                 {t('auth.password')}
-                <RequiredMark />
               </label>
               <div className="relative">
                 <input
