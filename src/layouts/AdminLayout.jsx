@@ -45,8 +45,8 @@ function SidebarLink({
   railCompact = false,
   labelsVisible = true,
 }) {
-  const className = `relative flex w-full min-h-[44px] items-center rounded-lg text-sm font-medium transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none ${
-    railCompact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-3'
+  const className = `relative flex w-full items-center rounded-lg text-sm font-medium transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none ${
+    railCompact ? 'h-11 justify-center gap-0 px-0' : 'min-h-[44px] gap-3 px-3 py-3'
   } ${active ? sidebarNavActive : sidebarNavIdle}`;
 
   const cornerBadge =
@@ -234,7 +234,7 @@ export default function AdminLayout() {
           dismissShortcutCoach={dismissShortcutCoach}
           collapseToggleRef={collapseToggleRef}
         />
-        <nav className={`flex-1 space-y-1 ${showLabels ? '' : 'px-0.5'}`}>
+        <nav className={`flex-1 ${showLabels ? 'space-y-1' : 'space-y-0.5 px-0.5'}`}>
           {adminNavItems.map((item) => (
             <SidebarLink
               key={item.section}

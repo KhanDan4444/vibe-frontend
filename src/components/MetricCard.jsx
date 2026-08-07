@@ -36,6 +36,19 @@ const BADGE_COLOR = {
   slate: 'bg-app-surface text-app-muted border-app-border-subtle',
 };
 
+/** Icon tint matches metric semantics (same tokens as member filter chips). */
+const ICON_COLOR = {
+  emerald: 'text-[color:var(--color-status-active)]',
+  sky: 'text-[color:var(--color-status-due-soon)]',
+  rose: 'text-[color:var(--color-status-expired)]',
+  teal: 'text-brand',
+  brand: 'text-brand',
+  indigo: 'text-brand',
+  violet: 'text-[color:var(--color-status-unpaid)]',
+  amber: 'text-[color:var(--color-status-trialing)]',
+  slate: 'text-app-muted',
+};
+
 export default function MetricCard({
   label,
   value,
@@ -53,6 +66,7 @@ export default function MetricCard({
 }) {
   const progressBarColor = PROGRESS_COLOR[color] || PROGRESS_COLOR.teal;
   const badgeClass = BADGE_COLOR[color] || BADGE_COLOR.teal;
+  const iconClass = ICON_COLOR[color] || ICON_COLOR.slate;
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
 
   return (
@@ -70,8 +84,8 @@ export default function MetricCard({
                 {badge}
               </span>
             ) : null}
-            {Icon && !badge ? (
-              <Icon className={`h-4 w-4 shrink-0 ${mutedText}`} aria-hidden />
+            {Icon ? (
+              <Icon className={`h-4 w-4 shrink-0 ${iconClass}`} aria-hidden />
             ) : null}
           </div>
         )}

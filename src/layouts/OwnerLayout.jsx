@@ -163,7 +163,7 @@ export default function OwnerLayout() {
         onClick={onNavigate}
         aria-label={railCompact ? label : undefined}
         className={`relative flex items-center rounded-lg text-sm font-medium transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none ${
-          railCompact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+          railCompact ? 'h-11 w-full justify-center gap-0 px-0' : 'gap-3 px-3 py-2.5'
         } ${active ? sidebarNavActive : sidebarNavIdle}`}
       >
         <span className="relative shrink-0">
@@ -267,7 +267,7 @@ export default function OwnerLayout() {
           dismissShortcutCoach={dismissShortcutCoach}
           collapseToggleRef={collapseToggleRef}
         />
-        <nav className={`flex-1 space-y-1 ${showLabels ? '' : 'px-0.5'}`}>
+        <nav className={`flex-1 ${showLabels ? 'space-y-1' : 'space-y-0.5 px-0.5'}`}>
           {menuItems.map((item) =>
             renderNavLink(item, undefined, { railCompact: compact, labelsVisible: showLabels })
           )}

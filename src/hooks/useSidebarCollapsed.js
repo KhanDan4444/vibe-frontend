@@ -117,7 +117,7 @@ export function useSidebarCollapsed() {
   const compact = collapsed;
 
   const asideWidthClass = showLabels ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED;
-  const asidePadClass = showLabels ? 'p-6' : 'px-2.5 py-5';
+  const asidePadClass = showLabels ? 'p-6' : 'px-2 py-4';
   const contentPadClass = collapsed ? SIDEBAR_PAD_COLLAPSED : SIDEBAR_PAD_EXPANDED;
 
   const asideClassName = [

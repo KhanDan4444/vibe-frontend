@@ -11,6 +11,8 @@ import {
   RefreshCw,
   Calendar,
   AlertCircle,
+  AlertTriangle,
+  XCircle,
   FileStack,
 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
@@ -275,9 +277,9 @@ export default function OwnerReports() {
         </div>
 
         <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
-          <MetricCard label={t('metrics.unpaid')} value={memberStats.unpaid} icon={AlertCircle} color="amber" badge={memberStats.unpaid > 0 ? t('metrics.actionRequired') : null} />
-          <MetricCard label={t('metrics.dueSoon')} value={memberStats.dueSoon} icon={AlertCircle} color="amber" />
-          <MetricCard label={t('metrics.expired')} value={memberStats.expired} icon={AlertCircle} color="rose" />
+          <MetricCard label={t('metrics.unpaid')} value={memberStats.unpaid} icon={AlertCircle} color="violet" badge={memberStats.unpaid > 0 ? t('metrics.actionRequired') : null} />
+          <MetricCard label={t('metrics.dueSoon')} value={memberStats.dueSoon} icon={AlertTriangle} color="sky" />
+          <MetricCard label={t('metrics.expired')} value={memberStats.expired} icon={XCircle} color="rose" />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

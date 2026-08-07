@@ -289,8 +289,8 @@ export default function AdminReports({ onBootingChange }) {
           <>
           <MetricCard label={t('admin.gymsInReport')} value={gymStats.total} icon={Building2} color="teal" />
           <MetricCard label={t('admin.activeStatus')} value={gymStats.active} icon={Building2} color="emerald" />
-          <MetricCard label={t('admin.unpaidLicenses')} value={gymStats.unpaid} icon={AlertCircle} color="amber" badge={gymStats.unpaid > 0 ? t('admin.actionBadge') : null} />
-          <MetricCard label={t('admin.platformMembers')} value={gymStats.members} icon={Users} color="violet" hint={t('admin.platformMembersHint')} showHintBelow />
+          <MetricCard label={t('admin.unpaidLicenses')} value={gymStats.unpaid} icon={AlertCircle} color="violet" badge={gymStats.unpaid > 0 ? t('admin.actionBadge') : null} />
+          <MetricCard label={t('admin.platformMembers')} value={gymStats.members} icon={Users} color="teal" hint={t('admin.platformMembersHint')} showHintBelow />
           </>
           )}
         </div>

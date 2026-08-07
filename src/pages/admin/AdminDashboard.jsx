@@ -568,7 +568,7 @@ export default function AdminDashboard() {
                   value={dueSoonGyms} 
                   hint={dueSoonGyms > 0 ? null : t('admin.noImmediateRenewals')} 
                   icon={AlertTriangle} 
-                  color="rose" 
+                  color="sky" 
                   badge={dueSoonGyms > 0 ? t('metrics.critical') : null}
                 />
                 <MetricCard 

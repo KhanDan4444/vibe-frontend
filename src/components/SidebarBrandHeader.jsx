@@ -28,7 +28,9 @@ export default function SidebarBrandHeader({
         ref={collapseToggleRef}
         type="button"
         onClick={toggleCollapsed}
-        className="shrink-0 rounded-lg p-2 text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong"
+        className={`shrink-0 rounded-lg text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong ${
+          compact ? 'flex h-11 w-11 items-center justify-center' : 'p-2'
+        }`}
         aria-label={`${tipLabel} (${shortcutHint})`}
       >
         {collapsed ? <PanelLeft className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
@@ -39,7 +41,7 @@ export default function SidebarBrandHeader({
   return (
     <div
       className={`relative transition-all duration-[180ms] ease-out motion-reduce:transition-none ${
-        compact ? 'mb-4 flex flex-col items-center gap-2 pb-4' : 'mb-4 pr-9 pb-4'
+        compact ? 'mb-3 flex flex-col items-center gap-1.5 pb-3' : 'mb-4 pr-9 pb-4'
       }`}
     >
       <BrandLogo
@@ -55,11 +57,14 @@ export default function SidebarBrandHeader({
         anchorRef={collapseToggleRef}
         layoutKey={showLabels}
       />
+      {/* Collapsed: short solid tick reads better on a narrow rail; expanded: soft full rule */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent ${
-          compact ? 'left-1 right-1' : '-left-1 -right-1'
-        }`}
+        className={
+          compact
+            ? 'pointer-events-none absolute bottom-0 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-white/35'
+            : 'pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent'
+        }
       />
     </div>
   );
