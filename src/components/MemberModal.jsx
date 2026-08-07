@@ -23,6 +23,7 @@ import {
   clearAllFieldErrors,
 } from '../utils/validation';
 import { compressMemberPhoto } from '../utils/compressMemberPhoto';
+import { calculateEndDate } from '../utils/memberDates';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -405,6 +406,9 @@ export default function MemberModal({
   const useSteps = isPage && !isEdit;
   const canContinueStep1 = memberFieldsReady && (!showBranchPicker || Boolean(branchId));
   const canContinueStep2 = plans.length > 0 && Boolean(planId) && Boolean(startDate);
+  const computedEndDate =
+    selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : '';
+  const endDateValue = computedEndDate && computedEndDate !== '—' ? computedEndDate : '';
 
   const enrollSteps = [
     { id: 'member', label: t('modals.member.sectionMember') },
@@ -745,6 +749,16 @@ export default function MemberModal({
                     }}
                   />
                   <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
+                </div>
+                <div>
+                  <label className={modalFieldLabel}>{t('modals.member.endDate')}</label>
+                  <div
+                    className={`${baseFieldClass} flex min-h-[42px] cursor-default items-center bg-app-surface text-app-muted`}
+                    aria-live="polite"
+                  >
+                    {endDateValue ? formatDisplayDate(endDateValue) : '—'}
+                  </div>
+                  <p className="mt-1 text-xs text-app-muted">{t('modals.member.endDateHint')}</p>
                 </div>
               </div>
             </section>

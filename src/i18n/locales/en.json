@@ -754,6 +754,8 @@
       "phoneHint": "Required for SMS renewal reminders. Use 09… or +251…",
       "plan": "Membership plan",
       "startDate": "Start date",
+      "endDate": "End date",
+      "endDateHint": "Calculated from the plan and start date.",
       "branch": "Branch",
       "photo": "Photo",
       "uploadPhoto": "Upload photo",

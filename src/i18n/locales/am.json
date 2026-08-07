@@ -718,6 +718,8 @@
       "saveEnroll": "አባል መዝግብ",
       "saveUpdate": "ለውጦችን አስቀምጥ",
       "startDate": "የመጀመሪያ ቀን",
+      "endDate": "ማለቂያ ቀን",
+      "endDateHint": "ከዕቅዱና ከመጀመሪያ ቀን በራስ ይሰላል።",
       "unpaidWarning": "ክፍያ እስኪሰበሰብ ድረስ አባሉ እንዳልከፈለ ምልክት ይደረግበታል።",
       "uploadPhoto": "ፎቶ ይስቀሉ",
       "addPhotoOptional": "ፎቶ ጨምር (አማራጭ)",
