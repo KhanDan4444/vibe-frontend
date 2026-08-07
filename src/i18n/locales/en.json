@@ -230,7 +230,8 @@
       "dueSoon": "Due soon reminder",
       "expiresToday": "Expires today",
       "expired": "Expired notice",
-      "renewed": "Renewal confirmed"
+      "renewed": "Renewal confirmed",
+      "enrolled": "Enrollment confirmed"
     },
     "gymTypes": {
       "dueSoon": "License due soon (3 days)",
@@ -755,7 +756,7 @@
       "namePlaceholder": "Member name",
       "phone": "Phone",
       "phonePlaceholder": "09xxxxxxxx",
-      "phoneHint": "Required for SMS renewal reminders. Use 09… or +251…",
+      "phoneHint": "Required for enrollment SMS and renewal reminders. Use 09… or +251…",
       "plan": "Membership plan",
       "startDate": "Start date",
       "endDate": "End date",

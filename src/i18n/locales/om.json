@@ -230,7 +230,8 @@
       "dueSoon": "Yaadachiisa dhiyeenyatti dhumu",
       "expiresToday": "Har'a dhumata",
       "expired": "Beeksisa dhumuu",
-      "renewed": "Haaromsa mirkanaa'e"
+      "renewed": "Haaromsa mirkanaa'e",
+      "enrolled": "Galmeessi mirkanaa'e"
     },
     "gymTypes": {
       "dueSoon": "Hayyamni dhiyeenyatti dhumata (guyyaa 3)",

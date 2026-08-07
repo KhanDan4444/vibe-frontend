@@ -5,6 +5,7 @@ const MEMBER_TYPE_KEYS = {
   member_expires_today: 'smsLog.types.expiresToday',
   member_expired: 'smsLog.types.expired',
   member_renewed: 'smsLog.types.renewed',
+  member_enrolled: 'smsLog.types.enrolled',
 };
 
 const GYM_LICENSE_TYPE_KEYS = {
@@ -42,6 +43,7 @@ export function formatAdminSmsMessageType(t, messageType) {
 
 export const SMS_TYPE_FILTER_OPTIONS = [
   { value: 'all', labelKey: 'filters.all' },
+  { value: 'member_enrolled', labelKey: 'smsLog.types.enrolled' },
   { value: 'member_due_soon', labelKey: 'smsLog.types.dueSoon' },
   { value: 'member_expires_today', labelKey: 'smsLog.types.expiresToday' },
   { value: 'member_expired', labelKey: 'smsLog.types.expired' },
