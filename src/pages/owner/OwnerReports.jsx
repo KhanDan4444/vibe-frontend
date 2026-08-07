@@ -268,7 +268,7 @@ export default function OwnerReports() {
             label={t('metrics.newMembers')}
             value={summary.newMembersThisMonth ?? 0}
             icon={UserPlus}
-            color="violet"
+            color="amber"
             trend={summary.newMembersTrendPercent ?? null}
             trendCaption={summary.newMembersDeltaLabel || t('metrics.vsLastMonth')}
           />

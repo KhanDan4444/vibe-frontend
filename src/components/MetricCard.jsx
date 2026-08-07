@@ -84,7 +84,7 @@ export default function MetricCard({
                 {badge}
               </span>
             ) : null}
-            {Icon ? (
+            {Icon && !badge ? (
               <Icon className={`h-4 w-4 shrink-0 ${iconClass}`} aria-hidden />
             ) : null}
           </div>

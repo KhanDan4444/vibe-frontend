@@ -93,9 +93,9 @@ export default function BranchComparisonTable({ branches = [], loading = false }
                     )}
                   </td>
                   <td>{row.totalMembers}</td>
-                  <td className="text-emerald-700 dark:text-emerald-400">{row.activeMembers}</td>
-                  <td className="text-amber-700 dark:text-amber-400">{row.dueSoonMembers}</td>
-                  <td className="text-rose-700 dark:text-rose-400">{row.expiredMembers}</td>
+                  <td className="text-[color:var(--color-status-active)]">{row.activeMembers}</td>
+                  <td className="text-[color:var(--color-status-due-soon)]">{row.dueSoonMembers}</td>
+                  <td className="text-[color:var(--color-status-expired)]">{row.expiredMembers}</td>
                   <td className="font-semibold text-app-text-strong">
                     {formatMoney(row.monthlyIncome)}
                     {row.revenueTrendPercent != null && (
