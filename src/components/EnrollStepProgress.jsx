@@ -22,14 +22,13 @@ export default function EnrollStepProgress({ steps, current, onSelect }) {
                 onClick={() => clickable && onSelect(n)}
                 className={[
                   'flex w-14 shrink-0 flex-col items-center gap-1.5 rounded-lg py-0.5 transition-colors sm:w-16',
-                  active ? 'bg-teal-700/10' : '',
                   clickable ? 'cursor-pointer hover:bg-app-surface' : 'cursor-default',
                 ].join(' ')}
                 aria-current={active ? 'step' : undefined}
               >
                 <span
                   className={[
-                    'flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors',
+                    'flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors',
                     active || done
                       ? 'bg-teal-700 text-white dark:bg-teal-600'
                       : 'bg-app-surface text-app-muted ring-1 ring-app-border-subtle',
@@ -48,7 +47,7 @@ export default function EnrollStepProgress({ steps, current, onSelect }) {
               </button>
 
               {!isLast ? (
-                <div className="mx-1 flex h-8 min-w-[1rem] flex-1 items-center sm:mx-2" aria-hidden>
+                <div className="mx-1 flex h-10 min-w-[1rem] flex-1 items-center sm:mx-2" aria-hidden>
                   <div className="h-0.5 w-full overflow-hidden rounded-full bg-app-border-subtle">
                     <div
                       className={[

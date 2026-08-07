@@ -716,6 +716,40 @@
     animation: app-page-in 0.28s ease-out;
   }
 
+  @keyframes enroll-success-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes enroll-success-check {
+    0% {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .enroll-success-in {
+    animation: enroll-success-in 0.36s ease-out both;
+  }
+
+  .enroll-success-check {
+    animation: enroll-success-check 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  }
+
   @keyframes app-metric-in {
     from {
       opacity: 0;
@@ -750,6 +784,8 @@
   @media (prefers-reduced-motion: reduce) {
     .app-page,
     .app-metric-grid > *,
+    .enroll-success-in,
+    .enroll-success-check,
     html:not(.dark) .app-card-lift,
     html:not(.dark) .app-card-lift:hover {
       animation: none !important;

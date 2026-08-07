@@ -24,7 +24,7 @@ import {
 } from '../utils/validation';
 import { compressMemberPhoto } from '../utils/compressMemberPhoto';
 import { calculateEndDate } from '../utils/memberDates';
-import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
+import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../i18n/helpers.js';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
 import ResponsiveModal from './ResponsiveModal';
@@ -78,8 +78,6 @@ export default function MemberModal({
   const [enrollStep, setEnrollStep] = useState(1);
   const [enrollDone, setEnrollDone] = useState(null);
   const lastModalModeRef = useRef(null);
-  const phoneInputRef = useRef(null);
-  const phoneRefocusLockRef = useRef(false);
 
   const isEdit = !!member;
   const fieldErrors = { ...externalFieldErrors, ...localFieldErrors };
@@ -143,42 +141,28 @@ export default function MemberModal({
     if (!isEdit) markTouched();
   };
 
-  /** Keep focus on phone and show the field error until the number is valid. */
-  const ensurePhoneValid = useCallback(() => {
+  /** Show phone field error on blur; do not trap focus so users can edit other fields. */
+  const handlePhoneBlur = () => {
     const result = validateRequiredEthiopianPhone(phone);
     if (result.ok) {
       clearFieldError(setLocalFieldErrors, 'phone');
-      return true;
+      return;
     }
     showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
-    return false;
-  }, [phone, t]);
-
-  const handlePhoneBlur = (e) => {
-    if (phoneRefocusLockRef.current) return;
-    if (ensurePhoneValid()) return;
-
-    const next = e.relatedTarget;
-    // Allow Cancel / close / leaving the modal; still keep the field error visible.
-    if (!next || next.matches('button, [type="submit"], [type="button"]')) return;
-    const form = e.currentTarget.form;
-    if (form && !form.contains(next)) return;
-
-    phoneRefocusLockRef.current = true;
-    requestAnimationFrame(() => {
-      phoneInputRef.current?.focus();
-      phoneRefocusLockRef.current = false;
-    });
   };
 
-  const handlePhoneKeyDown = (e) => {
-    // Block Tab (forward) / Enter from leaving an invalid phone field.
-    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
-      if (!ensurePhoneValid()) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+  const handleNameBlur = () => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      showValidationError(
+        { ok: false, key: 'validation.fullNameRequired', field: 'name' },
+        setValidationError,
+        t,
+        { setFieldErrors: setLocalFieldErrors }
+      );
+      return;
     }
+    clearFieldError(setLocalFieldErrors, 'name');
   };
 
   useEffect(() => {
@@ -322,6 +306,13 @@ export default function MemberModal({
     };
 
     const selectedPlan = plans.find((p) => p.id === parseInt(planId, 10));
+    const endDateIso = selectedPlan ? calculateEndDate(startDate, selectedPlan.duration) : '';
+    const doneSummary = {
+      name: base.name,
+      planName: selectedPlan?.name || '',
+      startDate,
+      endDate: endDateIso && endDateIso !== '—' ? endDateIso : '',
+    };
     let photoDataUrl;
     if (photoFile) {
       setPhotoProcessing(true);
@@ -358,7 +349,12 @@ export default function MemberModal({
           photo: photoDataUrl,
         });
         if (variant === 'page') {
-          setEnrollDone({ name: base.name, skipPayment: false });
+          setEnrollDone({
+            ...doneSummary,
+            skipPayment: false,
+            amount: parsedAmount,
+            method,
+          });
           setEnrollStep(1);
         } else {
           resetDraft();
@@ -378,7 +374,10 @@ export default function MemberModal({
           photo: photoDataUrl,
         });
         if (variant === 'page') {
-          setEnrollDone({ name: base.name, skipPayment: true });
+          setEnrollDone({
+            ...doneSummary,
+            skipPayment: true,
+          });
           setEnrollStep(1);
         } else {
           resetDraft();
@@ -404,7 +403,6 @@ export default function MemberModal({
   const isPage = variant === 'page';
   const selectedPlan = plans.find((p) => String(p.id) === String(planId));
   const useSteps = isPage && !isEdit;
-  const canContinueStep1 = memberFieldsReady && (!showBranchPicker || Boolean(branchId));
   const canContinueStep2 = plans.length > 0 && Boolean(planId) && Boolean(startDate);
   const computedEndDate =
     selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : '';
@@ -477,23 +475,23 @@ export default function MemberModal({
       <div>
         <label className={modalFieldLabel}>{t('modals.member.photo')}</label>
         <label
-          className={`mt-2 flex cursor-pointer items-center gap-4 rounded-xl border border-dashed px-4 py-4 transition-colors ${
+          className={`mt-2 flex cursor-pointer items-center gap-4 rounded-xl border border-dashed px-1 py-2 transition-colors ${
             photoPreview
-              ? 'border-teal-600/40 bg-teal-50/50 dark:border-teal-500/30 dark:bg-teal-500/5'
-              : 'border-app-border bg-gradient-to-br from-app-raised to-app-surface hover:border-teal-600/50 hover:from-teal-50/40 hover:to-app-surface dark:hover:from-teal-500/10'
+              ? 'border-teal-600/40 dark:border-teal-500/30'
+              : 'border-transparent hover:border-app-border'
           }`}
         >
           <div
-            className={`relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-app-bg ${
+            className={`relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-app-bg sm:h-24 sm:w-24 ${
               photoPreview
                 ? 'ring-teal-600/50 dark:ring-teal-400/40'
-                : 'bg-app-raised ring-app-border-subtle'
+                : 'bg-app-surface ring-app-border-subtle'
             }`}
           >
             {photoPreview ? (
               <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
             ) : (
-              <Camera className="h-6 w-6 text-teal-700 dark:text-teal-400" aria-hidden />
+              <Camera className="h-8 w-8 text-teal-700 dark:text-teal-400 sm:h-9 sm:w-9" aria-hidden />
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -598,6 +596,8 @@ export default function MemberModal({
                   clearFieldError(setLocalFieldErrors, 'name');
                   markEnrollTouched();
                 }}
+                onBlur={handleNameBlur}
+                aria-invalid={Boolean(fieldErrors.name)}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
             </div>
@@ -607,7 +607,6 @@ export default function MemberModal({
                 <RequiredMark />
               </label>
               <input
-                ref={phoneInputRef}
                 type="tel"
                 required={!useSteps}
                 inputMode="tel"
@@ -632,7 +631,6 @@ export default function MemberModal({
                   }
                 }}
                 onBlur={handlePhoneBlur}
-                onKeyDown={handlePhoneKeyDown}
                 aria-invalid={Boolean(fieldErrors.phone)}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
@@ -885,7 +883,7 @@ export default function MemberModal({
                   {enrollStep < 3 ? (
                     <Button
                       type="button"
-                      disabled={enrollStep === 1 ? !canContinueStep1 : !canContinueStep2}
+                      disabled={isBusy || (enrollStep === 2 && !canContinueStep2)}
                       onClick={goEnrollNext}
                       className="w-full sm:w-auto"
                     >
@@ -932,32 +930,72 @@ export default function MemberModal({
     if (!isOpen) return null;
 
     if (enrollDone) {
+      const termLabel =
+        enrollDone.startDate && enrollDone.endDate
+          ? `${formatDisplayDate(enrollDone.startDate)} → ${formatDisplayDate(enrollDone.endDate)}`
+          : enrollDone.startDate
+            ? formatDisplayDate(enrollDone.startDate)
+            : '';
+      const paymentLabel = enrollDone.skipPayment
+        ? t('status.unpaid')
+        : [
+            enrollDone.amount != null ? formatMoney(enrollDone.amount) : null,
+            enrollDone.method ? translatePaymentMethod(enrollDone.method) : null,
+          ]
+            .filter(Boolean)
+            .join(' · ');
+
       return (
-        <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
-          <PageHeader
-            title={title}
-            subtitle={subtitle}
-            actions={
-              <Button type="button" variant="secondary" onClick={onClose}>
-                <ArrowLeft className="h-4 w-4" />
-                {t('pages.members.backToList')}
-              </Button>
-            }
-          />
-          <Card className="p-6 sm:p-8">
+        <div className="mx-auto w-full max-w-xl enroll-success-in">
+          <Card className="overflow-hidden p-6 sm:p-8">
             <div className="mx-auto flex max-w-sm flex-col items-center text-center">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                <CheckCircle2 className="h-8 w-8" />
+              <div className="enroll-success-check mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-9 w-9" strokeWidth={2} />
               </div>
-              <h2 className="text-lg font-bold text-app-text-strong">
-                {t('modals.member.successTitle', { name: enrollDone.name })}
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-800 dark:text-teal-300">
+                {t('modals.member.successDone')}
+              </p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-app-text-strong">
+                {enrollDone.name}
               </h2>
-              <p className="mt-2 text-sm text-app-muted">
+              <p className="mt-1.5 text-sm text-app-muted">
                 {enrollDone.skipPayment
                   ? t('modals.member.successSkip')
                   : t('modals.member.successPaid')}
               </p>
-              <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
+
+              {(enrollDone.planName || termLabel || paymentLabel) && (
+                <dl className="mt-6 w-full divide-y divide-app-border-subtle rounded-xl border border-app-border-subtle bg-app-surface text-left text-sm">
+                  {enrollDone.planName ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('table.plan')}</dt>
+                      <dd className="truncate font-medium text-app-text-strong">{enrollDone.planName}</dd>
+                    </div>
+                  ) : null}
+                  {termLabel ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('modals.member.term')}</dt>
+                      <dd className="font-medium text-app-text-strong">{termLabel}</dd>
+                    </div>
+                  ) : null}
+                  {paymentLabel ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('modals.member.sectionPayment')}</dt>
+                      <dd
+                        className={`font-medium ${
+                          enrollDone.skipPayment
+                            ? 'text-amber-800 dark:text-amber-300'
+                            : 'text-app-text-strong'
+                        }`}
+                      >
+                        {paymentLabel}
+                      </dd>
+                    </div>
+                  ) : null}
+                </dl>
+              )}
+
+              <div className="mt-7 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
                 <Button type="button" onClick={startAnotherEnroll} className="w-full sm:w-auto">
                   {t('modals.member.enrollAnother')}
                 </Button>
@@ -977,7 +1015,7 @@ export default function MemberModal({
           title={title}
           subtitle={subtitle}
           actions={
-            <Button type="button" variant="secondary" onClick={onClose}>
+            <Button type="button" onClick={onClose}>
               <ArrowLeft className="h-4 w-4" />
               {t('pages.members.backToList')}
             </Button>
