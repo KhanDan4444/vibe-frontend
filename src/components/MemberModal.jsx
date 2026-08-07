@@ -307,8 +307,13 @@ export default function MemberModal({
 
     const selectedPlan = plans.find((p) => p.id === parseInt(planId, 10));
     const endDateIso = selectedPlan ? calculateEndDate(startDate, selectedPlan.duration) : '';
+    const selectedBranch = activeBranches.find((b) => String(b.id) === String(branchId));
     const doneSummary = {
       name: base.name,
+      phone: base.phone,
+      branchName: selectedBranch
+        ? `${selectedBranch.name}${selectedBranch.is_default ? t('branch.defaultSuffix') : ''}`
+        : '',
       planName: selectedPlan?.name || '',
       startDate,
       endDate: endDateIso && endDateIso !== '—' ? endDateIso : '',
@@ -964,8 +969,24 @@ export default function MemberModal({
                   : t('modals.member.successPaid')}
               </p>
 
-              {(enrollDone.planName || termLabel || paymentLabel) && (
+              {(enrollDone.phone ||
+                enrollDone.branchName ||
+                enrollDone.planName ||
+                termLabel ||
+                paymentLabel) && (
                 <dl className="mt-6 w-full divide-y divide-app-border-subtle rounded-xl border border-app-border-subtle bg-app-surface text-left text-sm">
+                  {enrollDone.phone ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('table.phone')}</dt>
+                      <dd className="font-medium text-app-text-strong">{enrollDone.phone}</dd>
+                    </div>
+                  ) : null}
+                  {enrollDone.branchName ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('table.branch')}</dt>
+                      <dd className="truncate font-medium text-app-text-strong">{enrollDone.branchName}</dd>
+                    </div>
+                  ) : null}
                   {enrollDone.planName ? (
                     <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
                       <dt className="shrink-0 text-app-muted">{t('table.plan')}</dt>
