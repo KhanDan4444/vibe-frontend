@@ -307,10 +307,14 @@ export default function MemberModal({
 
     const selectedPlan = plans.find((p) => p.id === parseInt(planId, 10));
     const endDateIso = selectedPlan ? calculateEndDate(startDate, selectedPlan.duration) : '';
-    const selectedBranch = activeBranches.find((b) => String(b.id) === String(branchId));
+    const resolvedBranchId = String(branchId || resolvedDefaultBranch || '');
+    const selectedBranch =
+      activeBranches.find((b) => String(b.id) === resolvedBranchId) ||
+      activeBranches.find((b) => b.is_default) ||
+      activeBranches[0];
     const doneSummary = {
       name: base.name,
-      phone: base.phone,
+      phone: trimmedPhone,
       branchName: selectedBranch
         ? `${selectedBranch.name}${selectedBranch.is_default ? t('branch.defaultSuffix') : ''}`
         : '',
