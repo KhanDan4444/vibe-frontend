@@ -248,7 +248,11 @@ export default function MemberModal({
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
+    // Stepped page enroll: ignore Enter / click-through until the payment step.
+    if (variant === 'page' && !member && enrollStep < 3) {
+      return;
+    }
     if (submitting || saving || photoProcessing) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
@@ -430,7 +434,8 @@ export default function MemberModal({
         setValidationError(t('validation.branchRequired'));
         return;
       }
-      setEnrollStep(2);
+      // Defer so the Continue click cannot land on a newly mounted Submit control.
+      window.setTimeout(() => setEnrollStep(2), 0);
       return;
     }
     if (enrollStep === 2) {
@@ -452,7 +457,7 @@ export default function MemberModal({
         );
         return;
       }
-      setEnrollStep(3);
+      window.setTimeout(() => setEnrollStep(3), 0);
     }
   };
 
@@ -834,7 +839,12 @@ export default function MemberModal({
                       {t('common.continue')}
                     </Button>
                   ) : (
-                    <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
+                    <Button
+                      type="button"
+                      disabled={!canSubmit}
+                      onClick={(e) => void handleSubmit(e)}
+                      className="w-full sm:w-auto"
+                    >
                       {isBusy
                         ? photoProcessing
                           ? t('modals.member.processingPhoto')
