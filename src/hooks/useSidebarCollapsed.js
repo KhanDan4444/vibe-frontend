@@ -2,8 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'niku.sidebar.collapsed';
 const SHORTCUT_HINT_KEY = 'niku.sidebar.shortcutHintSeen';
-/** Delay before collapsed rail expands on hover — leaves room for icon tooltips. */
-const PEEK_DELAY_MS = 380;
 
 /** Desktop sidebar widths — keep aside + main padding in sync. */
 export const SIDEBAR_WIDTH_EXPANDED = 'w-64';
@@ -52,11 +50,6 @@ function isTypingTarget(target) {
   return Boolean(target.closest('[contenteditable="true"]'));
 }
 
-function prefersReducedMotion() {
-  if (typeof window === 'undefined' || !window.matchMedia) return false;
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
 /** Platform-aware chord shown in tooltips / aria. */
 export function getSidebarShortcutHint() {
   if (typeof navigator === 'undefined') return 'Ctrl+B';
@@ -68,26 +61,12 @@ export function getSidebarShortcutHint() {
 
 /**
  * Desktop-only collapse preference (mobile drawer stays full-width).
- * Supports ⌘/Ctrl+B and delayed hover peek (overlay expand without pushing content).
+ * Expands/collapses only via toggle click or ⌘/Ctrl+B — no hover peek overlay.
  */
 export function useSidebarCollapsed() {
   const [collapsed, setCollapsed] = useState(readStoredCollapsed);
-  const [peeking, setPeeking] = useState(false);
   const [shortcutCoachOpen, setShortcutCoachOpen] = useState(false);
-  const peekTimerRef = useRef(null);
   const collapseToggleRef = useRef(null);
-  const coachOpenRef = useRef(false);
-
-  useEffect(() => {
-    coachOpenRef.current = shortcutCoachOpen;
-  }, [shortcutCoachOpen]);
-
-  const clearPeekTimer = useCallback(() => {
-    if (peekTimerRef.current != null) {
-      clearTimeout(peekTimerRef.current);
-      peekTimerRef.current = null;
-    }
-  }, []);
 
   const dismissShortcutCoach = useCallback(() => {
     writeShortcutHintSeen();
@@ -109,33 +88,20 @@ export function useSidebarCollapsed() {
   }, [collapsed]);
 
   useEffect(() => {
-    if (!collapsed) {
-      clearPeekTimer();
-      setPeeking(false);
-    }
-  }, [collapsed, clearPeekTimer]);
-
-  useEffect(() => () => clearPeekTimer(), [clearPeekTimer]);
-
-  useEffect(() => {
     const onKeyDown = (e) => {
       if (!(e.metaKey || e.ctrlKey) || e.altKey || e.shiftKey) return;
       if (e.key.toLowerCase() !== 'b') return;
       if (isTypingTarget(e.target)) return;
       if (typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches) return;
       e.preventDefault();
-      clearPeekTimer();
-      setPeeking(false);
       dismissShortcutCoach();
       setCollapsed((v) => !v);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [clearPeekTimer, dismissShortcutCoach]);
+  }, [dismissShortcutCoach]);
 
   const toggleCollapsed = useCallback(() => {
-    clearPeekTimer();
-    setPeeking(false);
     setCollapsed((v) => {
       const next = !v;
       if (next) {
@@ -145,58 +111,28 @@ export function useSidebarCollapsed() {
       }
       return next;
     });
-  }, [clearPeekTimer, maybeOfferShortcutCoach]);
+  }, [maybeOfferShortcutCoach]);
 
-  /** Mouse: delayed peek so icon tooltips can show first (instant if reduced motion). */
-  const onSidebarEnter = useCallback(() => {
-    if (!collapsed || coachOpenRef.current) return;
-    clearPeekTimer();
-    const delay = prefersReducedMotion() ? 0 : PEEK_DELAY_MS;
-    peekTimerRef.current = setTimeout(() => {
-      setPeeking(true);
-      peekTimerRef.current = null;
-    }, delay);
-  }, [collapsed, clearPeekTimer]);
-
-  /** Keyboard: expand labels immediately while focus is in the rail. */
-  const onSidebarFocus = useCallback(() => {
-    if (!collapsed) return;
-    clearPeekTimer();
-    setPeeking(true);
-  }, [collapsed, clearPeekTimer]);
-
-  const onSidebarLeave = useCallback(() => {
-    clearPeekTimer();
-    setPeeking(false);
-  }, [clearPeekTimer]);
-
-  const showLabels = !collapsed || peeking;
-  const compact = collapsed && !peeking;
-  const overlayPeek = collapsed && peeking;
+  const showLabels = !collapsed;
+  const compact = collapsed;
 
   const asideWidthClass = showLabels ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED;
   const asidePadClass = showLabels ? 'p-6' : 'px-2.5 py-5';
   const contentPadClass = collapsed ? SIDEBAR_PAD_COLLAPSED : SIDEBAR_PAD_EXPANDED;
 
   const asideClassName = [
-    'fixed inset-y-0 left-0 hidden flex-col lg:flex',
+    'fixed inset-y-0 left-0 z-30 hidden flex-col lg:flex',
     SIDEBAR_MOTION,
     asideWidthClass,
     asidePadClass,
-    overlayPeek ? 'z-40 shadow-2xl shadow-black/25 ring-1 ring-white/10' : 'z-30',
   ].join(' ');
 
   return {
     collapsed,
     setCollapsed,
     toggleCollapsed,
-    peeking,
     showLabels,
     compact,
-    overlayPeek,
-    onSidebarEnter,
-    onSidebarFocus,
-    onSidebarLeave,
     asideClassName,
     contentPadClass,
     shortcutHint: getSidebarShortcutHint(),

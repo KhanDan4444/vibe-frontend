@@ -62,9 +62,6 @@ export default function OwnerLayout() {
     toggleCollapsed,
     showLabels,
     compact,
-    onSidebarEnter,
-    onSidebarFocus,
-    onSidebarLeave,
     asideClassName,
     contentPadClass,
     shortcutHint,
@@ -261,13 +258,7 @@ export default function OwnerLayout() {
 
       <aside
         className={`${asideClassName} ${sidebarSurface}`}
-        aria-expanded={!collapsed || showLabels}
-        onMouseEnter={onSidebarEnter}
-        onMouseLeave={onSidebarLeave}
-        onFocusCapture={onSidebarFocus}
-        onBlurCapture={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget)) onSidebarLeave();
-        }}
+        aria-expanded={!collapsed}
       >
         <SidebarBrandHeader
           logoTo="/dashboard"
