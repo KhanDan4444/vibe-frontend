@@ -349,9 +349,9 @@ export default function OwnerLayout() {
                           e.stopPropagation();
                           openMemberFromNotification(n, 'payment');
                         }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-amber-600 hover:text-amber-800"
+                        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
                       >
-                        <DollarSign className="h-3 w-3" /> {t('notifications.collectPayment')}
+                        <DollarSign className="h-3.5 w-3.5" /> {t('notifications.collectPayment')}
                       </button>
                     )}
                     {n.memberId && !readOnly && n.suggestedAction === 'renew' && (
@@ -361,9 +361,9 @@ export default function OwnerLayout() {
                           e.stopPropagation();
                           openMemberFromNotification(n, 'renew');
                         }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 hover:text-emerald-800"
+                        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
                       >
-                        <RefreshCw className="h-3 w-3" /> {t('notifications.renewNow')}
+                        <RefreshCw className="h-3.5 w-3.5" /> {t('notifications.renewNow')}
                       </button>
                     )}
                     {n.memberId && n.type === 'info' && (
@@ -373,7 +373,7 @@ export default function OwnerLayout() {
                           e.stopPropagation();
                           openMemberFromNotification(n, 'view');
                         }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-teal-700 hover:text-teal-800"
+                        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
                       >
                         {t('notifications.viewMember')}
                       </button>
