@@ -6,11 +6,10 @@ import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
 import { mutationErrorState } from '../../utils/validation';
-import { flashFromKey } from '../../i18n/flashToast';
 import MemberModal from '../../components/MemberModal';
 
 /**
- * Full-page enroll flow — long form (identity, photo, plan, payment) fits a page better than a modal.
+ * Full-page enroll flow — stepped form with room to grow.
  * Edit member stays as a modal on the members list / drawer.
  */
 export default function EnrollMember() {
@@ -20,7 +19,6 @@ export default function EnrollMember() {
   const {
     plans,
     enrollMember,
-    showFlash,
     refreshSummary,
     readOnly,
     branches,
@@ -50,17 +48,12 @@ export default function EnrollMember() {
     setFieldErrors({});
     try {
       await enrollMember(data);
-      showFlash(
-        flashFromKey(t, data.skipPayment ? 'enrolledSkip' : 'enrolledPaid', {
-          subtitleParams: { name: data.name },
-        })
-      );
       void refreshSummary();
-      navigate('/dashboard/members');
     } catch (err) {
       const next = mutationErrorState(err, { date: 'paymentDate' });
       setError(next.error || err.message);
       setFieldErrors(next.fieldErrors || {});
+      throw err;
     } finally {
       setSaving(false);
     }

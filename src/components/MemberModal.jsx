@@ -1,6 +1,6 @@
 // src/components/MemberModal.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Upload, User, ArrowLeft } from 'lucide-react';
+import { X, Upload, User, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
@@ -30,6 +30,8 @@ import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import Card from './ui/Card';
 import PageHeader from './PageHeader';
+import SearchableSelect from './ui/SearchableSelect';
+import EnrollStepProgress from './EnrollStepProgress';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalFieldLabel } from '../utils/modalLayout';
 
@@ -71,6 +73,8 @@ export default function MemberModal({
   const [photoProcessing, setPhotoProcessing] = useState(false);
   const [photoRemoved, setPhotoRemoved] = useState(false);
   const [hadExistingPhoto, setHadExistingPhoto] = useState(false);
+  const [enrollStep, setEnrollStep] = useState(1);
+  const [enrollDone, setEnrollDone] = useState(null);
   const lastModalModeRef = useRef(null);
   const phoneInputRef = useRef(null);
   const phoneRefocusLockRef = useRef(false);
@@ -99,6 +103,8 @@ export default function MemberModal({
     });
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
+    setEnrollStep(1);
+    setEnrollDone(null);
   }, [resolvedDefaultBranch]);
 
   const initializeForm = useCallback(() => {
@@ -345,7 +351,14 @@ export default function MemberModal({
           branchId: showBranchPicker && branchId ? parseInt(branchId, 10) : undefined,
           photo: photoDataUrl,
         });
-        resetDraft();
+        if (variant === 'page') {
+          setEnrollDone({ name: base.name, skipPayment: false });
+          setEnrollStep(1);
+        } else {
+          resetDraft();
+        }
+      } catch {
+        /* Parent surfaces API error via `error` / fieldErrors props. */
       } finally {
         setSubmitting(false);
       }
@@ -358,7 +371,14 @@ export default function MemberModal({
           branchId: showBranchPicker && branchId ? parseInt(branchId, 10) : undefined,
           photo: photoDataUrl,
         });
-        resetDraft();
+        if (variant === 'page') {
+          setEnrollDone({ name: base.name, skipPayment: true });
+          setEnrollStep(1);
+        } else {
+          resetDraft();
+        }
+      } catch {
+        /* Parent surfaces API error via `error` / fieldErrors props. */
       } finally {
         setSubmitting(false);
       }
@@ -371,16 +391,76 @@ export default function MemberModal({
   const memberFieldsReady = validateMemberForm({ name, phone }).ok;
   const enrollExtrasReady =
     plans.length > 0 &&
+    Boolean(planId) &&
     Boolean(startDate) &&
     (!showBranchPicker || Boolean(branchId));
   const canSubmit = !isBusy && memberFieldsReady && (isEdit || enrollExtrasReady);
   const isPage = variant === 'page';
   const selectedPlan = plans.find((p) => String(p.id) === String(planId));
+  const useSteps = isPage && !isEdit;
+  const canContinueStep1 = memberFieldsReady && (!showBranchPicker || Boolean(branchId));
+  const canContinueStep2 = plans.length > 0 && Boolean(planId) && Boolean(startDate);
+
+  const enrollSteps = [
+    { id: 'member', label: t('modals.member.sectionMember') },
+    { id: 'membership', label: t('modals.member.sectionMembership') },
+    { id: 'payment', label: t('modals.member.sectionPayment') },
+  ];
+
+  const branchOptions = activeBranches.map((branch) => ({
+    value: String(branch.id),
+    label: `${branch.name}${branch.is_default ? t('branch.defaultSuffix') : ''}`,
+  }));
+  const planOptions = plans.map((p) => ({
+    value: String(p.id),
+    label: `${p.name} (${formatMoney(p.price)})`,
+  }));
 
   const title = isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle');
   const subtitle = isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle');
 
   const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
+
+  const goEnrollNext = () => {
+    setValidationError('');
+    if (enrollStep === 1) {
+      const result = validateMemberForm({ name, phone });
+      if (!showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
+      if (showBranchPicker && !branchId) {
+        setValidationError(t('validation.branchRequired'));
+        return;
+      }
+      setEnrollStep(2);
+      return;
+    }
+    if (enrollStep === 2) {
+      if (!planId) {
+        showValidationError(
+          { ok: false, key: 'validation.planNotSelected', field: 'planId' },
+          setValidationError,
+          t,
+          { setFieldErrors: setLocalFieldErrors }
+        );
+        return;
+      }
+      if (!startDate) {
+        showValidationError(
+          { ok: false, key: 'validation.startDateRequired', field: 'startDate' },
+          setValidationError,
+          t,
+          { setFieldErrors: setLocalFieldErrors }
+        );
+        return;
+      }
+      setEnrollStep(3);
+    }
+  };
+
+  const startAnotherEnroll = () => {
+    resetDraft();
+    setEnrollDone(null);
+    setEnrollStep(1);
+  };
 
   const photoBlock = showPhotoUpload ? (
     isPage && !isEdit ? (
@@ -476,13 +556,15 @@ export default function MemberModal({
           onChangeCapture={markTouched}
           className={isPage ? 'space-y-6' : 'space-y-4'}
         >
+          {(!useSteps || enrollStep === 1) && (
           <section className="space-y-4">
-            {!isEdit && isPage ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
+            {!isEdit && isPage && !useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
+            {useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
             <div>
               <label className={modalFieldLabel}>{t('modals.member.name')}</label>
               <input
                 type="text"
-                required
+                required={!useSteps}
                 placeholder={t('modals.member.namePlaceholder')}
                 className={fc('name')}
                 value={name}
@@ -499,7 +581,7 @@ export default function MemberModal({
               <input
                 ref={phoneInputRef}
                 type="tel"
-                required
+                required={!useSteps}
                 inputMode="tel"
                 autoComplete="tel"
                 placeholder={t('modals.member.phonePlaceholder')}
@@ -529,6 +611,20 @@ export default function MemberModal({
               <p className="mt-1 text-xs text-app-muted">{t('modals.member.phoneHint')}</p>
             </div>
             {showBranchPicker && activeBranches.length > 0 && (
+              useSteps ? (
+                <SearchableSelect
+                  label={t('modals.member.branch')}
+                  value={branchId}
+                  onChange={(v) => {
+                    setBranchId(v);
+                    clearFieldError(setLocalFieldErrors, 'branchId');
+                    markEnrollTouched();
+                  }}
+                  options={branchOptions}
+                  placeholder={t('modals.member.branch')}
+                  error={Boolean(fieldErrors.branchId)}
+                />
+              ) : (
               <div>
                 <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
                 <select
@@ -545,6 +641,7 @@ export default function MemberModal({
                   ))}
                 </select>
               </div>
+              )
             )}
             {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
               <div>
@@ -556,34 +653,52 @@ export default function MemberModal({
             )}
             {photoBlock}
           </section>
+          )}
 
-          {!isEdit && (
-            <section className={`space-y-4 ${isPage ? 'border-t border-app-border-subtle pt-5' : ''}`}>
+          {!isEdit && (!useSteps || enrollStep === 2) && (
+            <section className={`space-y-4 ${isPage && !useSteps ? 'border-t border-app-border-subtle pt-5' : ''}`}>
               {isPage ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMembership')}</h3> : null}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className={`grid grid-cols-1 gap-4 ${useSteps ? '' : 'sm:grid-cols-2'}`}>
                 <div>
-                  <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
-                  <select
-                    className={`${fc('planId')}cursor-pointer`}
-                    value={planId}
-                    onChange={(e) => {
-                      setPlanId(e.target.value);
-                      clearFieldError(setLocalFieldErrors, 'planId');
-                      markEnrollTouched();
-                    }}
-                    aria-invalid={Boolean(fieldErrors.planId)}
-                  >
-                    <option value="">{t('modals.renew.selectPlan')}</option>
-                    {plans.map((p) => (
-                      <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
-                    ))}
-                  </select>
+                  {useSteps ? (
+                    <SearchableSelect
+                      label={t('modals.member.plan')}
+                      value={planId}
+                      onChange={(v) => {
+                        setPlanId(v);
+                        clearFieldError(setLocalFieldErrors, 'planId');
+                        markEnrollTouched();
+                      }}
+                      options={planOptions}
+                      placeholder={t('modals.renew.selectPlan')}
+                      error={Boolean(fieldErrors.planId)}
+                    />
+                  ) : (
+                    <>
+                      <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
+                      <select
+                        className={`${fc('planId')}cursor-pointer`}
+                        value={planId}
+                        onChange={(e) => {
+                          setPlanId(e.target.value);
+                          clearFieldError(setLocalFieldErrors, 'planId');
+                          markEnrollTouched();
+                        }}
+                        aria-invalid={Boolean(fieldErrors.planId)}
+                      >
+                        <option value="">{t('modals.renew.selectPlan')}</option>
+                        {plans.map((p) => (
+                          <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
+                        ))}
+                      </select>
+                    </>
+                  )}
                   <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />
                 </div>
                 <div>
                   <label className={modalFieldLabel}>{t('modals.member.startDate')}</label>
                   <DateField
-                    required
+                    required={!useSteps}
                     className={`${fc('startDate')}cursor-pointer`}
                     value={startDate}
                     max={boundsForEnrollStart(skipPayment).max}
@@ -612,8 +727,8 @@ export default function MemberModal({
             </div>
           )}
 
-          {!isEdit && (
-            <section className={`space-y-4 ${isPage ? 'border-t border-app-border-subtle pt-5' : 'border-t border-app-border-subtle pt-4'}`}>
+          {!isEdit && (!useSteps || enrollStep === 3) && (
+            <section className={`space-y-4 ${isPage && !useSteps ? 'border-t border-app-border-subtle pt-5' : useSteps ? '' : 'border-t border-app-border-subtle pt-4'}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h3 className={sectionTitleClass}>
                   {isPage ? t('modals.member.sectionPayment') : t('modals.member.paymentSection')}
@@ -634,7 +749,7 @@ export default function MemberModal({
 
               {!skipPayment && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className={`grid grid-cols-1 gap-4 ${useSteps ? '' : 'sm:grid-cols-2'}`}>
                     <div>
                       <p className={modalFieldLabel}>{t('modals.member.amount')}</p>
                       <p className="mt-1.5 text-base font-semibold text-app-text-strong">
@@ -661,7 +776,7 @@ export default function MemberModal({
                   <div>
                     <label className={modalFieldLabel}>{t('modals.member.paymentDate')}</label>
                     <DateField
-                      required
+                      required={!useSteps}
                       min={boundsForPaymentOnTerm(startDate).min}
                       max={boundsForPaymentOnTerm(startDate).max}
                       className={`${fc('paymentDate')}cursor-pointer`}
@@ -690,15 +805,44 @@ export default function MemberModal({
           )}
 
           {isPage ? (
-            <div className="sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
-              <div className="flex justify-end">
-                <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
-                  {isBusy
-                    ? photoProcessing
-                      ? t('modals.member.processingPhoto')
-                      : t('common.processing')
-                    : t('modals.member.saveEnroll')}
-                </Button>
+            <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur dark:shadow-[0_-10px_30px_rgba(0,0,0,0.35)] sm:-mx-6 sm:px-6">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-center text-xs text-app-muted sm:text-left">
+                  {t('modals.member.stepOf', { current: enrollStep, total: 3 })}
+                </p>
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
+                  {enrollStep > 1 ? (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => {
+                        setValidationError('');
+                        setEnrollStep((s) => s - 1);
+                      }}
+                      className="w-full sm:w-auto"
+                    >
+                      {t('common.back')}
+                    </Button>
+                  ) : null}
+                  {enrollStep < 3 ? (
+                    <Button
+                      type="button"
+                      disabled={enrollStep === 1 ? !canContinueStep1 : !canContinueStep2}
+                      onClick={goEnrollNext}
+                      className="w-full sm:w-auto"
+                    >
+                      {t('common.continue')}
+                    </Button>
+                  ) : (
+                    <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
+                      {isBusy
+                        ? photoProcessing
+                          ? t('modals.member.processingPhoto')
+                          : t('common.processing')
+                        : t('modals.member.saveEnroll')}
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -723,6 +867,47 @@ export default function MemberModal({
 
   if (isPage) {
     if (!isOpen) return null;
+
+    if (enrollDone) {
+      return (
+        <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
+          <PageHeader
+            title={title}
+            subtitle={subtitle}
+            actions={
+              <Button type="button" variant="secondary" onClick={onClose}>
+                <ArrowLeft className="h-4 w-4" />
+                {t('pages.members.backToList')}
+              </Button>
+            }
+          />
+          <Card className="p-6 sm:p-8">
+            <div className="mx-auto flex max-w-sm flex-col items-center text-center">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <h2 className="text-lg font-bold text-app-text-strong">
+                {t('modals.member.successTitle', { name: enrollDone.name })}
+              </h2>
+              <p className="mt-2 text-sm text-app-muted">
+                {enrollDone.skipPayment
+                  ? t('modals.member.successSkip')
+                  : t('modals.member.successPaid')}
+              </p>
+              <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
+                <Button type="button" onClick={startAnotherEnroll} className="w-full sm:w-auto">
+                  {t('modals.member.enrollAnother')}
+                </Button>
+                <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+                  {t('modals.member.viewMembers')}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
     return (
       <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
         <PageHeader
@@ -735,7 +920,12 @@ export default function MemberModal({
             </Button>
           }
         />
-        <Card className="overflow-visible p-4 sm:p-6">{formInner}</Card>
+        <Card className="overflow-visible p-4 sm:p-6">
+          <div className="mb-5">
+            <EnrollStepProgress steps={enrollSteps} current={enrollStep} onSelect={setEnrollStep} />
+          </div>
+          {formInner}
+        </Card>
       </div>
     );
   }
