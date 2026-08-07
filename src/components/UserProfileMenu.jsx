@@ -12,7 +12,7 @@ import { User, KeyRound, LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
 function roleSubtitle(role, t) {
   if (isPlatformAdmin(role)) return t('profile.platformAdmin');
   if (isGymOwner(role)) return t('profile.gymOwner');
-  if (isGymStaff(role)) return role === 'Gym Staff' ? t('profile.helpDesk') : role;
+  if (isGymStaff(role)) return t('profile.frontDesk');
   return t('profile.account');
 }
 

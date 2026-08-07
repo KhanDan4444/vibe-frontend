@@ -790,6 +790,8 @@
       "branch": "ቅርንጫፍ",
       "createTitle": "ሰራተኛ መዝግብ",
       "editTitle": "ሰራተኛ አርትዕ",
+      "role": "ሚና",
+      "roleFrontDeskHint": "በፊት ዴስክ አባላትን፣ እድሳትን እና ክፍያዎችን ያስተዳድሩ።",
       "email": "ኢሜይል",
       "emailOptional": "አማራጭ — ለእውቂያ እና የይለፍ ቃል ማስተካከያ።",
       "hidePassword": "የይለፍ ቃል ደብቅ",
@@ -972,6 +974,7 @@
       "contactInfo": "የእውቂያ መረጃ",
       "contactUpdated": "የእውቂያ ዝርዝሮች ተዘምነዋል።",
       "createPlanFirst": "በመጀመሪያ የአባልነት ዕቅድ ይፍጠሩ",
+      "backToList": "ወደ አባላት ተመለስ",
       "deleteMessage": "ይህ {{name}}ን እና የክፍያ ታሪካቸውን ለዘለዓለም ያስወግዳል።",
       "deleteTitle": "አባል ይወገድ?",
       "durationRange": "ቆይታ (መጀመሪያ - ማለቂያ)",
@@ -1056,7 +1059,7 @@
       "enableTitle": "የሰራተኛ መለያ ይነቃ?",
       "noBranch": "ምንም ቅርንጫፍ የለም",
       "sectionTitle": "የሰራተኛ መለያዎች",
-      "subtitle": "ለእገዛ ዴስክ የሚሆኑ የሰራተኛ መለያዎች።",
+      "subtitle": "ለፊት ዴስክ የሚሆኑ የሰራተኛ መለያዎች።",
       "title": "ሰራተኞች",
       "staffCreated": "{{name}} በሰጡት የመግቢያ መረጃ መግባት ይችላሉ።",
       "staffUpdated": "የሰራተኛ መለያ ተዘምኗል።",
@@ -1065,7 +1068,7 @@
       "resetPassword": "የይለፍ ቃል ቀይር",
       "passwordReset": "ለ{{name}} የይለፍ ቃል ተቀይሯል። አዲሱን በደህንነት ያጋሩ።",
       "emptyTitle": "እስካሁን ሰራተኛ የለም",
-      "emptyBody": "በዴስክ አባላትን እንዲያስተዳድሩ የእገዛ ዴስክ ሰራተኞችን ይጋብዙ።"
+      "emptyBody": "በዴስክ አባላትን እንዲያስተዳድሩ የፊት ዴስክ ሰራተኞችን ይጋብዙ።"
     }
   },
   "pagination": {
@@ -1103,12 +1106,16 @@
     "afanOromo": "Afaan Oromoo",
     "gymOwner": "የጂም ባለቤት",
     "gymProfile": "የጂም መገለጫ",
-    "helpDesk": "የእገዛ ዴስክ",
+    "helpDesk": "የፊት ዴስክ",
+    "frontDesk": "የፊት ዴስክ",
     "language": "ቋንቋ",
     "logout": "ውጣ",
     "platformAdmin": "የመድረክ አስተዳዳሪ",
     "themeDark": "ጨለማ",
     "themeLight": "ብርሃን"
+  },
+  "roles": {
+    "frontDesk": "የፊት ዴስክ"
   },
   "sort": {
     "dateAsc": "ቀን፦ የቆየው መጀመሪያ",

@@ -136,7 +136,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl" zIndexClass="z-[60]">
-      <div className={`${modalBody}relative`}>
+      <div className={`${modalBody} relative`}>
         <button
           type="button"
           onClick={onClose}

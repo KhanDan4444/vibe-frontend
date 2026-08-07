@@ -84,7 +84,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-50">
-      <div className={`${modalBody}relative sm:min-h-[280px]`}>
+      <div className={`${modalBody} relative sm:min-h-[280px]`}>
         <button
           type="button"
           onClick={onClose}

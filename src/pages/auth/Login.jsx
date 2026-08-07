@@ -187,7 +187,7 @@ export default function Login() {
                 <code className="font-mono text-teal-300">password</code>
               </p>
               <p>
-                • Help Desk: <code className="font-mono text-teal-300">helpdesk@gym.com</code> /{' '}
+                • Front Desk: <code className="font-mono text-teal-300">helpdesk@gym.com</code> /{' '}
                 <code className="font-mono text-teal-300">password</code>
               </p>
               <p>

@@ -4,7 +4,7 @@ export const ROLES = {
   GYM_OWNER: 'Gym Owner',
 };
 
-export { STAFF_ROLES, DEFAULT_STAFF_ROLE, isStaffRole } from './staffRoles';
+export { STAFF_ROLES, DEFAULT_STAFF_ROLE, isStaffRole, normalizeStaffRole } from './staffRoles';
 
 import { isStaffRole } from './staffRoles';
 

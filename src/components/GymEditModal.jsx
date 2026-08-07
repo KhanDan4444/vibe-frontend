@@ -77,7 +77,7 @@ export default function GymEditModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody}relative`}>
+      <div className={`${modalBody} relative`}>
         <button
           type="button"
           onClick={onClose}

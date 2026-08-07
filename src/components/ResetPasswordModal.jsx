@@ -59,7 +59,7 @@ export default function ResetPasswordModal({
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <form onSubmit={handleSubmit} onChangeCapture={markTouched}>
-        <div className={`${modalHeader}flex items-center justify-between gap-3`}>
+        <div className={`${modalHeader} flex items-center justify-between gap-3`}>
           <h2 className="text-lg font-bold text-app-text-strong">{title}</h2>
           <button
             type="button"

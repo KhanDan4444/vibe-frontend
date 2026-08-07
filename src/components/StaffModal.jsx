@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_STAFF_ROLE } from '../utils/staffRoles';
+import { DEFAULT_STAFF_ROLE, STAFF_ROLE_OPTIONS, normalizeStaffRole } from '../utils/staffRoles';
 import { validateStaffForm, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
@@ -10,7 +10,7 @@ import Button from './ui/Button';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
- * Create or edit a help desk staff login (owner sets credentials on-platform).
+ * Create or edit a front desk staff login (owner sets credentials on-platform).
  */
 export default function StaffModal({
   isOpen,
@@ -44,7 +44,7 @@ export default function StaffModal({
       setName(staff.name || '');
       setEmail(staff.email || '');
       setUsername(staff.username || '');
-      setStaffRole(staff.staff_role || DEFAULT_STAFF_ROLE);
+      setStaffRole(normalizeStaffRole(staff.staff_role));
       setBranchId(staff.branch_id ? String(staff.branch_id) : String(defaultBranchId));
       setPassword('');
     } else {
@@ -112,7 +112,7 @@ export default function StaffModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[100]">
-      <div className={`${modalHeader}flex items-center justify-between gap-3`}>
+      <div className={`${modalHeader} flex items-center justify-between gap-3`}>
         <h2 className="text-lg font-bold text-app-text-strong">
           {isEdit ? t('modals.staff.editTitle') : t('modals.staff.createTitle')}
         </h2>
@@ -127,7 +127,7 @@ export default function StaffModal({
       </div>
 
       <form onSubmit={handleSubmit} onChangeCapture={markTouched} autoComplete="off">
-        <div className={`${modalBody}space-y-4`}>
+        <div className={`${modalBody} space-y-4`}>
           {displayError && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
               {displayError}
@@ -155,6 +155,26 @@ export default function StaffModal({
               ))}
             </select>
             <FieldError message={fieldErrorMessage(fieldErrors, 'branchId')} />
+          </div>
+
+          <div>
+            <label htmlFor="staff-role" className="form-label">
+              {t('modals.staff.role')}
+            </label>
+            <select
+              id="staff-role"
+              required
+              value={staffRole}
+              onChange={(e) => setStaffRole(e.target.value)}
+              className={`${fc('staffRole')}cursor-pointer`}
+            >
+              {STAFF_ROLE_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>
+                  {t(opt.labelKey)}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-app-muted">{t('modals.staff.roleFrontDeskHint')}</p>
           </div>
 
           <div>

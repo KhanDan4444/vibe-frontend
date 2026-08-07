@@ -1,6 +1,6 @@
 // src/pages/owner/Members.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
@@ -57,10 +57,11 @@ export default function Members() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
   const {
-    plans, summary, refreshSummary, enrollMember, updateMember, deleteMember, renewMember, changeMemberPlan, addPayment, transferMember, showFlash,
+    plans, summary, refreshSummary, updateMember, deleteMember, renewMember, changeMemberPlan, addPayment, transferMember, showFlash,
     readOnly, branchReadOnly, getBranchQueryParams, branches, selectedBranchId, loading: gymLoading,
   } = useGym();
   const location = useLocation();
+  const navigate = useNavigate();
   const membersRequestGuard = useLatestRequestGuard();
 
   const [members, setMembers] = useState([]);
@@ -246,25 +247,6 @@ export default function Members() {
     runInBackground(Promise.all(tasks));
   };
 
-  const handleEnrollSubmit = async (data) => {
-    setSaving(true);
-    setModalState((s) => ({ ...s, error: '', fieldErrors: {} }));
-    try {
-      await enrollMember(data);
-      setModalState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      showFlash(
-        flashFromKey(t, data.skipPayment ? 'enrolledSkip' : 'enrolledPaid', {
-          subtitleParams: { name: data.name },
-        })
-      );
-      refreshAfterMemberChange();
-    } catch (err) {
-      setModalState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleUpdateMemberSubmit = async (data) => {
     if (!modalState.member) return;
     setSaving(true);
@@ -439,10 +421,7 @@ export default function Members() {
         actions={
           !readOnly ? (
             <Button
-              onClick={() => {
-                setError('');
-                setModalState({ isOpen: true, member: null, error: '' });
-              }}
+              onClick={() => navigate('/dashboard/members/enroll')}
               disabled={gymLoading || plans.length === 0}
               title={!gymLoading && plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
             >
@@ -862,9 +841,9 @@ export default function Members() {
       </Card>
 
       <MemberModal
-        isOpen={modalState.isOpen}
+        isOpen={modalState.isOpen && !!modalState.member}
         onClose={() => setModalState((s) => ({ ...s, isOpen: false, error: '', fieldErrors: {} }))}
-        onSubmit={modalState.member ? handleUpdateMemberSubmit : handleEnrollSubmit}
+        onSubmit={handleUpdateMemberSubmit}
         plans={plans}
         member={modalState.member}
         branches={branches}

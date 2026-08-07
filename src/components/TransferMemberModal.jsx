@@ -41,7 +41,7 @@ export default function TransferMemberModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
-      <div className={`${modalHeader}flex items-center justify-between gap-3`}>
+      <div className={`${modalHeader} flex items-center justify-between gap-3`}>
         <h2 className="text-lg font-bold text-app-text-strong">{t('modals.transfer.title')}</h2>
         <button
           type="button"
@@ -61,7 +61,7 @@ export default function TransferMemberModal({
         }}
         onChangeCapture={markTouched}
       >
-        <div className={`${modalBody}space-y-4`}>
+        <div className={`${modalBody} space-y-4`}>
           {error && (
             <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700">
               {error}

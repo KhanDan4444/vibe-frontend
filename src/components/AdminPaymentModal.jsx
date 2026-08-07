@@ -131,7 +131,7 @@ export default function AdminPaymentModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalHeader}flex items-start justify-between gap-3`}>
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
           <h2 className="text-lg font-bold text-app-text-strong">
             {isEdit ? t('modals.adminPayment.editTitle') : t('modals.adminPayment.collectTitle')}
@@ -149,7 +149,7 @@ export default function AdminPaymentModal({
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className={`${modalBody}flex-1 space-y-5`}>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className={`${modalBody} flex-1 space-y-5`}>
           {displayError && (
             <div className="ui-alert-rose">
               {displayError}

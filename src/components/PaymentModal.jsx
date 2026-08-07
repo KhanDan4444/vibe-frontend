@@ -124,7 +124,7 @@ export default function PaymentModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody}relative`} onClick={(e) => e.stopPropagation()}>
+      <div className={`${modalBody} relative`} onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}

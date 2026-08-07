@@ -80,7 +80,8 @@
   "profile": {
     "platformAdmin": "Bulchaa Platformii",
     "gymOwner": "Abbaa jimii",
-    "helpDesk": "Deeggarsa Hojjettootaa",
+    "helpDesk": "Deskii Fuulduraa",
+    "frontDesk": "Deskii Fuulduraa",
     "account": "Akkaawuntii",
     "gymProfile": "Profaayilii jimii",
     "changePassword": "Jecha iccitii jijjiiri",
@@ -92,6 +93,9 @@
     "english": "English",
     "amharic": "አማርኛ",
     "afanOromo": "Afaan Oromoo"
+  },
+  "roles": {
+    "frontDesk": "Deskii Fuulduraa"
   },
   "admin": {
     "platformAdmin": "Bulchaa Platformii",
@@ -519,6 +523,7 @@
       "searchPlaceholder": "Miseensota barbaadi…",
       "noPlansWarning": "Karoorri miseensummaa ammaaf hin jiru. Miseensota galmeessuu keessan dura yoo xinnaate karoora tokko dabalaa.",
       "createPlanFirst": "Dura karoora miseensummaa uumaa",
+      "backToList": "Gara miseensotaatti deebi'i",
       "loading": "Miseensonni fe'amaa jiru…",
       "empty": "Miseensonni argaman hin jiran.",
       "deleteTitle": "Miseensa dhabamsiisuu?",
@@ -619,7 +624,7 @@
     },
     "team": {
       "title": "Hojjettoota",
-      "subtitle": "Akkaantii hojjettoota waajjira gargaarsa keetii.",
+      "subtitle": "Akkaantii hojjettoota deskii fuulduraa keetii.",
       "add": "Hojjetaa Galmeessi",
       "sectionTitle": "Akkaantii hojjettootaa",
       "empty": "Ammatti akkaantiin hojjeetaa hin jiru.",
@@ -635,7 +640,7 @@
       "resetPassword": "Jechama siriitii deebisi",
       "passwordReset": "Jechamni siriitii {{name}}if jijjiirameera. Jechama siriitii haarawa kana of eeggannoon qooddi.",
       "emptyTitle": "Hojjettonni hin jiran",
-      "emptyBody": "Hojjettoota gargaarsaa afeeri si'a ta'u miseensota teessuma duraatiin bulchuu danda'u."
+      "emptyBody": "Hojjettoota deskii fuulduraa afeeri si'a ta'u miseensota teessuma duraatiin bulchuu danda'u."
     },
     "activity": {
       "title": "Sosocho'iinsota",
@@ -840,6 +845,8 @@
     "staff": {
       "createTitle": "Hojjetaa Galmeessi",
       "editTitle": "Hojjeetaa gulaali",
+      "role": "Gahee",
+      "roleFrontDeskHint": "Miseensota, haaromsaa, fi kaffaltii deskii fuulduraatti bulchi.",
       "name": "Maqaa",
       "email": "Imeelii",
       "emailOptional": "Filannoo — qunnamtii fi jechama siriitii deebisuuf.",

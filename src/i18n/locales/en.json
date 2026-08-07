@@ -80,7 +80,8 @@
   "profile": {
     "platformAdmin": "Platform admin",
     "gymOwner": "Gym owner",
-    "helpDesk": "Help Desk",
+    "helpDesk": "Front Desk",
+    "frontDesk": "Front Desk",
     "account": "Account",
     "gymProfile": "Gym profile",
     "changePassword": "Change password",
@@ -92,6 +93,9 @@
     "english": "English",
     "amharic": "አማርኛ",
     "afanOromo": "Afaan Oromoo"
+  },
+  "roles": {
+    "frontDesk": "Front Desk"
   },
   "admin": {
     "platformAdmin": "Platform Admin",
@@ -519,6 +523,7 @@
       "searchPlaceholder": "Search members…",
       "noPlansWarning": "No membership plans yet. Add at least one plan before you can enroll members.",
       "createPlanFirst": "Create a membership plan first",
+      "backToList": "Back to members",
       "loading": "Loading members…",
       "empty": "No members found.",
       "deleteTitle": "Remove member?",
@@ -619,7 +624,7 @@
     },
     "team": {
       "title": "Staff",
-      "subtitle": "Staff accounts for your help desk.",
+      "subtitle": "Staff accounts for your front desk.",
       "add": "Add staff",
       "sectionTitle": "Staff accounts",
       "empty": "No staff accounts yet.",
@@ -635,7 +640,7 @@
       "resetPassword": "Reset password",
       "passwordReset": "Password reset for {{name}}. Share the new password securely.",
       "emptyTitle": "No staff yet",
-      "emptyBody": "Invite help desk staff so they can manage members at the desk."
+      "emptyBody": "Invite front desk staff so they can manage members at the desk."
     },
     "activity": {
       "title": "Activity",
@@ -840,6 +845,8 @@
     "staff": {
       "createTitle": "Add staff",
       "editTitle": "Edit staff",
+      "role": "Role",
+      "roleFrontDeskHint": "Handle members, renewals, and payments at the front desk.",
       "name": "Name",
       "email": "Email",
       "emailOptional": "Optional — for contact and password reset.",

@@ -1,6 +1,6 @@
 // src/components/MemberModal.jsx
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Upload, User } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { X, Upload, User, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
@@ -28,12 +28,15 @@ import FieldError from './FieldError';
 import { DateField } from './DateField';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
+import Card from './ui/Card';
+import PageHeader from './PageHeader';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalFieldLabel } from '../utils/modalLayout';
 
 /**
  * Enroll (create) or edit a gym member.
  * Create mode includes payment fields — one submit enrolls + records payment.
+ * Use variant="page" for enroll (full page); variant="modal" for edit.
  */
 export default function MemberModal({
   isOpen,
@@ -49,6 +52,7 @@ export default function MemberModal({
   saving = false,
   error,
   fieldErrors: externalFieldErrors = {},
+  variant = 'modal',
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
@@ -372,32 +376,19 @@ export default function MemberModal({
   const displayError = validationError || error;
   const isBusy = saving || submitting || photoProcessing;
 
-  const selectedPlan = plans.find((p) => String(p.id) === String(planId));
-  const enrollAmount = selectedPlan ? String(selectedPlan.price) : amount;
   const memberFieldsReady = validateMemberForm({ name, phone }).ok;
   const enrollExtrasReady =
     plans.length > 0 &&
     Boolean(startDate) &&
     (!showBranchPicker || Boolean(branchId));
   const canSubmit = !isBusy && memberFieldsReady && (isEdit || enrollExtrasReady);
+  const isPage = variant === 'page';
 
-  return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
-      <div className={`${modalBody}relative`}>
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text dark:hover:text-app-text-strong sm:right-3 sm:top-3"
-        >
-          <X className="h-5 w-5" />
-        </button>
-        <h2 className="pr-10 text-lg font-bold text-app-text-strong mb-1">
-          {isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle')}
-        </h2>
-        <p className="text-sm text-app-muted mb-5">
-          {isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle')}
-        </p>
+  const title = isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle');
+  const subtitle = isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle');
 
+  const formInner = (
+    <>
         {displayError && (
           <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
             {displayError}
@@ -658,7 +649,7 @@ export default function MemberModal({
             </>
           )}
 
-          <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-3">
+          <div className={`flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-3 ${isPage ? 'border-t border-app-border-subtle pt-4 mt-2' : ''}`}>
             <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
               {t('common.cancel')}
             </Button>
@@ -673,6 +664,41 @@ export default function MemberModal({
             </Button>
           </div>
         </form>
+    </>
+  );
+
+  if (isPage) {
+    if (!isOpen) return null;
+    return (
+      <div className="mx-auto w-full max-w-3xl space-y-4 sm:space-y-5">
+        <PageHeader
+          title={title}
+          subtitle={subtitle}
+          actions={
+            <Button type="button" variant="secondary" onClick={onClose}>
+              <ArrowLeft className="h-4 w-4" />
+              {t('pages.members.backToList')}
+            </Button>
+          }
+        />
+        <Card className="p-4 sm:p-6">{formInner}</Card>
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
+      <div className={`${modalBody} relative`}>
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text dark:hover:text-app-text-strong sm:right-3 sm:top-3"
+        >
+          <X className="h-5 w-5" />
+        </button>
+        <h2 className="pr-10 text-lg font-bold text-app-text-strong mb-1">{title}</h2>
+        <p className="text-sm text-app-muted mb-5">{subtitle}</p>
+        {formInner}
       </div>
     </ResponsiveModal>
   );
