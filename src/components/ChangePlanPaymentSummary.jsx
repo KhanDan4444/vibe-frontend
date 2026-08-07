@@ -60,7 +60,7 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
         <span className="text-sm font-bold text-app-text">
           {t('modals.changePlan.termPaymentTotalAfter')}
         </span>
-        <span className="text-base font-bold text-teal-700 dark:text-teal-400">{formatMoney(totalAfter)}</span>
+        <span className="text-base font-bold text-app-text-strong">{formatMoney(totalAfter)}</span>
       </div>
 
       <p className="mt-3 text-xs leading-relaxed text-app-muted">

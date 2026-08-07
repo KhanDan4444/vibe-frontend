@@ -63,7 +63,10 @@ export default function BranchComparisonTable({ branches = [], loading = false }
                   <span className="ml-1 text-xs text-app-muted">({row.revenueTrendPercent})</span>
                 )}
               </p>
-              <p className="mt-1 text-xs text-app-muted">{t('branchCompare.newMembers')}: {row.newMembersThisMonth}</p>
+              <p className="mt-1 text-xs">
+                <span className="text-app-muted">{t('branchCompare.newMembers')}: </span>
+                <span className="font-semibold text-[color:var(--color-status-trialing)]">{row.newMembersThisMonth}</span>
+              </p>
             </div>
           ))}
         </div>
@@ -104,7 +107,7 @@ export default function BranchComparisonTable({ branches = [], loading = false }
                       </span>
                     )}
                   </td>
-                  <td>{row.newMembersThisMonth}</td>
+                  <td className="text-[color:var(--color-status-trialing)]">{row.newMembersThisMonth}</td>
                 </tr>
               ))}
             </tbody>
