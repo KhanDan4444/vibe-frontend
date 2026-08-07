@@ -24,8 +24,6 @@ import {
   MapPin,
   MessageSquare,
   RefreshCw,
-  PanelLeftClose,
-  PanelLeft,
 } from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
@@ -35,13 +33,13 @@ import BrandLogo from '../components/BrandLogo';
 import ErrorRetryBanner from '../components/ErrorRetryBanner';
 import { SlidePanel, SlidePanelEmpty } from '../components/SlidePanel';
 import { localizeNotification } from '../utils/notificationText';
+import SidebarBrandHeader from '../components/SidebarBrandHeader';
+import SidebarTooltip from '../components/SidebarTooltip';
 import {
   useSidebarCollapsed,
   SIDEBAR_LABEL_VISIBLE,
   SIDEBAR_LABEL_HIDDEN,
 } from '../hooks/useSidebarCollapsed';
-import SidebarTooltip from '../components/SidebarTooltip';
-import SidebarShortcutCoach from '../components/SidebarShortcutCoach';
 
 export default function OwnerLayout() {
   const { t } = useTranslation();
@@ -271,42 +269,22 @@ export default function OwnerLayout() {
           if (!e.currentTarget.contains(e.relatedTarget)) onSidebarLeave();
         }}
       >
-        <div className={`mb-6 flex ${showLabels ? 'justify-start' : 'justify-center'} transition-all duration-[180ms] ease-out motion-reduce:transition-none`}>
-          <BrandLogo to="/dashboard" variant={showLabels ? 'lockup' : 'icon'} />
-        </div>
+        <SidebarBrandHeader
+          logoTo="/dashboard"
+          showLabels={showLabels}
+          compact={compact}
+          collapsed={collapsed}
+          toggleCollapsed={toggleCollapsed}
+          shortcutHint={shortcutHint}
+          shortcutCoachOpen={shortcutCoachOpen}
+          dismissShortcutCoach={dismissShortcutCoach}
+          collapseToggleRef={collapseToggleRef}
+        />
         <nav className={`flex-1 space-y-1 ${showLabels ? '' : 'px-0.5'}`}>
           {menuItems.map((item) =>
             renderNavLink(item, undefined, { railCompact: compact, labelsVisible: showLabels })
           )}
         </nav>
-        <SidebarTooltip
-          label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
-          hint={shortcutHint}
-          enabled={compact}
-          className="mt-4"
-        >
-          <button
-            ref={collapseToggleRef}
-            type="button"
-            onClick={toggleCollapsed}
-            className={`flex w-full items-center rounded-lg text-sm font-medium text-slate-400 transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none hover:bg-white/[0.06] hover:text-slate-100 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong ${
-              compact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-2.5'
-            }`}
-            aria-label={`${collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')} (${shortcutHint})`}
-          >
-            {collapsed ? <PanelLeft className="h-5 w-5 shrink-0" /> : <PanelLeftClose className="h-5 w-5 shrink-0" />}
-            <span className={`truncate ${showLabels ? SIDEBAR_LABEL_VISIBLE : SIDEBAR_LABEL_HIDDEN}`}>
-              {collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
-            </span>
-          </button>
-        </SidebarTooltip>
-        <SidebarShortcutCoach
-          open={shortcutCoachOpen}
-          onDismiss={dismissShortcutCoach}
-          shortcutHint={shortcutHint}
-          anchorRef={collapseToggleRef}
-          layoutKey={showLabels}
-        />
       </aside>
 
       <div className={`transition-[padding] duration-[180ms] ease-out motion-reduce:transition-none ${contentPadClass}`}>
