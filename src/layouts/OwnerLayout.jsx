@@ -6,7 +6,27 @@ import { useAuth } from '../context/AuthContext';
 import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
-import { LayoutDashboard, Users, Dumbbell, Menu, X, Bell, AlertTriangle, AlertCircle, Info, DollarSign, FileBarChart, ShieldAlert, UserCog, ScrollText, MapPin, MessageSquare, RefreshCw } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Users,
+  Dumbbell,
+  Menu,
+  X,
+  Bell,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  DollarSign,
+  FileBarChart,
+  ShieldAlert,
+  UserCog,
+  ScrollText,
+  MapPin,
+  MessageSquare,
+  RefreshCw,
+  PanelLeftClose,
+  PanelLeft,
+} from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -15,6 +35,13 @@ import BrandLogo from '../components/BrandLogo';
 import ErrorRetryBanner from '../components/ErrorRetryBanner';
 import { SlidePanel, SlidePanelEmpty } from '../components/SlidePanel';
 import { localizeNotification } from '../utils/notificationText';
+import {
+  useSidebarCollapsed,
+  SIDEBAR_LABEL_VISIBLE,
+  SIDEBAR_LABEL_HIDDEN,
+} from '../hooks/useSidebarCollapsed';
+import SidebarTooltip from '../components/SidebarTooltip';
+import SidebarShortcutCoach from '../components/SidebarShortcutCoach';
 
 export default function OwnerLayout() {
   const { t } = useTranslation();
@@ -32,6 +59,21 @@ export default function OwnerLayout() {
     return branches.find((b) => b.id === user.branch_id)?.name || user?.branch_name || null;
   }, [user, branches]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const {
+    collapsed,
+    toggleCollapsed,
+    showLabels,
+    compact,
+    onSidebarEnter,
+    onSidebarFocus,
+    onSidebarLeave,
+    asideClassName,
+    contentPadClass,
+    shortcutHint,
+    shortcutCoachOpen,
+    dismissShortcutCoach,
+    collapseToggleRef,
+  } = useSidebarCollapsed();
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [dismissedIds, setDismissedIds] = useState([]);
   const [readIds, setReadIds] = useState([]);
@@ -114,25 +156,37 @@ export default function OwnerLayout() {
     }
   };
 
-  const renderNavLink = (item, onNavigate) => {
+  const renderNavLink = (item, onNavigate, { railCompact = false, labelsVisible = true } = {}) => {
     const Icon = item.icon;
     const active = location.pathname === item.path;
+    const label = t(item.nameKey);
     const showAttentionBadge = item.nameKey === 'nav.members' && (dueSoonCount + expiredCount + unpaidCount) > 0;
     const attentionTotal = dueSoonCount + expiredCount + unpaidCount;
-    return (
+    const link = (
       <Link
-        key={item.path}
         to={item.path}
         onClick={onNavigate}
-        className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-          active ? sidebarNavActive : sidebarNavIdle
-        }`}
+        aria-label={railCompact ? label : undefined}
+        className={`relative flex items-center rounded-lg text-sm font-medium transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none ${
+          railCompact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+        } ${active ? sidebarNavActive : sidebarNavIdle}`}
       >
-        <Icon className="h-5 w-5 shrink-0 opacity-90" />
-        <span className="truncate">{t(item.nameKey)}</span>
+        <span className="relative shrink-0">
+          <Icon className="h-5 w-5 opacity-90" />
+          {railCompact && showAttentionBadge ? (
+            <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold leading-none text-white ring-2 ring-[color:var(--color-app-sidebar)]">
+              {attentionTotal > 9 ? '9+' : attentionTotal}
+            </span>
+          ) : null}
+        </span>
+        <span className={`truncate ${labelsVisible ? SIDEBAR_LABEL_VISIBLE : SIDEBAR_LABEL_HIDDEN}`}>
+          {label}
+        </span>
         {showAttentionBadge ? (
           <span
-            className={`ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
+            className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
+              labelsVisible ? `ml-auto ${SIDEBAR_LABEL_VISIBLE}` : SIDEBAR_LABEL_HIDDEN
+            } ${
               active
                 ? 'bg-white/15 text-white'
                 : 'bg-white/[0.08] text-slate-300 ring-1 ring-white/10'
@@ -142,6 +196,11 @@ export default function OwnerLayout() {
           </span>
         ) : null}
       </Link>
+    );
+    return (
+      <SidebarTooltip key={item.path} label={label} enabled={railCompact}>
+        {link}
+      </SidebarTooltip>
     );
   };
 
@@ -202,16 +261,55 @@ export default function OwnerLayout() {
         </div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-7">
-          <BrandLogo to="/dashboard" />
+      <aside
+        className={`${asideClassName} ${sidebarSurface}`}
+        aria-expanded={!collapsed || showLabels}
+        onMouseEnter={onSidebarEnter}
+        onMouseLeave={onSidebarLeave}
+        onFocusCapture={onSidebarFocus}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) onSidebarLeave();
+        }}
+      >
+        <div className={`mb-6 flex ${showLabels ? 'justify-start' : 'justify-center'} transition-all duration-[180ms] ease-out motion-reduce:transition-none`}>
+          <BrandLogo to="/dashboard" variant={showLabels ? 'lockup' : 'icon'} />
         </div>
-        <nav className="flex-1 space-y-1">
-          {menuItems.map((item) => renderNavLink(item, undefined))}
+        <nav className={`flex-1 space-y-1 ${showLabels ? '' : 'px-0.5'}`}>
+          {menuItems.map((item) =>
+            renderNavLink(item, undefined, { railCompact: compact, labelsVisible: showLabels })
+          )}
         </nav>
+        <SidebarTooltip
+          label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+          hint={shortcutHint}
+          enabled={compact}
+          className="mt-4"
+        >
+          <button
+            ref={collapseToggleRef}
+            type="button"
+            onClick={toggleCollapsed}
+            className={`flex w-full items-center rounded-lg text-sm font-medium text-slate-400 transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none hover:bg-white/[0.06] hover:text-slate-100 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong ${
+              compact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+            }`}
+            aria-label={`${collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')} (${shortcutHint})`}
+          >
+            {collapsed ? <PanelLeft className="h-5 w-5 shrink-0" /> : <PanelLeftClose className="h-5 w-5 shrink-0" />}
+            <span className={`truncate ${showLabels ? SIDEBAR_LABEL_VISIBLE : SIDEBAR_LABEL_HIDDEN}`}>
+              {collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+            </span>
+          </button>
+        </SidebarTooltip>
+        <SidebarShortcutCoach
+          open={shortcutCoachOpen}
+          onDismiss={dismissShortcutCoach}
+          shortcutHint={shortcutHint}
+          anchorRef={collapseToggleRef}
+          layoutKey={showLabels}
+        />
       </aside>
 
-      <div className="lg:pl-64">
+      <div className={`transition-[padding] duration-[180ms] ease-out motion-reduce:transition-none ${contentPadClass}`}>
         {gymBooting && (
           <div className="sticky top-0 z-20 h-0.5 overflow-hidden bg-app-border-subtle">
             <div className="app-boot-bar h-full w-1/3 bg-teal-600" />

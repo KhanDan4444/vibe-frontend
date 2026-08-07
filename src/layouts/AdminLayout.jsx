@@ -8,6 +8,8 @@ import {
   LayoutDashboard,
   Menu,
   MessageSquare,
+  PanelLeft,
+  PanelLeftClose,
   ShieldCheck,
   X,
 } from 'lucide-react';
@@ -16,6 +18,8 @@ import { useAuth } from '../context/AuthContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import UserProfileMenu from '../components/UserProfileMenu';
 import BrandLogo from '../components/BrandLogo';
+import SidebarTooltip from '../components/SidebarTooltip';
+import SidebarShortcutCoach from '../components/SidebarShortcutCoach';
 import { parseApiResponse } from '../utils/api';
 import { getAdminDashboard } from '../services/gymAdminService';
 import { ADMIN_SECTION_PATH, adminPathToSection } from '../utils/adminRoutes';
@@ -27,40 +31,85 @@ import {
   sidebarNavIdle,
   sidebarSurface,
 } from '../utils/surfaceClasses';
+import {
+  useSidebarCollapsed,
+  SIDEBAR_LABEL_VISIBLE,
+  SIDEBAR_LABEL_HIDDEN,
+} from '../hooks/useSidebarCollapsed';
 
-function SidebarLink({ active, to, onClick, icon: Icon, label, badge }) {
-  const className = `flex w-full min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${
-    active ? sidebarNavActive : sidebarNavIdle
-  }`;
+function SidebarLink({
+  active,
+  to,
+  onClick,
+  icon: Icon,
+  label,
+  badge,
+  railCompact = false,
+  labelsVisible = true,
+}) {
+  const className = `relative flex w-full min-h-[44px] items-center rounded-lg text-sm font-medium transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none ${
+    railCompact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-3'
+  } ${active ? sidebarNavActive : sidebarNavIdle}`;
+
+  const cornerBadge =
+    badge && railCompact ? (
+      <span
+        className={`absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold leading-none text-white ring-2 ring-[color:var(--color-app-sidebar)] ${
+          badge.tone === 'amber' ? 'bg-amber-500' : 'bg-rose-500'
+        }`}
+      >
+        {badge.count > 9 ? '9+' : badge.count}
+      </span>
+    ) : null;
+
+  const rowBadge = badge ? (
+    <span
+      className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${
+        labelsVisible ? `ml-auto ${SIDEBAR_LABEL_VISIBLE}` : SIDEBAR_LABEL_HIDDEN
+      } ${
+        active
+          ? 'bg-white/20 text-white'
+          : badge.tone === 'amber'
+            ? 'bg-amber-500 text-white'
+            : 'bg-rose-500 text-white'
+      }`}
+    >
+      {badge.count}
+    </span>
+  ) : null;
+
   const inner = (
     <>
-      <Icon className="h-5 w-5" /> {label}
-      {badge && (
-        <span
-          className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${
-            active
-              ? 'bg-white/20 text-white'
-              : badge.tone === 'amber'
-                ? 'bg-amber-500 text-white'
-                : 'bg-rose-500 text-white'
-          }`}
-        >
-          {badge.count}
-        </span>
-      )}
+      <span className="relative shrink-0">
+        <Icon className="h-5 w-5" />
+        {cornerBadge}
+      </span>
+      <span className={`truncate ${labelsVisible ? SIDEBAR_LABEL_VISIBLE : SIDEBAR_LABEL_HIDDEN}`}>
+        {label}
+      </span>
+      {rowBadge}
     </>
   );
-  if (to) {
-    return (
-      <Link to={to} onClick={onClick} className={className}>
-        {inner}
-      </Link>
-    );
-  }
-  return (
-    <button type="button" onClick={onClick} className={className}>
+
+  const control = to ? (
+    <Link to={to} onClick={onClick} className={className} aria-label={railCompact ? label : undefined}>
+      {inner}
+    </Link>
+  ) : (
+    <button
+      type="button"
+      onClick={onClick}
+      className={className}
+      aria-label={railCompact ? label : undefined}
+    >
       {inner}
     </button>
+  );
+
+  return (
+    <SidebarTooltip label={label} enabled={railCompact}>
+      {control}
+    </SidebarTooltip>
   );
 }
 
@@ -78,6 +127,21 @@ export default function AdminLayout() {
   const location = useLocation();
   const adminSection = useMemo(() => adminPathToSection(location.pathname), [location.pathname]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const {
+    collapsed,
+    toggleCollapsed,
+    showLabels,
+    compact,
+    onSidebarEnter,
+    onSidebarFocus,
+    onSidebarLeave,
+    asideClassName,
+    contentPadClass,
+    shortcutHint,
+    shortcutCoachOpen,
+    dismissShortcutCoach,
+    collapseToggleRef,
+  } = useSidebarCollapsed();
   const [unpaidCount, setUnpaidCount] = useState(0);
 
   const loadBadge = useCallback(async () => {
@@ -160,11 +224,22 @@ export default function AdminLayout() {
         </div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 z-30 hidden w-64 flex-col p-6 lg:flex ${sidebarSurface}`}>
-        <div className="mb-7">
-          <BrandLogo to="/admin/dashboard" />
+      <aside
+        className={`${asideClassName} ${sidebarSurface}`}
+        aria-expanded={!collapsed || showLabels}
+        onMouseEnter={onSidebarEnter}
+        onMouseLeave={onSidebarLeave}
+        onFocusCapture={onSidebarFocus}
+        onBlurCapture={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) onSidebarLeave();
+        }}
+      >
+        <div
+          className={`mb-6 flex ${showLabels ? 'justify-start' : 'justify-center'} transition-all duration-[180ms] ease-out motion-reduce:transition-none`}
+        >
+          <BrandLogo to="/admin/dashboard" variant={showLabels ? 'lockup' : 'icon'} />
         </div>
-        <nav className="space-y-1">
+        <nav className={`flex-1 space-y-1 ${showLabels ? '' : 'px-0.5'}`}>
           {adminNavItems.map((item) => (
             <SidebarLink
               key={item.section}
@@ -173,12 +248,42 @@ export default function AdminLayout() {
               icon={item.icon}
               label={t(item.labelKey)}
               badge={item.badge}
+              railCompact={compact}
+              labelsVisible={showLabels}
             />
           ))}
         </nav>
+        <SidebarTooltip
+          label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+          hint={shortcutHint}
+          enabled={compact}
+          className="mt-4"
+        >
+          <button
+            ref={collapseToggleRef}
+            type="button"
+            onClick={toggleCollapsed}
+            className={`flex w-full items-center rounded-lg text-sm font-medium text-slate-400 transition-[background-color,color,padding,gap] duration-[180ms] motion-reduce:transition-none hover:bg-white/[0.06] hover:text-slate-100 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong ${
+              compact ? 'justify-center gap-0 px-0 py-2.5' : 'gap-3 px-3 py-2.5'
+            }`}
+            aria-label={`${collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')} (${shortcutHint})`}
+          >
+            {collapsed ? <PanelLeft className="h-5 w-5 shrink-0" /> : <PanelLeftClose className="h-5 w-5 shrink-0" />}
+            <span className={`truncate ${showLabels ? SIDEBAR_LABEL_VISIBLE : SIDEBAR_LABEL_HIDDEN}`}>
+              {collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+            </span>
+          </button>
+        </SidebarTooltip>
+        <SidebarShortcutCoach
+          open={shortcutCoachOpen}
+          onDismiss={dismissShortcutCoach}
+          shortcutHint={shortcutHint}
+          anchorRef={collapseToggleRef}
+          layoutKey={showLabels}
+        />
       </aside>
 
-      <div className="lg:pl-64">
+      <div className={`transition-[padding] duration-[180ms] ease-out motion-reduce:transition-none ${contentPadClass}`}>
         <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
           <div className="inline-flex items-center gap-2 rounded-full border border-teal-600/20 bg-teal-600/10 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-300">
             <ShieldCheck className="h-3.5 w-3.5" /> {t('admin.platformAdmin')}

@@ -574,12 +574,6 @@ export default function MemberModal({
           </div>
         )}
 
-        {!isEdit && plans.length === 0 && (
-          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
-            {t('validation.createPlanFirst')}
-          </div>
-        )}
-
         <form
           onSubmit={handleSubmit}
           onChangeCapture={markTouched}
