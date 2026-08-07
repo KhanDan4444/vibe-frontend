@@ -60,7 +60,6 @@ export default function MemberModal({
   const [planId, setPlanId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [branchId, setBranchId] = useState('');
-  const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('Cash');
   const [paymentDate, setPaymentDate] = useState('');
   const [skipPayment, setSkipPayment] = useState(false);
@@ -100,7 +99,6 @@ export default function MemberModal({
     });
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
-    setAmount('');
   }, [resolvedDefaultBranch]);
 
   const initializeForm = useCallback(() => {
@@ -204,12 +202,6 @@ export default function MemberModal({
       }
     };
   }, [photoPreview]);
-
-  useEffect(() => {
-    if (!isOpen || isEdit || skipPayment) return;
-    const plan = plans.find((p) => p.id === parseInt(planId, 10));
-    setAmount(plan ? String(plan.price) : '');
-  }, [planId, plans, isOpen, isEdit, skipPayment]);
 
   if (!isOpen) return null;
 
@@ -332,7 +324,7 @@ export default function MemberModal({
     }
 
     if (!skipPayment) {
-      const enrollAmount = selectedPlan ? String(selectedPlan.price) : amount;
+      const enrollAmount = selectedPlan ? String(selectedPlan.price) : '';
       const paymentResult = validateMemberEnrollPayment({
         amount: enrollAmount,
         paymentDate,
@@ -383,9 +375,87 @@ export default function MemberModal({
     (!showBranchPicker || Boolean(branchId));
   const canSubmit = !isBusy && memberFieldsReady && (isEdit || enrollExtrasReady);
   const isPage = variant === 'page';
+  const selectedPlan = plans.find((p) => String(p.id) === String(planId));
 
   const title = isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle');
   const subtitle = isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle');
+
+  const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
+
+  const photoBlock = showPhotoUpload ? (
+    isPage && !isEdit ? (
+      <div className="rounded-lg border border-dashed border-app-border-subtle bg-app-surface/60 px-3 py-3">
+        <div className="flex items-center gap-3">
+          {photoPreview ? (
+            <div className="flex h-12 w-12 shrink-0 overflow-hidden rounded-full border border-app-border-subtle">
+              <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
+            </div>
+          ) : (
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-app-border-subtle bg-app-raised">
+              <User className="h-5 w-5 text-app-muted" />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <label className="inline-flex cursor-pointer text-sm font-medium text-teal-800 hover:text-teal-900 dark:text-teal-300 dark:hover:text-teal-200">
+              {photoPreview ? t('modals.member.changePhoto') : t('modals.member.addPhotoOptional')}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={handlePhotoChange}
+              />
+            </label>
+            {photoPreview ? (
+              <button
+                type="button"
+                onClick={clearPhoto}
+                className="mt-0.5 block text-xs font-medium text-app-muted hover:text-app-text-strong"
+              >
+                {t('modals.member.removePhoto')}
+              </button>
+            ) : (
+              <p className="mt-0.5 text-xs text-app-muted">{t('modals.member.photoHintShort')}</p>
+            )}
+          </div>
+        </div>
+      </div>
+    ) : (
+      <div>
+        <label className={modalFieldLabel}>{t('modals.member.photo')}</label>
+        <div className="mt-2 flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-app-border-subtle bg-app-surface">
+            {photoPreview ? (
+              <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
+            ) : (
+              <User className="h-7 w-7 text-app-muted" />
+            )}
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-app-border-subtle px-3 py-2 text-sm font-medium text-app-text-strong hover:bg-app-surface">
+              <Upload className="h-4 w-4" />
+              {t('modals.member.uploadPhoto')}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="sr-only"
+                onChange={handlePhotoChange}
+              />
+            </label>
+            {photoPreview && (
+              <button
+                type="button"
+                onClick={clearPhoto}
+                className="block text-xs font-medium text-app-muted hover:text-app-text-strong"
+              >
+                {t('modals.member.removePhoto')}
+              </button>
+            )}
+            <p className="text-xs text-app-muted">{t('modals.member.photoHint')}</p>
+          </div>
+        </div>
+      </div>
+    )
+  ) : null;
 
   const formInner = (
     <>
@@ -401,157 +471,133 @@ export default function MemberModal({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
-          <div>
-            <label className={modalFieldLabel}>{t('modals.member.name')}</label>
-            <input
-              type="text"
-              required
-              placeholder={t('modals.member.namePlaceholder')}
-              className={fc('name')}
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                clearFieldError(setLocalFieldErrors, 'name');
-                markEnrollTouched();
-              }}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
-          </div>
-          <div>
-            <label className={modalFieldLabel}>{t('modals.member.phone')}</label>
-            <input
-              ref={phoneInputRef}
-              type="tel"
-              required
-              inputMode="tel"
-              autoComplete="tel"
-              placeholder={t('modals.member.phonePlaceholder')}
-              className={fc('phone')}
-              value={phone}
-              onChange={(e) => {
-                const next = e.target.value;
-                setPhone(next);
-                markEnrollTouched();
-                const trimmed = next.trim();
-                if (!trimmed) {
-                  clearFieldError(setLocalFieldErrors, 'phone');
-                  return;
-                }
-                const result = validateRequiredEthiopianPhone(trimmed);
-                if (result.ok) {
-                  clearFieldError(setLocalFieldErrors, 'phone');
-                } else {
-                  showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
-                }
-              }}
-              onBlur={handlePhoneBlur}
-              onKeyDown={handlePhoneKeyDown}
-              aria-invalid={Boolean(fieldErrors.phone)}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
-            <p className="mt-1 text-xs text-app-muted">{t('modals.member.phoneHint')}</p>
-          </div>
-          {showBranchPicker && activeBranches.length > 0 && (
+        <form
+          onSubmit={handleSubmit}
+          onChangeCapture={markTouched}
+          className={isPage ? 'space-y-6' : 'space-y-4'}
+        >
+          <section className="space-y-4">
+            {!isEdit && isPage ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
             <div>
-              <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
-              <select
-                required={!isEdit}
-                className={`${fc('branchId')}cursor-pointer`}
-                value={branchId}
-                onChange={(e) => setBranchId(e.target.value)}
-              >
-                {activeBranches.map((branch) => (
-                  <option key={branch.id} value={branch.id}>
-                    {branch.name}
-                    {branch.is_default ? t('branch.defaultSuffix') : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-          {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
-            <div>
-              <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
-              <p className="mt-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text-strong">
-                {member.branchName || activeBranches.find((b) => b.id === member.branchId)?.name || '—'}
-              </p>
-            </div>
-          )}
-          {showPhotoUpload && (
-            <div>
-              <label className={modalFieldLabel}>{t('modals.member.photo')}</label>
-              <div className="mt-2 flex items-center gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-app-border-subtle bg-app-surface">
-                  {photoPreview ? (
-                    <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
-                  ) : (
-                    <User className="h-7 w-7 text-app-muted" />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1 space-y-2">
-                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-app-border-subtle px-3 py-2 text-sm font-medium text-app-text-strong hover:bg-app-surface">
-                    <Upload className="h-4 w-4" />
-                    {t('modals.member.uploadPhoto')}
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      className="sr-only"
-                      onChange={handlePhotoChange}
-                    />
-                  </label>
-                  {photoPreview && (
-                    <button
-                      type="button"
-                      onClick={clearPhoto}
-                      className="block text-xs font-medium text-app-muted hover:text-app-text-strong"
-                    >
-                      {t('modals.member.removePhoto')}
-                    </button>
-                  )}
-                  <p className="text-xs text-app-muted">{t('modals.member.photoHint')}</p>
-                </div>
-              </div>
-            </div>
-          )}
-          {!isEdit && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div>
-              <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
-              <select
-                className={`${fc('planId')}cursor-pointer`}
-                value={planId}
-                onChange={(e) => {
-                  setPlanId(e.target.value);
-                  clearFieldError(setLocalFieldErrors, 'planId');
-                  markEnrollTouched();
-                }}
-                aria-invalid={Boolean(fieldErrors.planId)}
-              >
-                <option value="">{t('modals.renew.selectPlan')}</option>
-                {plans.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
-                ))}
-              </select>
-              <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />
-            </div>
-            <div>
-              <label className={modalFieldLabel}>{t('modals.member.startDate')}</label>
-              <DateField
+              <label className={modalFieldLabel}>{t('modals.member.name')}</label>
+              <input
+                type="text"
                 required
-                className={`${fc('startDate')}cursor-pointer`}
-                value={startDate}
-                max={boundsForEnrollStart(skipPayment).max}
-                onChange={(v) => {
-                  setStartDate(v);
-                  if (!skipPayment) setPaymentDate(clampPaymentToTerm(v, paymentDate));
-                  clearFieldError(setLocalFieldErrors, 'startDate');
+                placeholder={t('modals.member.namePlaceholder')}
+                className={fc('name')}
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  clearFieldError(setLocalFieldErrors, 'name');
                   markEnrollTouched();
                 }}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
             </div>
-          </div>
+            <div>
+              <label className={modalFieldLabel}>{t('modals.member.phone')}</label>
+              <input
+                ref={phoneInputRef}
+                type="tel"
+                required
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder={t('modals.member.phonePlaceholder')}
+                className={fc('phone')}
+                value={phone}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  setPhone(next);
+                  markEnrollTouched();
+                  const trimmed = next.trim();
+                  if (!trimmed) {
+                    clearFieldError(setLocalFieldErrors, 'phone');
+                    return;
+                  }
+                  const result = validateRequiredEthiopianPhone(trimmed);
+                  if (result.ok) {
+                    clearFieldError(setLocalFieldErrors, 'phone');
+                  } else {
+                    showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
+                  }
+                }}
+                onBlur={handlePhoneBlur}
+                onKeyDown={handlePhoneKeyDown}
+                aria-invalid={Boolean(fieldErrors.phone)}
+              />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
+              <p className="mt-1 text-xs text-app-muted">{t('modals.member.phoneHint')}</p>
+            </div>
+            {showBranchPicker && activeBranches.length > 0 && (
+              <div>
+                <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
+                <select
+                  required={!isEdit}
+                  className={`${fc('branchId')}cursor-pointer`}
+                  value={branchId}
+                  onChange={(e) => setBranchId(e.target.value)}
+                >
+                  {activeBranches.map((branch) => (
+                    <option key={branch.id} value={branch.id}>
+                      {branch.name}
+                      {branch.is_default ? t('branch.defaultSuffix') : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
+              <div>
+                <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
+                <p className="mt-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text-strong">
+                  {member.branchName || activeBranches.find((b) => b.id === member.branchId)?.name || '—'}
+                </p>
+              </div>
+            )}
+            {photoBlock}
+          </section>
+
+          {!isEdit && (
+            <section className={`space-y-4 ${isPage ? 'border-t border-app-border-subtle pt-5' : ''}`}>
+              {isPage ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMembership')}</h3> : null}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className={modalFieldLabel}>{t('modals.member.plan')}</label>
+                  <select
+                    className={`${fc('planId')}cursor-pointer`}
+                    value={planId}
+                    onChange={(e) => {
+                      setPlanId(e.target.value);
+                      clearFieldError(setLocalFieldErrors, 'planId');
+                      markEnrollTouched();
+                    }}
+                    aria-invalid={Boolean(fieldErrors.planId)}
+                  >
+                    <option value="">{t('modals.renew.selectPlan')}</option>
+                    {plans.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
+                    ))}
+                  </select>
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />
+                </div>
+                <div>
+                  <label className={modalFieldLabel}>{t('modals.member.startDate')}</label>
+                  <DateField
+                    required
+                    className={`${fc('startDate')}cursor-pointer`}
+                    value={startDate}
+                    max={boundsForEnrollStart(skipPayment).max}
+                    onChange={(v) => {
+                      setStartDate(v);
+                      if (!skipPayment) setPaymentDate(clampPaymentToTerm(v, paymentDate));
+                      clearFieldError(setLocalFieldErrors, 'startDate');
+                      markEnrollTouched();
+                    }}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
+                </div>
+              </div>
+            </section>
           )}
 
           {isEdit && member && (
@@ -567,102 +613,110 @@ export default function MemberModal({
           )}
 
           {!isEdit && (
-            <>
-              <div className="border-t border-app-border-subtle pt-4">
-                <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <h3 className="text-sm font-semibold text-app-text-strong">{t('modals.member.paymentSection')}</h3>
-                  <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-app-text-strong">
-                    <input
-                      type="checkbox"
-                      checked={skipPayment}
-                      onChange={(e) => {
-                        setSkipPayment(e.target.checked);
-                        markEnrollTouched();
-                      }}
-                      className="rounded border-app-border-subtle bg-app-raised"
-                    />
-                    {t('actions.skipPayLater')}
-                  </label>
-                </div>
+            <section className={`space-y-4 ${isPage ? 'border-t border-app-border-subtle pt-5' : 'border-t border-app-border-subtle pt-4'}`}>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h3 className={sectionTitleClass}>
+                  {isPage ? t('modals.member.sectionPayment') : t('modals.member.paymentSection')}
+                </h3>
+                <label className="flex cursor-pointer items-center gap-2 text-xs font-medium text-app-text-strong">
+                  <input
+                    type="checkbox"
+                    checked={skipPayment}
+                    onChange={(e) => {
+                      setSkipPayment(e.target.checked);
+                      markEnrollTouched();
+                    }}
+                    className="rounded border-app-border-subtle bg-app-raised"
+                  />
+                  {t('actions.skipPayLater')}
+                </label>
+              </div>
 
-                {!skipPayment && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <div>
-                        <label className={modalFieldLabel}>{t('modals.member.amount')}</label>
-                        <input
-                          type="number"
-                          min="0.01"
-                          step="0.01"
-                          required
-                          readOnly
-                          className={`${fc('amount')}cursor-default bg-app-surface text-app-muted`}
-                          value={amount}
-                        />
-                        <p className="mt-1 text-xs text-app-muted">{t('modals.member.amountFromPlan')}</p>
-                        <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
-                      </div>
-                      <div>
-                        <label className={modalFieldLabel}>{t('modals.member.method')}</label>
-                        <select
-                          className={`${fc('method')}cursor-pointer`}
-                          value={method}
-                          onChange={(e) => setMethod(e.target.value)}
-                        >
-                          {PAYMENT_METHOD_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>
-                              {t(opt.labelKey)}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+              {!skipPayment && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <p className={modalFieldLabel}>{t('modals.member.amount')}</p>
+                      <p className="mt-1.5 text-base font-semibold text-app-text-strong">
+                        {selectedPlan ? formatMoney(selectedPlan.price) : t('modals.member.amountPickPlan')}
+                      </p>
+                      <p className="mt-1 text-xs text-app-muted">{t('modals.member.amountFromPlan')}</p>
+                      <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
                     </div>
                     <div>
-                      <label className={modalFieldLabel}>{t('modals.member.paymentDate')}</label>
-                      <DateField
-                        required
-                        min={boundsForPaymentOnTerm(startDate).min}
-                        max={boundsForPaymentOnTerm(startDate).max}
-                        className={`${fc('paymentDate')}cursor-pointer`}
-                        value={paymentDate}
-                        onChange={(v) => {
-                          setPaymentDate(v);
-                          clearFieldError(setLocalFieldErrors, 'paymentDate');
-                          markEnrollTouched();
-                        }}
-                      />
-                      <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
-                      {startDate && (
-                        <p className="mt-1 text-xs text-app-muted">
-                          {t('modals.member.paymentDateHint', { date: formatDisplayDate(startDate) })}
-                        </p>
-                      )}
+                      <label className={modalFieldLabel}>{t('modals.member.method')}</label>
+                      <select
+                        className={`${fc('method')}cursor-pointer`}
+                        value={method}
+                        onChange={(e) => setMethod(e.target.value)}
+                      >
+                        {PAYMENT_METHOD_OPTIONS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {t(opt.labelKey)}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
-                )}
-                {skipPayment && (
-                  <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
-                    {t('modals.member.unpaidWarning')}
+                  <div>
+                    <label className={modalFieldLabel}>{t('modals.member.paymentDate')}</label>
+                    <DateField
+                      required
+                      min={boundsForPaymentOnTerm(startDate).min}
+                      max={boundsForPaymentOnTerm(startDate).max}
+                      className={`${fc('paymentDate')}cursor-pointer`}
+                      value={paymentDate}
+                      onChange={(v) => {
+                        setPaymentDate(v);
+                        clearFieldError(setLocalFieldErrors, 'paymentDate');
+                        markEnrollTouched();
+                      }}
+                    />
+                    <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
+                    {startDate && (
+                      <p className="mt-1 text-xs text-app-muted">
+                        {t('modals.member.paymentDateHint', { date: formatDisplayDate(startDate) })}
+                      </p>
+                    )}
                   </div>
-                )}
-              </div>
-            </>
+                </div>
+              )}
+              {skipPayment && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
+                  {t('modals.member.unpaidWarning')}
+                </div>
+              )}
+            </section>
           )}
 
-          <div className={`flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-3 ${isPage ? 'border-t border-app-border-subtle pt-4 mt-2' : ''}`}>
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
-              {isBusy
-                ? photoProcessing
-                  ? t('modals.member.processingPhoto')
-                  : t('common.processing')
-                : isEdit
-                ? t('modals.member.saveUpdate')
-                : t('modals.member.saveEnroll')}
-            </Button>
-          </div>
+          {isPage ? (
+            <div className="sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+              <div className="flex justify-end">
+                <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
+                  {isBusy
+                    ? photoProcessing
+                      ? t('modals.member.processingPhoto')
+                      : t('common.processing')
+                    : t('modals.member.saveEnroll')}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-3">
+              <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+                {t('common.cancel')}
+              </Button>
+              <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
+                {isBusy
+                  ? photoProcessing
+                    ? t('modals.member.processingPhoto')
+                    : t('common.processing')
+                  : isEdit
+                  ? t('modals.member.saveUpdate')
+                  : t('modals.member.saveEnroll')}
+              </Button>
+            </div>
+          )}
         </form>
     </>
   );
@@ -670,7 +724,7 @@ export default function MemberModal({
   if (isPage) {
     if (!isOpen) return null;
     return (
-      <div className="mx-auto w-full max-w-3xl space-y-4 sm:space-y-5">
+      <div className="mx-auto w-full max-w-xl space-y-4 sm:space-y-5">
         <PageHeader
           title={title}
           subtitle={subtitle}
@@ -681,7 +735,7 @@ export default function MemberModal({
             </Button>
           }
         />
-        <Card className="p-4 sm:p-6">{formInner}</Card>
+        <Card className="overflow-visible p-4 sm:p-6">{formInner}</Card>
       </div>
     );
   }

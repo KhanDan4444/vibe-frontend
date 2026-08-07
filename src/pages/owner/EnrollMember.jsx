@@ -69,7 +69,7 @@ export default function EnrollMember() {
   return (
     <div className="space-y-4 sm:space-y-5">
       {!gymLoading && plans.length === 0 && (
-        <div className="admin-alert-amber mx-auto flex max-w-3xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="admin-alert-amber mx-auto flex max-w-xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-2">
             <AlertCircle className="admin-alert-amber-icon mt-0.5 h-5 w-5 shrink-0" />
             <p className="admin-alert-amber-title text-sm">{t('pages.members.noPlansWarning')}</p>
