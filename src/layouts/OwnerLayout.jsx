@@ -179,13 +179,9 @@ export default function OwnerLayout() {
         </span>
         {showAttentionBadge ? (
           <span
-            className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums ${
+            className={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white ${
               labelsVisible ? `ml-auto ${SIDEBAR_LABEL_VISIBLE}` : SIDEBAR_LABEL_HIDDEN
-            } ${
-              active
-                ? 'bg-white/15 text-white'
-                : 'bg-white/[0.08] text-slate-300 ring-1 ring-white/10'
-            }`}
+            } bg-rose-500`}
           >
             {attentionTotal}
           </span>
