@@ -1,6 +1,6 @@
 // src/components/MemberModal.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Upload, User, ArrowLeft, CheckCircle2, Camera } from 'lucide-react';
+import { X, Upload, User, ArrowLeft, Check, Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
@@ -76,6 +76,7 @@ export default function MemberModal({
   const [photoRemoved, setPhotoRemoved] = useState(false);
   const [hadExistingPhoto, setHadExistingPhoto] = useState(false);
   const [enrollStep, setEnrollStep] = useState(1);
+  const [enrollMaxStep, setEnrollMaxStep] = useState(1);
   const [enrollDone, setEnrollDone] = useState(null);
   const lastModalModeRef = useRef(null);
 
@@ -104,6 +105,7 @@ export default function MemberModal({
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     setEnrollStep(1);
+    setEnrollMaxStep(1);
     setEnrollDone(null);
   }, [resolvedDefaultBranch]);
 
@@ -365,6 +367,7 @@ export default function MemberModal({
             method,
           });
           setEnrollStep(1);
+          setEnrollMaxStep(1);
         } else {
           resetDraft();
         }
@@ -388,6 +391,7 @@ export default function MemberModal({
             skipPayment: true,
           });
           setEnrollStep(1);
+          setEnrollMaxStep(1);
         } else {
           resetDraft();
         }
@@ -418,9 +422,9 @@ export default function MemberModal({
   const endDateValue = computedEndDate && computedEndDate !== '—' ? computedEndDate : '';
 
   const enrollSteps = [
-    { id: 'member', label: t('modals.member.sectionMember') },
-    { id: 'membership', label: t('modals.member.sectionMembership') },
-    { id: 'payment', label: t('modals.member.sectionPayment') },
+    { id: 'member', label: t('modals.member.stepMember') },
+    { id: 'membership', label: t('modals.member.stepPlan') },
+    { id: 'payment', label: t('modals.member.stepPayment') },
   ];
 
   const branchOptions = activeBranches.map((branch) => ({
@@ -437,20 +441,19 @@ export default function MemberModal({
 
   const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
 
-  const goEnrollNext = () => {
-    setValidationError('');
-    if (enrollStep === 1) {
+  const validateEnrollStep = (step) => {
+    if (step === 1) {
       const result = validateMemberForm({ name, phone });
-      if (!showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
+      if (!showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) {
+        return false;
+      }
       if (showBranchPicker && !branchId) {
         setValidationError(t('validation.branchRequired'));
-        return;
+        return false;
       }
-      // Defer so the Continue click cannot land on a newly mounted Submit control.
-      window.setTimeout(() => setEnrollStep(2), 0);
-      return;
+      return true;
     }
-    if (enrollStep === 2) {
+    if (step === 2) {
       if (!planId) {
         showValidationError(
           { ok: false, key: 'validation.planNotSelected', field: 'planId' },
@@ -458,7 +461,7 @@ export default function MemberModal({
           t,
           { setFieldErrors: setLocalFieldErrors }
         );
-        return;
+        return false;
       }
       if (!startDate) {
         showValidationError(
@@ -467,16 +470,50 @@ export default function MemberModal({
           t,
           { setFieldErrors: setLocalFieldErrors }
         );
-        return;
+        return false;
       }
-      window.setTimeout(() => setEnrollStep(3), 0);
+      return true;
     }
+    return true;
+  };
+
+  const goEnrollNext = () => {
+    setValidationError('');
+    if (enrollStep === 1) {
+      if (!validateEnrollStep(1)) return;
+      // Defer so the Continue click cannot land on a newly mounted Submit control.
+      window.setTimeout(() => {
+        setEnrollStep(2);
+        setEnrollMaxStep((m) => Math.max(m, 2));
+      }, 0);
+      return;
+    }
+    if (enrollStep === 2) {
+      if (!validateEnrollStep(2)) return;
+      window.setTimeout(() => {
+        setEnrollStep(3);
+        setEnrollMaxStep((m) => Math.max(m, 3));
+      }, 0);
+    }
+  };
+
+  const selectEnrollStep = (n) => {
+    if (n < 1 || n > enrollMaxStep || n === enrollStep) return;
+    if (n > enrollStep) {
+      for (let s = enrollStep; s < n; s += 1) {
+        if (!validateEnrollStep(s)) return;
+      }
+    }
+    setValidationError('');
+    clearAllFieldErrors(setLocalFieldErrors);
+    setEnrollStep(n);
   };
 
   const startAnotherEnroll = () => {
     resetDraft();
     setEnrollDone(null);
     setEnrollStep(1);
+    setEnrollMaxStep(1);
   };
 
   const photoBlock = showPhotoUpload ? (
@@ -952,16 +989,18 @@ export default function MemberModal({
         <div className="mx-auto w-full max-w-xl enroll-success-in">
           <Card className="overflow-hidden p-6 sm:p-8">
             <div className="mx-auto flex max-w-sm flex-col items-center text-center">
-              <div className="enroll-success-check mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                <CheckCircle2 className="h-9 w-9" strokeWidth={2} />
+              <div className="enroll-success-check mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-emerald-600/25 bg-emerald-500/10 dark:border-emerald-400/25">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400">
+                  <Check className="h-9 w-9" strokeWidth={2.5} />
+                </div>
               </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-800 dark:text-teal-300">
-                {t('modals.member.successDone')}
-              </p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-app-text-strong">
-                {enrollDone.name}
+              <h2 className="text-xl font-bold tracking-tight text-app-text-strong sm:text-2xl">
+                {t('modals.member.successTitle')}
               </h2>
-              <p className="mt-1.5 text-sm text-app-muted">
+              <p className="mt-2.5 text-2xl font-bold tracking-tight text-app-text-strong sm:text-[1.75rem]">
+                {enrollDone.name}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-app-muted sm:text-[15px]">
                 {enrollDone.skipPayment
                   ? t('modals.member.successSkip')
                   : t('modals.member.successPaid')}
@@ -1042,7 +1081,12 @@ export default function MemberModal({
         />
         <Card className="overflow-visible p-4 sm:p-6">
           <div className="mb-5">
-            <EnrollStepProgress steps={enrollSteps} current={enrollStep} onSelect={setEnrollStep} />
+            <EnrollStepProgress
+              steps={enrollSteps}
+              current={enrollStep}
+              maxReached={enrollMaxStep}
+              onSelect={selectEnrollStep}
+            />
           </div>
           {formInner}
         </Card>
