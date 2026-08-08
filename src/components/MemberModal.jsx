@@ -1057,7 +1057,7 @@ export default function MemberModal({
                 <Button type="button" onClick={startAnotherEnroll} className="w-full sm:w-auto">
                   {t('modals.member.enrollAnother')}
                 </Button>
-                <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+                <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
                   {t('modals.member.viewMembers')}
                 </Button>
               </div>

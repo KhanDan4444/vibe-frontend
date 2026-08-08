@@ -6,6 +6,8 @@ const VARIANTS = {
     'bg-teal-700 text-white hover:bg-teal-800 focus-visible:ring-teal-600/30 dark:bg-teal-600 dark:hover:bg-teal-500',
   secondary:
     'border border-app-border-subtle bg-app-raised text-app-text hover:bg-app-surface focus-visible:ring-app-border/40',
+  outline:
+    'border-[1.5px] border-teal-700 bg-transparent text-teal-800 hover:bg-teal-700/10 focus-visible:ring-teal-600/30 dark:border-teal-400 dark:text-teal-300 dark:hover:bg-teal-400/10',
   ghost:
     'text-app-muted hover:bg-app-raised focus-visible:ring-app-border/40',
   danger:
@@ -19,7 +21,7 @@ const SIZES = {
 
 /**
  * @param {object} props
- * @param {'primary'|'secondary'|'ghost'|'danger'} [props.variant]
+ * @param {'primary'|'secondary'|'outline'|'ghost'|'danger'} [props.variant]
  * @param {'sm'|'md'} [props.size]
  * @param {boolean} [props.loading]
  */
