@@ -35,7 +35,8 @@ export default function RevenueBarChart({ data, formatMoney }) {
         data={rows}
         layout="vertical"
         margin={{ left: 8, right: 20, top: 4, bottom: 4 }}
-        barCategoryGap="12%"
+        barCategoryGap={8}
+        barSize={18}
       >
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.grid} />
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
@@ -58,15 +59,15 @@ export default function RevenueBarChart({ data, formatMoney }) {
           shape={(props) => {
             const { x, y, width, height, index } = props;
             const active = index === activeIndex;
-            const thick = active ? 6 : 0;
-            const longer = active ? 5 : 0;
+            const thick = active ? 4 : 0;
+            const longer = active ? 4 : 0;
             return (
               <Rectangle
                 x={x}
                 y={y - thick / 2}
                 width={Math.max(0, width + longer)}
                 height={height + thick}
-                radius={[0, 7, 7, 0]}
+                radius={[0, 6, 6, 0]}
                 fill={BAR_FILL}
                 fillOpacity={active ? 1 : rankFill(index, rows.length)}
                 stroke="none"
