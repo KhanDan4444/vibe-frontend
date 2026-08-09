@@ -34,6 +34,7 @@ export {
   validateForgotIdentifier,
   validateOtpCode,
   validateLogin,
+  validateLoginFields,
   MIN_USERNAME_LENGTH,
   MAX_USERNAME_LENGTH,
 } from './auth';

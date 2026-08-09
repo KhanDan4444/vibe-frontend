@@ -1,5 +1,5 @@
 // src/pages/auth/Login.jsx — cardless glass login matching mobile brand treatment
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -9,8 +9,7 @@ import { isPlatformAdmin, hasGymPortalAccess } from '../../utils/roles';
 import AuthScreen from '../../components/auth/AuthScreen';
 import LoginBrandPanel from '../../components/auth/LoginBrandPanel';
 import {
-  validateLogin,
-  showValidationError,
+  validateLoginFields,
   mutationErrorState,
   inputClass,
   fieldErrorMessage,
@@ -25,6 +24,8 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const successMessage = location.state?.message || '';
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,16 +33,34 @@ export default function Login() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [shakeToken, setShakeToken] = useState(0);
 
   const inputBase =
-    'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
+    'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color,box-shadow] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
 
+  const focusFirstInvalid = (errors) => {
+    requestAnimationFrame(() => {
+      if (errors.email) emailRef.current?.focus();
+      else if (errors.password) passwordRef.current?.focus();
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    const failureKeys = validateLoginFields(email, password);
+    if (Object.keys(failureKeys).length > 0) {
+      const nextErrors = Object.fromEntries(
+        Object.entries(failureKeys).map(([field, key]) => [field, t(key)])
+      );
+      setFieldErrors(nextErrors);
+      setShakeToken((n) => n + 1);
+      focusFirstInvalid(nextErrors);
+      return;
+    }
+
     clearAllFieldErrors(setFieldErrors);
-    if (!showValidationError(validateLogin(email, password), setError, t, { setFieldErrors })) return;
     setLoading(true);
 
     try {
@@ -58,10 +77,15 @@ export default function Login() {
       const next = mutationErrorState(err, { email: 'email' });
       setError(next.error);
       setFieldErrors(next.fieldErrors);
+      setShakeToken((n) => n + 1);
+      focusFirstInvalid(next.fieldErrors);
     } finally {
       setLoading(false);
     }
   };
+
+  const emailError = fieldErrorMessage(fieldErrors, 'email');
+  const passwordError = fieldErrorMessage(fieldErrors, 'password');
 
   return (
     <AuthScreen hero>
@@ -76,21 +100,31 @@ export default function Login() {
           )}
 
           {error && (
-            <div className="mb-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm font-medium text-rose-300">
+            <div
+              className="mb-4 rounded-2xl border border-rose-400/35 bg-rose-500/15 p-4 text-sm font-medium text-rose-200"
+              role="alert"
+            >
               {error}
             </div>
           )}
 
-          <form className="space-y-3" onSubmit={handleSubmit}>
+          <form
+            key={shakeToken}
+            className={`space-y-3 ${shakeToken > 0 ? 'auth-login-shake' : ''}`}
+            onSubmit={handleSubmit}
+            noValidate
+          >
             <div>
               <label htmlFor="login-email" className="sr-only">
                 {t('auth.emailOrUsername')}
               </label>
               <input
+                ref={emailRef}
                 id="login-email"
                 type="text"
-                required
                 autoComplete="username"
+                aria-invalid={Boolean(emailError)}
+                aria-describedby={emailError ? 'login-email-error' : undefined}
                 className={inputClass(inputBase, fieldErrors, 'email')}
                 placeholder={t('auth.emailOrUsername')}
                 value={email}
@@ -99,7 +133,7 @@ export default function Login() {
                   clearFieldError(setFieldErrors, 'email');
                 }}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+              <FieldError id="login-email-error" message={emailError} className="text-sm text-rose-300" />
             </div>
             <div>
               <label htmlFor="login-password" className="sr-only">
@@ -107,10 +141,12 @@ export default function Login() {
               </label>
               <div className="relative">
                 <input
+                  ref={passwordRef}
                   id="login-password"
                   type={showPassword ? 'text' : 'password'}
-                  required
                   autoComplete="current-password"
+                  aria-invalid={Boolean(passwordError)}
+                  aria-describedby={passwordError ? 'login-password-error' : undefined}
                   className={inputClass(`${inputBase} pr-12`, fieldErrors, 'password')}
                   placeholder={t('auth.password')}
                   value={password}
@@ -128,7 +164,7 @@ export default function Login() {
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-              <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
+              <FieldError id="login-password-error" message={passwordError} className="text-sm text-rose-300" />
             </div>
 
             <div className="flex items-center justify-between gap-3 pt-1">

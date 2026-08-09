@@ -68,3 +68,19 @@ export function validateOtpCode(value) {
 export function validateLogin(identifier, password) {
   return firstFailure(validateLoginIdentifier(identifier), validatePasswordRequired(password));
 }
+
+/**
+ * All login field failures (so empty email + password both surface at once).
+ * @param {string|null|undefined} identifier
+ * @param {string|null|undefined} password
+ * @returns {Record<string, string>} map of field → i18n key
+ */
+export function validateLoginFields(identifier, password) {
+  /** @type {Record<string, string>} */
+  const fields = {};
+  const idResult = validateLoginIdentifier(identifier);
+  if (!idResult.ok && idResult.field) fields[idResult.field] = idResult.key;
+  const passwordResult = validatePasswordRequired(password);
+  if (!passwordResult.ok && passwordResult.field) fields[passwordResult.field] = passwordResult.key;
+  return fields;
+}

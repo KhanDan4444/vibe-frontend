@@ -1,6 +1,6 @@
 /** Tailwind classes applied when a field has a validation error. */
 export const FIELD_INPUT_ERROR_CLASS =
-  '!border-rose-500 ring-1 ring-rose-500/30 focus:!border-rose-500 dark:!border-rose-500';
+  '!border-rose-400 ring-1 ring-rose-400/40 focus:!border-rose-400 focus:!ring-rose-400/35 dark:!border-rose-400';
 
 /** Default text input styling used in modals and auth forms. */
 export const FORM_INPUT_CLASS =
