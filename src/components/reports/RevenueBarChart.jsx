@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useChartTheme } from '../../utils/chartTheme';
+import { chartTooltipStyle } from '../../utils/chartTooltip';
 import { formatMoneyTick } from '../../utils/formatMoney';
 
 const BAR_FILL = '#14b8a6';
@@ -18,7 +19,7 @@ const BAR_FILL = '#14b8a6';
 /** Rank-aware teal: strongest at the top, quieter down the list. */
 function rankFill(index, total) {
   if (total <= 1) return 1;
-  return Math.max(0.45, 1 - (index / (total - 1)) * 0.45);
+  return Math.max(0.52, 1 - (index / (total - 1)) * 0.38);
 }
 
 /** Horizontal bar chart for top revenue entities (gyms or members). */
@@ -30,23 +31,24 @@ export default function RevenueBarChart({ data, formatMoney }) {
 
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <BarChart data={rows} layout="vertical" margin={{ left: 8, right: 16 }}>
+      <BarChart
+        data={rows}
+        layout="vertical"
+        margin={{ left: 8, right: 20, top: 4, bottom: 4 }}
+        barCategoryGap="28%"
+      >
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.grid} />
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
-        <YAxis type="category" dataKey="name" width={88} tick={{ fontSize: 10, fill: chartTheme.tick }} />
+        <YAxis type="category" dataKey="name" width={92} tick={{ fontSize: 10, fill: chartTheme.tick }} />
         <Tooltip
+          shared={false}
           cursor={false}
-          contentStyle={{
-            ...chartTheme.tooltip.contentStyle,
-            boxShadow: chartTheme.isDark
-              ? '0 6px 18px rgba(0,0,0,0.28)'
-              : '0 6px 18px rgba(15,23,42,0.08)',
-            border: `1px solid ${chartTheme.isDark ? '#3a4150' : '#e2e8f0'}`,
-          }}
+          contentStyle={chartTooltipStyle(chartTheme)}
           formatter={(v) => [formatMoney(v), t('charts.revenue')]}
         />
         <Bar
           dataKey="value"
+          fill={BAR_FILL}
           stroke="none"
           isAnimationActive={false}
           activeBar={false}
@@ -56,14 +58,15 @@ export default function RevenueBarChart({ data, formatMoney }) {
           shape={(props) => {
             const { x, y, width, height, index } = props;
             const active = index === activeIndex;
-            const grow = active ? 8 : 0;
+            const thick = active ? 6 : 0;
+            const longer = active ? 5 : 0;
             return (
               <Rectangle
                 x={x}
-                y={y - grow / 2}
-                width={width}
-                height={height + grow}
-                radius={[0, 6, 6, 0]}
+                y={y - thick / 2}
+                width={Math.max(0, width + longer)}
+                height={height + thick}
+                radius={[0, 7, 7, 0]}
                 fill={BAR_FILL}
                 fillOpacity={active ? 1 : rankFill(index, rows.length)}
                 stroke="none"

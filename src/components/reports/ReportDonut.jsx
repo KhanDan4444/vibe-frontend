@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useChartTheme } from '../../utils/chartTheme';
+import { chartTooltipStyle } from '../../utils/chartTooltip';
 
 /** Fallback slice palette — alternating hues so adjacent slices stay distinct. */
 const PIE_PALETTE = ['#14b8a6', '#f59e0b', '#38bdf8', '#94a3b8', '#fb7185', '#84cc16', '#a78bfa'];
@@ -21,6 +22,7 @@ function renderSlice(props) {
     startAngle,
     endAngle,
     fill,
+    isActive,
   } = props;
 
   return (
@@ -28,7 +30,7 @@ function renderSlice(props) {
       cx={cx}
       cy={cy}
       innerRadius={innerRadius}
-      outerRadius={outerRadius}
+      outerRadius={isActive ? outerRadius + 4 : outerRadius}
       startAngle={startAngle}
       endAngle={endAngle}
       fill={fill}
@@ -60,12 +62,13 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={46}
-              outerRadius={68}
-              paddingAngle={2.5}
+              innerRadius={48}
+              outerRadius={70}
+              paddingAngle={3}
               stroke={chartTheme.isDark ? '#1a1d24' : '#ffffff'}
               strokeWidth={2}
               shape={renderSlice}
+              activeIndex={activeIndex ?? undefined}
               onMouseEnter={(_, index) => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
               style={{ cursor: 'pointer', outline: 'none' }}
@@ -74,33 +77,28 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
                 <Cell
                   key={entry.name}
                   fill={sliceColor(entry, i)}
+                  fillOpacity={activeIndex == null || activeIndex === i ? 1 : 0.78}
                   style={{ outline: 'none' }}
                 />
               ))}
             </Pie>
             <Tooltip
               cursor={false}
-              contentStyle={{
-                ...chartTheme.tooltip.contentStyle,
-                boxShadow: chartTheme.isDark
-                  ? '0 6px 18px rgba(0,0,0,0.28)'
-                  : '0 6px 18px rgba(15,23,42,0.08)',
-                border: `1px solid ${chartTheme.isDark ? '#3a4150' : '#e2e8f0'}`,
-              }}
+              contentStyle={chartTooltipStyle(chartTheme)}
               formatter={tooltipFormatter}
             />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
-      <ul className="mt-2 flex max-h-[5.5rem] flex-col gap-1.5 overflow-y-auto px-0.5">
+      <ul className="mt-2.5 flex max-h-[5.5rem] flex-col gap-1.5 overflow-y-auto px-0.5">
         {rows.map((entry, i) => {
           const active = activeIndex === i;
           return (
             <li
               key={entry.name}
               className={`flex cursor-pointer items-center gap-2 text-xs transition-colors duration-200 ${
-                active ? 'text-app-text-strong' : 'text-slate-600 dark:text-app-muted'
+                active ? 'font-medium text-app-text-strong' : 'text-slate-600 dark:text-app-muted'
               }`}
               onMouseEnter={() => setActiveIndex(i)}
               onMouseLeave={() => setActiveIndex(null)}

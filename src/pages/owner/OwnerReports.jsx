@@ -178,7 +178,7 @@ export default function OwnerReports() {
     : null;
 
   return (
-    <div className="space-y-7 sm:space-y-8">
+    <div className="space-y-6 sm:space-y-7">
       <PageHeader
         title={t('pages.reports.title')}
         subtitle={t('pages.reports.subtitle')}
@@ -352,10 +352,6 @@ export default function OwnerReports() {
           </ChartCard>
         </div>
       </section>
-
-      <p className="pb-1 text-center text-xs text-app-muted">
-        {t('pages.reports.exportNote')}
-      </p>
     </div>
   );
 }
