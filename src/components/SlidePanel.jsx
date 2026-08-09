@@ -232,7 +232,7 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border bg-app-raised px-3 py-2 text-left transition hover:border-teal-600/40 hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 border-app-border-subtle dark:hover:border-teal-500/40 disabled:opacity-50 ${className}`}
+        className={`flex min-h-[40px] cursor-pointer items-center gap-2 rounded-md border border-app-border bg-app-input px-3 py-2 text-left transition hover:border-teal-600/40 hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 dark:hover:border-teal-500/40 disabled:opacity-50 ${className}`}
         {...props}
       >
         {Icon && <Icon className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />}

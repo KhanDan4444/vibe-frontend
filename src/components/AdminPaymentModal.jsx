@@ -33,7 +33,7 @@ export default function AdminPaymentModal({
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const fieldErrors = localFieldErrors;
-  const inputBase = 'w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 text-sm text-app-text focus:border-teal-600 focus:outline-none';
+  const inputBase = 'w-full rounded-lg border border-app-border bg-app-input py-2.5 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none';
   const fc = (field, extra = '') => inputClass(`${inputBase} ${extra}`, fieldErrors, field);
 
   const isEdit = !!payment;
@@ -222,7 +222,7 @@ export default function AdminPaymentModal({
               <RequiredMark />
             </label>
             <select
-              className="w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
+              className="w-full rounded-lg border border-app-border bg-app-input py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={method}
               onChange={(e) => setMethod(e.target.value)}
             >
@@ -238,7 +238,7 @@ export default function AdminPaymentModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <textarea
               rows="2"
-              className="w-full rounded-lg border border-app-border-subtle bg-app-raised py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none"
+              className="w-full rounded-lg border border-app-border bg-app-input py-2.5 px-4 text-sm text-app-text focus:border-teal-600 focus:outline-none"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />

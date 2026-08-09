@@ -163,7 +163,7 @@ export default function RenewModal({
             </label>
             <select
               required
-              className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
+              className="mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
               value={planId}
               onChange={(e) => setPlanId(e.target.value)}
             >
@@ -185,7 +185,7 @@ export default function RenewModal({
               <DateField
                 required
                 min={renewStartBounds.min}
-                className="mt-1 block w-full rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={startDate}
                 onChange={(v) => {
                   setStartDate(v);
@@ -269,7 +269,7 @@ export default function RenewModal({
                 <RequiredMark />
               </label>
               <select
-                className="mt-1 block w-full rounded-lg border border-app-border-subtle bg-app-raised px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >

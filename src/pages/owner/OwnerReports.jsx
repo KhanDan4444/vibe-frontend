@@ -324,7 +324,7 @@ export default function OwnerReports() {
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
+                    className="rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -334,7 +334,7 @@ export default function OwnerReports() {
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
+                    className="rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm focus:border-teal-600 focus:outline-none"
                   />
                 </div>
               </>
