@@ -56,14 +56,14 @@ export default function RevenueBarChart({ data, formatMoney }) {
           shape={(props) => {
             const { x, y, width, height, index } = props;
             const active = index === activeIndex;
-            const grow = active ? 5 : 0;
+            const grow = active ? 8 : 0;
             return (
               <Rectangle
                 x={x}
                 y={y - grow / 2}
                 width={width}
                 height={height + grow}
-                radius={[0, 5, 5, 0]}
+                radius={[0, 6, 6, 0]}
                 fill={BAR_FILL}
                 fillOpacity={active ? 1 : rankFill(index, rows.length)}
                 stroke="none"
