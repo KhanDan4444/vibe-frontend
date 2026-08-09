@@ -31,12 +31,13 @@ export default function RevenueBarChart({ data, formatMoney }) {
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
         <YAxis type="category" dataKey="name" width={88} tick={{ fontSize: 10, fill: chartTheme.tick }} />
         <Tooltip contentStyle={chartTheme.tooltip.contentStyle} formatter={(v) => [formatMoney(v), t('charts.revenue')]} />
-        <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+        <Bar dataKey="value" radius={[0, 4, 4, 0]} activeBar={false} stroke="none">
           {rows.map((entry, index) => (
             <Cell
               key={entry.name || index}
               fill="#0d9488"
               fillOpacity={rankFill(index, rows.length)}
+              stroke="none"
             />
           ))}
         </Bar>
