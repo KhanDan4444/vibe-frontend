@@ -33,7 +33,6 @@ export default function Login() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [shakeToken, setShakeToken] = useState(0);
 
   const inputBase =
     'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color,box-shadow] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
@@ -55,7 +54,6 @@ export default function Login() {
         Object.entries(failureKeys).map(([field, key]) => [field, t(key)])
       );
       setFieldErrors(nextErrors);
-      setShakeToken((n) => n + 1);
       focusFirstInvalid(nextErrors);
       return;
     }
@@ -77,7 +75,6 @@ export default function Login() {
       const next = mutationErrorState(err, { email: 'email' });
       setError(next.error);
       setFieldErrors(next.fieldErrors);
-      setShakeToken((n) => n + 1);
       focusFirstInvalid(next.fieldErrors);
     } finally {
       setLoading(false);
@@ -108,12 +105,7 @@ export default function Login() {
             </div>
           )}
 
-          <form
-            key={shakeToken}
-            className={`space-y-3 ${shakeToken > 0 ? 'auth-login-shake' : ''}`}
-            onSubmit={handleSubmit}
-            noValidate
-          >
+          <form className="space-y-3" onSubmit={handleSubmit} noValidate>
             <div>
               <label htmlFor="login-email" className="sr-only">
                 {t('auth.emailOrUsername')}
