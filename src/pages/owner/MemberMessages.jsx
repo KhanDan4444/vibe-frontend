@@ -96,7 +96,7 @@ export default function MemberMessages() {
           id="sms-type-filter"
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+          className="rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
         >
           {SMS_TYPE_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>

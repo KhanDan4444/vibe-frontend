@@ -162,7 +162,7 @@ export default function PaymentModal({
               id="payment-member"
               required
               disabled={!!payment || !!defaultMemberId}
-              className="mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer disabled:bg-app-surface disabled:text-app-muted disabled:cursor-not-allowed"
+              className="mt-1 block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer disabled:bg-app-surface disabled:text-app-muted disabled:cursor-not-allowed"
               value={selectedMemberId}
               onChange={(e) => handleMemberChange(e.target.value)}
             >
@@ -197,7 +197,7 @@ export default function PaymentModal({
                   required
                   min="0.01"
                   step="0.01"
-                  className={inputClass('block w-full rounded-lg border border-app-border bg-app-input pl-8 pr-3 py-2 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none', fieldErrors, 'amount')}
+                  className={inputClass('block w-full rounded-lg border border-app-input-border bg-app-input pl-8 pr-3 py-2 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none', fieldErrors, 'amount')}
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
@@ -216,7 +216,7 @@ export default function PaymentModal({
               </label>
               <select
                 id="payment-method"
-                className="mt-1 block w-full rounded-lg border border-app-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
+                className="mt-1 block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text focus:border-teal-600 focus:outline-none cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >

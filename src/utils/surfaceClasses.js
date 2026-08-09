@@ -36,10 +36,10 @@ export const cardHeader =
   'border-b border-app-border-subtle bg-app-surface';
 
 export const inputSurface =
-  'rounded-lg border border-app-border bg-app-input text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20';
+  'rounded-lg border border-app-input-border bg-app-input text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20';
 
 export const selectSurface =
-  'h-10 cursor-pointer appearance-none rounded-lg border border-app-border bg-app-input bg-[length:16px] bg-[right_10px_center] bg-no-repeat px-3 pr-9 text-sm text-app-text-strong focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:cursor-not-allowed disabled:opacity-60';
+  'h-10 cursor-pointer appearance-none rounded-lg border border-app-input-border bg-app-input bg-[length:16px] bg-[right_10px_center] bg-no-repeat px-3 pr-9 text-sm text-app-text-strong focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:cursor-not-allowed disabled:opacity-60';
 
 export const menuSurface =
   'rounded-xl bg-app-raised ring-1 ring-app-border-subtle shadow-sm shadow-black/[0.04] dark:shadow-none';
