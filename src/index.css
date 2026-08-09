@@ -233,6 +233,45 @@
     background-color: rgb(255 255 255 / 0.07);
   }
 
+  /* Shared glass fields for forgot / register / reset (match login softness). */
+  .auth-field {
+    margin-top: 0.25rem;
+    display: block;
+    width: 100%;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    background-color: rgb(255 255 255 / 0.1);
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: #ffffff;
+    caret-color: #ffffff;
+    box-shadow: none;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .auth-field::placeholder {
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  .auth-field:focus {
+    border-color: rgb(13 148 136 / 0.7);
+    background-color: rgb(255 255 255 / 0.14);
+    outline: none;
+    box-shadow: 0 0 0 2px rgb(15 118 110 / 0.35);
+  }
+
+  select.auth-field {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%94a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    padding-right: 2.5rem;
+  }
+
   /* Auth modules: shared deep teal CTAs + links */
   .auth-cta-btn {
     display: flex;
@@ -241,7 +280,7 @@
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    border-radius: 0.375rem;
+    border-radius: 1rem;
     background-color: #0f766e;
     padding: 0.625rem 1rem;
     font-size: 0.875rem;
@@ -272,6 +311,49 @@
 
   .auth-link:hover {
     color: #0d9488;
+  }
+
+  .auth-label {
+    display: block;
+    margin-bottom: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .auth-hint {
+    margin-top: 0.375rem;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    color: rgb(255 255 255 / 0.45);
+  }
+
+  .auth-banner-error {
+    border-radius: 1rem;
+    border: 1px solid rgb(251 113 133 / 0.35);
+    background: rgb(244 63 94 / 0.12);
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fecdd3;
+  }
+
+  .auth-banner-success {
+    border-radius: 1rem;
+    border: 1px solid rgb(52 211 153 / 0.35);
+    background: rgb(16 185 129 / 0.12);
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #a7f3d0;
+  }
+
+  .auth-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.4);
   }
 
   /* Neutralize browser autofill yellow on app forms (esp. staff edit). */
@@ -306,7 +388,14 @@
   .auth-login-input:autofill:focus,
   .auth-login-input:autofill:active,
   .dark .auth-login-input:-webkit-autofill,
-  .dark .auth-login-input:autofill {
+  .dark .auth-login-input:autofill,
+  .auth-field:-webkit-autofill,
+  .auth-field:-webkit-autofill:hover,
+  .auth-field:-webkit-autofill:focus,
+  .auth-field:-webkit-autofill:active,
+  .auth-field:autofill,
+  .dark .auth-field:-webkit-autofill,
+  .dark .auth-field:autofill {
     -webkit-text-fill-color: #ffffff !important;
     color: #ffffff !important;
     caret-color: #ffffff !important;

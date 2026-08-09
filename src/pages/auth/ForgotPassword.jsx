@@ -16,6 +16,7 @@ import {
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
+import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -32,10 +33,10 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [showSupportOption, setShowSupportOption] = useState(false);
 
-  const inputClass =
-    'mt-1 block w-full rounded-md border border-slate-600 bg-slate-900/40 px-3 py-2.5 text-white focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+  const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
+  const onReset = step === 'reset';
 
   const handleRequestOtp = async (e) => {
     e.preventDefault();
@@ -76,39 +77,39 @@ export default function ForgotPassword() {
 
   return (
     <AuthScreen>
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl sm:p-8">
-        <div>
-          <h2 className="text-center text-2xl font-bold text-white dark:text-app-text-strong">
-            {t('auth.forgotTitle')}
-          </h2>
-          <p className="mt-2 text-center text-sm text-slate-400 dark:text-app-muted">{t('auth.forgotSubtitle')}</p>
-          <p className="mt-2 text-center text-xs text-slate-500 dark:text-app-muted">{t('auth.forgotAdminHint')}</p>
+      <AuthFormShell>
+        <div className="space-y-3 text-center">
+          <AuthStepDots activeIndex={onReset ? 1 : 0} />
+          <div>
+            <h2 className="text-2xl font-bold text-white">{t('auth.forgotTitle')}</h2>
+            <p className="mt-2 text-sm text-white/55">{t('auth.forgotSubtitle')}</p>
+            <p className="mt-1.5 text-xs text-white/40">{t('auth.forgotAdminHint')}</p>
+          </div>
         </div>
 
         {bannerError && (
-          <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-400">{bannerError}</div>
+          <div className="auth-banner-error" role="alert">
+            {bannerError}
+          </div>
         )}
-        {message && step === 'reset' && (
-          <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-400">
+        {message && onReset && (
+          <div className="auth-banner-success" role="status">
             {message}
-            {import.meta.env.DEV && (
-              <p className="mt-2 text-xs text-slate-400">{t('auth.otpDevHint')}</p>
-            )}
+            {import.meta.env.DEV && <p className="auth-hint mt-2">{t('auth.otpDevHint')}</p>}
           </div>
         )}
 
-        {step === 'username' ? (
-          <form className="space-y-4" onSubmit={handleRequestOtp}>
+        {!onReset ? (
+          <form className="space-y-5" onSubmit={handleRequestOtp} noValidate>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label htmlFor="forgot-identifier" className="auth-label">
                 {t('auth.forgotIdentifierLabel')}
                 <RequiredMark />
               </label>
               <input
+                id="forgot-identifier"
                 type="text"
-                required
                 autoComplete="username"
-                inputMode="text"
                 value={identifier}
                 onChange={(e) => {
                   setIdentifier(e.target.value);
@@ -117,35 +118,32 @@ export default function ForgotPassword() {
                 }}
                 className={fc('email')}
                 placeholder={t('auth.forgotIdentifierPlaceholder')}
+                aria-invalid={Boolean(
+                  fieldErrorMessage(fieldErrors, 'email') || fieldErrorMessage(fieldErrors, 'username')
+                )}
               />
               <FieldError
                 message={
-                  fieldErrorMessage(fieldErrors, 'email') ||
-                  fieldErrorMessage(fieldErrors, 'username')
+                  fieldErrorMessage(fieldErrors, 'email') || fieldErrorMessage(fieldErrors, 'username')
                 }
+                className="text-sm text-rose-300"
               />
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
-                {t('auth.forgotIdentifierHint')}
-              </p>
+              <p className="auth-hint">{t('auth.forgotIdentifierHint')}</p>
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="auth-cta-btn"
-            >
+            <button type="submit" disabled={loading} className="auth-cta-btn">
               {loading ? t('auth.sending') : t('auth.sendOtp')}
             </button>
           </form>
         ) : (
-          <form className="space-y-4" onSubmit={handleReset}>
+          <form className="space-y-5" onSubmit={handleReset} noValidate>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label htmlFor="forgot-code" className="auth-label">
                 {t('auth.otpCode')}
                 <RequiredMark />
               </label>
               <input
+                id="forgot-code"
                 type="text"
-                required
                 inputMode="numeric"
                 autoComplete="one-time-code"
                 value={code}
@@ -155,17 +153,17 @@ export default function ForgotPassword() {
                 }}
                 className={fc('code')}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'code')} />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'code')} className="text-sm text-rose-300" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label htmlFor="forgot-password" className="auth-label">
                 {t('auth.newPassword')}
                 <RequiredMark />
               </label>
               <input
+                id="forgot-password"
                 type="password"
-                required
-                minLength={8}
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
@@ -173,17 +171,17 @@ export default function ForgotPassword() {
                 }}
                 className={fc('password')}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'password')} className="text-sm text-rose-300" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label htmlFor="forgot-confirm" className="auth-label">
                 {t('auth.confirmPassword')}
                 <RequiredMark />
               </label>
               <input
+                id="forgot-confirm"
                 type="password"
-                required
-                minLength={8}
+                autoComplete="new-password"
                 value={confirm}
                 onChange={(e) => {
                   setConfirm(e.target.value);
@@ -191,13 +189,12 @@ export default function ForgotPassword() {
                 }}
                 className={fc('confirmPassword')}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
+              <FieldError
+                message={fieldErrorMessage(fieldErrors, 'confirmPassword')}
+                className="text-sm text-rose-300"
+              />
             </div>
-            <button
-              type="submit"
-              disabled={loading || !sessionId}
-              className="auth-cta-btn"
-            >
+            <button type="submit" disabled={loading || !sessionId} className="auth-cta-btn">
               {loading ? t('auth.saving') : t('auth.updatePassword')}
             </button>
             <button
@@ -209,15 +206,16 @@ export default function ForgotPassword() {
                 setConfirm('');
                 setMessage('');
                 setError('');
+                clearAllFieldErrors(setFieldErrors);
               }}
-              className="w-full text-center text-sm text-slate-400 hover:text-slate-300"
+              className="w-full text-center text-sm text-white/45 transition-colors hover:text-white/70"
             >
               {t('auth.resendOtp')}
             </button>
           </form>
         )}
 
-        <div className="space-y-3 rounded-xl border border-slate-700/70 bg-slate-900/30 p-4 dark:border-app-border-subtle dark:bg-app-surface/60">
+        <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
           <button
             type="button"
             onClick={() => setShowSupportOption((show) => !show)}
@@ -226,20 +224,20 @@ export default function ForgotPassword() {
             {t('auth.tryOtherOption')}
           </button>
           {showSupportOption && (
-            <div className="space-y-2 text-sm text-slate-400 dark:text-app-muted">
-              <p className="font-semibold text-slate-300 dark:text-app-text">{t('auth.supportResetTitle')}</p>
+            <div className="space-y-2 text-sm text-white/50">
+              <p className="font-semibold text-white/80">{t('auth.supportResetTitle')}</p>
               <p>{t('auth.supportResetBody')}</p>
               <p>{t('auth.supportResetAfter')}</p>
             </div>
           )}
         </div>
 
-        <p className="text-center text-sm text-slate-400">
+        <p className="text-center text-sm text-white/55">
           <Link to="/login" className="auth-link">
             {t('auth.backToSignIn')}
           </Link>
         </p>
-      </div>
+      </AuthFormShell>
     </AuthScreen>
   );
 }

@@ -2,10 +2,19 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { resetPassword } from '../../services/authService';
-import { validatePassword, validatePasswordMatch, showValidationError, inputClass as fieldInputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../../utils/validation';
+import {
+  validatePassword,
+  validatePasswordMatch,
+  showValidationError,
+  inputClass as fieldInputClass,
+  fieldErrorMessage,
+  clearFieldError,
+  clearAllFieldErrors,
+} from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
+import AuthFormShell from '../../components/auth/AuthFormShell';
 
 export default function ResetPassword() {
   const { t } = useTranslation();
@@ -19,8 +28,7 @@ export default function ResetPassword() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const baseInputClass =
-    'mt-1 block w-full rounded-md border border-slate-600 bg-slate-900/40 px-3 py-2.5 text-white focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+  const baseInputClass = 'auth-field';
   const fc = (field) => fieldInputClass(baseInputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
 
@@ -48,28 +56,28 @@ export default function ResetPassword() {
 
   return (
     <AuthScreen>
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl sm:p-8">
-        <div>
-          <h2 className="text-center text-2xl font-bold text-white dark:text-app-text-strong">{t('auth.resetTitle')}</h2>
-          <p className="mt-2 text-center text-sm text-slate-400 dark:text-app-muted">{t('auth.resetSubtitle')}</p>
+      <AuthFormShell>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white">{t('auth.resetTitle')}</h2>
+          <p className="mt-2 text-sm text-white/55">{t('auth.resetSubtitle')}</p>
         </div>
 
         {bannerError && (
-          <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-400">
+          <div className="auth-banner-error" role="alert">
             {bannerError}
           </div>
         )}
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit} noValidate>
           <div>
-            <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+            <label htmlFor="reset-password" className="auth-label">
               {t('auth.newPassword')}
               <RequiredMark />
             </label>
             <input
+              id="reset-password"
               type="password"
-              required
-              minLength={8}
+              autoComplete="new-password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -77,17 +85,17 @@ export default function ResetPassword() {
               }}
               className={fc('password')}
             />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
+            <FieldError message={fieldErrorMessage(fieldErrors, 'password')} className="text-sm text-rose-300" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+            <label htmlFor="reset-confirm" className="auth-label">
               {t('auth.confirmPassword')}
               <RequiredMark />
             </label>
             <input
+              id="reset-confirm"
               type="password"
-              required
-              minLength={8}
+              autoComplete="new-password"
               value={confirm}
               onChange={(e) => {
                 setConfirm(e.target.value);
@@ -95,23 +103,22 @@ export default function ResetPassword() {
               }}
               className={fc('confirmPassword')}
             />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
+            <FieldError
+              message={fieldErrorMessage(fieldErrors, 'confirmPassword')}
+              className="text-sm text-rose-300"
+            />
           </div>
-          <button
-            type="submit"
-            disabled={loading}
-            className="auth-cta-btn"
-          >
+          <button type="submit" disabled={loading} className="auth-cta-btn">
             {loading ? t('auth.saving') : t('auth.updatePassword')}
           </button>
         </form>
 
-        <p className="text-center text-sm text-slate-400">
+        <p className="text-center text-sm text-white/55">
           <Link to="/forgot-password" className="auth-link">
             {t('auth.requestNewLink')}
           </Link>
         </p>
-      </div>
+      </AuthFormShell>
     </AuthScreen>
   );
 }

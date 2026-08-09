@@ -14,7 +14,7 @@ export default function AuthScreen({ children, hero = false }) {
   }
 
   return (
-    <div className="dark safe-top safe-bottom flex min-h-[100dvh] items-center justify-center bg-app-bg px-4 py-8">
+    <div className="dark auth-hero-bg safe-top safe-bottom flex min-h-[100dvh] items-center justify-center px-4 py-10">
       {children}
     </div>
   );
