@@ -379,8 +379,8 @@ export default function Revenue() {
                   <div
                     className={`h-1.5 rounded-full transition-all duration-500 ${
                       index === 0
-                        ? 'bg-teal-600/55 dark:bg-teal-400/45'
-                        : 'bg-teal-600/30 dark:bg-teal-400/25'
+                        ? 'bg-teal-700/70 dark:bg-teal-400/55'
+                        : 'bg-teal-700/28 dark:bg-teal-400/22'
                     }`}
                     style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
                   />
