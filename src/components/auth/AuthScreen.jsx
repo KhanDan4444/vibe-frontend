@@ -1,8 +1,9 @@
 import AuthHeroBackground from './AuthHeroBackground';
 
 /**
- * Auth routes always render in dark mode — matches the in-app default and avoids
- * a light login → dark dashboard mismatch. Does not change the user's saved theme.
+ * Auth UI uses a nested `.dark` shell (yesterday's glass login).
+ * Document theme is forced light on auth routes elsewhere so the hero wash
+ * composites like before — without changing the saved/app default (dark).
  */
 export default function AuthScreen({ children, hero = false }) {
   if (hero) {

@@ -49,8 +49,15 @@ export function PreferencesProvider({ children }) {
     skipThemePersistRef.current = true;
     const storedTheme = readStoredTheme(user);
     setThemeState(storedTheme);
-    applyThemeClass(storedTheme);
-    setIsDark(storedTheme === 'dark');
+    // Login/auth keep yesterday's look: light html under the dark glass shell.
+    // Do not persist — app default stays dark after login.
+    if (onAuthRoute) {
+      applyThemeClass('light');
+      setIsDark(false);
+    } else {
+      applyThemeClass(storedTheme);
+      setIsDark(storedTheme === 'dark');
+    }
 
     // Logout: carry the current language onto the login/guest screen
     // (previously reset to browser default, dropping an Amharic choice).
@@ -63,7 +70,7 @@ export function PreferencesProvider({ children }) {
       }
       setDocumentLanguage(carried);
     }
-  }, [user?.id, user?.gym_id, i18n]);
+  }, [user?.id, user?.gym_id, i18n, onAuthRoute]);
 
   useEffect(() => {
     const code = normalizeLanguage(
@@ -77,6 +84,14 @@ export function PreferencesProvider({ children }) {
   }, [user?.id, user?.gym_id, i18n, onAuthRoute]);
 
   useEffect(() => {
+    // Auth pages: light document theme under dark AuthScreen (yesterday's login wash).
+    // Saved preference / app default remain dark and are restored after leaving auth.
+    if (onAuthRoute) {
+      applyThemeClass('light');
+      setIsDark(false);
+      return;
+    }
+
     applyThemeClass(theme);
     setIsDark(theme === 'dark');
 
@@ -86,7 +101,7 @@ export function PreferencesProvider({ children }) {
     }
 
     persistTheme(theme, user);
-  }, [theme, user?.id, user?.gym_id]);
+  }, [theme, user?.id, user?.gym_id, onAuthRoute]);
 
   const setTheme = useCallback((next) => {
     setThemeState(next === 'dark' ? 'dark' : 'light');
