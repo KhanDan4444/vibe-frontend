@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { DollarSign, Search, CreditCard, ArrowUpRight, TrendingUp, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX } from 'lucide-react';
+import { DollarSign, Search, CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX, TrendingUp } from 'lucide-react';
 import PaymentModal from '../../components/PaymentModal';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
@@ -22,26 +23,27 @@ import { getPayments } from '../../services/paymentService';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } from '../../utils/listSort';
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
-import { formatMoney } from '../../utils/formatMoney';
+import { formatMoney, formatMoneyShort } from '../../utils/formatMoney';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
-import { tableRowHover, selectSurface, iconActionIdle, iconActionDanger } from '../../utils/surfaceClasses';
+import { tableRowHover, selectSurface, iconActionIdle, iconActionDanger, headingText } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { AdminListSkeleton, AdminTableRowsSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
+import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 export default function Revenue() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
-  const { plans, updatePayment, deletePayment, showFlash, refreshSummary, readOnly, getBranchQueryParams, selectedBranchId } = useGym();
-  const showBranchColumn = isGymOwner(user?.role) && selectedBranchId === 'all';
+  const { plans, updatePayment, deletePayment, showFlash, refreshSummary, readOnly, getBranchQueryParams, selectedBranchId, branches } = useGym();
+  const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
+  const showBranchColumn = isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
   const canManageRevenue = isGymOwner(user?.role) && !readOnly;
   const navigate = useNavigate();
 
@@ -144,7 +146,35 @@ export default function Revenue() {
   const transactionCount = summary.count ?? 0;
   const averagePayment = summary.average ?? 0;
   const byMethod = summary.byMethod ?? {};
-  const isTrendPositive = trendStr ? !trendStr.startsWith('-') : true;
+
+  const methodRows = useMemo(() => {
+    const entries = Object.entries(byMethod).map(([method, amount]) => ({
+      method,
+      amount: Number(amount) || 0,
+    }));
+    const methodTotal = entries.reduce((sum, row) => sum + row.amount, 0);
+    const base = methodTotal > 0 ? methodTotal : periodRevenue;
+    return entries
+      .sort((a, b) => b.amount - a.amount)
+      .map((row) => ({
+        ...row,
+        percent: base > 0 ? Math.round((row.amount / base) * 100) : 0,
+      }));
+  }, [byMethod, periodRevenue]);
+
+  const topMethod = methodRows[0];
+  const statusLine =
+    transactionCount > 0 && topMethod
+      ? t('pages.revenue.statusLine', {
+          revenue: formatMoneyShort(periodRevenue),
+          count: transactionCount,
+          method: translatePaymentMethod(topMethod.method),
+          percent: topMethod.percent,
+        })
+      : t('pages.revenue.statusLineEmpty', {
+          revenue: formatMoneyShort(periodRevenue),
+          count: transactionCount,
+        });
 
   const attentionMembers = unpaidMembers.filter(
     (m) => m.status === 'Expired' || m.status === 'Due Soon'
@@ -215,7 +245,7 @@ export default function Revenue() {
     <div className="space-y-5 sm:space-y-6">
       <PageHeader
         title={t('pages.revenue.title')}
-        subtitle={t('pages.revenue.subtitle')}
+        subtitle={statusLine}
         actions={
           <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
             <Download className="h-4 w-4" /> {t('common.exportCsv')}
@@ -292,70 +322,66 @@ export default function Revenue() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {listLoading && payments.length === 0 ? (
-          Array.from({ length: 3 }).map((_, i) => <SummaryCardSkeleton key={i} />)
+          <>
+            <MetricCardSkeleton variant="emphasis" className="col-span-2" />
+            <MetricCardSkeleton variant="dense" />
+            <MetricCardSkeleton variant="dense" />
+          </>
         ) : (
           <>
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-app-muted">{t('pages.revenue.periodRevenue', { period: periodLabel })}</span>
-            <span className="rounded-lg bg-emerald-50 p-2 text-emerald-600 dark:bg-emerald-500/12 dark:text-emerald-400">
-              <TrendingUp className="h-5 w-5" />
-            </span>
-          </div>
-          <div className="mt-2 flex items-baseline">
-            <span className="text-3xl font-bold text-app-text-strong">
-              {formatMoney(periodRevenue)}
-            </span>
-            {trendStr && (
-              <span className={`ml-2 text-xs font-semibold flex items-center ${isTrendPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
-                <ArrowUpRight className="h-3 w-3 mr-0.5" /> {trendStr}
-              </span>
-            )}
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-app-muted">{t('metrics.transactions')}</span>
-            <span className="rounded-lg bg-teal-50 p-2 text-teal-700 dark:bg-teal-600/12 dark:text-teal-400">
-              <CreditCard className="h-5 w-5" />
-            </span>
-          </div>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-app-text-strong">{transactionCount}</span>
-            <span className="ml-2 text-xs text-app-muted font-medium">{t('pages.revenue.inSelectedPeriod')}</span>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-app-muted">{t('metrics.averagePayment')}</span>
-            <span className="rounded-lg p-2 text-app-muted bg-app-surface">
-              <DollarSign className="h-5 w-5" />
-            </span>
-          </div>
-          <div className="mt-2">
-            <span className="text-3xl font-bold text-app-text-strong">
-              {formatMoney(averagePayment)}
-            </span>
-          </div>
-        </Card>
+            <MetricCard
+              className="col-span-2"
+              variant="emphasis"
+              label={t('pages.revenue.periodRevenue', { period: periodLabel })}
+              value={formatMoneyShort(periodRevenue)}
+              icon={TrendingUp}
+              color="teal"
+              trend={trendStr}
+              trendCaption={trendStr ? t('metrics.vsLastMonth') : null}
+            />
+            <MetricCard
+              variant="dense"
+              label={t('metrics.transactions')}
+              value={transactionCount}
+              icon={CreditCard}
+              color="sky"
+              hint={t('pages.revenue.inSelectedPeriod')}
+              showHintBelow
+            />
+            <MetricCard
+              variant="dense"
+              label={t('metrics.averagePayment')}
+              value={formatMoneyShort(averagePayment)}
+              icon={DollarSign}
+              color="slate"
+            />
           </>
         )}
       </div>
 
-      {Object.keys(byMethod).length > 0 && (
-        <Card className="p-4">
-          <h3 className="mb-2.5 text-sm font-semibold text-app-text-strong">{t('metrics.revenueByMethod')}</h3>
-          <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            {Object.entries(byMethod).map(([method, amount]) => (
-              <div key={method} className="admin-method-chip">
-                <PaymentMethodBadge method={method} />
-                <p className="mt-1.5 text-lg font-bold text-app-text-strong">
-                  {formatMoney(amount)}
-                </p>
+      {methodRows.length > 0 && (
+        <Card quiet className="p-4 sm:p-5">
+          <h3 className={`mb-3 text-sm font-semibold ${headingText}`}>{t('metrics.revenueByMethod')}</h3>
+          <div className="space-y-3">
+            {methodRows.map((row) => (
+              <div key={row.method}>
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <PaymentMethodBadge method={row.method} />
+                  <div className="flex shrink-0 items-baseline gap-2 text-right">
+                    <span className="text-xs font-semibold text-app-muted">{row.percent}%</span>
+                    <span className={`font-display text-sm font-bold tracking-tight ${headingText}`}>
+                      {formatMoneyShort(row.amount)}
+                    </span>
+                  </div>
+                </div>
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-app-border-subtle">
+                  <div
+                    className="h-1.5 rounded-full bg-brand transition-all duration-500"
+                    style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -434,7 +460,7 @@ export default function Revenue() {
                       <PaymentMethodBadge method={payment.method} />
                     </div>
                   </div>
-                  <p className="shrink-0 text-base font-bold text-app-text-strong">
+                  <p className={`shrink-0 font-display text-base font-bold tracking-tight ${headingText}`}>
                     {formatMoney(payment.amount)}
                   </p>
                 </div>
@@ -515,7 +541,7 @@ export default function Revenue() {
                     <td>
                       <PaymentMethodBadge method={payment.method} />
                     </td>
-                    <td className="font-bold whitespace-nowrap text-app-text-strong">
+                    <td className={`whitespace-nowrap font-display text-base font-bold tracking-tight ${headingText}`}>
                       {formatMoney(payment.amount)}
                     </td>
                     {canManageRevenue && (

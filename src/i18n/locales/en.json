@@ -578,6 +578,8 @@
     "revenue": {
       "title": "Revenue",
       "subtitle": "Track payments and export reports.",
+      "statusLine": "{{revenue}} · {{count}} payments · {{method}} {{percent}}%",
+      "statusLineEmpty": "{{revenue}} · {{count}} payments",
       "enrollLink": "enroll members",
       "subtitleWithEnroll": "Track payments from {{link}} and export reports.",
       "attentionBanner": "{{count}} member(s) enrolled without payment for their current term.",

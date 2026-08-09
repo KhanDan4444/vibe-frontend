@@ -1080,6 +1080,8 @@
       "searchPlaceholder": "ክፍያዎችን በአባል ስም ፈልግ…",
       "sortPayments": "ክፍያዎችን ደርድር",
       "subtitle": "ክፍያዎችን ይከታተሉ እና ሪፖርቶችን ያውርዱ።",
+      "statusLine": "{{revenue}} · {{count}} ክፍያዎች · {{method}} {{percent}}%",
+      "statusLineEmpty": "{{revenue}} · {{count}} ክፍያዎች",
       "subtitleWithEnroll": "ክፍያዎችን ከ{{link}} ይከታተሉ እና ሪፖርቶችን ያውርዱ።",
       "title": "ገቢ",
       "unknownMember": "ያልታወቀ አባል",
