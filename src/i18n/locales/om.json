@@ -526,8 +526,10 @@
       "renewed": "{{name}} haaromee kaffaltinis galmeeffameera."
     },
     "members": {
-      "title": "Galmee Miseensotaa",
+      "title": "Miseensota",
       "subtitle": "Miseensota galmeessaa, kaffaltii jijjiiraa, yeroo haaromsaa, fi kaffaltii dabarsan sassaabaa.",
+      "statusLineAttention": "{{expired}} dhumatan · {{dueSoon}} dhiyootti · {{unpaid}} hin kaffalle",
+      "statusLineClear": "{{active}} si'aawaa · {{total}} waliigala",
       "add": "Miseensa Galmeessi",
       "searchPlaceholder": "Miseensota barbaadi…",
       "noPlansWarning": "Karoorri miseensummaa ammaaf hin jiru. Miseensota galmeessuu keessan dura yoo xinnaate karoora tokko dabalaa.",

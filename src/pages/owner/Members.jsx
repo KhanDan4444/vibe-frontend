@@ -13,7 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionDanger, renewActionBtn } from '../../utils/surfaceClasses';
+import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionDanger, renewActionBtn, collectActionBtn } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -90,10 +90,23 @@ export default function Members() {
   const unpaidCount = summary.unpaidCount ?? 0;
   const activeMembersCount = summary.activeMembers ?? 0;
   const totalMembers = summary.totalMembers ?? total;
-  const showBranchColumn = isGymOwner(user?.role) && selectedBranchId === 'all';
+  const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
+  const showBranchColumn =
+    isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
   const showTransfer = isGymOwner(user?.role) && (!readOnly || branchReadOnly);
   const canDeleteMembers = isGymOwner(user?.role);
-  const showBranchPicker = isGymOwner(user?.role) && branches.filter((b) => b.is_active !== false).length > 0;
+  const showBranchPicker = isGymOwner(user?.role) && activeBranchCount > 1;
+  const needsAttention = expiredCount > 0 || dueSoonCount > 0 || unpaidCount > 0;
+  const statusLine = needsAttention
+    ? t('pages.members.statusLineAttention', {
+        expired: expiredCount,
+        dueSoon: dueSoonCount,
+        unpaid: unpaidCount,
+      })
+    : t('pages.members.statusLineClear', {
+        active: activeMembersCount,
+        total: totalMembers,
+      });
   const enrollDefaultBranchId =
     selectedBranchId !== 'all'
       ? selectedBranchId
@@ -417,7 +430,7 @@ export default function Members() {
     <div className="space-y-4 sm:space-y-5">
       <PageHeader
         title={t('pages.members.title')}
-        subtitle={t('pages.members.subtitle')}
+        subtitle={statusLine}
         actions={
           !readOnly ? (
             <Button
@@ -588,29 +601,6 @@ export default function Members() {
                 </div>
                 {!readOnly && (
                   <div className="admin-row-actions mt-2" onClick={(e) => e.stopPropagation()}>
-                    {member.isUnpaid && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setError('');
-                          setPaymentState({ isOpen: true, member, error: '' });
-                        }}
-                        className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
-                        title={t('actions.collectPayment')}
-                      >
-                        <DollarSign className="h-4 w-4" />
-                      </button>
-                    )}
-                    {canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => openChangePlanModal(member)}
-                        className={iconActionIdle}
-                        title={t('actions.changePlan')}
-                      >
-                        <ArrowLeftRight className="h-4 w-4" />
-                      </button>
-                    )}
                     {canRenewMember(member) && (
                       <button
                         type="button"
@@ -622,6 +612,29 @@ export default function Members() {
                         title={t('actions.renew')}
                       >
                         <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
+                      </button>
+                    )}
+                    {member.isUnpaid && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setError('');
+                          setPaymentState({ isOpen: true, member, error: '' });
+                        }}
+                        className={collectActionBtn}
+                        title={t('actions.collectPayment')}
+                      >
+                        <DollarSign className="h-3 w-3" /> {t('actions.collect')}
+                      </button>
+                    )}
+                    {canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => openChangePlanModal(member)}
+                        className={iconActionIdle}
+                        title={t('actions.changePlan')}
+                      >
+                        <ArrowLeftRight className="h-4 w-4" />
                       </button>
                     )}
                     <button
@@ -735,6 +748,19 @@ export default function Members() {
                       </td>
                       <td className="owner-members-col-actions">
                         <div className="admin-row-actions">
+                        {!readOnly && canRenewMember(member) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setError('');
+                              openRenewModal(member);
+                            }}
+                            className={renewActionBtn}
+                            title={t('actions.renew')}
+                          >
+                            <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
+                          </button>
+                        )}
                         {!readOnly && member.isUnpaid && (
                           <button
                             onClick={(e) => {
@@ -742,10 +768,10 @@ export default function Members() {
                               setError('');
                               setPaymentState({ isOpen: true, member, error: '' });
                             }}
-                            className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
+                            className={collectActionBtn}
                             title={t('actions.collectPayment')}
                           >
-                            <DollarSign className="h-4 w-4" />
+                            <DollarSign className="h-3 w-3" /> {t('actions.collect')}
                           </button>
                         )}
                         {!readOnly && canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
@@ -758,19 +784,6 @@ export default function Members() {
                             title={t('actions.changePlan')}
                           >
                             <ArrowLeftRight className="h-4 w-4" />
-                          </button>
-                        )}
-                        {!readOnly && canRenewMember(member) && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setError('');
-                              openRenewModal(member);
-                            }}
-                            className={renewActionBtn}
-                            title={t('actions.renew')}
-                          >
-                            <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                           </button>
                         )}
                         {!readOnly && (

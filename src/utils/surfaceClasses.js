@@ -73,3 +73,7 @@ export const iconActionDanger =
 /** Solid renew CTA — deep teal + white in both themes (avoid dark-mode bright brand fill). */
 export const renewActionBtn =
   'inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-black/10 hover:bg-[#0d9488] cursor-pointer dark:bg-teal-600 dark:hover:bg-teal-500 dark:shadow-none';
+
+/** Solid collect CTA — amber for unpaid / at-risk payment rows. */
+export const collectActionBtn =
+  'inline-flex items-center gap-1 rounded-lg bg-amber-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm shadow-black/10 hover:bg-amber-500 cursor-pointer dark:bg-amber-600 dark:hover:bg-amber-500 dark:shadow-none';

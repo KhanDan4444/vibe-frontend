@@ -526,8 +526,10 @@
       "renewed": "{{name}} renewed and payment recorded."
     },
     "members": {
-      "title": "Member Directory",
+      "title": "Members",
       "subtitle": "Enroll members, change plans, renew terms, and collect missed payments.",
+      "statusLineAttention": "{{expired}} expired · {{dueSoon}} due soon · {{unpaid}} unpaid",
+      "statusLineClear": "{{active}} active · {{total}} total",
       "add": "Enroll Member",
       "searchPlaceholder": "Search members…",
       "noPlansWarning": "No membership plans yet. Add at least one plan before you can enroll members.",
