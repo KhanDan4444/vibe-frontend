@@ -164,6 +164,10 @@ export default function OwnerDashboard() {
         )}
       </div>
 
+      {showComparison && !gymBooting && (
+        <BranchComparisonTable branches={branchComparison} loading={comparisonLoading} />
+      )}
+
       <div className="grid gap-6 md:grid-cols-5">
         {gymBooting ? (
           <>
@@ -340,10 +344,6 @@ export default function OwnerDashboard() {
           </>
         )}
       </div>
-
-      {showComparison && !gymBooting && (
-        <BranchComparisonTable branches={branchComparison} loading={comparisonLoading} />
-      )}
 
       <RenewModal
         isOpen={renewState.isOpen}
