@@ -375,10 +375,12 @@ export default function Revenue() {
                     </span>
                   </div>
                 </div>
-                <div className="h-1 w-full overflow-hidden rounded-full bg-app-border-subtle">
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-app-border-subtle">
                   <div
-                    className={`h-1 rounded-full transition-all duration-500 ${
-                      index === 0 ? 'bg-app-text/40 dark:bg-white/30' : 'bg-app-text/20 dark:bg-white/14'
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      index === 0
+                        ? 'bg-teal-600/55 dark:bg-teal-400/45'
+                        : 'bg-teal-600/30 dark:bg-teal-400/25'
                     }`}
                     style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
                   />
