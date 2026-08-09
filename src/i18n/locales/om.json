@@ -575,6 +575,14 @@
     "plans": {
       "title": "Karoorawwan Miseensummaa",
       "subtitle": "Galmee miseensotaatiif sadarkaalee gatii murteessaa.",
+      "catalog": "Tarree karooraa",
+      "statusLine": "Karoorawwan {{count}} · {{from}}–{{to}} · miseensota hojiirra {{members}}",
+      "statusLineSingle": "Karoorawwan {{count}} · {{price}} · miseensota hojiirra {{members}}",
+      "statusLineEmpty": "Karoorawwan ammaaf hin jiran",
+      "sortLabel": "Karoorawwan tarreessi",
+      "activeMembers_one": "Miseensa hojiirra {{count}}",
+      "activeMembers_other": "Miseensota hojiirra {{count}}",
+      "perMonth": "{{amount}} / ji'a",
       "add": "Karoora Galmeessi",
       "emptyTitle": "Karoorawwan ammaaf hin jiran",
       "emptyBody": "Miseensota galmeessuu eegaluuf karoora miseensummaa keessan isa duraa uumaa.",
@@ -584,7 +592,15 @@
       "deleteConfirmMessage": "Karoora miseensummaa \"{{name}}\" dhaabbataan haqamuu isaatiif mirkanaa'aadhaa? Tarkaanfiin kun deebi'uu hin danda'u.",
       "cannotDelete": "\"{{name}}\" haqamuu hin danda'u. Yeroo ammaa miseensonni {{count}} karoora kanaatti hidhamanii jiru. Maaloo karoora kana dhabamsiisuu dura akkaawuntiiwwan sana bakka biraatti ramadaa.",
       "editPlanTitle": "Karoora Jijjiiri",
-      "deletePlanTitle": "Karoora Haqii"
+      "deletePlanTitle": "Karoora Haqii",
+      "sort": {
+        "priceAsc": "Gatii: gadii gara ol",
+        "priceDesc": "Gatii: olii gara gadi",
+        "durationAsc": "Turtii: gabaabaa",
+        "durationDesc": "Turtii: dheeraa",
+        "membersDesc": "Miseensota baay'ee",
+        "nameAsc": "Maqaa: A hanga Z"
+      }
     },
     "revenue": {
       "title": "Galii",
@@ -655,6 +671,10 @@
     "branches": {
       "title": "Dameewwan",
       "subtitle": "Bakka hojii fi dhiheessii jimii bulchi.",
+      "locations": "Bakkeewwan",
+      "statusLine": "Dameewwan {{count}} · {{active}} hojiirra · Default: {{default}}",
+      "statusLineEmpty": "Ammatti dameen hin jiru",
+      "searchPlaceholder": "Maqaa, bilbila, ykn teessoo tiin barbaadi…",
       "add": "Damee Galmeessi",
       "empty": "Ammatti dameen hin jiru. Bakka hojii kee isa jalqabaa dabali.",
       "formAdd": "Damee Galmeessi",
@@ -674,7 +694,14 @@
       "deactivateTitle": "Damee dhaabuu?",
       "deactivateMessage": "{{name}} dhaabuu akka feetu mirkaneeffadhu?",
       "emptyTitle": "Ammatti dameen hin jiru",
-      "emptyBody": "Miseensota dameen gurmeessuuf bakka hojii kee isa jalqabaa dabali."
+      "emptyBody": "Miseensota dameen gurmeessuuf bakka hojii kee isa jalqabaa dabali.",
+      "emptyFilteredTitle": "Dameen walsimatu hin jiru",
+      "emptyFilteredBody": "Barbaacha ykn filatara haalaa biraa yaali.",
+      "filters": {
+        "all": "Haala hunda",
+        "active": "Kan hojiirra jiru qofa",
+        "inactive": "Kan hojiirra hin jirre qofa"
+      }
     },
     "team": {
       "title": "Hojjettoota",
@@ -694,14 +721,36 @@
       "resetPassword": "Jechama siriitii deebisi",
       "passwordReset": "Jechamni siriitii {{name}}if jijjiirameera. Jechama siriitii haarawa kana of eeggannoon qooddi.",
       "emptyTitle": "Hojjettonni hin jiran",
-      "emptyBody": "Hojjettoota deskii fuulduraa afeeri si'a ta'u miseensota teessuma duraatiin bulchuu danda'u."
+      "emptyBody": "Hojjettoota deskii fuulduraa afeeri si'a ta'u miseensota teessuma duraatiin bulchuu danda'u.",
+      "emptyBranchTitle": "Damee kana irratti hojjetoonni hin jiran",
+      "emptyBranchBody": "Gara dameewwan hundaatti jijjiiri, ykn hojjettoota bakka kanaaf ramadi."
     },
     "activity": {
       "title": "Sosocho'iinsota",
       "subtitle": "Galmee jijjiirama jimii kee keessatti ta'an.",
+      "history": "Seenaa gochaa",
+      "statusLine": "Gochawwan {{count}} · {{filter}}",
+      "statusLineEmpty": "Ilaalcha kana keessatti gochi hin jiru",
+      "searchPlaceholder": "Kaayyoo ykn gochaa taasisuun barbaadi…",
+      "actionFilterLabel": "Gosa gochaa",
       "empty": "Ammatti socho'iinsi galmeeffame hin jiru.",
       "emptyTitle": "Socho'iinsi hin jiru",
-      "emptyBody": "Gochooti miseensotaa fi kaffaltii yeroo hojjettu asitti mul'atu."
+      "emptyBody": "Gochooti miseensotaa fi kaffaltii yeroo hojjettu asitti mul'atu.",
+      "emptyFilteredTitle": "Filtara kanaaf gochi hin jiru",
+      "emptyFilteredBody": "Gosa ykn eenyuun biraa yaali, ykn gara Hundaatti deebi'i.",
+      "emptySearchTitle": "Gochi walsimatu hin jiru",
+      "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi.",
+      "filters": {
+        "allEvents": "Gochawwan hunda",
+        "allMemberEvents": "Gochawwan miseensaa hunda",
+        "allPaymentEvents": "Gochawwan kaffaltii hunda",
+        "allPlanEvents": "Gochawwan karooraa hunda",
+        "allStaffEvents": "Gochawwan hojjettootaa hunda",
+        "groupMembers": "Miseensota",
+        "groupPayments": "Kaffaltiiwwan",
+        "groupPlans": "Karoora",
+        "groupStaff": "Hojjettoota"
+      }
     },
     "memberMessages": {
       "title": "SMS Miseensaa",
@@ -709,12 +758,15 @@
       "statusLine": "Ergaalee {{count}} · {{filter}}",
       "statusLineEmpty": "Ilaalcha kana keessatti ergaan hin jiru",
       "messageHistory": "Seenaa ergaa",
+      "searchPlaceholder": "Maqaa miseensaatiin barbaadi…",
       "empty": "SMSn miseensaa kan ergame hin jiru.",
       "loadError": "Galmee SMS ol fe'uu hin dandeenye.",
       "emptyTitle": "SMSn hin jiru",
       "emptyBody": "Seenaan SMS miseensaa ergaa ofumaan jalqabaa ergames booda mul'ata.",
       "emptyFilteredTitle": "Gosa kanaaf ergaan hin jiru",
-      "emptyFilteredBody": "Gosa biraa yaali, ykn gara Hundaatti deebi'i."
+      "emptyFilteredBody": "Gosa biraa yaali, ykn gara Hundaatti deebi'i.",
+      "emptySearchTitle": "Miseensi walsimatu hin jiru",
+      "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi."
     },
     "adminGymMessages": {
       "title": "Galmee SMS Plaatfoormii",

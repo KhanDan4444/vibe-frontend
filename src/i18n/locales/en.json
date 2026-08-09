@@ -575,6 +575,14 @@
     "plans": {
       "title": "Membership Plans",
       "subtitle": "Define pricing tiers for member enrollments.",
+      "catalog": "Plan catalog",
+      "statusLine": "{{count}} plans · {{from}}–{{to}} · {{members}} active members",
+      "statusLineSingle": "{{count}} plans · {{price}} · {{members}} active members",
+      "statusLineEmpty": "No plans yet",
+      "sortLabel": "Sort plans",
+      "activeMembers_one": "{{count}} active member",
+      "activeMembers_other": "{{count}} active members",
+      "perMonth": "{{amount}} / month",
       "add": "Create New Plan",
       "emptyTitle": "No plans yet",
       "emptyBody": "Create your first membership tier to start enrolling members.",
@@ -584,7 +592,15 @@
       "deleteConfirmMessage": "Are you sure you want to permanently delete the \"{{name}}\" membership plan? This action cannot be undone.",
       "cannotDelete": "Cannot delete \"{{name}}\". There are currently {{count}} member(s) linked to this tier. Please reassign those accounts before removing this package.",
       "editPlanTitle": "Edit Plan",
-      "deletePlanTitle": "Delete Plan"
+      "deletePlanTitle": "Delete Plan",
+      "sort": {
+        "priceAsc": "Price: low to high",
+        "priceDesc": "Price: high to low",
+        "durationAsc": "Duration: shortest",
+        "durationDesc": "Duration: longest",
+        "membersDesc": "Most members",
+        "nameAsc": "Name: A to Z"
+      }
     },
     "revenue": {
       "title": "Revenue",
@@ -655,6 +671,10 @@
     "branches": {
       "title": "Branches",
       "subtitle": "Manage gym locations and defaults.",
+      "locations": "Locations",
+      "statusLine": "{{count}} branches · {{active}} active · Default: {{default}}",
+      "statusLineEmpty": "No branches yet",
+      "searchPlaceholder": "Search by name, phone, or address…",
       "add": "Add branch",
       "empty": "No branches yet. Add your first location.",
       "formAdd": "Add branch",
@@ -674,7 +694,14 @@
       "deactivateTitle": "Deactivate branch?",
       "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
       "emptyTitle": "No branches yet",
-      "emptyBody": "Add your first location to organize members by branch."
+      "emptyBody": "Add your first location to organize members by branch.",
+      "emptyFilteredTitle": "No matching branches",
+      "emptyFilteredBody": "Try another search or status filter.",
+      "filters": {
+        "all": "All statuses",
+        "active": "Active only",
+        "inactive": "Inactive only"
+      }
     },
     "team": {
       "title": "Staff",
@@ -694,14 +721,36 @@
       "resetPassword": "Reset password",
       "passwordReset": "Password reset for {{name}}. Share the new password securely.",
       "emptyTitle": "No staff yet",
-      "emptyBody": "Invite front desk staff so they can manage members at the desk."
+      "emptyBody": "Invite front desk staff so they can manage members at the desk.",
+      "emptyBranchTitle": "No staff at this branch",
+      "emptyBranchBody": "Switch to All branches, or assign staff to this location."
     },
     "activity": {
       "title": "Activity",
       "subtitle": "Audit log of changes across your gym.",
+      "history": "Event history",
+      "statusLine": "{{count}} events · {{filter}}",
+      "statusLineEmpty": "No events in this view",
+      "searchPlaceholder": "Search by target or actor…",
+      "actionFilterLabel": "Event type",
       "empty": "No activity recorded yet.",
       "emptyTitle": "No activity yet",
-      "emptyBody": "Member and payment events will appear here as you work."
+      "emptyBody": "Member and payment events will appear here as you work.",
+      "emptyFilteredTitle": "No events for this filter",
+      "emptyFilteredBody": "Try another event type or who filter, or switch back to All.",
+      "emptySearchTitle": "No matching events",
+      "emptySearchBody": "Try a different name, or clear the search.",
+      "filters": {
+        "allEvents": "All events",
+        "allMemberEvents": "All member events",
+        "allPaymentEvents": "All payment events",
+        "allPlanEvents": "All plan events",
+        "allStaffEvents": "All staff events",
+        "groupMembers": "Members",
+        "groupPayments": "Payments",
+        "groupPlans": "Plans",
+        "groupStaff": "Staff"
+      }
     },
     "memberMessages": {
       "title": "Member SMS",
@@ -709,12 +758,15 @@
       "statusLine": "{{count}} messages · {{filter}}",
       "statusLineEmpty": "No messages in this view",
       "messageHistory": "Message history",
+      "searchPlaceholder": "Search by member name…",
       "empty": "No member SMS has been sent yet.",
       "loadError": "Failed to load SMS log.",
       "emptyTitle": "No SMS yet",
       "emptyBody": "Member SMS history shows up after the first automatic message is sent.",
       "emptyFilteredTitle": "No messages for this type",
-      "emptyFilteredBody": "Try another message type, or switch back to All."
+      "emptyFilteredBody": "Try another message type, or switch back to All.",
+      "emptySearchTitle": "No matching members",
+      "emptySearchBody": "Try a different name, or clear the search."
     },
     "adminGymMessages": {
       "title": "Platform SMS Log",

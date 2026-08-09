@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { UserPlus, Edit, UserX, UserCheck, Users } from 'lucide-react';
@@ -19,7 +19,7 @@ import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/Load
 export default function Team() {
   const { t } = useTranslation();
   const { apiFetch } = useAuth();
-  const { showFlash, branches, readOnly } = useGym();
+  const { showFlash, branches, readOnly, selectedBranchId } = useGym();
 
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +28,11 @@ export default function Team() {
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState('');
   const [toggleTarget, setToggleTarget] = useState(null);
+
+  const visibleStaff = useMemo(() => {
+    if (selectedBranchId === 'all') return staff;
+    return staff.filter((member) => String(member.branch_id) === String(selectedBranchId));
+  }, [staff, selectedBranchId]);
 
   const loadTeam = useCallback(async () => {
     setLoading(true);
@@ -159,16 +164,24 @@ export default function Team() {
               </table>
             </div>
           </>
-        ) : staff.length === 0 ? (
+        ) : visibleStaff.length === 0 ? (
           <EmptyState
             icon={Users}
-            title={t('pages.team.emptyTitle')}
-            body={t('pages.team.emptyBody')}
+            title={
+              staff.length > 0 && selectedBranchId !== 'all'
+                ? t('pages.team.emptyBranchTitle')
+                : t('pages.team.emptyTitle')
+            }
+            body={
+              staff.length > 0 && selectedBranchId !== 'all'
+                ? t('pages.team.emptyBranchBody')
+                : t('pages.team.emptyBody')
+            }
           />
         ) : (
           <>
             <div className="lg:hidden divide-y divide-app-border-subtle">
-              {staff.map((member) => (
+              {visibleStaff.map((member) => (
                 <div key={member.id} className="p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -233,7 +246,7 @@ export default function Team() {
                 </tr>
               </thead>
               <tbody>
-                {staff.map((member) => (
+                {visibleStaff.map((member) => (
                   <tr key={member.id} className={tableRowHover}>
                     <td className="truncate font-medium text-app-text-strong">{member.name}</td>
                     <td className="truncate text-app-text">{member.branch_name || '—'}</td>

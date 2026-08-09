@@ -21,6 +21,37 @@ const ACTION_KEYS = {
   'staff.updated': 'activity.actions.staff.updated',
 };
 
+/** Filter dropdown: categories + specific actions (optgroups in UI). */
+export const ACTION_FILTER_OPTIONS = [
+  { value: 'all', labelKey: 'pages.activity.filters.allEvents', group: null },
+  { value: 'member', labelKey: 'pages.activity.filters.allMemberEvents', group: 'member' },
+  { value: 'member.enrolled', labelKey: 'activity.actions.member.enrolled', group: 'member' },
+  { value: 'member.renewed', labelKey: 'activity.actions.member.renewed', group: 'member' },
+  { value: 'member.created', labelKey: 'activity.actions.member.created', group: 'member' },
+  { value: 'member.updated', labelKey: 'activity.actions.member.updated', group: 'member' },
+  { value: 'member.plan_changed', labelKey: 'activity.actions.member.plan_changed', group: 'member' },
+  { value: 'member.transferred', labelKey: 'activity.actions.member.transferred', group: 'member' },
+  { value: 'member.deleted', labelKey: 'activity.actions.member.deleted', group: 'member' },
+  { value: 'payment', labelKey: 'pages.activity.filters.allPaymentEvents', group: 'payment' },
+  { value: 'payment.recorded', labelKey: 'activity.actions.payment.recorded', group: 'payment' },
+  { value: 'payment.updated', labelKey: 'activity.actions.payment.updated', group: 'payment' },
+  { value: 'payment.deleted', labelKey: 'activity.actions.payment.deleted', group: 'payment' },
+  { value: 'plan', labelKey: 'pages.activity.filters.allPlanEvents', group: 'plan' },
+  { value: 'plan.created', labelKey: 'activity.actions.plan.created', group: 'plan' },
+  { value: 'plan.updated', labelKey: 'activity.actions.plan.updated', group: 'plan' },
+  { value: 'plan.deleted', labelKey: 'activity.actions.plan.deleted', group: 'plan' },
+  { value: 'staff', labelKey: 'pages.activity.filters.allStaffEvents', group: 'staff' },
+  { value: 'staff.created', labelKey: 'activity.actions.staff.created', group: 'staff' },
+  { value: 'staff.updated', labelKey: 'activity.actions.staff.updated', group: 'staff' },
+];
+
+export const ACTION_FILTER_GROUPS = [
+  { id: 'member', labelKey: 'pages.activity.filters.groupMembers' },
+  { id: 'payment', labelKey: 'pages.activity.filters.groupPayments' },
+  { id: 'plan', labelKey: 'pages.activity.filters.groupPlans' },
+  { id: 'staff', labelKey: 'pages.activity.filters.groupStaff' },
+];
+
 export function formatAuditAction(action) {
   const key = ACTION_KEYS[action];
   return key ? i18n.t(key) : action;
@@ -30,8 +61,10 @@ export function formatAuditDetails(entry) {
   const d = entry.details || {};
   const parts = [];
 
-  if (d.payment_amount != null) {
-    parts.push(`${formatMoney(d.payment_amount)}${d.payment_method ? ` · ${translatePaymentMethod(d.payment_method)}` : ''}`);
+  const paymentAmount = d.payment_amount ?? d.amount;
+  const paymentMethod = d.payment_method ?? d.method;
+  if (paymentAmount != null) {
+    parts.push(`${formatMoney(paymentAmount)}${paymentMethod ? ` · ${translatePaymentMethod(paymentMethod)}` : ''}`);
   }
   if (d.skip_payment) parts.push(i18n.t('activity.details.noPaymentRecorded'));
   if (d.staff_role) parts.push(`${i18n.t('activity.details.role')} ${d.staff_role}`);

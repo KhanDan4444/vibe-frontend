@@ -30,7 +30,7 @@ function renderSlice(props) {
       cx={cx}
       cy={cy}
       innerRadius={innerRadius}
-      outerRadius={isActive ? outerRadius + 4 : outerRadius}
+      outerRadius={isActive ? outerRadius + 3 : outerRadius}
       startAngle={startAngle}
       endAngle={endAngle}
       fill={fill}
@@ -53,17 +53,17 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
 
   return (
     <div className="flex h-full flex-col">
-      <div className="min-h-0 flex-1">
+      <div className="min-h-[10rem] flex-1 overflow-visible">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
+          <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
             <Pie
               data={rows}
               dataKey="value"
               nameKey="name"
               cx="50%"
               cy="50%"
-              innerRadius={48}
-              outerRadius={70}
+              innerRadius="52%"
+              outerRadius="78%"
               paddingAngle={3}
               stroke={chartTheme.isDark ? '#1a1d24' : '#ffffff'}
               strokeWidth={2}
@@ -91,7 +91,7 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
         </ResponsiveContainer>
       </div>
 
-      <ul className="mt-2.5 flex max-h-[5.5rem] flex-col gap-1.5 overflow-y-auto px-0.5">
+      <ul className="mt-2.5 flex max-h-[5.5rem] shrink-0 flex-col gap-1.5 overflow-y-auto px-0.5">
         {rows.map((entry, i) => {
           const active = activeIndex === i;
           return (

@@ -947,8 +947,28 @@
       "empty": "ምንም እንቅስቃሴ አልተመዘገበም።",
       "subtitle": "በጂምዎ ላይ የተደረጉ ለውጦች መቆጣጠሪያ መዝገብ።",
       "title": "እንቅስቃሴ",
+      "history": "የክስተት ታሪክ",
+      "statusLine": "{{count}} ክስተቶች · {{filter}}",
+      "statusLineEmpty": "በዚህ እይታ ክስተት የለም",
+      "searchPlaceholder": "በዒላማ ወይም በሰው ፈልግ…",
+      "actionFilterLabel": "የክስተት ዓይነት",
       "emptyTitle": "እስካሁን እንቅስቃሴ የለም",
-      "emptyBody": "ሲሰሩ የአባልና የክፍያ ክስተቶች እዚህ ይታያሉ።"
+      "emptyBody": "ሲሰሩ የአባልና የክፍያ ክስተቶች እዚህ ይታያሉ።",
+      "emptyFilteredTitle": "ለዚህ ማጣሪያ ክስተት የለም",
+      "emptyFilteredBody": "ሌላ ዓይነት ወይም ማን ማጣሪያ ይሞክሩ፣ ወይም ወደ ሁሉም ይመለሱ።",
+      "emptySearchTitle": "ተዛማጅ ክስተት የለም",
+      "emptySearchBody": "ሌላ ስም ይሞክሩ ወይም ፍለጋውን ያጽዱ።",
+      "filters": {
+        "allEvents": "ሁሉም ክስተቶች",
+        "allMemberEvents": "ሁሉም የአባል ክስተቶች",
+        "allPaymentEvents": "ሁሉም የክፍያ ክስተቶች",
+        "allPlanEvents": "ሁሉም የዕቅድ ክስተቶች",
+        "allStaffEvents": "ሁሉም የሰራተኛ ክስተቶች",
+        "groupMembers": "አባላት",
+        "groupPayments": "ክፍያዎች",
+        "groupPlans": "ዕቅዶች",
+        "groupStaff": "ሰራተኞች"
+      }
     },
     "memberMessages": {
       "title": "የአባላት SMS",
@@ -956,12 +976,15 @@
       "statusLine": "{{count}} መልእክቶች · {{filter}}",
       "statusLineEmpty": "በዚህ እይታ መልእክት የለም",
       "messageHistory": "የመልእክት ታሪክ",
+      "searchPlaceholder": "በአባል ስም ፈልግ…",
       "empty": "ለአባላት የተላከ ምንም SMS የለም።",
       "loadError": "የSMS መዝገብ መጫን አልተሳካም።",
       "emptyTitle": "እስካሁን SMS የለም",
       "emptyBody": "የመጀመሪያው ራስ-ሰር መልእክት ከተላከ በኋላ የአባል SMS ታሪክ ይታያል።",
       "emptyFilteredTitle": "ለዚህ ዓይነት መልእክት የለም",
-      "emptyFilteredBody": "ሌላ ዓይነት ይሞክሩ ወይም ወደ ሁሉም ይመለሱ።"
+      "emptyFilteredBody": "ሌላ ዓይነት ይሞክሩ ወይም ወደ ሁሉም ይመለሱ።",
+      "emptySearchTitle": "ተዛማጅ አባል የለም",
+      "emptySearchBody": "ሌላ ስም ይሞክሩ ወይም ፍለጋውን ያጽዱ።"
     },
     "adminGymMessages": {
       "title": "የመድረክ SMS መዝገብ",
@@ -980,6 +1003,10 @@
       "namePlaceholder": "ለምሳሌ፦ መሀል ከተማ",
       "subtitle": "የጂም ቦታዎችን እና ነባሪ ቅንብሮችን ያስተዳድሩ።",
       "title": "ቅርንጫፎች",
+      "locations": "ቦታዎች",
+      "statusLine": "{{count}} ቅርንጫፎች · {{active}} ንቁ · ነባሪ፦ {{default}}",
+      "statusLineEmpty": "እስካሁን ቅርንጫፍ የለም",
+      "searchPlaceholder": "በስም፣ ስልክ ወይም አድራሻ ፈልግ…",
       "branchUpdated": "ቅርንጫፉ ተዘምኗል።",
       "branchCreated": "ቅርንጫፉ ተፈጥሯል።",
       "branchDeactivated": "{{name}} ተሰናክሏል።",
@@ -991,7 +1018,36 @@
       "deactivateTitle": "ቅርንጫፍ ይሰናከል?",
       "deactivateMessage": "{{name}}ን ማሰናከል እርግጠኛ ነዎት?",
       "emptyTitle": "እስካሁን ቅርንጫፍ የለም",
-      "emptyBody": "አባላትን በቅርንጫፍ ለማደራጀት የመጀመሪያ ቦታዎን ያክሉ።"
+      "emptyBody": "አባላትን በቅርንጫፍ ለማደራጀት የመጀመሪያ ቦታዎን ያክሉ።",
+      "emptyFilteredTitle": "ተዛማጅ ቅርንጫፍ የለም",
+      "emptyFilteredBody": "ሌላ ፍለጋ ወይም ሁኔታ ማጣሪያ ይሞክሩ።",
+      "filters": {
+        "all": "ሁሉም ሁኔታዎች",
+        "active": "ንቁ ብቻ",
+        "inactive": "ያልነቁ ብቻ"
+      }
+    },
+    "team": {
+      "title": "ሰራተኞች",
+      "subtitle": "ለፊት ዴስክ የሰራተኛ መለያዎች።",
+      "add": "ሰራተኛ ጨምር",
+      "sectionTitle": "የሰራተኛ መለያዎች",
+      "empty": "እስካሁን የሰራተኛ መለያ የለም።",
+      "noBranch": "ቅርንጫፍ የለም",
+      "disableTitle": "የሰራተኛ መለያ ይሰናከል?",
+      "enableTitle": "የሰራተኛ መለያ ይንቃ?",
+      "disableMessage": "{{name}} እስከ እንደገና እስኪነቃ ድረስ መዳረሻ አያገኝም።",
+      "enableMessage": "{{name}} እንደገና መግባት ይችላል።",
+      "staffCreated": "{{name}} በያዙት መረጃ መግባት ይችላል።",
+      "staffUpdated": "የሰራተኛ መለያ ተዘምኗል።",
+      "staffEnabled": "{{name}} እንደገና መግባት ይችላል።",
+      "staffDisabled": "{{name}} ተሰናክሏል።",
+      "resetPassword": "የይለፍ ቃል ዳግም አስጀምር",
+      "passwordReset": "ለ{{name}} የይለፍ ቃል ዳግም ተጀምሯል። አዲሱን የይለፍ ቃል በደህና ያጋሩ።",
+      "emptyTitle": "እስካሁን ሰራተኛ የለም",
+      "emptyBody": "በዴስክ አባላትን እንዲያስተዳድሩ የፊት ዴስክ ሰራተኞችን ይጋብዙ።",
+      "emptyBranchTitle": "በዚህ ቅርንጫፍ ሰራተኛ የለም",
+      "emptyBranchBody": "ወደ ሁሉም ቅርንጫፎች ይቀይሩ፣ ወይም ሰራተኛ ለዚህ ቦታ ይመድቡ።"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",
@@ -1063,7 +1119,23 @@
       "emptyBody": "አባላትን ለመመዝገብ መጀመሪያ የአባልነት ደረጃዎችን ይፍጠሩ።",
       "emptyTitle": "ምንም ዕቅድ የለም",
       "subtitle": "ለአባላት ምዝገባ የሚሆኑ የዋጋ ደረጃዎችን ይግለጹ።",
-      "title": "የአባልነት ዕቅዶች"
+      "title": "የአባልነት ዕቅዶች",
+      "catalog": "የዕቅድ ካታሎግ",
+      "statusLine": "{{count}} ዕቅዶች · {{from}}–{{to}} · {{members}} ንቁ አባላት",
+      "statusLineSingle": "{{count}} ዕቅዶች · {{price}} · {{members}} ንቁ አባላት",
+      "statusLineEmpty": "እስካሁን ዕቅድ የለም",
+      "sortLabel": "ዕቅዶችን ደርድር",
+      "activeMembers_one": "{{count}} ንቁ አባል",
+      "activeMembers_other": "{{count}} ንቁ አባላት",
+      "perMonth": "{{amount}} / ወር",
+      "sort": {
+        "priceAsc": "ዋጋ፦ ከዝቅተኛ ወደ ከፍተኛ",
+        "priceDesc": "ዋጋ፦ ከከፍተኛ ወደ ዝቅተኛ",
+        "durationAsc": "ጊዜ፦ አጭር",
+        "durationDesc": "ጊዜ፦ ረጅም",
+        "membersDesc": "ብዙ አባላት",
+        "nameAsc": "ስም፦ ሀ እስከ ፐ"
+      }
     },
     "reports": {
       "exportNote": "ሪፖርቶች ከላይ የተመረጡትን ቀናት እና ማጣሪያዎች ይጠቀማሉ።",
@@ -1130,26 +1202,6 @@
       "unknownMember": "ያልታወቀ አባል",
       "emptyTitle": "እስካሁን ክፍያ የለም",
       "emptyBody": "አባላት ሲመዘገቡ ወይም ሲያድሱ ክፍያዎች እዚህ ይታያሉ።"
-    },
-    "team": {
-      "add": "ሰራተኛ መዝግብ",
-      "disableMessage": "{{name}} እንደገና እስኪነቃ ድረስ መግባት አይችሉም።",
-      "disableTitle": "የሰራተኛ መለያ ይሰናከል?",
-      "empty": "ምንም የሰራተኛ መለያ የለም።",
-      "enableMessage": "{{name}} እንደገና መግባት ይችላሉ።",
-      "enableTitle": "የሰራተኛ መለያ ይነቃ?",
-      "noBranch": "ምንም ቅርንጫፍ የለም",
-      "sectionTitle": "የሰራተኛ መለያዎች",
-      "subtitle": "ለፊት ዴስክ የሚሆኑ የሰራተኛ መለያዎች።",
-      "title": "ሰራተኞች",
-      "staffCreated": "{{name}} በሰጡት የመግቢያ መረጃ መግባት ይችላሉ።",
-      "staffUpdated": "የሰራተኛ መለያ ተዘምኗል።",
-      "staffEnabled": "{{name}} እንደገና መግባት ይችላሉ።",
-      "staffDisabled": "{{name}} ተሰናክሏል።",
-      "resetPassword": "የይለፍ ቃል ቀይር",
-      "passwordReset": "ለ{{name}} የይለፍ ቃል ተቀይሯል። አዲሱን በደህንነት ያጋሩ።",
-      "emptyTitle": "እስካሁን ሰራተኛ የለም",
-      "emptyBody": "በዴስክ አባላትን እንዲያስተዳድሩ የፊት ዴስክ ሰራተኞችን ይጋብዙ።"
     }
   },
   "pagination": {

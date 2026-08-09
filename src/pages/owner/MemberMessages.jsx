@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { MessageSquare, RefreshCw } from 'lucide-react';
+import { MessageSquare, RefreshCw, Search } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -24,6 +24,11 @@ import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/Load
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
+const CHIP_ACTIVE =
+  'inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300';
+const CHIP_MUTED =
+  'inline-flex rounded-full bg-app-surface px-2.5 py-1 text-xs font-medium text-app-muted';
+
 export default function MemberMessages() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -35,8 +40,18 @@ export default function MemberMessages() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [typeFilter, setTypeFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const typeFiltered = typeFilter !== 'all';
+  const chipClass = typeFiltered ? CHIP_MUTED : CHIP_ACTIVE;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const loadMessages = useCallback(async () => {
     setLoading(true);
@@ -46,6 +61,7 @@ export default function MemberMessages() {
         page,
         limit: PAGE_SIZE,
         type: typeFilter,
+        search: debouncedSearch,
         ...getBranchQueryParams(),
       });
       const data = await parseApiResponse(res);
@@ -61,7 +77,7 @@ export default function MemberMessages() {
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, page, typeFilter, getBranchQueryParams, t]);
+  }, [apiFetch, page, typeFilter, debouncedSearch, getBranchQueryParams, t]);
 
   useEffect(() => {
     loadMessages();
@@ -69,7 +85,7 @@ export default function MemberMessages() {
 
   useEffect(() => {
     setPage(1);
-  }, [typeFilter, selectedBranchId]);
+  }, [typeFilter, selectedBranchId, debouncedSearch]);
 
   const openMember = (memberId) => {
     if (!memberId) return;
@@ -84,12 +100,17 @@ export default function MemberMessages() {
   const statusLine = total > 0
     ? t('pages.memberMessages.statusLine', { count: total, filter: filterLabel })
     : t('pages.memberMessages.statusLineEmpty');
-  const emptyTitle = typeFilter === 'all'
-    ? t('pages.memberMessages.emptyTitle')
-    : t('pages.memberMessages.emptyFilteredTitle');
-  const emptyBody = typeFilter === 'all'
-    ? t('pages.memberMessages.emptyBody')
-    : t('pages.memberMessages.emptyFilteredBody');
+
+  const emptyTitle = debouncedSearch
+    ? t('pages.memberMessages.emptySearchTitle')
+    : typeFiltered
+      ? t('pages.memberMessages.emptyFilteredTitle')
+      : t('pages.memberMessages.emptyTitle');
+  const emptyBody = debouncedSearch
+    ? t('pages.memberMessages.emptySearchBody')
+    : typeFiltered
+      ? t('pages.memberMessages.emptyFilteredBody')
+      : t('pages.memberMessages.emptyBody');
   const colCount = showBranchColumn ? 5 : 4;
 
   return (
@@ -108,14 +129,27 @@ export default function MemberMessages() {
       {error ? <ErrorRetryBanner message={error} onRetry={() => void loadMessages()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
           <div className="min-w-0">
             <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
               {t('pages.memberMessages.messageHistory')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.memberMessages.subtitle')}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative w-full sm:max-w-md">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
+                <Search className="h-5 w-5" />
+              </span>
+              <input
+                type="search"
+                className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
+                placeholder={t('pages.memberMessages.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label={t('pages.memberMessages.searchPlaceholder')}
+              />
+            </div>
             <label className="sr-only" htmlFor="sms-type-filter">
               {t('smsLog.filterLabel')}
             </label>
@@ -139,7 +173,7 @@ export default function MemberMessages() {
             <AdminListSkeleton rows={5} />
           ) : items.length > 0 ? (
             items.map((row) => {
-              const preview = formatSmsMessagePreview(t, row.message_type);
+              const preview = typeFiltered ? null : formatSmsMessagePreview(t, row.message_type);
               return (
                 <button
                   key={row.id}
@@ -153,7 +187,7 @@ export default function MemberMessages() {
                   <div className="min-w-0 flex-1">
                     <p className="font-semibold text-app-text-strong">{row.member_name}</p>
                     <p className="mt-1">
-                      <span className="inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
+                      <span className={chipClass}>
                         {formatSmsMessageType(t, row.message_type)}
                       </span>
                     </p>
@@ -193,7 +227,7 @@ export default function MemberMessages() {
                 <AdminTableRowsSkeleton rows={5} cols={colCount} />
               ) : items.length > 0 ? (
                 items.map((row) => {
-                  const preview = formatSmsMessagePreview(t, row.message_type);
+                  const preview = typeFiltered ? null : formatSmsMessagePreview(t, row.message_type);
                   return (
                     <tr
                       key={row.id}
@@ -204,7 +238,7 @@ export default function MemberMessages() {
                       <td className="text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
                       <td>
                         <div className="min-w-0 max-w-xs">
-                          <span className="inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
+                          <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
                           {preview ? (

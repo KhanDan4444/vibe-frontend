@@ -13,7 +13,7 @@ export default function ChartCard({ title, subtitle, children, empty, compact = 
       <div
         className={
           compact
-            ? 'mt-3 h-48 sm:mt-3.5 sm:h-52'
+            ? 'mt-3 h-60 sm:mt-3.5 sm:h-64'
             : 'mt-3 h-52 sm:mt-3.5 sm:h-60 md:h-64'
         }
       >
