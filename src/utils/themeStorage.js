@@ -6,7 +6,7 @@ export function themeStorageKey(user) {
 }
 
 export function readStoredTheme(user) {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return 'dark';
 
   const key = themeStorageKey(user);
   if (key) {
@@ -17,7 +17,7 @@ export function readStoredTheme(user) {
   const legacy = localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
   if (legacy === 'dark' || legacy === 'light') return legacy;
 
-  return 'light';
+  return 'dark';
 }
 
 export function readBootstrapTheme() {
