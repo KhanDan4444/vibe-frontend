@@ -43,7 +43,7 @@ export default function RegisterGym() {
   const [message, setMessage] = useState('');
 
   const inputClass =
-    'mt-1 block w-full rounded-md border border-slate-600 bg-slate-900/40 px-3 py-2.5 text-white focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+    'mt-1 block w-full rounded-md border border-app-border bg-app-input px-3 py-2.5 text-app-text-strong focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 sm:text-sm';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
 
@@ -152,10 +152,10 @@ export default function RegisterGym() {
     <AuthScreen>
       <div className="w-full max-w-lg space-y-6 rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl sm:p-8">
         <div>
-          <h2 className="text-center text-2xl font-bold text-white dark:text-app-text-strong">
+          <h2 className="text-center text-2xl font-bold text-app-text-strong">
             {t('auth.signupTitle')}
           </h2>
-          <p className="mt-2 text-center text-sm text-slate-400 dark:text-app-muted">{t('auth.signupSubtitle')}</p>
+          <p className="mt-2 text-center text-sm text-app-muted">{t('auth.signupSubtitle')}</p>
         </div>
 
         {bannerError && (
@@ -165,7 +165,7 @@ export default function RegisterGym() {
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-400">
             {message}
             {import.meta.env.DEV && (
-              <p className="mt-2 text-xs text-slate-400">{t('auth.otpDevHint')}</p>
+              <p className="mt-2 text-xs text-app-muted">{t('auth.otpDevHint')}</p>
             )}
           </div>
         )}
@@ -173,7 +173,7 @@ export default function RegisterGym() {
         {step === 'phone' ? (
           <form className="space-y-4" onSubmit={handleRequestOtp}>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label className="block text-sm font-medium text-app-text">
                 {t('auth.ownerPhone')}
                 <RequiredMark />
               </label>
@@ -189,7 +189,7 @@ export default function RegisterGym() {
                 placeholder={t('auth.phonePlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
-              <p className="mt-1 text-xs text-slate-500 dark:text-app-muted">{t('auth.signupPhoneHint')}</p>
+              <p className="mt-1 text-xs text-app-muted">{t('auth.signupPhoneHint')}</p>
             </div>
             <button
               type="submit"
@@ -202,7 +202,7 @@ export default function RegisterGym() {
         ) : (
           <form className="space-y-4" onSubmit={handleComplete}>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.otpCode')}
+              <label className="block text-sm font-medium text-app-text">{t('auth.otpCode')}
                 <RequiredMark /></label>
               <input
                 type="text"
@@ -219,7 +219,7 @@ export default function RegisterGym() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+                <label className="block text-sm font-medium text-app-text">
                   {t('modals.registerGym.gymName')}
                   <RequiredMark />
                 </label>
@@ -227,7 +227,7 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+                <label className="block text-sm font-medium text-app-text">
                   {t('modals.registerGym.ownerName')}
                   <RequiredMark />
                 </label>
@@ -235,7 +235,7 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+                <label className="block text-sm font-medium text-app-text">
                   {t('modals.registerGym.username')}
                   <RequiredMark />
                 </label>
@@ -250,14 +250,14 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+                <label className="block text-sm font-medium text-app-text">
                   {t('auth.email')} ({t('account.optional')})
                 </label>
                 <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); clearFieldError(setFieldErrors, 'email'); }} className={fc('email')} />
                 <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('table.plan')}
+                <label className="block text-sm font-medium text-app-text">{t('table.plan')}
                   <RequiredMark /></label>
                 <select
                   required
@@ -274,7 +274,7 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'saasPlanId')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">{t('auth.password')}
+                <label className="block text-sm font-medium text-app-text">{t('auth.password')}
                   <RequiredMark /></label>
                 <input
                   type="password"
@@ -287,7 +287,7 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+                <label className="block text-sm font-medium text-app-text">
                   {t('auth.confirmPassword')}
                   <RequiredMark />
                 </label>
@@ -302,7 +302,7 @@ export default function RegisterGym() {
                 <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
               </div>
             </div>
-            <p className="text-xs text-slate-500 dark:text-app-muted">{t('auth.signupPaymentNote')}</p>
+            <p className="text-xs text-app-muted">{t('auth.signupPaymentNote')}</p>
             <button
               type="submit"
               disabled={loading}
@@ -313,8 +313,8 @@ export default function RegisterGym() {
           </form>
         )}
 
-        <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="text-teal-400 hover:text-teal-300">
+        <p className="text-center text-sm text-app-muted">
+          <Link to="/login" className="text-teal-700 hover:text-teal-800">
             {t('auth.backToSignIn')}
           </Link>
         </p>

@@ -224,13 +224,15 @@
 
 @layer components {
   .auth-hero-bg {
-    background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
+    background:
+      radial-gradient(ellipse 80% 55% at 50% -10%, rgb(13 148 136 / 0.18), transparent 55%),
+      linear-gradient(180deg, #f8fafc 0%, #eef2f7 45%, #e2e8f0 100%);
   }
 
   .auth-login-input {
-    color: #ffffff;
-    caret-color: #ffffff;
-    background-color: rgb(255 255 255 / 0.07);
+    color: #0f172a;
+    caret-color: #0f172a;
+    background-color: #ffffff;
   }
 
   /* Neutralize browser autofill yellow on app forms (esp. staff edit). */
@@ -255,7 +257,7 @@
     box-shadow: 0 0 0 1000px var(--color-app-raised) inset;
   }
 
-  /* Login glass fields: kill autofill yellow (Chrome + Firefox). */
+  /* Login fields: kill autofill yellow (Chrome + Firefox) on light auth. */
   .auth-login-input:-webkit-autofill,
   .auth-login-input:-webkit-autofill:hover,
   .auth-login-input:-webkit-autofill:focus,
@@ -263,15 +265,13 @@
   .auth-login-input:autofill,
   .auth-login-input:autofill:hover,
   .auth-login-input:autofill:focus,
-  .auth-login-input:autofill:active,
-  .dark .auth-login-input:-webkit-autofill,
-  .dark .auth-login-input:autofill {
-    -webkit-text-fill-color: #ffffff !important;
-    color: #ffffff !important;
-    caret-color: #ffffff !important;
-    background-color: rgb(15 23 42 / 0.88) !important;
+  .auth-login-input:autofill:active {
+    -webkit-text-fill-color: #0f172a !important;
+    color: #0f172a !important;
+    caret-color: #0f172a !important;
+    background-color: #ffffff !important;
     background-image: none !important;
-    box-shadow: 0 0 0 1000px rgb(15 23 42 / 0.88) inset !important;
+    box-shadow: 0 0 0 1000px #ffffff inset !important;
     transition: background-color 99999s ease-in-out 0s !important;
     filter: none !important;
   }

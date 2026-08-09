@@ -1,4 +1,4 @@
-// src/pages/auth/Login.jsx — cardless glass login matching mobile brand treatment
+// src/pages/auth/Login.jsx — light auth hero; app theme default remains dark after login
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff } from 'lucide-react';
@@ -34,8 +34,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
-
+    'auth-login-input block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-base text-slate-900 placeholder-slate-400 caret-slate-900 shadow-sm transition-[border-color,background-color,box-shadow] focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,13 +69,13 @@ export default function Login() {
           <LoginBrandPanel />
 
           {successMessage && (
-            <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-300">
+            <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-medium text-emerald-800">
               {successMessage}
             </div>
           )}
 
           {error && (
-            <div className="mb-4 rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm font-medium text-rose-300">
+            <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-medium text-rose-700">
               {error}
             </div>
           )}
@@ -122,7 +121,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/45 transition-colors hover:text-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-400/30"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 transition-colors hover:text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600/30"
                   aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -132,17 +131,17 @@ export default function Login() {
             </div>
 
             <div className="flex items-center justify-between gap-3 pt-1">
-              <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-white/75">
+              <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-slate-600">
                 <input
                   id="login-remember"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-teal-500 focus:ring-teal-400/40"
+                  className="h-4 w-4 rounded border-slate-300 bg-white text-teal-700 focus:ring-teal-600/40"
                 />
                 {t('auth.rememberMe')}
               </label>
-              <Link to="/forgot-password" className="text-sm font-semibold text-teal-300 hover:text-teal-200">
+              <Link to="/forgot-password" className="text-sm font-semibold text-teal-700 hover:text-teal-800">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
@@ -150,7 +149,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-brand px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-300/50 disabled:opacity-50"
+              className="mt-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-brand px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-600/40 disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -170,29 +169,29 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-white/70">
+          <p className="mt-6 text-center text-sm text-slate-600">
             {t('auth.noAccount')}{' '}
-            <Link to="/register-gym" className="font-semibold text-teal-300 hover:text-teal-200">
+            <Link to="/register-gym" className="font-semibold text-teal-700 hover:text-teal-800">
               {t('auth.registerGymLink')}
             </Link>
           </p>
 
           {import.meta.env.DEV && (
-            <div className="mt-8 animate-pulse space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-white/55">
-              <p className="flex items-center gap-1 font-semibold text-white/80">
+            <div className="mt-8 space-y-2 rounded-2xl border border-slate-200 bg-white/80 p-4 text-xs text-slate-500 shadow-sm">
+              <p className="flex items-center gap-1 font-semibold text-slate-700">
                 Developer Quick-Access (Sandbox Active):
               </p>
               <p>
-                • Gym Owner: <code className="font-mono text-teal-300">owner@gym.com</code> /{' '}
-                <code className="font-mono text-teal-300">password</code>
+                • Gym Owner: <code className="font-mono text-teal-700">owner@gym.com</code> /{' '}
+                <code className="font-mono text-teal-700">password</code>
               </p>
               <p>
-                • Front Desk: <code className="font-mono text-teal-300">helpdesk@gym.com</code> /{' '}
-                <code className="font-mono text-teal-300">password</code>
+                • Front Desk: <code className="font-mono text-teal-700">helpdesk@gym.com</code> /{' '}
+                <code className="font-mono text-teal-700">password</code>
               </p>
               <p>
-                • SaaS Admin: <code className="font-mono text-teal-300">admin@saas.com</code> /{' '}
-                <code className="font-mono text-teal-300">password</code>
+                • SaaS Admin: <code className="font-mono text-teal-700">admin@saas.com</code> /{' '}
+                <code className="font-mono text-teal-700">password</code>
               </p>
             </div>
           )}

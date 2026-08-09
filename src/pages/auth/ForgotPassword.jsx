@@ -33,7 +33,7 @@ export default function ForgotPassword() {
   const [showSupportOption, setShowSupportOption] = useState(false);
 
   const inputClass =
-    'mt-1 block w-full rounded-md border border-slate-600 bg-slate-900/40 px-3 py-2.5 text-white focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 dark:border-app-border dark:bg-app-input dark:text-app-text-strong sm:text-sm';
+    'mt-1 block w-full rounded-md border border-app-border bg-app-input px-3 py-2.5 text-app-text-strong focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 sm:text-sm';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
 
@@ -78,11 +78,11 @@ export default function ForgotPassword() {
     <AuthScreen>
       <div className="w-full max-w-md space-y-6 rounded-2xl border border-app-border-subtle bg-app-raised p-6 shadow-xl sm:p-8">
         <div>
-          <h2 className="text-center text-2xl font-bold text-white dark:text-app-text-strong">
+          <h2 className="text-center text-2xl font-bold text-app-text-strong">
             {t('auth.forgotTitle')}
           </h2>
-          <p className="mt-2 text-center text-sm text-slate-400 dark:text-app-muted">{t('auth.forgotSubtitle')}</p>
-          <p className="mt-2 text-center text-xs text-slate-500 dark:text-app-muted">{t('auth.forgotAdminHint')}</p>
+          <p className="mt-2 text-center text-sm text-app-muted">{t('auth.forgotSubtitle')}</p>
+          <p className="mt-2 text-center text-xs text-app-muted">{t('auth.forgotAdminHint')}</p>
         </div>
 
         {bannerError && (
@@ -92,7 +92,7 @@ export default function ForgotPassword() {
           <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-400">
             {message}
             {import.meta.env.DEV && (
-              <p className="mt-2 text-xs text-slate-400">{t('auth.otpDevHint')}</p>
+              <p className="mt-2 text-xs text-app-muted">{t('auth.otpDevHint')}</p>
             )}
           </div>
         )}
@@ -100,7 +100,7 @@ export default function ForgotPassword() {
         {step === 'username' ? (
           <form className="space-y-4" onSubmit={handleRequestOtp}>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label className="block text-sm font-medium text-app-text">
                 {t('auth.forgotIdentifierLabel')}
                 <RequiredMark />
               </label>
@@ -124,7 +124,7 @@ export default function ForgotPassword() {
                   fieldErrorMessage(fieldErrors, 'username')
                 }
               />
-              <p className="mt-1.5 text-xs text-slate-500 dark:text-app-muted">
+              <p className="mt-1.5 text-xs text-app-muted">
                 {t('auth.forgotIdentifierHint')}
               </p>
             </div>
@@ -139,7 +139,7 @@ export default function ForgotPassword() {
         ) : (
           <form className="space-y-4" onSubmit={handleReset}>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label className="block text-sm font-medium text-app-text">
                 {t('auth.otpCode')}
                 <RequiredMark />
               </label>
@@ -158,7 +158,7 @@ export default function ForgotPassword() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'code')} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label className="block text-sm font-medium text-app-text">
                 {t('auth.newPassword')}
                 <RequiredMark />
               </label>
@@ -176,7 +176,7 @@ export default function ForgotPassword() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-300 dark:text-app-text">
+              <label className="block text-sm font-medium text-app-text">
                 {t('auth.confirmPassword')}
                 <RequiredMark />
               </label>
@@ -210,32 +210,32 @@ export default function ForgotPassword() {
                 setMessage('');
                 setError('');
               }}
-              className="w-full text-center text-sm text-slate-400 hover:text-slate-300"
+              className="w-full text-center text-sm text-app-muted hover:text-app-text"
             >
               {t('auth.resendOtp')}
             </button>
           </form>
         )}
 
-        <div className="space-y-3 rounded-xl border border-slate-700/70 bg-slate-900/30 p-4 dark:border-app-border-subtle dark:bg-app-surface/60">
+        <div className="space-y-3 rounded-xl border border-app-border-subtle bg-app-surface/60 p-4">
           <button
             type="button"
             onClick={() => setShowSupportOption((show) => !show)}
-            className="w-full text-left text-sm font-semibold text-teal-300 hover:text-teal-200"
+            className="w-full text-left text-sm font-semibold text-teal-700 hover:text-teal-800"
           >
             {t('auth.tryOtherOption')}
           </button>
           {showSupportOption && (
-            <div className="space-y-2 text-sm text-slate-400 dark:text-app-muted">
-              <p className="font-semibold text-slate-300 dark:text-app-text">{t('auth.supportResetTitle')}</p>
+            <div className="space-y-2 text-sm text-app-muted">
+              <p className="font-semibold text-app-text">{t('auth.supportResetTitle')}</p>
               <p>{t('auth.supportResetBody')}</p>
               <p>{t('auth.supportResetAfter')}</p>
             </div>
           )}
         </div>
 
-        <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="text-teal-400 hover:text-teal-300">
+        <p className="text-center text-sm text-app-muted">
+          <Link to="/login" className="text-teal-700 hover:text-teal-800">
             {t('auth.backToSignIn')}
           </Link>
         </p>
