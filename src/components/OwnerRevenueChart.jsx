@@ -22,7 +22,7 @@ export default function OwnerRevenueChart({ chartData }) {
       <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 4 }}>
         <defs>
           <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#0f766e" stopOpacity={0.3} />
+            <stop offset="5%" stopColor="#0f766e" stopOpacity={0.16} />
             <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
           </linearGradient>
         </defs>
@@ -36,11 +36,11 @@ export default function OwnerRevenueChart({ chartData }) {
           tickFormatter={(val) => formatMoneyTick(val)}
         />
         <Tooltip
-          contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+          contentStyle={{ ...chartTheme.tooltip.contentStyle, border: 'none', boxShadow: 'none' }}
           itemStyle={{ color: '#0f766e', fontWeight: 600 }}
           formatter={(value) => [formatMoney(value), t('pages.dashboard.chartRevenue')]}
         />
-        <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+        <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
       </AreaChart>
     </ResponsiveContainer>
   );

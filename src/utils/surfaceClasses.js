@@ -55,7 +55,7 @@ export const mutedText = 'text-app-muted';
 export const headingText = 'text-app-text-strong';
 
 export const pageTitle =
-  'text-2xl font-semibold tracking-tight text-app-text-strong sm:text-3xl';
+  'font-display text-3xl font-semibold tracking-tight text-app-text-strong sm:text-4xl';
 
 export const tableRowHover =
   'hover:bg-app-surface';

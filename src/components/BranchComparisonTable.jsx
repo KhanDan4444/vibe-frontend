@@ -20,8 +20,8 @@ export default function BranchComparisonTable({ branches = [], loading = false }
   return (
     <section className="space-y-3">
       <div>
-        <h2 className={`text-base font-semibold ${headingText} sm:text-lg`}>{t('branchCompare.title')}</h2>
-        <p className={`text-sm ${mutedText}`}>{t('branchCompare.subtitle')}</p>
+        <h2 className={`font-display text-lg font-semibold tracking-tight ${headingText} sm:text-xl`}>{t('branchCompare.title')}</h2>
+        <p className={`mt-1 text-sm ${mutedText}`}>{t('branchCompare.subtitle')}</p>
       </div>
       <Card className="overflow-hidden">
         <div className="lg:hidden divide-y divide-app-border-subtle">

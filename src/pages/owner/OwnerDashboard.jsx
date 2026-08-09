@@ -100,7 +100,7 @@ export default function OwnerDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className={pageTitle}>{gymName || t('pages.dashboard.title')}</h1>
-        <p className={`mt-1.5 text-sm ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
+        <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 app-metric-grid">
@@ -179,7 +179,7 @@ export default function OwnerDashboard() {
         <>
         <Card quiet className="md:col-span-3 overflow-hidden">
           <div className="admin-panel-header">
-            <h2 className="text-base font-semibold text-app-text-strong sm:text-lg">{t('pages.dashboard.expiringSection')}</h2>
+            <h2 className="font-display text-lg font-semibold tracking-tight text-app-text-strong sm:text-xl">{t('pages.dashboard.expiringSection')}</h2>
             <button
               type="button"
               onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
@@ -307,7 +307,7 @@ export default function OwnerDashboard() {
         </Card>
 
         <Card quiet className="md:col-span-2 flex flex-col p-4 sm:p-6">
-          <h2 className={`mb-4 text-base font-semibold ${headingText} sm:mb-5 sm:text-lg`}>{t('pages.dashboard.revenueThisMonth')}</h2>
+          <h2 className={`font-display mb-4 text-lg font-semibold tracking-tight ${headingText} sm:mb-5 sm:text-xl`}>{t('pages.dashboard.revenueThisMonth')}</h2>
           <div className="flex-1 min-h-[220px] sm:min-h-[260px]">
             <Suspense
               fallback={

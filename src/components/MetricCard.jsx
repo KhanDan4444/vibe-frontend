@@ -92,9 +92,9 @@ export default function MetricCard({
       </div>
 
       <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:mt-2">
-        <span className={`text-2xl font-semibold tracking-tight ${headingText} sm:text-3xl`}>{value}</span>
+        <span className={`font-display text-2xl font-bold tracking-tight ${headingText} sm:text-3xl`}>{value}</span>
         {subValue && (
-          <span className={`text-lg font-medium ${mutedText}`}>{subValue}</span>
+          <span className={`font-display text-lg font-medium tracking-tight ${mutedText}`}>{subValue}</span>
         )}
         {trend && (
           <span
