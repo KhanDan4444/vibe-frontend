@@ -419,7 +419,7 @@ export default function Revenue() {
             )}
           </div>
 
-          <div className="flex h-3.5 w-full gap-0.5 overflow-hidden rounded-full bg-app-border-subtle">
+          <div className="flex h-5 w-full gap-0.5 overflow-hidden rounded-full bg-app-border-subtle sm:h-6">
             {methodRows.map((row) => {
               const selected = methodFilter === row.method;
               const color = methodShareColor(row.method);
