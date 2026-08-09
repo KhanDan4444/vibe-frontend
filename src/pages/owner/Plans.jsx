@@ -226,12 +226,12 @@ export default function Plans() {
                   key={plan.id}
                   className={`relative p-5 ${
                     isPopular
-                      ? 'ring-1 ring-teal-500/25 dark:ring-teal-400/20'
+                      ? 'ring-2 ring-teal-500/50 dark:ring-teal-400/40'
                       : ''
                   }`}
                 >
                   {isPopular ? (
-                    <span className="absolute -top-2.5 left-4 rounded-full border border-app-border-subtle bg-app-raised px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-app-muted">
+                    <span className="absolute -top-2.5 left-4 rounded-full bg-teal-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white dark:bg-teal-500">
                       {t('pages.plans.popular')}
                     </span>
                   ) : null}
