@@ -1083,7 +1083,16 @@
       "subtitle": "ክፍያዎችን ይከታተሉ እና ሪፖርቶችን ያውርዱ።",
       "statusLine": "{{revenue}} · {{count}} ክፍያዎች · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · {{count}} ክፍያዎች",
-      "trendThinBaseline": "ከቀለለ ያለፈ ወር ጋር ሲነፃፀር",
+      "trendThinBaseline": "ከቀለለ ቀዳሚ ጊዜ ጋር ሲነፃፀር",
+      "trendVs": {
+        "today": "ከትናንት አንጻር",
+        "thisWeek": "ካለፈው ሳምንት አንጻር",
+        "thisMonth": "ካለፈው ወር አንጻር",
+        "lastMonth": "ከበፊቱ ወር አንጻር",
+        "last30Days": "ካለፉት 30 ቀናት በፊት አንጻር",
+        "thisYear": "ካለፈው ዓመት አንጻር",
+        "custom": "ከቀዳሚ ጊዜ አንጻር"
+      },
       "methodFilterTip": "ክፍያዎችን ለማጣራት ዘዴን ይጫኑ",
       "methodFilterHint": "{{method}} በማሳየት ላይ — ለማጥፋት እንደገና ይጫኑ",
       "subtitleWithEnroll": "ክፍያዎችን ከ{{link}} ይከታተሉ እና ሪፖርቶችን ያውርዱ።",

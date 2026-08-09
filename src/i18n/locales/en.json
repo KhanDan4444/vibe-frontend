@@ -584,7 +584,16 @@
       "subtitle": "Track payments and export reports.",
       "statusLine": "{{revenue}} · {{count}} payments · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · {{count}} payments",
-      "trendThinBaseline": "vs a quieter last month",
+      "trendThinBaseline": "vs a quieter prior period",
+      "trendVs": {
+        "today": "vs yesterday",
+        "thisWeek": "vs last week",
+        "thisMonth": "vs last month",
+        "lastMonth": "vs the month before",
+        "last30Days": "vs prior 30 days",
+        "thisYear": "vs last year",
+        "custom": "vs prior period"
+      },
       "methodFilterTip": "Click a method to filter payments",
       "methodFilterHint": "Showing {{method}} — click again to clear",
       "enrollLink": "enroll members",

@@ -1,5 +1,5 @@
 // src/pages/owner/Revenue.jsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
@@ -24,7 +24,7 @@ import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } fro
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
 import { formatMoney, formatMoneyShort } from '../../utils/formatMoney';
-import { formatTrendForDisplay } from '../../utils/trendDisplay';
+import { formatTrendForDisplay, trendCaptionKeyForPreset } from '../../utils/trendDisplay';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
@@ -62,6 +62,7 @@ export default function Revenue() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [methodFilter, setMethodFilter] = useState('All');
+  const methodFilterRef = useRef(null);
   const [listSort, setListSort] = useState(DEFAULT_REVENUE_SORT);
   const [periodPreset, setPeriodPreset] = useState('this_month');
   const [customStart, setCustomStart] = useState('');
@@ -188,11 +189,27 @@ export default function Revenue() {
     setMethodFilter((current) => (current === method ? 'All' : method));
   }, []);
 
+  useEffect(() => {
+    if (methodFilter === 'All') return undefined;
+    const onPointerDown = (event) => {
+      if (methodFilterRef.current?.contains(event.target)) return;
+      clearMethodFilter();
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [methodFilter, clearMethodFilter]);
+
   const statusLine = t('pages.revenue.statusLineEmpty', {
     revenue: formatMoneyShort(periodRevenue),
     count: transactionCount,
   });
   const trendDisplay = formatTrendForDisplay(trendStr);
+  const trendVsCaption = t(trendCaptionKeyForPreset(periodPreset));
+  const trendCaption = trendDisplay.extreme
+    ? t('pages.revenue.trendThinBaseline')
+    : trendDisplay.label
+      ? trendVsCaption
+      : null;
 
   const attentionMembers = unpaidMembers.filter(
     (m) => m.status === 'Expired' || m.status === 'Due Soon'
@@ -357,13 +374,8 @@ export default function Revenue() {
               value={formatMoneyShort(periodRevenue)}
               color="slate"
               trend={trendDisplay.label}
-              trendCaption={
-                trendDisplay.extreme
-                  ? t('pages.revenue.trendThinBaseline')
-                  : trendDisplay.label
-                    ? t('metrics.vsLastMonth')
-                    : null
-              }
+              trendCaption={trendDisplay.label ? trendCaption : null}
+              hint={trendDisplay.extreme ? trendCaption : undefined}
             />
             <MetricCard
               variant="dense"
@@ -382,7 +394,7 @@ export default function Revenue() {
       </div>
 
       {methodRows.length > 0 && (
-        <div className="space-y-3">
+        <div ref={methodFilterRef} className="max-w-xl space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-xs font-medium uppercase tracking-wide text-app-muted">
               {t('metrics.revenueByMethod')}
@@ -401,82 +413,98 @@ export default function Revenue() {
               </button>
             )}
           </div>
-          <div className="space-y-1">
+
+          <div className="flex h-3 w-full overflow-hidden rounded-full bg-app-border-subtle">
             {methodRows.map((row, index) => {
               const selected = methodFilter === row.method;
+              const width = Math.max(row.percent, row.amount > 0 ? 1.5 : 0);
               return (
                 <button
-                  key={row.method}
+                  key={`share-${row.method}`}
                   type="button"
-                  onClick={() => toggleMethodFilter(row.method)}
+                  title={`${translatePaymentMethod(row.method)} ${row.percent}%`}
+                  aria-label={`${translatePaymentMethod(row.method)} ${row.percent}%`}
                   aria-pressed={selected}
-                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors sm:gap-4 ${
+                  onClick={() => toggleMethodFilter(row.method)}
+                  className={`h-full min-w-0 transition-[filter,opacity] ${
                     selected
-                      ? 'bg-teal-600/10 ring-1 ring-teal-600/25 dark:bg-teal-400/10 dark:ring-teal-400/20'
-                      : 'hover:bg-app-surface'
-                  }`}
-                >
-                  <PaymentMethodBadge
-                    method={row.method}
-                    quiet
-                    className="w-[7.5rem] shrink-0 sm:w-36"
-                  />
-                  <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-app-border-subtle">
-                    <div
-                      className={`h-2 rounded-full transition-all duration-500 ${
-                        selected || index === 0
-                          ? 'bg-teal-700/70 dark:bg-teal-400/55'
-                          : 'bg-teal-700/28 dark:bg-teal-400/22'
-                      }`}
-                      style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
-                    />
-                  </div>
-                  <div className="flex w-[7.25rem] shrink-0 items-baseline justify-end gap-1.5 sm:w-32">
-                    <span className="text-xs text-app-muted">{row.percent}%</span>
-                    <span className="text-sm font-semibold tabular-nums text-app-text">
-                      {formatMoneyShort(row.amount)}
-                    </span>
-                  </div>
-                </button>
+                      ? 'bg-teal-700/80 dark:bg-teal-400/70'
+                      : index === 0
+                        ? 'bg-teal-700/55 dark:bg-teal-400/45'
+                        : index === 1
+                          ? 'bg-teal-700/35 dark:bg-teal-400/28'
+                          : 'bg-teal-700/20 dark:bg-teal-400/16'
+                  } ${methodFilter !== 'All' && !selected ? 'opacity-40' : ''} hover:brightness-110`}
+                  style={{ flexGrow: width, flexBasis: 0 }}
+                />
               );
             })}
           </div>
+
+          <ul className="space-y-0.5">
+            {methodRows.map((row) => {
+              const selected = methodFilter === row.method;
+              return (
+                <li key={row.method}>
+                  <button
+                    type="button"
+                    onClick={() => toggleMethodFilter(row.method)}
+                    aria-pressed={selected}
+                    className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors ${
+                      selected
+                        ? 'bg-teal-600/10 ring-1 ring-teal-600/25 dark:bg-teal-400/10 dark:ring-teal-400/20'
+                        : 'hover:bg-app-surface'
+                    }`}
+                  >
+                    <PaymentMethodBadge
+                      method={row.method}
+                      quiet
+                      className="min-w-0 flex-1"
+                    />
+                    <span className="shrink-0 text-xs tabular-nums text-app-muted">{row.percent}%</span>
+                    <span className="w-[5.5rem] shrink-0 text-right text-sm font-semibold tabular-nums text-app-text sm:w-28">
+                      {formatMoneyShort(row.amount)}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       )}
 
-      {canManageRevenue && (
-        <p className="text-xs text-app-muted">
-          {t('pages.revenue.editDeleteHint')}
-        </p>
-      )}
-
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-          <div className="relative w-full sm:max-w-md">
-            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-              <Search className="h-5 w-5" />
-            </span>
-            <input
-              type="text"
-              className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-              placeholder={t('pages.revenue.searchPlaceholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+        <div className="flex flex-col gap-2 border-b border-app-border-subtle p-3 sm:px-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative w-full sm:max-w-md">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
+                <Search className="h-5 w-5" />
+              </span>
+              <input
+                type="text"
+                className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
+                placeholder={t('pages.revenue.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <select
+              className={`ui-select ${selectSurface} min-w-[10rem]`}
+              value={listSort}
+              onChange={(e) => {
+                setPage(1);
+                setListSort(e.target.value);
+              }}
+              aria-label={t('pages.revenue.sortPayments')}
+            >
+              {REVENUE_SORT_OPTIONS.map((opt) => (
+                <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
+              ))}
+            </select>
           </div>
-          <select
-            className={`ui-select ${selectSurface} min-w-[10rem]`}
-            value={listSort}
-            onChange={(e) => {
-              setPage(1);
-              setListSort(e.target.value);
-            }}
-            aria-label={t('pages.revenue.sortPayments')}
-          >
-            {REVENUE_SORT_OPTIONS.map((opt) => (
-              <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
-            ))}
-          </select>
+          {canManageRevenue && (
+            <p className="text-xs text-app-muted">{t('pages.revenue.editDeleteHint')}</p>
+          )}
         </div>
 
         <div className="lg:hidden divide-y divide-app-border-subtle">

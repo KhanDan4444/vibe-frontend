@@ -584,7 +584,16 @@
       "subtitle": "Kaffaltiiwwan hordofaa fi gabaasota ergaa.",
       "statusLine": "{{revenue}} · kaffaltii {{count}} · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · kaffaltii {{count}}",
-      "trendThinBaseline": "waniin ji'a darbe xiqqaa wajjin",
+      "trendThinBaseline": "waniin yeroo duraatti xiqqaa wajjin",
+      "trendVs": {
+        "today": "kaleessa wajjin",
+        "thisWeek": "torbee darbe wajjin",
+        "thisMonth": "ji'a darbe wajjin",
+        "lastMonth": "ji'a sana duraatti wajjin",
+        "last30Days": "guyyoota 30 duraatti wajjin",
+        "thisYear": "waggaa darbe wajjin",
+        "custom": "yeroo duraatti wajjin"
+      },
       "methodFilterTip": "Kaffaltii calaluuf mala tuqi",
       "methodFilterHint": "{{method}} agarsiisaa — haquuf irra deebi'ii tuqi",
       "enrollLink": "miseensota galmeessaa",
