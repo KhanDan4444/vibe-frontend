@@ -300,6 +300,7 @@
   },
   "common": {
     "cancel": "Dhiisi",
+    "clear": "Haqi",
     "save": "Foyyessii",
     "delete": "Haqii",
     "edit": "Jijjiiri",
@@ -581,6 +582,8 @@
       "statusLine": "{{revenue}} · kaffaltii {{count}} · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · kaffaltii {{count}}",
       "trendThinBaseline": "waniin ji'a darbe xiqqaa wajjin",
+      "methodFilterTip": "Kaffaltii calaluuf mala tuqi",
+      "methodFilterHint": "{{method}} agarsiisaa — haquuf irra deebi'ii tuqi",
       "enrollLink": "miseensota galmeessaa",
       "subtitleWithEnroll": "Kaffaltiiwwan {{link}} irraa hordofaa fi gabaasota ergaa.",
       "attentionBanner": "Miseensi (miseensonni) {{count}} yeroo ammatiif kaffaltii malee galmaa'aniiru.",

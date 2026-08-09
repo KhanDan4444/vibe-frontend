@@ -300,6 +300,7 @@
   },
   "common": {
     "cancel": "Cancel",
+    "clear": "Clear",
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
@@ -581,6 +582,8 @@
       "statusLine": "{{revenue}} · {{count}} payments · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · {{count}} payments",
       "trendThinBaseline": "vs a quieter last month",
+      "methodFilterTip": "Click a method to filter payments",
+      "methodFilterHint": "Showing {{method}} — click again to clear",
       "enrollLink": "enroll members",
       "subtitleWithEnroll": "Track payments from {{link}} and export reports.",
       "attentionBanner": "{{count}} member(s) enrolled without payment for their current term.",

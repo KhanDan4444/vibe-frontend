@@ -8,10 +8,22 @@ const METHOD_ICONS = {
   'Bank Transfer': ArrowLeftRight,
 };
 
-/** Icon + label chip — method identity from glyph, not color coding. */
-export default function PaymentMethodBadge({ method, className = '' }) {
+export function paymentMethodIcon(method) {
   const key = String(method || '').trim();
-  const Icon = METHOD_ICONS[key] || Wallet;
+  return METHOD_ICONS[key] || Wallet;
+}
+
+/** Icon + label chip — method identity from glyph, not color coding. */
+export default function PaymentMethodBadge({ method, className = '', quiet = false }) {
+  const Icon = paymentMethodIcon(method);
+  if (quiet) {
+    return (
+      <span className={`inline-flex min-w-0 items-center gap-2 text-sm text-app-text ${className}`}>
+        <Icon className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />
+        <span className="truncate">{translatePaymentMethod(method)}</span>
+      </span>
+    );
+  }
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-semibold ${paymentMethodStyle(method)} ${className}`}

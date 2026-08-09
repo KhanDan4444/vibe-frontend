@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Search, CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX } from 'lucide-react';
+import { Search, CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX, X } from 'lucide-react';
 import PaymentModal from '../../components/PaymentModal';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
@@ -49,7 +49,8 @@ export default function Revenue() {
   const navigate = useNavigate();
 
   const [payments, setPayments] = useState([]);
-  const [summary, setSummary] = useState({ total: 0, count: 0, average: 0, byMethod: {} });
+  const [periodSummary, setPeriodSummary] = useState({ total: 0, count: 0, average: 0, byMethod: {} });
+  const [methodBreakdown, setMethodBreakdown] = useState({});
   const [trendStr, setTrendStr] = useState(null);
   const [unpaidMembers, setUnpaidMembers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -100,9 +101,9 @@ export default function Revenue() {
     const params = {
       page: overrides.page ?? page,
       limit: overrides.limit ?? PAGE_SIZE,
-      search: debouncedSearch,
-      method: methodFilter,
-      sort: listSort,
+      search: overrides.search ?? debouncedSearch,
+      method: overrides.method ?? methodFilter,
+      sort: overrides.sort ?? listSort,
     };
     if (periodPreset === 'custom') {
       if (customStart) params.from = customStart;
@@ -116,40 +117,54 @@ export default function Revenue() {
   const fetchPayments = useCallback(async () => {
     setListLoading(true);
     try {
-      const res = await getPayments(apiFetch, buildQueryParams());
-      const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || t('errors.loadPayments'));
-      setPayments((data.items || []).map(mapPaymentFromApi).filter(Boolean));
-      setTotal(data.total ?? 0);
-      setTotalPages(data.totalPages ?? 1);
-      setSummary(data.summary || { total: 0, count: 0, average: 0, byMethod: {} });
-      setTrendStr(data.trendPercent ?? null);
+      const listRes = await getPayments(apiFetch, buildQueryParams());
+      const listData = await parseApiResponse(listRes);
+      if (!listRes.ok) throw new Error(listData.error || t('errors.loadPayments'));
+
+      setPayments((listData.items || []).map(mapPaymentFromApi).filter(Boolean));
+      setTotal(listData.total ?? 0);
+      setTotalPages(listData.totalPages ?? 1);
+
+      // Hero + method mix always reflect the full period (not the method filter).
+      let overview = listData;
+      if (methodFilter !== 'All') {
+        const overviewRes = await getPayments(
+          apiFetch,
+          buildQueryParams({ method: 'All', page: 1, limit: 1 }),
+        );
+        const overviewData = await parseApiResponse(overviewRes);
+        if (overviewRes.ok) overview = overviewData;
+      }
+
+      setPeriodSummary(overview.summary || { total: 0, count: 0, average: 0, byMethod: {} });
+      setTrendStr(overview.trendPercent ?? null);
+      setMethodBreakdown(overview.summary?.byMethod || {});
       setUnpaidMembers(
-        (data.unpaidMembers || []).map((m) => ({
+        (overview.unpaidMembers || []).map((m) => ({
           id: m.id,
           name: m.name,
           status: formatMemberStatusForDisplay(m.status),
           endDate: toDateString(m.end_date),
-        }))
+        })),
       );
     } catch (err) {
       setError(err.message);
     } finally {
       setListLoading(false);
     }
-  }, [apiFetch, buildQueryParams]);
+  }, [apiFetch, buildQueryParams, methodFilter, t]);
 
   useEffect(() => {
     fetchPayments();
   }, [fetchPayments]);
 
-  const periodRevenue = summary.total ?? 0;
-  const transactionCount = summary.count ?? 0;
-  const averagePayment = summary.average ?? 0;
-  const byMethod = summary.byMethod ?? {};
+  const periodRevenue = periodSummary.total ?? 0;
+  const transactionCount = periodSummary.count ?? 0;
+  const averagePayment = periodSummary.average ?? 0;
 
   const methodRows = useMemo(() => {
-    const entries = Object.entries(byMethod).map(([method, amount]) => ({
+    const source = Object.keys(methodBreakdown).length > 0 ? methodBreakdown : periodSummary.byMethod || {};
+    const entries = Object.entries(source).map(([method, amount]) => ({
       method,
       amount: Number(amount) || 0,
     }));
@@ -161,7 +176,17 @@ export default function Revenue() {
         ...row,
         percent: base > 0 ? Math.round((row.amount / base) * 100) : 0,
       }));
-  }, [byMethod, periodRevenue]);
+  }, [methodBreakdown, periodSummary.byMethod, periodRevenue]);
+
+  const clearMethodFilter = useCallback(() => {
+    setPage(1);
+    setMethodFilter('All');
+  }, []);
+
+  const toggleMethodFilter = useCallback((method) => {
+    setPage(1);
+    setMethodFilter((current) => (current === method ? 'All' : method));
+  }, []);
 
   const statusLine = t('pages.revenue.statusLineEmpty', {
     revenue: formatMoneyShort(periodRevenue),
@@ -240,49 +265,47 @@ export default function Revenue() {
         title={t('pages.revenue.title')}
         subtitle={statusLine}
         actions={
-          <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
-            <Download className="h-4 w-4" /> {t('common.exportCsv')}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="sr-only" htmlFor="revenue-period">
+              {t('period.reportPeriod')}
+            </label>
+            <select
+              id="revenue-period"
+              className={`ui-select ${selectSurface} min-w-[9.5rem]`}
+              value={periodPreset}
+              onChange={(e) => setPeriodPreset(e.target.value)}
+            >
+              {PERIOD_PRESETS.map((p) => (
+                <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
+              ))}
+            </select>
+            <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
+              <Download className="h-4 w-4" /> {t('common.exportCsv')}
+            </Button>
+          </div>
         }
       />
 
-      {error ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+      {periodPreset === 'custom' && (
         <div className="flex flex-wrap items-center gap-2">
-          <label className="text-sm text-app-muted" htmlFor="revenue-period">
-            {t('period.reportPeriod')}
-          </label>
-          <select
-            id="revenue-period"
-            className={`ui-select ${selectSurface}`}
-            value={periodPreset}
-            onChange={(e) => setPeriodPreset(e.target.value)}
-          >
-            {PERIOD_PRESETS.map((p) => (
-              <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
-            ))}
-          </select>
+          <DateField
+            className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
+            value={customStart}
+            onChange={setCustomStart}
+            max={boundsForCustomRangeFrom(customEnd).max}
+          />
+          <span className="text-app-muted">{t('common.to')}</span>
+          <DateField
+            className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
+            value={customEnd}
+            onChange={setCustomEnd}
+            min={boundsForCustomRangeTo(customStart).min}
+            max={boundsForCustomRangeTo(customStart).max}
+          />
         </div>
-        {periodPreset === 'custom' && (
-          <div className="flex flex-wrap items-center gap-2">
-            <DateField
-              className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
-              value={customStart}
-              onChange={setCustomStart}
-              max={boundsForCustomRangeFrom(customEnd).max}
-            />
-            <span className="text-app-muted">{t('common.to')}</span>
-            <DateField
-              className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
-              value={customEnd}
-              onChange={setCustomEnd}
-              min={boundsForCustomRangeTo(customStart).min}
-              max={boundsForCustomRangeTo(customStart).max}
-            />
-          </div>
-        )}
-      </div>
+      )}
+
+      {error ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
 
       {attentionMembers.length > 0 && (
         <div className="admin-alert-amber">
@@ -359,84 +382,103 @@ export default function Revenue() {
       </div>
 
       {methodRows.length > 0 && (
-        <div className="max-w-xl space-y-2.5 px-0.5">
-          <h3 className="text-xs font-medium uppercase tracking-wide text-app-muted">
-            {t('metrics.revenueByMethod')}
-          </h3>
-          <div className="space-y-2">
-            {methodRows.map((row, index) => (
-              <div key={row.method} className="flex items-center gap-3">
-                <PaymentMethodBadge method={row.method} className="w-[9.25rem] shrink-0 justify-start" />
-                <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-app-border-subtle">
-                  <div
-                    className={`h-1.5 rounded-full transition-all duration-500 ${
-                      index === 0
-                        ? 'bg-teal-700/70 dark:bg-teal-400/55'
-                        : 'bg-teal-700/28 dark:bg-teal-400/22'
-                    }`}
-                    style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-xs font-medium uppercase tracking-wide text-app-muted">
+              {t('metrics.revenueByMethod')}
+            </h3>
+            {methodFilter === 'All' ? (
+              <p className="text-xs text-app-muted">{t('pages.revenue.methodFilterTip')}</p>
+            ) : (
+              <button
+                type="button"
+                onClick={clearMethodFilter}
+                className="inline-flex items-center gap-1.5 rounded-full border border-teal-600/30 bg-teal-600/10 px-2.5 py-1 text-xs font-semibold text-teal-800 transition-colors hover:bg-teal-600/15 dark:border-teal-400/25 dark:bg-teal-400/10 dark:text-teal-200 dark:hover:bg-teal-400/15"
+              >
+                <span>{translatePaymentMethod(methodFilter)}</span>
+                <span className="font-medium opacity-70">· {t('common.clear')}</span>
+                <X className="h-3.5 w-3.5 shrink-0 opacity-80" aria-hidden />
+              </button>
+            )}
+          </div>
+          <div className="space-y-1">
+            {methodRows.map((row, index) => {
+              const selected = methodFilter === row.method;
+              return (
+                <button
+                  key={row.method}
+                  type="button"
+                  onClick={() => toggleMethodFilter(row.method)}
+                  aria-pressed={selected}
+                  className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors sm:gap-4 ${
+                    selected
+                      ? 'bg-teal-600/10 ring-1 ring-teal-600/25 dark:bg-teal-400/10 dark:ring-teal-400/20'
+                      : 'hover:bg-app-surface'
+                  }`}
+                >
+                  <PaymentMethodBadge
+                    method={row.method}
+                    quiet
+                    className="w-[7.5rem] shrink-0 sm:w-36"
                   />
-                </div>
-                <div className="flex w-[6.5rem] shrink-0 flex-col items-end leading-tight sm:w-28 sm:flex-row sm:items-baseline sm:justify-end sm:gap-1.5">
-                  <span className="text-xs text-app-muted">{row.percent}%</span>
-                  <span className="text-sm font-semibold text-app-text">
-                    {formatMoneyShort(row.amount)}
-                  </span>
-                </div>
-              </div>
-            ))}
+                  <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-app-border-subtle">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        selected || index === 0
+                          ? 'bg-teal-700/70 dark:bg-teal-400/55'
+                          : 'bg-teal-700/28 dark:bg-teal-400/22'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
+                    />
+                  </div>
+                  <div className="flex w-[7.25rem] shrink-0 items-baseline justify-end gap-1.5 sm:w-32">
+                    <span className="text-xs text-app-muted">{row.percent}%</span>
+                    <span className="text-sm font-semibold tabular-nums text-app-text">
+                      {formatMoneyShort(row.amount)}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:max-w-md">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-            <Search className="h-5 w-5" />
-          </span>
-          <input
-            type="text"
-            className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-            placeholder={t('pages.revenue.searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-        <select
-          className={`ui-select ${selectSurface} min-w-[10rem]`}
-          value={listSort}
-          onChange={(e) => {
-            setPage(1);
-            setListSort(e.target.value);
-          }}
-          aria-label={t('pages.revenue.sortPayments')}
-        >
-          {REVENUE_SORT_OPTIONS.map((opt) => (
-            <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
-          ))}
-        </select>
-
-        <select
-          className={`ui-select ${selectSurface} min-w-[10rem]`}
-          value={methodFilter}
-          onChange={(e) => setMethodFilter(e.target.value)}
-        >
-          <option value="All">{t('filters.allMethods')}</option>
-          <option value="Cash">{t('paymentMethod.cash')}</option>
-          <option value="Card">{t('paymentMethod.card')}</option>
-          <option value="Bank Transfer">{t('paymentMethod.bankTransfer')}</option>
-        </select>
-        </div>
-      </Card>
-
       {canManageRevenue && (
-        <p className="text-xs text-app-muted -mt-2">
+        <p className="text-xs text-app-muted">
           {t('pages.revenue.editDeleteHint')}
         </p>
       )}
+
       <Card className="overflow-hidden">
+        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+          <div className="relative w-full sm:max-w-md">
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
+              <Search className="h-5 w-5" />
+            </span>
+            <input
+              type="text"
+              className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
+              placeholder={t('pages.revenue.searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <select
+            className={`ui-select ${selectSurface} min-w-[10rem]`}
+            value={listSort}
+            onChange={(e) => {
+              setPage(1);
+              setListSort(e.target.value);
+            }}
+            aria-label={t('pages.revenue.sortPayments')}
+          >
+            {REVENUE_SORT_OPTIONS.map((opt) => (
+              <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
+            ))}
+          </select>
+        </div>
+
         <div className="lg:hidden divide-y divide-app-border-subtle">
           {listLoading ? (
             <AdminListSkeleton rows={5} />
