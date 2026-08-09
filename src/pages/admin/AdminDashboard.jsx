@@ -49,7 +49,7 @@ import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes'
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { cardSurface, tableRowHover, selectSurface } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover, selectSurface, pageTitle, mutedText } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 
@@ -522,8 +522,8 @@ export default function AdminDashboard() {
 
             <>
               <div className="mb-6">
-                <h1 className="text-2xl font-bold tracking-tight text-app-text-strong">{t('nav.dashboard')}</h1>
-                <p className="text-sm text-app-muted">{t('admin.dashboardSubtitle')}</p>
+                <h1 className={pageTitle}>{t('nav.dashboard')}</h1>
+                <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('admin.dashboardSubtitle')}</p>
               </div>
 
               {saasPlansLoaded && saasPlans.length === 0 && (
@@ -737,8 +737,8 @@ export default function AdminDashboard() {
             <>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-app-text-strong">{t('admin.gymsTitle')}</h1>
-                  <p className="text-sm text-app-muted">{t('admin.gymsSubtitle')}</p>
+                  <h1 className={pageTitle}>{t('admin.gymsTitle')}</h1>
+                  <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('admin.gymsSubtitle')}</p>
                 </div>
                 <Button
                   onClick={() => {

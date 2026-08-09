@@ -507,6 +507,7 @@
       "title": "Daashboordii",
       "subtitle": "Waliigala miseensotaa, haaromsaa, fi galii.",
       "expiringSection": "Miseensota Dhiyeenyatti Dhumanii fi Dhumatan",
+      "expiringSectionHint": "Haaromsiwwan amma tarkaanfii barbaadan.",
       "revenueThisMonth": "Galii Ji'a Kanaa",
       "noPaymentsMonth": "Ji'a kana kaffaltiin galmeeffame hin jiru.",
       "addMemberFab": "Miseensa Galmeessi",

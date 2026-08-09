@@ -22,11 +22,11 @@ export default function OwnerRevenueChart({ chartData }) {
       <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 4, bottom: 4 }}>
         <defs>
           <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#0f766e" stopOpacity={0.16} />
+            <stop offset="5%" stopColor="#0f766e" stopOpacity={0.1} />
             <stop offset="95%" stopColor="#0f766e" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.55 : 1} />
+        <CartesianGrid strokeDasharray="4 4" vertical={false} stroke={chartTheme.grid} strokeOpacity={chartTheme.isDark ? 0.35 : 0.7} />
         <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: chartTheme.tick }} dy={8} />
         <YAxis
           width={52}
@@ -40,7 +40,7 @@ export default function OwnerRevenueChart({ chartData }) {
           itemStyle={{ color: '#0f766e', fontWeight: 600 }}
           formatter={(value) => [formatMoney(value), t('pages.dashboard.chartRevenue')]}
         />
-        <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" />
+        <Area type="monotone" dataKey="amount" stroke="#0f766e" strokeWidth={1.75} fillOpacity={1} fill="url(#colorRevenue)" />
       </AreaChart>
     </ResponsiveContainer>
   );

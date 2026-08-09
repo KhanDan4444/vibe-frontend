@@ -38,7 +38,7 @@ import { PAYMENT_METHOD_OPTIONS } from '../../i18n/helpers';
 import { AdminTableRowsSkeleton, AdminListSkeleton, SummaryCardSkeleton } from '../../components/LoadingSkeletons';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
-import { selectSurface } from '../../utils/surfaceClasses';
+import { selectSurface, pageTitle, mutedText } from '../../utils/surfaceClasses';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -279,8 +279,8 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-app-text-strong">{t('admin.paymentsTitle')}</h1>
-          <p className="text-sm text-app-muted">
+          <h1 className={pageTitle}>{t('admin.paymentsTitle')}</h1>
+          <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>
             {t('admin.paymentsSubtitle')}
           </p>
         </div>

@@ -809,6 +809,35 @@
     box-shadow: 0 6px 16px rgb(12 18 17 / 0.06);
   }
 
+  /* Owner dashboard: hero metric vs quiet rail */
+  .app-metric-hero {
+    box-shadow: none;
+  }
+
+  html:not(.dark) .app-metric-hero {
+    box-shadow: 0 1px 2px rgb(12 18 17 / 0.04);
+  }
+
+  .app-metric-dense {
+    box-shadow: none;
+  }
+
+  html.dark .app-metric-dense {
+    background-color: rgb(26 30 38 / 0.72);
+  }
+
+  .app-attention-panel {
+    border-left: 3px solid rgb(15 118 110 / 0.55);
+  }
+
+  html.dark .app-attention-panel {
+    border-left-color: rgb(45 212 191 / 0.45);
+  }
+
+  .app-chart-panel {
+    opacity: 0.98;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .app-page,
     .app-metric-grid > *,

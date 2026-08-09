@@ -97,61 +97,72 @@ export default function OwnerDashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className={pageTitle}>{gymName || t('pages.dashboard.title')}</h1>
         <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 app-metric-grid">
+      <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
         {gymBooting ? (
-          Array.from({ length: 5 }).map((_, i) => <MetricCardSkeleton key={i} />)
+          <>
+            <MetricCardSkeleton variant="emphasis" className="col-span-2 lg:col-span-2" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <MetricCardSkeleton key={i} variant="dense" className="lg:col-span-1" />
+            ))}
+          </>
         ) : (
-        <>
-        <MetricCard
-          label={t('metrics.activeMembers')}
-          value={`${activeMembersCount}`}
-          subValue={`/${totalMembersCount}`}
-          icon={Users}
-          color="emerald"
-          showProgressBar
-          progress={totalMembersCount > 0 ? (activeMembersCount / totalMembersCount) * 100 : 0}
-        />
-        <MetricCard
-          label={t('metrics.dueSoon')}
-          value={dueSoonMembersCount}
-          icon={AlertTriangle}
-          color="sky"
-        />
-        <MetricCard
-          label={t('metrics.expired')}
-          value={expiredMembersCount}
-          icon={XCircle}
-          color="rose"
-        />
-        <MetricCard
-          label={t('pages.dashboard.newMembersThisMonth')}
-          value={newMembersThisMonth}
-          icon={UserPlus}
-          color="amber"
-          trend={newMembersTrend}
-          trendCaption={t('pages.dashboard.lastMonthCount', { count: summary.newMembersLastMonth ?? 0 })}
-        />
-        <MetricCard
-          label={t('pages.dashboard.thisMonthRevenue')}
-          value={formatMoney(monthlyIncome)}
-          icon={TrendingUp}
-          color="teal"
-          trend={revenueTrend}
-          trendCaption={t('metrics.vsLastMonth')}
-        />
-        </>
+          <>
+            <MetricCard
+              className="col-span-2 lg:col-span-2"
+              variant="emphasis"
+              label={t('metrics.activeMembers')}
+              value={`${activeMembersCount}`}
+              subValue={`/${totalMembersCount}`}
+              icon={Users}
+              color="emerald"
+              showProgressBar
+              progress={totalMembersCount > 0 ? (activeMembersCount / totalMembersCount) * 100 : 0}
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('metrics.dueSoon')}
+              value={dueSoonMembersCount}
+              icon={AlertTriangle}
+              color="sky"
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('metrics.expired')}
+              value={expiredMembersCount}
+              icon={XCircle}
+              color="rose"
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('pages.dashboard.newMembersThisMonth')}
+              value={newMembersThisMonth}
+              icon={UserPlus}
+              color="amber"
+              trend={newMembersTrend}
+              trendCaption={t('pages.dashboard.lastMonthCount', { count: summary.newMembersLastMonth ?? 0 })}
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('pages.dashboard.thisMonthRevenue')}
+              value={formatMoney(monthlyIncome)}
+              icon={TrendingUp}
+              color="teal"
+              trend={revenueTrend}
+              trendCaption={t('metrics.vsLastMonth')}
+            />
+          </>
         )}
       </div>
-
-      {showComparison && !gymBooting && (
-        <BranchComparisonTable branches={branchComparison} loading={comparisonLoading} />
-      )}
 
       <div className="grid gap-6 md:grid-cols-5">
         {gymBooting ? (
@@ -176,153 +187,163 @@ export default function OwnerDashboard() {
             </div>
           </>
         ) : (
-        <>
-        <Card quiet className="md:col-span-3 overflow-hidden">
-          <div className="admin-panel-header">
-            <h2 className="font-display text-lg font-semibold tracking-tight text-app-text-strong sm:text-xl">{t('pages.dashboard.expiringSection')}</h2>
-            <button
-              type="button"
-              onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
-              className="min-h-9 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15 dark:hover:text-teal-200"
-            >
-              {t('common.viewAll')}
-            </button>
-          </div>
+          <>
+            <Card className="app-attention-panel md:col-span-3 overflow-hidden">
+              <div className="admin-panel-header">
+                <div className="min-w-0">
+                  <h2 className="font-display text-lg font-semibold tracking-tight text-app-text-strong sm:text-xl">
+                    {t('pages.dashboard.expiringSection')}
+                  </h2>
+                  <p className={`mt-0.5 text-xs sm:text-sm ${mutedText}`}>{t('pages.dashboard.expiringSectionHint')}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
+                  className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-800 transition-colors hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15"
+                >
+                  {t('common.viewAll')}
+                </button>
+              </div>
 
-          <div className="lg:hidden divide-y divide-app-border-subtle">
-            {alertMembers.length > 0 ? (
-              alertMembers.map((member) => {
-                const matchingPlan = plans.find((p) => p.id === member.planId);
-                return (
-                  <div key={member.id} className="flex items-center justify-between gap-3 px-4 py-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <MemberPhoto
-                          memberId={member.id}
-                          apiFetch={apiFetch}
-                          name={member.name}
-                          hasPhoto={member.hasPhoto}
-                          expandable={false}
-                          className="h-8 w-8 rounded-full object-cover"
-                          fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
-                        />
-                        <div className="min-w-0">
-                          <span className="block font-semibold text-app-text-strong truncate">{member.name}</span>
-                          <p className="text-xs text-app-muted truncate">
-                            {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
-                            {' · '}
-                            {formatDisplayDate(member.endDate)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="mt-1.5 pl-10">
-                        <StatusBadge status={member.status} />
-                      </div>
-                    </div>
-                    {!readOnly && canRenewMember(member) && (
-                      <div className="admin-row-actions shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => setRenewState({ isOpen: true, member })}
-                          className={renewActionBtn}
-                          title={t('actions.renew')}
-                        >
-                          <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                );
-              })
-            ) : (
-              <p className="admin-panel-empty px-4">
-                {t('pages.dashboard.noExpiring')}
-              </p>
-            )}
-          </div>
-
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="admin-data-table owner-dashboard-alert-table min-w-[720px]">
-              <thead>
-                <tr>
-                  <th>{t('table.member')}</th>
-                  <th>{t('table.plan')}</th>
-                  <th>{t('table.expiry')}</th>
-                  <th>{t('table.status')}</th>
-                  <th className="text-right">{t('table.action')}</th>
-                </tr>
-              </thead>
-              <tbody>
+              <div className="lg:hidden divide-y divide-app-border-subtle">
                 {alertMembers.length > 0 ? (
                   alertMembers.map((member) => {
                     const matchingPlan = plans.find((p) => p.id === member.planId);
                     return (
-                      <tr key={member.id} className={tableRowHover}>
-                        <td>
-                          <div className="flex items-center gap-3 min-w-0">
+                      <div key={member.id} className="flex items-center justify-between gap-3 px-4 py-3.5">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2.5">
                             <MemberPhoto
                               memberId={member.id}
                               apiFetch={apiFetch}
                               name={member.name}
                               hasPhoto={member.hasPhoto}
                               expandable={false}
-                              className="h-8 w-8 rounded-full object-cover"
-                              fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
+                              className="h-9 w-9 rounded-full object-cover"
+                              fallbackClassName="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
                             />
-                            <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
+                            <div className="min-w-0">
+                              <span className="block truncate font-semibold text-app-text-strong">{member.name}</span>
+                              <p className="truncate text-xs text-app-muted">
+                                {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                                {' · '}
+                                {formatDisplayDate(member.endDate)}
+                              </p>
+                            </div>
                           </div>
-                        </td>
-                        <td className="truncate font-medium text-teal-700">
-                          {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
-                        </td>
-                        <td className="whitespace-nowrap text-app-text">{formatDisplayDate(member.endDate)}</td>
-                        <td>
-                          <StatusBadge status={member.status} />
-                        </td>
-                        <td>
-                          <div className="flex justify-end">
-                          {!readOnly && canRenewMember(member) && (
+                          <div className="mt-1.5 pl-11">
+                            <StatusBadge status={member.status} />
+                          </div>
+                        </div>
+                        {!readOnly && canRenewMember(member) && (
+                          <div className="admin-row-actions shrink-0">
                             <button
+                              type="button"
                               onClick={() => setRenewState({ isOpen: true, member })}
                               className={renewActionBtn}
+                              title={t('actions.renew')}
                             >
                               <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                             </button>
-                          )}
                           </div>
-                        </td>
-                      </tr>
+                        )}
+                      </div>
                     );
                   })
                 ) : (
-                  <tr>
-                    <td colSpan="5" className="admin-panel-empty">
-                      {t('pages.dashboard.noExpiring')}
-                    </td>
-                  </tr>
+                  <p className="admin-panel-empty px-4">{t('pages.dashboard.noExpiring')}</p>
                 )}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+              </div>
 
-        <Card quiet className="md:col-span-2 flex flex-col p-4 sm:p-6">
-          <h2 className={`font-display mb-4 text-lg font-semibold tracking-tight ${headingText} sm:mb-5 sm:text-xl`}>{t('pages.dashboard.revenueThisMonth')}</h2>
-          <div className="flex-1 min-h-[220px] sm:min-h-[260px]">
-            <Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center text-sm text-app-muted">
-                  {t('common.loading')}
-                </div>
-              }
-            >
-              <OwnerRevenueChart chartData={chartData} />
-            </Suspense>
-          </div>
-        </Card>
-        </>
+              <div className="hidden overflow-x-auto lg:block">
+                <table className="admin-data-table owner-dashboard-alert-table min-w-[720px]">
+                  <thead>
+                    <tr>
+                      <th>{t('table.member')}</th>
+                      <th>{t('table.plan')}</th>
+                      <th>{t('table.expiry')}</th>
+                      <th>{t('table.status')}</th>
+                      <th className="text-right">{t('table.action')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {alertMembers.length > 0 ? (
+                      alertMembers.map((member) => {
+                        const matchingPlan = plans.find((p) => p.id === member.planId);
+                        return (
+                          <tr key={member.id} className={tableRowHover}>
+                            <td>
+                              <div className="flex min-w-0 items-center gap-3">
+                                <MemberPhoto
+                                  memberId={member.id}
+                                  apiFetch={apiFetch}
+                                  name={member.name}
+                                  hasPhoto={member.hasPhoto}
+                                  expandable={false}
+                                  className="h-8 w-8 rounded-full object-cover"
+                                  fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
+                                />
+                                <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
+                              </div>
+                            </td>
+                            <td className="truncate font-medium text-app-text">
+                              {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                            </td>
+                            <td className="whitespace-nowrap text-app-text">{formatDisplayDate(member.endDate)}</td>
+                            <td>
+                              <StatusBadge status={member.status} />
+                            </td>
+                            <td>
+                              <div className="flex justify-end">
+                                {!readOnly && canRenewMember(member) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setRenewState({ isOpen: true, member })}
+                                    className={renewActionBtn}
+                                  >
+                                    <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="admin-panel-empty">
+                          {t('pages.dashboard.noExpiring')}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
+              <h2 className={`font-display mb-3 text-base font-semibold tracking-tight ${headingText} sm:mb-4 sm:text-lg`}>
+                {t('pages.dashboard.revenueThisMonth')}
+              </h2>
+              <div className="min-h-[200px] flex-1 sm:min-h-[240px]">
+                <Suspense
+                  fallback={
+                    <div className="flex h-full items-center justify-center text-sm text-app-muted">
+                      {t('common.loading')}
+                    </div>
+                  }
+                >
+                  <OwnerRevenueChart chartData={chartData} />
+                </Suspense>
+              </div>
+            </Card>
+          </>
         )}
       </div>
+
+      {showComparison && !gymBooting && (
+        <BranchComparisonTable branches={branchComparison} loading={comparisonLoading} />
+      )}
 
       <RenewModal
         isOpen={renewState.isOpen}

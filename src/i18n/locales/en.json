@@ -507,6 +507,7 @@
       "title": "Dashboard",
       "subtitle": "Overview of members, renewals, and revenue.",
       "expiringSection": "Recent Expiring & Expired Members",
+      "expiringSectionHint": "Renewals that need action now.",
       "revenueThisMonth": "Revenue This Month",
       "noPaymentsMonth": "No payments recorded this month yet.",
       "addMemberFab": "Add new member",

@@ -48,7 +48,7 @@ import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
-import { selectSurface } from '../../utils/surfaceClasses';
+import { selectSurface, pageTitle, mutedText } from '../../utils/surfaceClasses';
 
 const GYM_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allGyms', query: {} },
@@ -178,8 +178,8 @@ export default function AdminReports({ onBootingChange }) {
     <div className="space-y-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-app-text-strong">{t('admin.reportsTitle')}</h1>
-          <p className="text-sm text-app-muted mt-1 max-w-xl">
+          <h1 className={pageTitle}>{t('admin.reportsTitle')}</h1>
+          <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>
             {t('admin.reportsChartsSubtitle')}
           </p>
         </div>

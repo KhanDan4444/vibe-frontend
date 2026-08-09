@@ -989,6 +989,7 @@
       "expiredHintOk": "ሁሉም ነገር ተከናውኗል።",
       "expires": "የሚያልቀው {{date}}",
       "expiringSection": "በቅርብ ጊዜ የሚያልቁ እና ጊዜያቸው ያለፈባቸው አባላት",
+      "expiringSectionHint": "አሁን እርምጃ የሚፈልጉ ማደሻዎች።",
       "lastMonthCount": "ካለፈው ወር {{count}}",
       "newMembersThisMonth": "አዲስ አባላት (የዚህ ወር)",
       "noExpiring": "በጣም ጥሩ! በ3 ቀናት ውስጥ ጊዜያቸው የሚያበቃ ወይም የሚያልቁ አባላት የሉም።",

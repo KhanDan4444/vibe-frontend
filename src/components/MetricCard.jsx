@@ -5,6 +5,7 @@ import { mutedText, headingText } from '../utils/surfaceClasses';
 
 /**
  * Shared metric card for dashboards (AdminDashboard + OwnerDashboard).
+ * variant: default | emphasis (hero) | dense (quiet rail)
  */
 
 const PROGRESS_COLOR = {
@@ -63,19 +64,38 @@ export default function MetricCard({
   showHintBelow,
   trend,
   trendCaption = 'vs last month',
+  variant = 'default',
+  className = '',
 }) {
   const progressBarColor = PROGRESS_COLOR[color] || PROGRESS_COLOR.teal;
   const badgeClass = BADGE_COLOR[color] || BADGE_COLOR.teal;
   const iconClass = ICON_COLOR[color] || ICON_COLOR.slate;
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
+  const isHero = variant === 'emphasis';
+  const isDense = variant === 'dense';
+  const showIcon = Boolean(Icon) && !badge && !isDense;
 
   return (
-    <Card quiet className="app-card-lift p-4 sm:p-5">
+    <Card
+      quiet={!isHero}
+      className={[
+        isHero ? 'app-metric-hero p-5 sm:p-6' : isDense ? 'app-metric-dense p-3.5 sm:p-4' : 'app-card-lift p-4 sm:p-5',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <div className="flex items-start justify-between gap-2 min-w-0">
-        <span className={`min-w-0 flex-1 text-xs font-medium leading-snug break-words ${mutedText}`}>
+        <span
+          className={[
+            'min-w-0 flex-1 font-medium leading-snug break-words',
+            isHero ? 'text-sm' : 'text-xs',
+            mutedText,
+          ].join(' ')}
+        >
           {label}
         </span>
-        {(badge || Icon) && (
+        {(badge || showIcon) && (
           <div className="flex shrink-0 flex-col items-end gap-1">
             {badge ? (
               <span
@@ -84,17 +104,33 @@ export default function MetricCard({
                 {badge}
               </span>
             ) : null}
-            {Icon && !badge ? (
+            {showIcon ? (
               <Icon className={`h-4 w-4 shrink-0 ${iconClass}`} aria-hidden />
             ) : null}
           </div>
         )}
       </div>
 
-      <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2 gap-y-1 sm:mt-2">
-        <span className={`font-display text-2xl font-bold tracking-tight ${headingText} sm:text-3xl`}>{value}</span>
+      <div className={`flex flex-wrap items-baseline gap-x-2 gap-y-1 ${isHero ? 'mt-3' : 'mt-1.5 sm:mt-2'}`}>
+        <span
+          className={[
+            'font-display font-bold tracking-tight',
+            headingText,
+            isHero ? 'text-4xl sm:text-5xl' : isDense ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl',
+          ].join(' ')}
+        >
+          {value}
+        </span>
         {subValue && (
-          <span className={`font-display text-lg font-medium tracking-tight ${mutedText}`}>{subValue}</span>
+          <span
+            className={[
+              'font-display font-medium tracking-tight',
+              mutedText,
+              isHero ? 'text-xl sm:text-2xl' : isDense ? 'text-base' : 'text-lg',
+            ].join(' ')}
+          >
+            {subValue}
+          </span>
         )}
         {trend && (
           <span
@@ -118,9 +154,9 @@ export default function MetricCard({
       )}
 
       {showProgressBar && (
-        <div className="mt-3 h-1 w-full rounded-full bg-app-border-subtle">
+        <div className={`w-full rounded-full bg-app-border-subtle ${isHero ? 'mt-4 h-1.5' : 'mt-3 h-1'}`}>
           <div
-            className={`h-1 rounded-full ${progressBarColor} transition-all duration-500`}
+            className={`${isHero ? 'h-1.5' : 'h-1'} rounded-full ${progressBarColor} transition-all duration-500`}
             style={{ width: `${Math.min(progress, 100)}%` }}
           />
         </div>
@@ -141,11 +177,12 @@ export default function MetricCard({
   );
 }
 
-export function MetricCardSkeleton() {
+export function MetricCardSkeleton({ variant = 'default', className = '' }) {
+  const isHero = variant === 'emphasis';
   return (
-    <Card quiet className="relative p-5">
+    <Card quiet={!isHero} className={`relative ${isHero ? 'p-6' : 'p-5'} ${className}`}>
       <div className="app-skeleton h-3 w-24" />
-      <div className="app-skeleton mt-3 h-8 w-20" />
+      <div className={`app-skeleton mt-3 ${isHero ? 'h-12 w-28' : 'h-8 w-20'}`} />
       <div className="app-skeleton mt-2 h-3 w-32" />
     </Card>
   );

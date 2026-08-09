@@ -8,7 +8,7 @@ import PaginationControls from '../../components/PaginationControls';
 import { formatDisplayDateTime } from '../../utils/date';
 import { formatAdminSmsMessageType, ADMIN_SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
-import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover, pageTitle, mutedText } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -87,10 +87,10 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-app-text-strong sm:text-2xl">
+          <h1 className={pageTitle}>
             {t('pages.adminGymMessages.title')}
           </h1>
-          <p className="text-sm text-app-muted">
+          <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>
             {t('pages.adminGymMessages.subtitle')}
           </p>
         </div>
