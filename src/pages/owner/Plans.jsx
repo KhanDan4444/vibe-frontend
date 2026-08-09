@@ -231,7 +231,7 @@ export default function Plans() {
                   }`}
                 >
                   {isPopular ? (
-                    <span className="absolute -top-2.5 left-4 rounded-full bg-teal-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white dark:bg-teal-500">
+                    <span className="absolute -top-2.5 left-4 rounded-full bg-teal-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-teal-50 dark:bg-teal-900 dark:text-teal-100">
                       {t('pages.plans.popular')}
                     </span>
                   ) : null}
