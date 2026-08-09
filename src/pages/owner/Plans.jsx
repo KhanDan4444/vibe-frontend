@@ -10,8 +10,9 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
 import { formatMoney } from '../../utils/formatMoney';
-import { cardSurface, selectSurface, headingText } from '../../utils/surfaceClasses';
+import { cardSurface, selectSurface } from '../../utils/surfaceClasses';
 
 const SORT_OPTIONS = [
   { value: 'price_asc', labelKey: 'pages.plans.sort.priceAsc' },
@@ -21,9 +22,6 @@ const SORT_OPTIONS = [
   { value: 'members_desc', labelKey: 'pages.plans.sort.membersDesc' },
   { value: 'name_asc', labelKey: 'pages.plans.sort.nameAsc' },
 ];
-
-const ACTION_SLOT =
-  'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-app-muted transition-colors hover:bg-app-surface/80';
 
 function sortPlans(plans, sort) {
   const list = [...plans];
@@ -80,6 +78,19 @@ export default function Plans() {
     () => plans.reduce((sum, p) => sum + (p.activeMemberCount ?? 0), 0),
     [plans],
   );
+  const popularPlanId = useMemo(() => {
+    if (plans.length < 2) return null;
+    let best = null;
+    let bestCount = 0;
+    for (const plan of plans) {
+      const count = plan.activeMemberCount ?? 0;
+      if (count > bestCount) {
+        best = plan.id;
+        bestCount = count;
+      }
+    }
+    return bestCount > 0 ? best : null;
+  }, [plans]);
 
   const statusLine = plans.length > 0
     ? priceMin === priceMax
@@ -179,20 +190,14 @@ export default function Plans() {
       ) : null}
 
       {gymLoading && plans.length === 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <PlanCardSkeleton key={i} />
           ))}
         </div>
       ) : plans.length > 0 ? (
-        <div className={`overflow-hidden ${cardSurface}`}>
-          <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-            <div className="min-w-0">
-              <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
-                {t('pages.plans.catalog')}
-              </h2>
-              <p className="mt-0.5 text-xs text-app-muted">{t('pages.plans.subtitle')}</p>
-            </div>
+        <>
+          <div className="flex justify-end">
             <label className="sr-only" htmlFor="plans-sort">
               {t('pages.plans.sortLabel')}
             </label>
@@ -210,33 +215,48 @@ export default function Plans() {
             </select>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 p-3 sm:grid-cols-2 sm:gap-4 sm:p-4 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {sortedPlans.map((plan) => {
               const members = plan.activeMemberCount ?? 0;
               const perMonth = monthlyRate(plan);
+              const isPopular = plan.id === popularPlanId;
+
               return (
-                <div
+                <Card
                   key={plan.id}
-                  className="flex flex-col rounded-xl border border-app-border-subtle bg-app-surface p-4 sm:p-5"
+                  className={`relative p-5 ${
+                    isPopular
+                      ? 'ring-2 ring-teal-500/50 dark:ring-teal-400/40'
+                      : ''
+                  }`}
                 >
+                  {isPopular ? (
+                    <span className="absolute -top-2.5 left-4 rounded-full bg-teal-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white dark:bg-teal-500">
+                      {t('pages.plans.popular')}
+                    </span>
+                  ) : null}
+
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-                        {t('common.month', { count: plan.duration })}
+                      <p className="text-2xl font-black tracking-tight text-app-text-strong sm:text-[1.65rem]">
+                        {formatMoney(plan.price)}
                       </p>
-                      <h3
-                        className="mt-1 truncate text-lg font-bold text-app-text-strong"
-                        title={plan.name}
-                      >
-                        {plan.name}
-                      </h3>
+                      {perMonth != null ? (
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {t('pages.plans.perMonth', { amount: formatMoney(perMonth) })}
+                        </p>
+                      ) : (
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {t('common.month', { count: plan.duration })}
+                        </p>
+                      )}
                     </div>
                     {canManagePlans ? (
                       <div className="flex shrink-0 gap-0.5">
                         <button
                           type="button"
                           onClick={() => handleEditClick(plan)}
-                          className={`${ACTION_SLOT} hover:text-teal-700 dark:hover:text-teal-300`}
+                          className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-teal-700 dark:hover:text-teal-300"
                           title={t('pages.plans.editPlanTitle')}
                           aria-label={t('pages.plans.editPlanTitle')}
                         >
@@ -245,7 +265,7 @@ export default function Plans() {
                         <button
                           type="button"
                           onClick={() => handleDeletePlanClick(plan)}
-                          className={`${ACTION_SLOT} hover:text-rose-600 dark:hover:text-rose-400`}
+                          className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-rose-600 dark:hover:text-rose-400"
                           title={t('pages.plans.deletePlanTitle')}
                           aria-label={t('pages.plans.deletePlanTitle')}
                         >
@@ -255,34 +275,33 @@ export default function Plans() {
                     ) : null}
                   </div>
 
+                  <h3
+                    className="mt-4 truncate text-base font-semibold text-app-text-strong"
+                    title={plan.name}
+                  >
+                    {plan.name}
+                  </h3>
+
                   {plan.description ? (
-                    <p className="mt-2 line-clamp-2 text-sm leading-snug text-app-muted">
+                    <p className="mt-1 line-clamp-2 text-sm leading-snug text-app-muted">
                       {plan.description}
                     </p>
                   ) : null}
 
-                  <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-app-muted">
-                    <Users className="h-3.5 w-3.5" />
-                    {t('pages.plans.activeMembers', { count: members })}
-                  </p>
-
-                  <div className="mt-auto flex items-end justify-between gap-3 border-t border-app-border-subtle pt-4 mt-5">
-                    <div className="min-w-0">
-                      <p className="text-2xl font-black tracking-tight text-app-text-strong">
-                        {formatMoney(plan.price)}
-                      </p>
-                      {perMonth != null ? (
-                        <p className="mt-0.5 text-xs text-app-muted">
-                          {t('pages.plans.perMonth', { amount: formatMoney(perMonth) })}
-                        </p>
-                      ) : null}
-                    </div>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex rounded-md bg-teal-50 px-2 py-1 text-xs font-semibold text-teal-800 dark:bg-teal-500/15 dark:text-teal-300">
+                      {t('common.month', { count: plan.duration })}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs text-app-muted">
+                      <Users className="h-3.5 w-3.5" />
+                      {t('pages.plans.activeMembers', { count: members })}
+                    </span>
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
-        </div>
+        </>
       ) : (
         <div className={cardSurface}>
           <EmptyState
