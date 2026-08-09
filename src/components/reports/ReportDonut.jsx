@@ -24,42 +24,16 @@ function renderSlice(props) {
     isActive,
   } = props;
 
-  if (isActive) {
-    return (
-      <g>
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={Math.max(0, innerRadius - 2)}
-          outerRadius={outerRadius + 7}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-          style={{ filter: 'brightness(1.12)' }}
-        />
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={outerRadius + 9}
-          outerRadius={outerRadius + 12}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-          opacity={0.35}
-        />
-      </g>
-    );
-  }
-
   return (
     <Sector
       cx={cx}
       cy={cy}
       innerRadius={innerRadius}
-      outerRadius={outerRadius}
+      outerRadius={isActive ? outerRadius + 3 : outerRadius}
       startAngle={startAngle}
       endAngle={endAngle}
       fill={fill}
+      style={{ transition: 'opacity 280ms ease' }}
     />
   );
 }
@@ -103,8 +77,8 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
                 <Cell
                   key={entry.name}
                   fill={sliceColor(entry, i)}
-                  fillOpacity={activeIndex == null || activeIndex === i ? 1 : 0.42}
-                  style={{ outline: 'none', transition: 'fill-opacity 160ms ease' }}
+                  fillOpacity={activeIndex == null || activeIndex === i ? 1 : 0.72}
+                  style={{ outline: 'none', transition: 'fill-opacity 280ms ease' }}
                 />
               ))}
             </Pie>
@@ -112,8 +86,8 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
               contentStyle={{
                 ...chartTheme.tooltip.contentStyle,
                 boxShadow: chartTheme.isDark
-                  ? '0 8px 24px rgba(0,0,0,0.35)'
-                  : '0 8px 24px rgba(15,23,42,0.12)',
+                  ? '0 6px 18px rgba(0,0,0,0.28)'
+                  : '0 6px 18px rgba(15,23,42,0.08)',
                 border: `1px solid ${chartTheme.isDark ? '#3a4150' : '#e2e8f0'}`,
               }}
               formatter={tooltipFormatter}
@@ -129,18 +103,18 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
           return (
             <li
               key={entry.name}
-              className={`flex cursor-pointer items-center gap-2 text-xs transition-opacity ${
+              className={`flex cursor-pointer items-center gap-2 text-xs transition-[opacity,color] duration-300 ease-out ${
                 active
-                  ? 'font-semibold text-app-text-strong'
+                  ? 'text-app-text-strong'
                   : dimmed
-                    ? 'text-app-muted opacity-50'
+                    ? 'text-app-muted opacity-60'
                     : 'text-slate-600 dark:text-app-muted'
               }`}
               onMouseEnter={() => setActiveIndex(i)}
               onMouseLeave={() => setActiveIndex(null)}
             >
               <span
-                className={`shrink-0 rounded-full transition-transform ${active ? 'h-2.5 w-2.5 scale-110' : 'h-2 w-2'}`}
+                className="h-2 w-2 shrink-0 rounded-full"
                 style={{ backgroundColor: sliceColor(entry, i) }}
                 aria-hidden
               />

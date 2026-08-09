@@ -14,7 +14,6 @@ import { useChartTheme } from '../../utils/chartTheme';
 import { formatMoneyTick } from '../../utils/formatMoney';
 
 const BAR_FILL = '#14b8a6';
-const BAR_ACTIVE = '#2dd4bf';
 
 /** Rank-aware teal: strongest at the top, quieter down the list. */
 function rankFill(index, total) {
@@ -36,25 +35,21 @@ export default function RevenueBarChart({ data, formatMoney }) {
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
         <YAxis type="category" dataKey="name" width={88} tick={{ fontSize: 10, fill: chartTheme.tick }} />
         <Tooltip
-          cursor={{ fill: chartTheme.isDark ? 'rgba(45, 212, 191, 0.08)' : 'rgba(20, 184, 166, 0.08)' }}
+          cursor={{ fill: chartTheme.isDark ? 'rgba(45, 212, 191, 0.05)' : 'rgba(20, 184, 166, 0.05)' }}
           contentStyle={{
             ...chartTheme.tooltip.contentStyle,
             boxShadow: chartTheme.isDark
-              ? '0 8px 24px rgba(0,0,0,0.35)'
-              : '0 8px 24px rgba(15,23,42,0.12)',
+              ? '0 6px 18px rgba(0,0,0,0.28)'
+              : '0 6px 18px rgba(15,23,42,0.08)',
             border: `1px solid ${chartTheme.isDark ? '#3a4150' : '#e2e8f0'}`,
           }}
           formatter={(v) => [formatMoney(v), t('charts.revenue')]}
         />
         <Bar
           dataKey="value"
-          radius={[0, 5, 5, 0]}
+          radius={[0, 4, 4, 0]}
           stroke="none"
-          activeBar={{
-            fill: BAR_ACTIVE,
-            stroke: 'none',
-            radius: [0, 5, 5, 0],
-          }}
+          activeBar={false}
           onMouseEnter={(_, index) => setActiveIndex(index)}
           onMouseLeave={() => setActiveIndex(null)}
           style={{ cursor: 'pointer', outline: 'none' }}
@@ -65,15 +60,15 @@ export default function RevenueBarChart({ data, formatMoney }) {
               activeIndex == null
                 ? base
                 : index === activeIndex
-                  ? 1
-                  : base * 0.4;
+                  ? Math.min(1, base + 0.18)
+                  : base * 0.7;
             return (
               <Cell
                 key={entry.name || index}
-                fill={index === activeIndex ? BAR_ACTIVE : BAR_FILL}
+                fill={BAR_FILL}
                 fillOpacity={opacity}
                 stroke="none"
-                style={{ outline: 'none', transition: 'fill-opacity 160ms ease, fill 160ms ease' }}
+                style={{ outline: 'none', transition: 'fill-opacity 280ms ease' }}
               />
             );
           })}
