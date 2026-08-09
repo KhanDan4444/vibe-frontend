@@ -131,7 +131,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
+              className="auth-cta-btn"
             >
               {loading ? t('auth.sending') : t('auth.sendOtp')}
             </button>
@@ -196,7 +196,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading || !sessionId}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
+              className="auth-cta-btn"
             >
               {loading ? t('auth.saving') : t('auth.updatePassword')}
             </button>
@@ -221,7 +221,7 @@ export default function ForgotPassword() {
           <button
             type="button"
             onClick={() => setShowSupportOption((show) => !show)}
-            className="w-full text-left text-sm font-semibold text-teal-300 hover:text-teal-200"
+            className="auth-link w-full text-left text-sm"
           >
             {t('auth.tryOtherOption')}
           </button>
@@ -235,7 +235,7 @@ export default function ForgotPassword() {
         </div>
 
         <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="text-teal-400 hover:text-teal-300">
+          <Link to="/login" className="auth-link">
             {t('auth.backToSignIn')}
           </Link>
         </p>

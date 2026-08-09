@@ -140,7 +140,7 @@ export default function RegisterGym() {
       <AuthScreen>
         <div className="max-w-md rounded-2xl border border-app-border-subtle bg-app-raised p-8 text-center">
           <p className="text-app-text">{t('auth.signupUnavailable')}</p>
-          <Link to="/login" className="mt-4 inline-block text-brand hover:text-brand-hover">
+          <Link to="/login" className="auth-link mt-4 inline-block">
             {t('auth.backToSignIn')}
           </Link>
         </div>
@@ -194,7 +194,7 @@ export default function RegisterGym() {
             <button
               type="submit"
               disabled={loading}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
+              className="auth-cta-btn"
             >
               {loading ? t('auth.sending') : t('auth.sendOtp')}
             </button>
@@ -306,7 +306,7 @@ export default function RegisterGym() {
             <button
               type="submit"
               disabled={loading}
-              className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
+              className="auth-cta-btn"
             >
               {loading ? t('auth.processing') : t('auth.createGymAccount')}
             </button>
@@ -314,7 +314,7 @@ export default function RegisterGym() {
         )}
 
         <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="text-teal-400 hover:text-teal-300">
+          <Link to="/login" className="auth-link">
             {t('auth.backToSignIn')}
           </Link>
         </p>

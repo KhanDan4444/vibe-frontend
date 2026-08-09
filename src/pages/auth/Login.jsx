@@ -173,20 +173,16 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-brand focus:ring-teal-400/40"
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#0f766e] focus:ring-teal-700/40"
                 />
                 {t('auth.rememberMe')}
               </label>
-              <Link to="/forgot-password" className="text-sm font-semibold text-[#2dd4bf] hover:text-[#5eead4]">
+              <Link to="/forgot-password" className="auth-link text-sm">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-1 flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-[#2dd4bf] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5eead4] focus:outline-none focus:ring-2 focus:ring-[#2dd4bf]/40 disabled:opacity-50"
-            >
+            <button type="submit" disabled={loading} className="auth-cta-btn mt-1">
               {loading ? (
                 <span className="flex items-center gap-2">
                   <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
@@ -207,7 +203,7 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-white/70">
             {t('auth.noAccount')}{' '}
-            <Link to="/register-gym" className="font-semibold text-[#2dd4bf] hover:text-[#5eead4]">
+            <Link to="/register-gym" className="auth-link">
               {t('auth.registerGymLink')}
             </Link>
           </p>

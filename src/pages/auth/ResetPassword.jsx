@@ -100,14 +100,14 @@ export default function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
+            className="auth-cta-btn"
           >
             {loading ? t('auth.saving') : t('auth.updatePassword')}
           </button>
         </form>
 
         <p className="text-center text-sm text-slate-400">
-          <Link to="/forgot-password" className="text-teal-400 hover:text-teal-300">
+          <Link to="/forgot-password" className="auth-link">
             {t('auth.requestNewLink')}
           </Link>
         </p>
