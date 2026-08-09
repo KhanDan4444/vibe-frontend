@@ -642,7 +642,8 @@
       "revenueStatusLine": "{{revenue}} · {{count}} payments · avg {{average}} · {{period}}",
       "revenueChartsNote": "Breakdowns and trends for the selected period.",
       "topMembers": "Top members",
-      "revenueTrend": "Revenue trend"
+      "revenueTrend": "Revenue trend",
+      "planMix": "Plan mix"
     },
     "branches": {
       "title": "Branches",

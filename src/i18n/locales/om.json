@@ -642,7 +642,8 @@
       "revenueStatusLine": "{{revenue}} · kaffaltii {{count}} · giddu-galeessa {{average}} · {{period}}",
       "revenueChartsNote": "Hir'inaa fi akkaataa yeroo filatameef.",
       "topMembers": "Miseensota olaanaa",
-      "revenueTrend": "Akkaataa galii"
+      "revenueTrend": "Akkaataa galii",
+      "planMix": "Walitti dhufeenya karooraa"
     },
     "branches": {
       "title": "Dameewwan",
