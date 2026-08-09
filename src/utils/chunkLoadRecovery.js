@@ -34,6 +34,20 @@ async function clearServiceWorkerAndCaches() {
   }
 }
 
+/** Don’t hang forever if SW unregister stalls. */
+function clearWithTimeout(ms = 4_000) {
+  return Promise.race([
+    clearServiceWorkerAndCaches(),
+    new Promise((resolve) => setTimeout(resolve, ms)),
+  ]);
+}
+
+function bustAndReplace() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('_swbust', String(Date.now()));
+  window.location.replace(url.toString());
+}
+
 /**
  * Clear PWA caches + unregister SW, then reload once so the browser picks up new assets.
  * Cooldown prevents an infinite reload loop if the chunk is truly missing.
@@ -50,24 +64,26 @@ export function reloadOnceForStaleChunk() {
     /* private mode — still attempt recovery */
   }
 
-  void clearServiceWorkerAndCaches().finally(() => {
-    // Cache-bust the document so we don't reload into the same broken shell.
-    const url = new URL(window.location.href);
-    url.searchParams.set('_swbust', String(Date.now()));
-    window.location.replace(url.toString());
+  void clearWithTimeout().finally(() => {
+    bustAndReplace();
   });
   return true;
 }
 
-/** Manual escape hatch when auto-reload already tried. */
-export function forceClearCachesAndReload() {
+/** Manual escape hatch when auto-reload already tried. Keeps spinner visible briefly. */
+export async function forceClearCachesAndReload() {
   if (typeof window === 'undefined') return;
   try {
     sessionStorage.removeItem(CHUNK_RELOAD_KEY);
   } catch {
     /* ignore */
   }
-  void clearServiceWorkerAndCaches().finally(() => {
-    window.location.reload();
-  });
+  const started = Date.now();
+  await clearWithTimeout();
+  const elapsed = Date.now() - started;
+  const minVisibleMs = 5_000;
+  if (elapsed < minVisibleMs) {
+    await new Promise((resolve) => setTimeout(resolve, minVisibleMs - elapsed));
+  }
+  bustAndReplace();
 }
