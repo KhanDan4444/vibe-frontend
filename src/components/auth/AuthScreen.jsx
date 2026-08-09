@@ -1,9 +1,8 @@
 import AuthHeroBackground from './AuthHeroBackground';
 
 /**
- * Auth UI uses a nested `.dark` shell (yesterday's glass login).
- * Document theme is forced light on auth routes elsewhere so the hero wash
- * composites like before — without changing the saved/app default (dark).
+ * Auth routes render in a nested dark shell (glass login).
+ * Document theme follows the app default / saved preference (dark by default).
  */
 export default function AuthScreen({ children, hero = false }) {
   if (hero) {
