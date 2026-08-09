@@ -109,7 +109,7 @@ export default function MemberDetailDrawer({
     [plans, member],
   );
   const otherPlans = useMemo(
-    () => (member ? plans.filter((p) => p.id !== member.planId) : []),
+    () => (member ? plans.filter((p) => String(p.id) !== String(member.planId)) : []),
     [plans, member],
   );
 
@@ -132,7 +132,7 @@ export default function MemberDetailDrawer({
 
   const canShowChangePlan = !readOnly && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
   const canShowTransfer = showTransfer && onTransfer;
-  const secondaryActionCount = Number(canShowChangePlan) + Number(canShowTransfer);
+  const hasSecondaryActions = canShowChangePlan || (!readOnly && canShowTransfer);
   const hasPrimaryLifecycle =
     !readOnly &&
     ((canCollectMissedPayment && onRecordPayment) || (canRenewMember(member) && onRenew));
@@ -202,13 +202,13 @@ export default function MemberDetailDrawer({
                   </SlidePanelActionButton>
                 ) : null}
 
-                {secondaryActionCount > 0 && (
-                  <SlidePanelActionGrid columns={secondaryActionCount === 1 ? 1 : 2}>
+                {hasSecondaryActions && (
+                  <SlidePanelActionGrid columns={2}>
                     {canShowChangePlan && (
                       <SlidePanelActionButton
                         variant="tile"
                         icon={ArrowLeftRight}
-                        className={secondaryActionCount === 1 ? 'col-span-1' : ''}
+                        className={!canShowTransfer ? 'col-span-2' : ''}
                         onClick={() => onChangePlan(member)}
                       >
                         {t('actions.changePlan')}
@@ -218,6 +218,7 @@ export default function MemberDetailDrawer({
                       <SlidePanelActionButton
                         variant="tile"
                         icon={ArrowRightLeft}
+                        className={!canShowChangePlan ? 'col-span-2' : ''}
                         onClick={() => onTransfer(member)}
                       >
                         {t('drawer.transferBranch')}
@@ -238,7 +239,7 @@ export default function MemberDetailDrawer({
               </SlidePanelActionButton>
             )}
             {!readOnly && (
-              <div className={`flex items-stretch gap-2 ${hasPrimaryLifecycle || secondaryActionCount > 0 ? 'pt-0.5' : ''}`}>
+              <div className={`flex items-stretch gap-2 ${hasPrimaryLifecycle || hasSecondaryActions ? 'pt-0.5' : ''}`}>
                 <SlidePanelActionButton
                   variant="secondary"
                   icon={Pencil}

@@ -66,7 +66,7 @@ export function SlidePanel({
         <div className="safe-bottom flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">{children}</div>
 
         {footer && (
-          <div className="safe-bottom shrink-0 border-t bg-app-surface px-4 py-3 border-app-border-subtle sm:px-6 sm:py-3.5">
+          <div className="safe-bottom max-h-[min(50vh,28rem)] shrink-0 overflow-y-auto border-t border-app-border-subtle bg-app-surface px-4 py-3 sm:px-6 sm:py-3.5">
             {footer}
           </div>
         )}
