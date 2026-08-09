@@ -584,7 +584,17 @@
       "subtitle": "Kaffaltiiwwan hordofaa fi gabaasota ergaa.",
       "statusLine": "{{revenue}} · kaffaltii {{count}} · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · kaffaltii {{count}}",
-      "trendThinBaseline": "waniin yeroo duraatti xiqqaa wajjin",
+      "trendThinBaseline": "Deebii madaaluuf daataan duraatti gahaan hin jiru",
+      "trendThin": {
+        "today": "Deebii madaaluuf daataan kaleessaa gahaan hin jiru",
+        "thisWeek": "Deebii madaaluuf daataan torbee darbe gahaan hin jiru",
+        "thisMonth": "Deebii madaaluuf daataan ji'a darbe gahaan hin jiru",
+        "lastMonth": "Deebii madaaluuf daataan ji'a duraatti gahaan hin jiru",
+        "last30Days": "Deebii madaaluuf daataan guyyoota 30 duraatti gahaan hin jiru",
+        "thisYear": "Deebii madaaluuf daataan waggaa darbe gahaan hin jiru",
+        "custom": "Deebii madaaluuf daataan duraatti gahaan hin jiru",
+        "fallback": "Deebii madaaluuf daataan duraatti gahaan hin jiru"
+      },
       "trendVs": {
         "today": "kaleessa wajjin",
         "thisWeek": "torbee darbe wajjin",
@@ -594,6 +604,8 @@
         "thisYear": "waggaa darbe wajjin",
         "custom": "yeroo duraatti wajjin"
       },
+      "paymentHistory": "Seenaa kaffaltii",
+      "paymentHistoryCount": "Ilaalcha kana keessatti {{count}}",
       "methodFilterTip": "Kaffaltii calaluuf mala tuqi",
       "methodFilterHint": "{{method}} agarsiisaa — haquuf irra deebi'ii tuqi",
       "enrollLink": "miseensota galmeessaa",

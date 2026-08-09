@@ -41,3 +41,25 @@ export function trendCaptionKeyForPreset(preset) {
       return 'pages.revenue.trendVs.thisMonth';
   }
 }
+
+/** Clearer copy when prior period data is too thin to compare. */
+export function trendThinBaselineKeyForPreset(preset) {
+  switch (preset) {
+    case 'today':
+      return 'pages.revenue.trendThin.today';
+    case 'this_week':
+      return 'pages.revenue.trendThin.thisWeek';
+    case 'this_month':
+      return 'pages.revenue.trendThin.thisMonth';
+    case 'last_month':
+      return 'pages.revenue.trendThin.lastMonth';
+    case 'last_30_days':
+      return 'pages.revenue.trendThin.last30Days';
+    case 'this_year':
+      return 'pages.revenue.trendThin.thisYear';
+    case 'custom':
+      return 'pages.revenue.trendThin.custom';
+    default:
+      return 'pages.revenue.trendThin.fallback';
+  }
+}

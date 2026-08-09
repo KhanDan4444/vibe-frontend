@@ -17,7 +17,7 @@ import { PAYMENT_METHOD_COLORS } from '../../utils/reportChartData';
 import { parseApiResponse } from '../../utils/api';
 import { runInBackground } from '../../utils/runInBackground';
 import { mapPaymentFromApi } from '../../utils/apiMappers';
-import { paymentSourceLabel, paymentSourceStyle } from '../../utils/paymentSources';
+import { paymentSourceLabel } from '../../utils/paymentSources';
 import PaymentMethodBadge from '../../components/PaymentMethodBadge';
 import { exportColumn, translatePaymentMethod } from '../../i18n/helpers';
 import { getPayments } from '../../services/paymentService';
@@ -25,7 +25,7 @@ import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } fro
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
 import { formatMoney, formatMoneyShort } from '../../utils/formatMoney';
-import { formatTrendForDisplay, trendCaptionKeyForPreset } from '../../utils/trendDisplay';
+import { formatTrendForDisplay, trendCaptionKeyForPreset, trendThinBaselineKeyForPreset } from '../../utils/trendDisplay';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
@@ -209,11 +209,10 @@ export default function Revenue() {
     count: transactionCount,
   });
   const trendDisplay = formatTrendForDisplay(trendStr);
-  const trendVsCaption = t(trendCaptionKeyForPreset(periodPreset));
   const trendCaption = trendDisplay.extreme
-    ? t('pages.revenue.trendThinBaseline')
+    ? t(trendThinBaselineKeyForPreset(periodPreset))
     : trendDisplay.label
-      ? trendVsCaption
+      ? t(trendCaptionKeyForPreset(periodPreset))
       : null;
 
   const attentionMembers = unpaidMembers.filter(
@@ -483,7 +482,17 @@ export default function Revenue() {
       )}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-2 border-b border-app-border-subtle p-3 sm:px-4">
+        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4 sm:pt-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+            <h3 className={`text-base font-semibold tracking-tight ${headingText}`}>
+              {t('pages.revenue.paymentHistory')}
+            </h3>
+            {!listLoading && (
+              <p className="text-xs text-app-muted">
+                {t('pages.revenue.paymentHistoryCount', { count: total })}
+              </p>
+            )}
+          </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative w-full sm:max-w-md">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
@@ -536,11 +545,16 @@ export default function Revenue() {
                       <span aria-hidden>·</span>
                       <span>{paymentSourceLabel(payment.source)}</span>
                     </p>
-                    <div className="mt-1.5">
-                      <PaymentMethodBadge method={payment.method} />
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-full"
+                        style={{ backgroundColor: methodShareColor(payment.method) }}
+                        aria-hidden
+                      />
+                      <PaymentMethodBadge method={payment.method} quiet />
                     </div>
                   </div>
-                  <p className={`shrink-0 font-display text-base font-bold tracking-tight ${headingText}`}>
+                  <p className={`shrink-0 font-display text-lg font-bold tracking-tight ${headingText}`}>
                     {formatMoney(payment.amount)}
                   </p>
                 </div>
@@ -588,7 +602,7 @@ export default function Revenue() {
                 <th>{t('pages.revenue.paymentDate')}</th>
                 <th>{t('table.source')}</th>
                 <th>{t('table.method')}</th>
-                <th>{t('pages.revenue.amountReceived')}</th>
+                <th className="text-right">{t('pages.revenue.amountReceived')}</th>
                 {canManageRevenue && <th className="text-right">{t('table.actions')}</th>}
               </tr>
             </thead>
@@ -603,31 +617,32 @@ export default function Revenue() {
                   <tr key={payment.id} className={tableRowHover}>
                     <td className="truncate font-semibold text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</td>
                     {showBranchColumn && (
-                      <td className="truncate text-app-text">{payment.branchName || '—'}</td>
+                      <td className="truncate text-app-muted">{payment.branchName || '—'}</td>
                     )}
                     <td className="whitespace-nowrap text-app-muted">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Calendar className="h-4 w-4 shrink-0 text-app-muted" />
-                        {formatDisplayDate(payment.date)}
-                      </span>
+                      {formatDisplayDate(payment.date)}
+                    </td>
+                    <td className="text-sm text-app-muted">
+                      {paymentSourceLabel(payment.source)}
                     </td>
                     <td>
-                      <span
-                        className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold border ${paymentSourceStyle(payment.source)}`}
-                      >
-                        {paymentSourceLabel(payment.source)}
+                      <span className="inline-flex items-center gap-2">
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ backgroundColor: methodShareColor(payment.method) }}
+                          aria-hidden
+                        />
+                        <PaymentMethodBadge method={payment.method} quiet />
                       </span>
                     </td>
-                    <td>
-                      <PaymentMethodBadge method={payment.method} />
-                    </td>
-                    <td className={`whitespace-nowrap font-display text-base font-bold tracking-tight ${headingText}`}>
+                    <td className={`whitespace-nowrap text-right font-display text-base font-bold tabular-nums tracking-tight ${headingText}`}>
                       {formatMoney(payment.amount)}
                     </td>
                     {canManageRevenue && (
                     <td>
-                      <div className="admin-row-actions">
+                      <div className="admin-row-actions justify-end">
                           <button
+                            type="button"
                             onClick={() => {
                               setError('');
                               setModalState({ isOpen: true, payment });
@@ -638,6 +653,7 @@ export default function Revenue() {
                             <Edit className="h-4 w-4" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => setPaymentToDelete(payment)}
                             className={iconActionDanger}
                             title={t('pages.revenue.deleteTransaction')}

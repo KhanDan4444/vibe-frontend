@@ -584,7 +584,17 @@
       "subtitle": "Track payments and export reports.",
       "statusLine": "{{revenue}} · {{count}} payments · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · {{count}} payments",
-      "trendThinBaseline": "vs a quieter prior period",
+      "trendThinBaseline": "Not enough prior data to compare",
+      "trendThin": {
+        "today": "Not enough yesterday data to compare",
+        "thisWeek": "Not enough last-week data to compare",
+        "thisMonth": "Not enough last-month data to compare",
+        "lastMonth": "Not enough prior-month data to compare",
+        "last30Days": "Not enough prior 30-day data to compare",
+        "thisYear": "Not enough last-year data to compare",
+        "custom": "Not enough prior data to compare",
+        "fallback": "Not enough prior data to compare"
+      },
       "trendVs": {
         "today": "vs yesterday",
         "thisWeek": "vs last week",
@@ -594,6 +604,8 @@
         "thisYear": "vs last year",
         "custom": "vs prior period"
       },
+      "paymentHistory": "Payment history",
+      "paymentHistoryCount": "{{count}} in this view",
       "methodFilterTip": "Click a method to filter payments",
       "methodFilterHint": "Showing {{method}} — click again to clear",
       "enrollLink": "enroll members",
