@@ -506,9 +506,7 @@
     "dashboard": {
       "title": "Dashboard",
       "subtitle": "Overview of members, renewals, and revenue.",
-      "statusLineAttention": "{{expired}} expired · {{dueSoon}} due soon · {{revenue}} this month",
-      "statusLineClear": "All members in good standing · {{revenue}} this month",
-      "expiringSection": "Needs renewing",
+      "expiringSection": "Recent Expiring & Expired Members",
       "expiringSectionHint": "Renewals that need action now.",
       "revenueThisMonth": "Revenue This Month",
       "noPaymentsMonth": "No payments recorded this month yet.",
@@ -522,8 +520,8 @@
       "expiredHintAction": "Requires immediate attention.",
       "expiredHintOk": "All caught up.",
       "lastMonthCount": "{{count}} last month",
-      "newMembersThisMonth": "New members",
-      "thisMonthRevenue": "This month's revenue",
+      "newMembersThisMonth": "New Members (This Month)",
+      "thisMonthRevenue": "This Month's Revenue",
       "chartRevenue": "Revenue",
       "renewed": "{{name}} renewed and payment recorded."
     },

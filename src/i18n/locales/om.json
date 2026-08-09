@@ -506,9 +506,7 @@
     "dashboard": {
       "title": "Daashboordii",
       "subtitle": "Waliigala miseensotaa, haaromsaa, fi galii.",
-      "statusLineAttention": "{{expired}} dhumatan · {{dueSoon}} dhiyootti · {{revenue}} ji'a kana",
-      "statusLineClear": "Miseensonni hundinuu haala gaarii irra jiru · {{revenue}} ji'a kana",
-      "expiringSection": "Haaromsa barbaadu",
+      "expiringSection": "Miseensota Dhiyeenyatti Dhumanii fi Dhumatan",
       "expiringSectionHint": "Haaromsiwwan amma tarkaanfii barbaadan.",
       "revenueThisMonth": "Galii Ji'a Kanaa",
       "noPaymentsMonth": "Ji'a kana kaffaltiin galmeeffame hin jiru.",
@@ -522,8 +520,8 @@
       "expiredHintAction": "Xiyyeeffannoo battalaa barbaada.",
       "expiredHintOk": "Hundinuu gaariidha.",
       "lastMonthCount": "{{count}} ji'a darbe",
-      "newMembersThisMonth": "Miseensota haaraa",
-      "thisMonthRevenue": "Galii ji'a kanaa",
+      "newMembersThisMonth": "Miseensota Haaraa (Ji'a Kana)",
+      "thisMonthRevenue": "Galii Ji'a Kanaa",
       "chartRevenue": "Galii",
       "renewed": "{{name}} haaromee kaffaltinis galmeeffameera."
     },

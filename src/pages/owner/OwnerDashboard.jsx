@@ -17,7 +17,7 @@ import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { formatMoneyShort } from '../../utils/formatMoney';
+import { formatMoney } from '../../utils/formatMoney';
 import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
@@ -74,17 +74,6 @@ export default function OwnerDashboard() {
   const newMembersTrend = summary.newMembersTrendPercent ?? null;
 
   const alertMembers = (summary.alertMembers || []).map((m) => mapMemberFromApi(m)).filter(Boolean);
-  const needsAttention = dueSoonMembersCount > 0 || expiredMembersCount > 0;
-  const revenueShort = formatMoneyShort(monthlyIncome);
-  const statusLine = gymBooting
-    ? null
-    : needsAttention
-      ? t('pages.dashboard.statusLineAttention', {
-          expired: expiredMembersCount,
-          dueSoon: dueSoonMembersCount,
-          revenue: revenueShort,
-        })
-      : t('pages.dashboard.statusLineClear', { revenue: revenueShort });
 
   const chartData = (summary.revenueChart || []).map((r) => ({
     date: formatDisplayDate(r.date),
@@ -111,80 +100,68 @@ export default function OwnerDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className={pageTitle}>{gymName || t('pages.dashboard.title')}</h1>
-        {statusLine ? (
-          <p className={`mt-2 max-w-2xl text-sm leading-relaxed ${mutedText}`}>{statusLine}</p>
-        ) : null}
+        <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
       </div>
 
-      <div className="space-y-3 sm:space-y-4">
-        <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {gymBooting ? (
-            <>
-              <MetricCardSkeleton variant="emphasis" className="col-span-2" />
-              <MetricCardSkeleton variant="dense" />
-              <MetricCardSkeleton variant="dense" />
-            </>
-          ) : (
-            <>
-              <MetricCard
-                className="col-span-2"
-                variant="emphasis"
-                label={t('metrics.activeMembers')}
-                value={`${activeMembersCount}`}
-                subValue={`/${totalMembersCount}`}
-                icon={Users}
-                color="emerald"
-                showProgressBar
-                progress={totalMembersCount > 0 ? (activeMembersCount / totalMembersCount) * 100 : 0}
-              />
-              <MetricCard
-                variant="dense"
-                label={t('metrics.dueSoon')}
-                value={dueSoonMembersCount}
-                icon={AlertTriangle}
-                color="sky"
-              />
-              <MetricCard
-                variant="dense"
-                label={t('metrics.expired')}
-                value={expiredMembersCount}
-                icon={XCircle}
-                color="rose"
-              />
-            </>
-          )}
-        </div>
-
-        <div className="app-metric-grid grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-          {gymBooting ? (
-            <>
-              <MetricCardSkeleton variant="emphasis" className="sm:col-span-2" />
-              <MetricCardSkeleton variant="dense" />
-            </>
-          ) : (
-            <>
-              <MetricCard
-                className="sm:col-span-2"
-                variant="emphasis"
-                label={t('pages.dashboard.thisMonthRevenue')}
-                value={revenueShort}
-                icon={TrendingUp}
-                color="teal"
-                trend={revenueTrend}
-                trendCaption={t('metrics.vsLastMonth')}
-              />
-              <MetricCard
-                variant="dense"
-                label={t('pages.dashboard.newMembersThisMonth')}
-                value={newMembersThisMonth}
-                icon={UserPlus}
-                color="amber"
-                trend={newMembersTrend}
-                trendCaption={t('pages.dashboard.lastMonthCount', { count: summary.newMembersLastMonth ?? 0 })}
-              />
-            </>
-          )}
-        </div>
+      <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
+        {gymBooting ? (
+          <>
+            <MetricCardSkeleton variant="emphasis" className="col-span-2 lg:col-span-2" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <MetricCardSkeleton key={i} variant="dense" className="lg:col-span-1" />
+            ))}
+          </>
+        ) : (
+          <>
+            <MetricCard
+              className="col-span-2 lg:col-span-2"
+              variant="emphasis"
+              label={t('metrics.activeMembers')}
+              value={`${activeMembersCount}`}
+              subValue={`/${totalMembersCount}`}
+              icon={Users}
+              color="emerald"
+              showProgressBar
+              progress={totalMembersCount > 0 ? (activeMembersCount / totalMembersCount) * 100 : 0}
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('metrics.dueSoon')}
+              value={dueSoonMembersCount}
+              icon={AlertTriangle}
+              color="sky"
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('metrics.expired')}
+              value={expiredMembersCount}
+              icon={XCircle}
+              color="rose"
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('pages.dashboard.newMembersThisMonth')}
+              value={newMembersThisMonth}
+              icon={UserPlus}
+              color="amber"
+              trend={newMembersTrend}
+              trendCaption={t('pages.dashboard.lastMonthCount', { count: summary.newMembersLastMonth ?? 0 })}
+            />
+            <MetricCard
+              className="lg:col-span-1"
+              variant="dense"
+              label={t('pages.dashboard.thisMonthRevenue')}
+              value={formatMoney(monthlyIncome)}
+              icon={TrendingUp}
+              color="teal"
+              trend={revenueTrend}
+              trendCaption={t('metrics.vsLastMonth')}
+            />
+          </>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-5">
