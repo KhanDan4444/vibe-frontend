@@ -125,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       cancelled = true;
     };
-  }, [user?.id, user?.name, user?.role]);
+  }, [user?.id, user?.role]);
 
   const login = useCallback(async (email, password, rememberMe = true) => {
     try {
@@ -161,7 +161,7 @@ export const AuthProvider = ({ children }) => {
   const apiFetch = useCallback(async (endpoint, options = {}) => {
     const headers = withAuthHeaders({ ...options.headers });
     const method = (options.method || 'GET').toUpperCase();
-    const userId = user?.id ?? null;
+    const userId = userIdRef.current;
 
     if (!(options.body instanceof FormData)) {
       headers['Content-Type'] = headers['Content-Type'] || 'application/json';
@@ -195,7 +195,7 @@ export const AuthProvider = ({ children }) => {
       });
     };
 
-    if (typeof navigator !== 'undefined' && navigator.onLine === false && user) {
+    if (typeof navigator !== 'undefined' && navigator.onLine === false && userId) {
       const fallback = await offlineFallback();
       if (fallback) return fallback;
       throw new Error(apiUnreachableMessage());
@@ -229,7 +229,7 @@ export const AuthProvider = ({ children }) => {
       return response;
     } catch (error) {
       if (isNetworkError(error)) {
-        if (user) {
+        if (userId) {
           const fallback = await offlineFallback();
           if (fallback) return fallback;
         }
@@ -238,7 +238,7 @@ export const AuthProvider = ({ children }) => {
       console.error(`API Request Failed [${endpoint}]:`, error.message);
       throw error;
     }
-  }, [user, logout]);
+  }, [logout]);
 
   const updateUser = useCallback((patch) => {
     setUser((prev) => (prev ? { ...prev, ...patch } : prev));

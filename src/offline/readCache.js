@@ -23,7 +23,12 @@ export async function cacheRead(userId, endpoint, body) {
 export async function getCachedRead(userId, endpoint) {
   if (!userId) return null;
   try {
-    const entry = await idbGet(READS_STORE, cacheKey(userId, endpoint));
+    const entry = await Promise.race([
+      idbGet(READS_STORE, cacheKey(userId, endpoint)),
+      new Promise((resolve) => {
+        setTimeout(() => resolve(null), 1500);
+      }),
+    ]);
     if (!entry) return null;
     if (Date.now() - entry.cachedAt > MAX_AGE_MS) return null;
     return entry;

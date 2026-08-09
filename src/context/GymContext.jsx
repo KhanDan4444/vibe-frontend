@@ -121,6 +121,10 @@ export const GymProvider = ({ children }) => {
     }
   }, [branches, selectedBranchId, user?.gym_id, setSelectedBranchId]);
 
+  const loginSubscriptionRef = useRef(loginSubscription);
+  loginSubscriptionRef.current = loginSubscription;
+  const bootGenRef = useRef(0);
+
   const loadSubscription = useCallback(async () => {
     setSubscriptionLoading(true);
     try {
@@ -131,9 +135,9 @@ export const GymProvider = ({ children }) => {
         return data;
       }
       // Older backend without GET /gym/subscription — infer from dashboard instead.
-      if (res.status === 404 && loginSubscription) {
-        setSubscription(loginSubscription);
-        return loginSubscription;
+      if (res.status === 404 && loginSubscriptionRef.current) {
+        setSubscription(loginSubscriptionRef.current);
+        return loginSubscriptionRef.current;
       }
       if (res.status === 404) {
         return null;
@@ -142,7 +146,7 @@ export const GymProvider = ({ children }) => {
     } finally {
       setSubscriptionLoading(false);
     }
-  }, [apiFetch, loginSubscription]);
+  }, [apiFetch]);
 
   const fetchPlans = useCallback(async () => {
     const plansRes = await getPlans(apiFetch);
@@ -228,32 +232,43 @@ export const GymProvider = ({ children }) => {
       return;
     }
 
+    const bootGen = ++bootGenRef.current;
     let cancelled = false;
+
     (async () => {
+      setLoading(true);
+      setError(null);
       try {
         const sub = await loadSubscription();
-        if (cancelled) return;
+        if (cancelled || bootGenRef.current !== bootGen) return;
         if (sub?.accessDenied) {
-          setLoading(false);
           bootDoneRef.current = true;
           return;
         }
         await fetchCoreData({ includePlans: true });
-        if (!cancelled) bootDoneRef.current = true;
-      } catch (err) {
-        if (!cancelled) {
-          setError(err.message || 'Failed to load gym subscription.');
-          setLoading(false);
+        if (!cancelled && bootGenRef.current === bootGen) {
           bootDoneRef.current = true;
+        }
+      } catch (err) {
+        if (!cancelled && bootGenRef.current === bootGen) {
+          setError(err.message || 'Failed to load gym subscription.');
+          bootDoneRef.current = true;
+        }
+      } finally {
+        // Always clear boot loading for this generation (including cancel-after-subscription
+        // races that previously left skeletons stuck on iOS Safari).
+        if (!cancelled && bootGenRef.current === bootGen) {
+          setLoading(false);
         }
       }
     })();
+
     return () => {
       cancelled = true;
     };
     // Intentionally omit fetchCoreData — branch changes handled below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, loadSubscription]);
+  }, [user?.id, loadSubscription]);
 
   // Branch switch only needs dashboard metrics (plans are gym-wide).
   useEffect(() => {
