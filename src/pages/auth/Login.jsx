@@ -112,9 +112,9 @@ export default function Login() {
             </div>
           )}
 
-          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+          <form className="space-y-3" onSubmit={handleSubmit} noValidate>
             <div>
-              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-white/80">
+              <label htmlFor="login-email" className="sr-only">
                 {t('auth.emailOrUsername')}
               </label>
               <input
@@ -125,7 +125,7 @@ export default function Login() {
                 aria-invalid={Boolean(emailError)}
                 aria-describedby={emailError ? 'login-email-error' : undefined}
                 className={inputClass(inputBase, fieldErrors, 'email')}
-                placeholder={t('auth.emailOrUsernamePlaceholder')}
+                placeholder={t('auth.emailOrUsername')}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -135,7 +135,7 @@ export default function Login() {
               <FieldError id="login-email-error" message={emailError} className="text-sm text-rose-300" />
             </div>
             <div>
-              <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-white/80">
+              <label htmlFor="login-password" className="sr-only">
                 {t('auth.password')}
               </label>
               <div className="relative">
@@ -173,11 +173,11 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#0f766e] focus:ring-teal-700/40"
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-brand focus:ring-teal-400/40"
                 />
                 {t('auth.rememberMe')}
               </label>
-              <Link to="/forgot-password" className="text-sm font-semibold text-[#0f766e] hover:text-[#0d9488]">
+              <Link to="/forgot-password" className="text-sm font-semibold text-teal-300 hover:text-teal-200">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
@@ -185,7 +185,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl border-0 bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white shadow-none transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-700/45 disabled:opacity-50"
+              className="mt-1 flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-300/40 disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -207,7 +207,7 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-white/70">
             {t('auth.noAccount')}{' '}
-            <Link to="/register-gym" className="font-semibold text-[#0f766e] hover:text-[#0d9488]">
+            <Link to="/register-gym" className="font-semibold text-teal-300 hover:text-teal-200">
               {t('auth.registerGymLink')}
             </Link>
           </p>
