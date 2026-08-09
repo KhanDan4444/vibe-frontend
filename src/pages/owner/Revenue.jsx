@@ -13,6 +13,7 @@ import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
+import { PAYMENT_METHOD_COLORS } from '../../utils/reportChartData';
 import { parseApiResponse } from '../../utils/api';
 import { runInBackground } from '../../utils/runInBackground';
 import { mapPaymentFromApi } from '../../utils/apiMappers';
@@ -38,6 +39,10 @@ import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
+
+function methodShareColor(method) {
+  return PAYMENT_METHOD_COLORS[method] || PAYMENT_METHOD_COLORS.Other;
+}
 
 export default function Revenue() {
   const { t } = useTranslation();
@@ -414,10 +419,10 @@ export default function Revenue() {
             )}
           </div>
 
-          <div className="flex h-3 w-full overflow-hidden rounded-full bg-app-border-subtle">
-            {methodRows.map((row, index) => {
+          <div className="flex h-3.5 w-full gap-0.5 overflow-hidden rounded-full bg-app-border-subtle">
+            {methodRows.map((row) => {
               const selected = methodFilter === row.method;
-              const width = Math.max(row.percent, row.amount > 0 ? 1.5 : 0);
+              const color = methodShareColor(row.method);
               return (
                 <button
                   key={`share-${row.method}`}
@@ -426,16 +431,14 @@ export default function Revenue() {
                   aria-label={`${translatePaymentMethod(row.method)} ${row.percent}%`}
                   aria-pressed={selected}
                   onClick={() => toggleMethodFilter(row.method)}
-                  className={`h-full min-w-0 transition-[filter,opacity] ${
-                    selected
-                      ? 'bg-teal-700/80 dark:bg-teal-400/70'
-                      : index === 0
-                        ? 'bg-teal-700/55 dark:bg-teal-400/45'
-                        : index === 1
-                          ? 'bg-teal-700/35 dark:bg-teal-400/28'
-                          : 'bg-teal-700/20 dark:bg-teal-400/16'
-                  } ${methodFilter !== 'All' && !selected ? 'opacity-40' : ''} hover:brightness-110`}
-                  style={{ flexGrow: width, flexBasis: 0 }}
+                  className={`h-full min-w-0 transition-[filter,opacity,box-shadow] hover:brightness-110 ${
+                    selected ? 'ring-2 ring-inset ring-white/35 dark:ring-white/25' : ''
+                  } ${methodFilter !== 'All' && !selected ? 'opacity-55' : ''}`}
+                  style={{
+                    flexGrow: Math.max(row.percent, row.amount > 0 ? 1.5 : 0),
+                    flexBasis: 0,
+                    backgroundColor: color,
+                  }}
                 />
               );
             })}
@@ -444,6 +447,7 @@ export default function Revenue() {
           <ul className="space-y-0.5">
             {methodRows.map((row) => {
               const selected = methodFilter === row.method;
+              const color = methodShareColor(row.method);
               return (
                 <li key={row.method}>
                   <button
@@ -456,6 +460,11 @@ export default function Revenue() {
                         : 'hover:bg-app-surface'
                     }`}
                   >
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: color }}
+                      aria-hidden
+                    />
                     <PaymentMethodBadge
                       method={row.method}
                       quiet
