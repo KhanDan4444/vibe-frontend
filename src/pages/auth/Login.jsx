@@ -177,7 +177,7 @@ export default function Login() {
                 />
                 {t('auth.rememberMe')}
               </label>
-              <Link to="/forgot-password" className="text-sm font-semibold text-teal-300 hover:text-teal-200">
+              <Link to="/forgot-password" className="text-sm font-semibold text-[#2dd4bf] hover:text-[#5eead4]">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
@@ -185,7 +185,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-brand px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-teal-300/40 disabled:opacity-50"
+              className="mt-1 flex min-h-[44px] w-full cursor-pointer items-center justify-center rounded-md bg-[#2dd4bf] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#5eead4] focus:outline-none focus:ring-2 focus:ring-[#2dd4bf]/40 disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -207,7 +207,7 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-white/70">
             {t('auth.noAccount')}{' '}
-            <Link to="/register-gym" className="font-semibold text-teal-300 hover:text-teal-200">
+            <Link to="/register-gym" className="font-semibold text-[#2dd4bf] hover:text-[#5eead4]">
               {t('auth.registerGymLink')}
             </Link>
           </p>
