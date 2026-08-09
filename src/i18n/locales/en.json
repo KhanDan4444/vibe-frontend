@@ -233,6 +233,13 @@
       "renewed": "Renewal confirmed",
       "enrolled": "Enrollment confirmed"
     },
+    "previews": {
+      "dueSoon": "Reminds the member their plan is due soon",
+      "expiresToday": "Lets them know membership ends today",
+      "expired": "Notifies that the membership has expired",
+      "renewed": "Confirms a successful renewal",
+      "enrolled": "Confirms enrollment and welcomes them"
+    },
     "gymTypes": {
       "dueSoon": "License due soon (3 days)",
       "dueIn3Days": "License due in 3 days",
@@ -699,10 +706,15 @@
     "memberMessages": {
       "title": "Member SMS",
       "subtitle": "Automatic reminder texts sent to members (due soon, expiring today, expired).",
+      "statusLine": "{{count}} messages · {{filter}}",
+      "statusLineEmpty": "No messages in this view",
+      "messageHistory": "Message history",
       "empty": "No member SMS has been sent yet.",
       "loadError": "Failed to load SMS log.",
       "emptyTitle": "No SMS yet",
-      "emptyBody": "Member SMS history shows up after you send the first message."
+      "emptyBody": "Member SMS history shows up after the first automatic message is sent.",
+      "emptyFilteredTitle": "No messages for this type",
+      "emptyFilteredBody": "Try another message type, or switch back to All."
     },
     "adminGymMessages": {
       "title": "Platform SMS Log",

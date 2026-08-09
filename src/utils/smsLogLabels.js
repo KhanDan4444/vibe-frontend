@@ -8,6 +8,14 @@ const MEMBER_TYPE_KEYS = {
   member_enrolled: 'smsLog.types.enrolled',
 };
 
+const MEMBER_TYPE_PREVIEW_KEYS = {
+  member_due_soon: 'smsLog.previews.dueSoon',
+  member_expires_today: 'smsLog.previews.expiresToday',
+  member_expired: 'smsLog.previews.expired',
+  member_renewed: 'smsLog.previews.renewed',
+  member_enrolled: 'smsLog.previews.enrolled',
+};
+
 const GYM_LICENSE_TYPE_KEYS = {
   gym_license_due_soon: 'smsLog.gymTypes.dueSoon',
   gym_license_due_in_3_days: 'smsLog.gymTypes.dueIn3Days',
@@ -29,6 +37,11 @@ const ADMIN_SMS_TYPE_KEYS = {
 export function formatSmsMessageType(t, messageType) {
   const key = MEMBER_TYPE_KEYS[messageType];
   return key ? t(key) : messageType || '—';
+}
+
+export function formatSmsMessagePreview(t, messageType) {
+  const key = MEMBER_TYPE_PREVIEW_KEYS[messageType];
+  return key ? t(key) : '';
 }
 
 export function formatGymSmsMessageType(t, messageType) {

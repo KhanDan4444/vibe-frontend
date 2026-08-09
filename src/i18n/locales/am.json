@@ -887,6 +887,13 @@
       "renewed": "እድሳት ተረጋግጧል",
       "enrolled": "ምዝገባ ተረጋግጧል"
     },
+    "previews": {
+      "dueSoon": "ዕቅዳቸው በቅርብ እንደሚያልቅ ያሳውቃል",
+      "expiresToday": "አባልነት ዛሬ እንደሚያበቃ ያሳውቃል",
+      "expired": "አባልነት ጊዜው እንደአለፈ ያሳውቃል",
+      "renewed": "እድሳት መሳካቱን ያረጋግጣል",
+      "enrolled": "ምዝገባን ያረጋግጣል እና እንኳን ደህና መጡ ይላል"
+    },
     "gymTypes": {
       "dueSoon": "ፈቃድ በ3 ቀናት ውስጥ ያበቃል",
       "dueIn3Days": "ፈቃድ በ3 ቀናት ውስጥ ያበቃል",
@@ -946,10 +953,15 @@
     "memberMessages": {
       "title": "የአባላት SMS",
       "subtitle": "ለአባላት የተላኩ ራስ-ሰር ማስታወሻ መልእክቶች (በቅርብ ጊዜ የሚያልቁ፣ ዛሬ የሚያልቁ እና ጊዜያቸው ያለፈባቸው)።",
+      "statusLine": "{{count}} መልእክቶች · {{filter}}",
+      "statusLineEmpty": "በዚህ እይታ መልእክት የለም",
+      "messageHistory": "የመልእክት ታሪክ",
       "empty": "ለአባላት የተላከ ምንም SMS የለም።",
       "loadError": "የSMS መዝገብ መጫን አልተሳካም።",
       "emptyTitle": "እስካሁን SMS የለም",
-      "emptyBody": "የመጀመሪያውን መልእክት ከላኩ በኋላ የአባል SMS ታሪክ ይታያል።"
+      "emptyBody": "የመጀመሪያው ራስ-ሰር መልእክት ከተላከ በኋላ የአባል SMS ታሪክ ይታያል።",
+      "emptyFilteredTitle": "ለዚህ ዓይነት መልእክት የለም",
+      "emptyFilteredBody": "ሌላ ዓይነት ይሞክሩ ወይም ወደ ሁሉም ይመለሱ።"
     },
     "adminGymMessages": {
       "title": "የመድረክ SMS መዝገብ",

@@ -233,6 +233,13 @@
       "renewed": "Haaromsa mirkanaa'e",
       "enrolled": "Galmeessi mirkanaa'e"
     },
+    "previews": {
+      "dueSoon": "Miseensa karoorri isaa akka dhihaatuuf yaadachiisa",
+      "expiresToday": "Miseensummaan har'a akka dhumu hima",
+      "expired": "Miseensummaan akka darbe hima",
+      "renewed": "Haaromsa milkaa'e mirkaneessa",
+      "enrolled": "Galmeessuu mirkaneessaa fi baga nagaan dhufte jedha"
+    },
     "gymTypes": {
       "dueSoon": "Hayyamni dhiyeenyatti dhumata (guyyaa 3)",
       "dueIn3Days": "Hayyamni guyyaa 3 keessatti dhumata",
@@ -699,10 +706,15 @@
     "memberMessages": {
       "title": "SMS Miseensaa",
       "subtitle": "Ergaa SMS ofumaan miseensotaaf ergaman (kan yeroon ga'e, har'a kan dhumu, kan darbe).",
+      "statusLine": "Ergaalee {{count}} · {{filter}}",
+      "statusLineEmpty": "Ilaalcha kana keessatti ergaan hin jiru",
+      "messageHistory": "Seenaa ergaa",
       "empty": "SMSn miseensaa kan ergame hin jiru.",
       "loadError": "Galmee SMS ol fe'uu hin dandeenye.",
       "emptyTitle": "SMSn hin jiru",
-      "emptyBody": "Seenaan SMS miseensaa ergaa jalqabaa ergteen booda mul'ata."
+      "emptyBody": "Seenaan SMS miseensaa ergaa ofumaan jalqabaa ergames booda mul'ata.",
+      "emptyFilteredTitle": "Gosa kanaaf ergaan hin jiru",
+      "emptyFilteredBody": "Gosa biraa yaali, ykn gara Hundaatti deebi'i."
     },
     "adminGymMessages": {
       "title": "Galmee SMS Plaatfoormii",
