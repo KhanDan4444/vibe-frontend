@@ -73,7 +73,7 @@ export default function MetricCard({
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
   const isHero = variant === 'emphasis';
   const isDense = variant === 'dense';
-  const showIcon = Boolean(Icon) && !badge && !isDense;
+  const showIcon = Boolean(Icon) && !badge;
 
   return (
     <Card
@@ -105,7 +105,10 @@ export default function MetricCard({
               </span>
             ) : null}
             {showIcon ? (
-              <Icon className={`h-4 w-4 shrink-0 ${iconClass}`} aria-hidden />
+              <Icon
+                className={`shrink-0 ${isDense ? 'h-3.5 w-3.5' : 'h-4 w-4'} ${iconClass}`}
+                aria-hidden
+              />
             ) : null}
           </div>
         )}
