@@ -182,7 +182,11 @@ export default function Login() {
               </Link>
             </div>
 
-            <button type="submit" disabled={loading} className="auth-cta-btn mt-1">
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-1 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-700/40 disabled:opacity-50"
+            >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
