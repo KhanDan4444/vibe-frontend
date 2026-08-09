@@ -659,6 +659,52 @@
     background-color: rgb(245 158 11 / 0.08);
   }
 
+  .admin-row-expired {
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-left-color: rgb(251 113 133 / 0.85);
+  }
+
+  html:not(.dark) .admin-row-expired {
+    background-color: rgb(255 241 242 / 0.55);
+  }
+
+  html:not(.dark) .admin-row-expired:hover {
+    background-color: rgb(255 228 230 / 0.7);
+  }
+
+  html.dark .admin-row-expired {
+    border-left-color: rgb(244 63 94 / 0.5);
+    background-color: rgb(244 63 94 / 0.05);
+  }
+
+  html.dark .admin-row-expired:hover {
+    background-color: rgb(244 63 94 / 0.09);
+  }
+
+  .admin-row-due-soon {
+    border-left-width: 3px;
+    border-left-style: solid;
+    border-left-color: rgb(56 189 248 / 0.85);
+  }
+
+  html:not(.dark) .admin-row-due-soon {
+    background-color: rgb(240 249 255 / 0.55);
+  }
+
+  html:not(.dark) .admin-row-due-soon:hover {
+    background-color: rgb(224 242 254 / 0.7);
+  }
+
+  html.dark .admin-row-due-soon {
+    border-left-color: rgb(14 165 233 / 0.5);
+    background-color: rgb(14 165 233 / 0.05);
+  }
+
+  html.dark .admin-row-due-soon:hover {
+    background-color: rgb(14 165 233 / 0.09);
+  }
+
   .admin-alert-amber {
     @apply rounded-xl border p-4 shadow-sm;
   }

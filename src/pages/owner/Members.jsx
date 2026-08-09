@@ -5,7 +5,7 @@ import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Search, UserPlus, Trash2, Edit, AlertCircle, RefreshCw, DollarSign, ArrowLeftRight } from 'lucide-react';
+import { Search, UserPlus, AlertCircle } from 'lucide-react';
 import UnpaidBadge from '../../components/UnpaidBadge';
 import MemberPhoto from '../../components/MemberPhoto';
 import EmptyState from '../../components/EmptyState';
@@ -13,20 +13,21 @@ import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { cardSurface, selectSurface, tableRowHover, iconActionIdle, iconActionDanger, renewActionBtn, collectActionBtn } from '../../utils/surfaceClasses';
+import { cardSurface, selectSurface, tableRowHover } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
 import ChangePlanModal from '../../components/ChangePlanModal';
 import PaymentModal from '../../components/PaymentModal';
 import StatusBadge from '../../components/StatusBadge';
+import MemberListRowActions, { memberAttentionRowClass } from '../../components/MemberListRowActions';
 import { FilterChip, FilterChipBar } from '../../components/FilterChip';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import TransferMemberModal from '../../components/TransferMemberModal';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import { DISPLAY_STATUS } from '../../utils/memberStatus';
-import { canRenewMember, canChangePlan } from '../../utils/memberRenew';
+import { canRenewMember } from '../../utils/memberRenew';
 import { parseApiResponse, formatApiError } from '../../utils/api';
 import { mutationErrorState } from '../../utils/validation';
 import { mapMemberFromApi } from '../../utils/apiMappers';
@@ -567,9 +568,7 @@ export default function Members() {
                     openMemberRow(member);
                   }
                 }}
-                className={`${cardSurface} p-4 active:bg-app-surface/60 ${
-                  member.isUnpaid ? 'admin-row-unpaid' : ''
-                }`}
+                className={`${cardSurface} p-4 active:bg-app-surface/60 ${memberAttentionRowClass(member)}`}
               >
                 <div className="flex items-center gap-3">
                   <MemberPhoto
@@ -599,67 +598,28 @@ export default function Members() {
                     </p>
                   </div>
                 </div>
-                {!readOnly && (
-                  <div className="admin-row-actions mt-2" onClick={(e) => e.stopPropagation()}>
-                    {canRenewMember(member) && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setError('');
-                          openRenewModal(member);
-                        }}
-                        className={renewActionBtn}
-                        title={t('actions.renew')}
-                      >
-                        <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
-                      </button>
-                    )}
-                    {member.isUnpaid && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setError('');
-                          setPaymentState({ isOpen: true, member, error: '' });
-                        }}
-                        className={collectActionBtn}
-                        title={t('actions.collectPayment')}
-                      >
-                        <DollarSign className="h-3 w-3" /> {t('actions.collect')}
-                      </button>
-                    )}
-                    {canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => openChangePlanModal(member)}
-                        className={iconActionIdle}
-                        title={t('actions.changePlan')}
-                      >
-                        <ArrowLeftRight className="h-4 w-4" />
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setError('');
-                        setModalState({ isOpen: true, member, error: '' });
-                      }}
-                      className={iconActionIdle}
-                      title={t('common.edit')}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    {canDeleteMembers && (
-                      <button
-                        type="button"
-                        onClick={() => setMemberToDelete(member)}
-                        className={iconActionDanger}
-                        title={t('common.delete')}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    )}
-                  </div>
-                )}
+                <div className="mt-2">
+                  <MemberListRowActions
+                    member={member}
+                    plans={plans}
+                    readOnly={readOnly}
+                    canDeleteMembers={canDeleteMembers}
+                    onRenew={(m) => {
+                      setError('');
+                      openRenewModal(m);
+                    }}
+                    onCollect={(m) => {
+                      setError('');
+                      setPaymentState({ isOpen: true, member: m, error: '' });
+                    }}
+                    onChangePlan={openChangePlanModal}
+                    onEdit={(m) => {
+                      setError('');
+                      setModalState({ isOpen: true, member: m, error: '' });
+                    }}
+                    onDelete={setMemberToDelete}
+                  />
+                </div>
               </div>
             );
           })
@@ -707,9 +667,7 @@ export default function Members() {
                     <tr
                       key={member.id}
                       onClick={() => openMemberRow(member)}
-                      className={`cursor-pointer transition-colors ${
-                        member.isUnpaid ? 'admin-row-unpaid' : tableRowHover
-                      }`}
+                      className={`cursor-pointer transition-colors ${memberAttentionRowClass(member, tableRowHover)}`}
                     >
                       <td>
                         <div className="flex items-center gap-3 min-w-0">
@@ -747,73 +705,26 @@ export default function Members() {
                         </div>
                       </td>
                       <td className="owner-members-col-actions">
-                        <div className="admin-row-actions">
-                        {!readOnly && canRenewMember(member) && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setError('');
-                              openRenewModal(member);
-                            }}
-                            className={renewActionBtn}
-                            title={t('actions.renew')}
-                          >
-                            <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
-                          </button>
-                        )}
-                        {!readOnly && member.isUnpaid && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setError('');
-                              setPaymentState({ isOpen: true, member, error: '' });
-                            }}
-                            className={collectActionBtn}
-                            title={t('actions.collectPayment')}
-                          >
-                            <DollarSign className="h-3 w-3" /> {t('actions.collect')}
-                          </button>
-                        )}
-                        {!readOnly && canChangePlan(member) && plans.filter((p) => p.id !== member.planId).length > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openChangePlanModal(member);
-                            }}
-                            className={iconActionIdle}
-                            title={t('actions.changePlan')}
-                          >
-                            <ArrowLeftRight className="h-4 w-4" />
-                          </button>
-                        )}
-                        {!readOnly && (
-                          <>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setError('');
-                                setModalState({ isOpen: true, member, error: '' });
-                              }}
-                              className={iconActionIdle}
-                              title={t('common.edit')}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            {canDeleteMembers && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setMemberToDelete(member);
-                              }}
-                              className={iconActionDanger}
-                              title={t('common.delete')}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                            )}
-                          </>
-                        )}
-                        </div>
+                        <MemberListRowActions
+                          member={member}
+                          plans={plans}
+                          readOnly={readOnly}
+                          canDeleteMembers={canDeleteMembers}
+                          onRenew={(m) => {
+                            setError('');
+                            openRenewModal(m);
+                          }}
+                          onCollect={(m) => {
+                            setError('');
+                            setPaymentState({ isOpen: true, member: m, error: '' });
+                          }}
+                          onChangePlan={openChangePlanModal}
+                          onEdit={(m) => {
+                            setError('');
+                            setModalState({ isOpen: true, member: m, error: '' });
+                          }}
+                          onDelete={setMemberToDelete}
+                        />
                       </td>
                     </tr>
                   );
