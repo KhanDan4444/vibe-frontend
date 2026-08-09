@@ -1200,6 +1200,7 @@
     "branchNote": " · Damee: {{name}}",
     "adminRevenueMeta": "{{date}} irratti oomishame · {{period}}",
     "columns": {
+      "no": "Lak.",
       "member": "Miseensa",
       "contact": "Qunnamtii",
       "branch": "Damee",

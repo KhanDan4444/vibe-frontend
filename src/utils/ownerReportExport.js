@@ -44,6 +44,13 @@ function showBranchInExport(meta = {}) {
   return Boolean(meta.showBranchColumn);
 }
 
+function withPdfRowNumbers(columns, rows) {
+  return {
+    head: [[exportColumn('no'), ...columns]],
+    body: rows.map((row, index) => [String(index + 1), ...row]),
+  };
+}
+
 function memberExportRow(m, meta = {}) {
   const showBranch = showBranchInExport(meta);
   const row = [m.name || '—', m.phone || '—'];
@@ -75,13 +82,17 @@ function exportHeaderLines(meta, extra = []) {
 }
 
 const MEMBER_PDF_COLUMN_STYLES = {
-  1: { cellWidth: 32 },
+  0: { cellWidth: 12, halign: 'center' },
+  2: { cellWidth: 32 },
   5: { halign: 'right', cellWidth: 24 },
   6: { halign: 'right', cellWidth: 24 },
+  7: { halign: 'right', cellWidth: 24 },
 };
 
 const REVENUE_PDF_COLUMN_STYLES = {
-  3: { halign: 'right', cellWidth: 28 },
+  0: { cellWidth: 12, halign: 'center' },
+  4: { halign: 'right', cellWidth: 28 },
+  5: { halign: 'right', cellWidth: 28 },
 };
 
 export function membersToCsv(members, meta = {}) {
@@ -112,8 +123,10 @@ export async function downloadMembersPdf(members, meta = {}) {
 
   pdfTable(doc, {
     startY,
-    head: [memberExportColumns(meta)],
-    body: sorted.map((m) => memberExportRow(m, meta)),
+    ...withPdfRowNumbers(
+      memberExportColumns(meta),
+      sorted.map((m) => memberExportRow(m, meta)),
+    ),
     styles: { fontSize: 9, cellPadding: 2.5 },
     headStyles: { fillColor: [79, 70, 229] },
     alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -152,8 +165,10 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
 
   pdfTable(doc, {
     startY: startY + 3,
-    head: [revenueExportColumns(meta)],
-    body: sorted.map((p) => revenueExportRow(p, meta)),
+    ...withPdfRowNumbers(
+      revenueExportColumns(meta),
+      sorted.map((p) => revenueExportRow(p, meta)),
+    ),
     styles: { fontSize: 9, cellPadding: 2.5 },
     headStyles: { fillColor: [16, 185, 129] },
     alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -221,8 +236,10 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
 
   pdfTable(doc, {
     startY: startY + 4,
-    head: [memberExportColumns(meta)],
-    body: sortedMembers.map((m) => memberExportRow(m, meta)),
+    ...withPdfRowNumbers(
+      memberExportColumns(meta),
+      sortedMembers.map((m) => memberExportRow(m, meta)),
+    ),
     styles: { fontSize: 8, cellPadding: 2 },
     headStyles: { fillColor: [79, 70, 229] },
     alternateRowStyles: { fillColor: [248, 250, 252] },
@@ -247,8 +264,10 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
 
   pdfTable(doc, {
     startY: y + 3,
-    head: [revenueExportColumns(meta)],
-    body: sortedPayments.map((p) => revenueExportRow(p, meta)),
+    ...withPdfRowNumbers(
+      revenueExportColumns(meta),
+      sortedPayments.map((p) => revenueExportRow(p, meta)),
+    ),
     styles: { fontSize: 9, cellPadding: 2.5 },
     headStyles: { fillColor: [16, 185, 129] },
     alternateRowStyles: { fillColor: [248, 250, 252] },

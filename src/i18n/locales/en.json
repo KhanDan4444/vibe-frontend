@@ -1200,6 +1200,7 @@
     "branchNote": " · Branch: {{name}}",
     "adminRevenueMeta": "Generated {{date}} · {{period}}",
     "columns": {
+      "no": "No",
       "member": "Member",
       "contact": "Contact",
       "branch": "Branch",
