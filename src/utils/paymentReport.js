@@ -3,7 +3,7 @@ import { parseLocalDate, formatDisplayDate } from './date';
 import i18n from '../i18n/index.js';
 import { exportColumn, translatePaymentMethod } from '../i18n/helpers';
 
-/** @typedef {'today' | 'this_week' | 'this_month' | 'last_month' | 'last_30_days' | 'all_time' | 'custom'} PeriodPreset */
+/** @typedef {'today' | 'this_week' | 'this_month' | 'last_month' | 'last_30_days' | 'this_year' | 'custom'} PeriodPreset */
 
 export const PERIOD_PRESETS = [
   { id: 'today', labelKey: 'period.today' },
@@ -11,7 +11,7 @@ export const PERIOD_PRESETS = [
   { id: 'this_month', labelKey: 'period.thisMonth' },
   { id: 'last_month', labelKey: 'period.lastMonth' },
   { id: 'last_30_days', labelKey: 'period.last30Days' },
-  { id: 'all_time', labelKey: 'period.allTime' },
+  { id: 'this_year', labelKey: 'period.thisYear' },
   { id: 'custom', labelKey: 'period.customRange' },
 ];
 
@@ -41,10 +41,6 @@ function parsePaymentDate(dateStr) {
 export function resolvePeriodRange(preset, customStart, customEnd) {
   const now = new Date();
   const today = startOfDay(now);
-
-  if (preset === 'all_time') {
-    return { start: null, end: null };
-  }
 
   if (preset === 'custom') {
     const start = customStart ? parseLocalDate(customStart) : null;
@@ -77,6 +73,13 @@ export function resolvePeriodRange(preset, customStart, customEnd) {
     const start = new Date(today);
     start.setDate(start.getDate() - 29);
     return { start, end: today };
+  }
+
+  if (preset === 'this_year') {
+    return {
+      start: new Date(today.getFullYear(), 0, 1),
+      end: today,
+    };
   }
 
   return { start: null, end: null };
@@ -162,6 +165,14 @@ export function periodTrendPercent(allPayments, preset, customStart, customEnd) 
     prevEnd.setDate(prevEnd.getDate() - 30);
     const prevStart = new Date(prevEnd);
     prevStart.setDate(prevStart.getDate() - 29);
+    previousTotal = allPayments.reduce((s, p) => {
+      const d = parsePaymentDate(p.date);
+      if (!d || d < prevStart || d > prevEnd) return s;
+      return s + p.amount;
+    }, 0);
+  } else if (preset === 'this_year') {
+    const prevStart = new Date(today.getFullYear() - 1, 0, 1);
+    const prevEnd = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
     previousTotal = allPayments.reduce((s, p) => {
       const d = parsePaymentDate(p.date);
       if (!d || d < prevStart || d > prevEnd) return s;
