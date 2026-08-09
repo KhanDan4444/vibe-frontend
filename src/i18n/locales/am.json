@@ -405,9 +405,12 @@
     "monthsShort": "{{count}} ወር",
     "noPayments": "ለዚህ አባል የተመዘገበ ክፍያ የለም።",
     "olderPayments": "+{{count}} የቆዩ · በጠቅላላ {{amount}}",
+    "showMorePayments": "{{count}} ተጨማሪ አሳይ",
+    "showLessPayments": "አሳንስ",
     "paid": "ተከፍሏል",
     "paidThrough": "እስከ",
     "paymentCount": "({{count}} ክፍያዎች)",
+    "payments": "ክፍያዎች",
     "paymentHistory": "የክፍያ ታሪክ",
     "paymentsLoadError": "የክፍያ ታሪክን መጫን አልተቻለም።",
     "planChangesHint": "የዕቅድ ለውጦችን ወይም ተጨማሪ ክፍያዎችን ያካትታል — የዕቅድ ዋጋ {{price}} ነው",
@@ -418,7 +421,8 @@
     "thisTerm": "ይህ ጊዜ፦ {{amount}}",
     "thisTermPaid": "በዚህ ጊዜ የተከፈለ",
     "unpaid": "አልተከፈለም",
-    "transferBranch": "ቅርንጫፍ አስተላልፍ"
+    "transferBranch": "ቅርንጫፍ አስተላልፍ",
+    "deleteMember": "ሰርዝ"
   },
   "export": {
     "branchLine": "ቅርንጫፍ፦ {{name}}",

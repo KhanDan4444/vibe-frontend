@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useGym } from '../../context/GymContext';
 import { useAuth } from '../../context/AuthContext';
 import { isGymOwner } from '../../utils/roles';
-import { Plus, Trash2, Edit, HelpCircle, Users } from 'lucide-react';
+import { Trash2, Edit, HelpCircle, Users } from 'lucide-react';
 import PlanModal from '../../components/PlanModal';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
@@ -177,7 +177,7 @@ export default function Plans() {
         actions={
           canManagePlans ? (
             <Button onClick={() => { setError(''); setIsAddModalOpen(true); }}>
-              <Plus className="h-4 w-4" /> {t('pages.plans.add')}
+              {t('pages.plans.add')}
             </Button>
           ) : null
         }

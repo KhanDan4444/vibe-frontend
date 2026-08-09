@@ -199,7 +199,7 @@ export function SlidePanelFooter({ alerts = [], children }) {
 
 /** Horizontal wrap / grid for secondary panel actions. */
 export function SlidePanelActionGrid({ children, columns = 2 }) {
-  const cols = columns === 3 ? 'grid-cols-3' : 'grid-cols-2';
+  const cols = columns === 1 ? 'grid-cols-1' : columns === 3 ? 'grid-cols-3' : 'grid-cols-2';
   return <div className={`grid ${cols} gap-2`}>{children}</div>;
 }
 

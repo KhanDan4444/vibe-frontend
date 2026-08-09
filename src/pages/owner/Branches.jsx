@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
-import { MapPin, Plus, Edit, Star, Ban, CheckCircle, Search } from 'lucide-react';
+import { MapPin, Edit, Star, Ban, CheckCircle, Search } from 'lucide-react';
 import { parseApiResponse, apiErrorFromResponse } from '../../utils/api';
 import { listBranches, createBranch, updateBranch } from '../../services/branchService';
 import ResponsiveModal from '../../components/ResponsiveModal';
@@ -389,7 +389,6 @@ export default function Branches() {
                 setModal({ open: true, branch: null });
               }}
             >
-              <Plus className="h-4 w-4" />
               {t('pages.branches.add')}
             </Button>
           ) : null

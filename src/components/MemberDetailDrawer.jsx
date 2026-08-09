@@ -1,5 +1,5 @@
 // src/components/MemberDetailDrawer.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -43,6 +43,8 @@ import {
   SlidePanelActionGrid,
 } from './SlidePanel';
 
+const PAYMENTS_PREVIEW = 3;
+
 export default function MemberDetailDrawer({
   member,
   plans = [],
@@ -71,6 +73,7 @@ export default function MemberDetailDrawer({
   const [memberPayments, setMemberPayments] = useState([]);
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [paymentsError, setPaymentsError] = useState('');
+  const [showAllPayments, setShowAllPayments] = useState(false);
 
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
@@ -97,10 +100,21 @@ export default function MemberDetailDrawer({
     loadPayments();
   }, [loadPayments, paymentsRefreshKey, member?.startDate, member?.isUnpaid]);
 
+  useEffect(() => {
+    setShowAllPayments(false);
+  }, [member?.id]);
+
+  const matchingPlan = useMemo(
+    () => (member ? plans.find((p) => p.id === member.planId) : null),
+    [plans, member],
+  );
+  const otherPlans = useMemo(
+    () => (member ? plans.filter((p) => p.id !== member.planId) : []),
+    [plans, member],
+  );
+
   if (!member) return null;
 
-  const matchingPlan = plans.find((p) => p.id === member.planId);
-  const otherPlans = plans.filter((p) => p.id !== member.planId);
   const termStart = member.startDate && member.startDate !== '—' ? member.startDate : null;
   const termPayments = termStart
     ? memberPayments.filter((p) => p.date && p.date >= termStart)
@@ -110,9 +124,18 @@ export default function MemberDetailDrawer({
   const paidForCurrentTerm = !member.isUnpaid;
   const canCollectMissedPayment = member.isUnpaid;
   const termPaymentCount = termPayments.length;
-  const recentPayments = memberPayments.slice(0, 3);
-  const olderPaymentCount = Math.max(memberPayments.length - recentPayments.length, 0);
+  const visiblePayments = showAllPayments
+    ? memberPayments
+    : memberPayments.slice(0, PAYMENTS_PREVIEW);
+  const hiddenPaymentCount = Math.max(memberPayments.length - PAYMENTS_PREVIEW, 0);
   const currency = (amount) => formatMoney(amount);
+
+  const canShowChangePlan = !readOnly && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
+  const canShowTransfer = showTransfer && onTransfer;
+  const secondaryActionCount = Number(canShowChangePlan) + Number(canShowTransfer);
+  const hasPrimaryLifecycle =
+    !readOnly &&
+    ((canCollectMissedPayment && onRecordPayment) || (canRenewMember(member) && onRenew));
 
   const handleEditSubmit = async (data) => {
     setSaving(true);
@@ -179,34 +202,22 @@ export default function MemberDetailDrawer({
                   </SlidePanelActionButton>
                 ) : null}
 
-                {((canChangePlan(member) && onChangePlan && otherPlans.length > 0) ||
-                  (showTransfer && onTransfer)) && (
-                  <SlidePanelActionGrid
-                    columns={
-                      canChangePlan(member) && onChangePlan && otherPlans.length > 0 && showTransfer && onTransfer
-                        ? 2
-                        : 2
-                    }
-                  >
-                    {canChangePlan(member) && onChangePlan && otherPlans.length > 0 && (
+                {secondaryActionCount > 0 && (
+                  <SlidePanelActionGrid columns={secondaryActionCount === 1 ? 1 : 2}>
+                    {canShowChangePlan && (
                       <SlidePanelActionButton
                         variant="tile"
                         icon={ArrowLeftRight}
-                        className={!(showTransfer && onTransfer) ? 'col-span-2' : ''}
+                        className={secondaryActionCount === 1 ? 'col-span-1' : ''}
                         onClick={() => onChangePlan(member)}
                       >
                         {t('actions.changePlan')}
                       </SlidePanelActionButton>
                     )}
-                    {showTransfer && onTransfer && (
+                    {canShowTransfer && (
                       <SlidePanelActionButton
                         variant="tile"
                         icon={ArrowRightLeft}
-                        className={
-                          !(canChangePlan(member) && onChangePlan && otherPlans.length > 0)
-                            ? 'col-span-2'
-                            : ''
-                        }
                         onClick={() => onTransfer(member)}
                       >
                         {t('drawer.transferBranch')}
@@ -216,7 +227,7 @@ export default function MemberDetailDrawer({
                 )}
               </div>
             )}
-            {readOnly && showTransfer && onTransfer && (
+            {readOnly && canShowTransfer && (
               <SlidePanelActionButton
                 variant="tile"
                 icon={ArrowRightLeft}
@@ -227,7 +238,7 @@ export default function MemberDetailDrawer({
               </SlidePanelActionButton>
             )}
             {!readOnly && (
-              <div className="flex items-stretch gap-2">
+              <div className={`flex items-stretch gap-2 ${hasPrimaryLifecycle || secondaryActionCount > 0 ? 'pt-0.5' : ''}`}>
                 <SlidePanelActionButton
                   variant="secondary"
                   icon={Pencil}
@@ -241,12 +252,13 @@ export default function MemberDetailDrawer({
                 </SlidePanelActionButton>
                 {canDelete && (
                   <SlidePanelActionButton
-                    variant="dangerIcon"
+                    variant="danger"
                     icon={Trash2}
+                    className="shrink-0"
                     onClick={() => setIsDeleteOpen(true)}
-                    title={t('common.delete')}
-                    aria-label={t('common.delete')}
-                  />
+                  >
+                    {t('drawer.deleteMember')}
+                  </SlidePanelActionButton>
                 )}
               </div>
             )}
@@ -291,7 +303,7 @@ export default function MemberDetailDrawer({
                 icon={Dumbbell}
                 label={t('table.plan')}
                 value={matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
-                valueClassName="text-sm font-bold text-teal-700"
+                valueClassName="text-sm font-bold text-teal-700 dark:text-teal-300"
               />
               <SlidePanelRow
                 icon={Calendar}
@@ -308,7 +320,7 @@ export default function MemberDetailDrawer({
             </SlidePanelCard>
           </SlidePanelSection>
 
-          <SlidePanelSection title={t('drawer.paymentHistory')}>
+          <SlidePanelSection title={t('drawer.payments')}>
             {paymentsError ? (
               <div className="py-6 text-center">
                 <p className="mb-2 text-sm text-rose-600">{paymentsError}</p>
@@ -326,7 +338,7 @@ export default function MemberDetailDrawer({
             ) : paymentsLoading ? (
               <p className="py-8 text-center text-sm text-app-muted">{t('drawer.loadingPayments')}</p>
             ) : memberPayments.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <SlidePanelCard>
                   <SlidePanelRow
                     icon={CircleDollarSign}
@@ -360,11 +372,8 @@ export default function MemberDetailDrawer({
                 </SlidePanelCard>
 
                 <div>
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-app-muted">
-                    {t('drawer.recentPayments')}
-                  </p>
                   <SlidePanelList>
-                    {recentPayments.map((p) => {
+                    {visiblePayments.map((p) => {
                       const sourceLabel = paymentSourceLabel(p.source);
                       return (
                         <SlidePanelListItem
@@ -383,11 +392,22 @@ export default function MemberDetailDrawer({
                       );
                     })}
                   </SlidePanelList>
-                  {olderPaymentCount > 0 && (
-                    <p className="mt-2 text-right text-xs text-app-muted">
-                      {t('drawer.olderPayments', { count: olderPaymentCount, amount: currency(totalPaid) })}
-                    </p>
-                  )}
+                  {hiddenPaymentCount > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowAllPayments((open) => !open)}
+                      className="mt-2 w-full text-center text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
+                    >
+                      {showAllPayments
+                        ? t('drawer.showLessPayments')
+                        : t('drawer.showMorePayments', { count: hiddenPaymentCount })}
+                      {!showAllPayments ? (
+                        <span className="ml-1 font-normal text-app-muted">
+                          · {currency(totalPaid)}
+                        </span>
+                      ) : null}
+                    </button>
+                  ) : null}
                 </div>
               </div>
             ) : (
