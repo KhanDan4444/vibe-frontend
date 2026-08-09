@@ -411,6 +411,8 @@
     "dateAsc": "Date: oldest first"
   },
   "period": {
+    "today": "Today",
+    "thisWeek": "This week",
     "thisMonth": "This month",
     "lastMonth": "Last month",
     "last30Days": "Last 30 days",

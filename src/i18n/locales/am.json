@@ -1137,7 +1137,9 @@
     "last30Days": "የአለፉት 30 ቀናት",
     "lastMonth": "ያለፈው ወር",
     "reportPeriod": "የሪፖርት ጊዜ",
-    "thisMonth": "ይህ ወር"
+    "thisMonth": "ይህ ወር",
+    "thisWeek": "ይህ ሳምንት",
+    "today": "ዛሬ"
   },
   "profile": {
     "account": "መለያ",

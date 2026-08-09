@@ -3,9 +3,11 @@ import { parseLocalDate, formatDisplayDate } from './date';
 import i18n from '../i18n/index.js';
 import { exportColumn, translatePaymentMethod } from '../i18n/helpers';
 
-/** @typedef {'this_month' | 'last_month' | 'last_30_days' | 'all_time' | 'custom'} PeriodPreset */
+/** @typedef {'today' | 'this_week' | 'this_month' | 'last_month' | 'last_30_days' | 'all_time' | 'custom'} PeriodPreset */
 
 export const PERIOD_PRESETS = [
+  { id: 'today', labelKey: 'period.today' },
+  { id: 'this_week', labelKey: 'period.thisWeek' },
   { id: 'this_month', labelKey: 'period.thisMonth' },
   { id: 'last_month', labelKey: 'period.lastMonth' },
   { id: 'last_30_days', labelKey: 'period.last30Days' },
@@ -17,6 +19,15 @@ function startOfDay(d) {
   const copy = new Date(d);
   copy.setHours(0, 0, 0, 0);
   return copy;
+}
+
+/** Monday-start week containing `day` (local). */
+function startOfWeekMonday(day) {
+  const start = new Date(day);
+  const weekday = start.getDay(); // 0 Sun … 6 Sat
+  const offset = weekday === 0 ? -6 : 1 - weekday;
+  start.setDate(start.getDate() + offset);
+  return startOfDay(start);
 }
 
 function parsePaymentDate(dateStr) {
@@ -39,6 +50,14 @@ export function resolvePeriodRange(preset, customStart, customEnd) {
     const start = customStart ? parseLocalDate(customStart) : null;
     const end = customEnd ? parseLocalDate(customEnd) : null;
     return { start, end };
+  }
+
+  if (preset === 'today') {
+    return { start: today, end: today };
+  }
+
+  if (preset === 'this_week') {
+    return { start: startOfWeekMonday(today), end: today };
   }
 
   if (preset === 'this_month') {
@@ -110,6 +129,24 @@ export function periodTrendPercent(allPayments, preset, customStart, customEnd) 
     previousTotal = allPayments.reduce((s, p) => {
       const d = parsePaymentDate(p.date);
       if (!d || d < lastStart || d > lastEnd) return s;
+      return s + p.amount;
+    }, 0);
+  } else if (preset === 'today') {
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    previousTotal = allPayments.reduce((s, p) => {
+      const d = parsePaymentDate(p.date);
+      if (!d || d < yesterday || d > yesterday) return s;
+      return s + p.amount;
+    }, 0);
+  } else if (preset === 'this_week') {
+    const weekStart = startOfWeekMonday(today);
+    const prevEnd = new Date(weekStart);
+    prevEnd.setDate(prevEnd.getDate() - 1);
+    const prevStart = startOfWeekMonday(prevEnd);
+    previousTotal = allPayments.reduce((s, p) => {
+      const d = parsePaymentDate(p.date);
+      if (!d || d < prevStart || d > prevEnd) return s;
       return s + p.amount;
     }, 0);
   } else if (preset === 'last_month') {

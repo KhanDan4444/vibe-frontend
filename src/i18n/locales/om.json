@@ -411,6 +411,8 @@
     "dateAsc": "Guyyaa: isa moofaa dura"
   },
   "period": {
+    "today": "Har'a",
+    "thisWeek": "Torbee kana",
     "thisMonth": "Ji'a kana",
     "lastMonth": "Ji'a darbe",
     "last30Days": "Guyyoota 30 darban",
