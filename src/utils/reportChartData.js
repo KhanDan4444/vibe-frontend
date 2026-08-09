@@ -7,9 +7,9 @@ import { formatDisplayDate } from './date';
 
 /** Distinct slice colors for payment method donut charts. */
 export const PAYMENT_METHOD_COLORS = {
-  Card: '#0284c7', // blue
+  Card: '#38bdf8', // sky
   'Bank Transfer': '#f59e0b', // amber
-  Cash: '#0d9488', // teal
+  Cash: '#14b8a6', // teal
   Other: '#94a3b8', // slate
 };
 
@@ -21,13 +21,13 @@ export const PAYMENT_STATUS_COLORS = {
 
 /** Distinct slice colors for membership / SaaS plan donuts (applied by slice order). */
 export const MEMBERSHIP_PLAN_PALETTE = [
-  '#0d9488', // teal
+  '#14b8a6', // teal
   '#f59e0b', // amber
-  '#0284c7', // blue
+  '#38bdf8', // sky
   '#94a3b8', // slate
-  '#e11d48', // rose
-  '#65a30d', // lime
-  '#7c3aed', // violet (last resort for 7+ plans)
+  '#fb7185', // rose
+  '#84cc16', // lime
+  '#a78bfa', // violet (last resort for 7+ plans)
 ];
 
 /** SaaS-plan palette kept visually distinct from semantic status colors. */

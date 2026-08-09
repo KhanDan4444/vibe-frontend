@@ -52,9 +52,9 @@ export const FILTER_CHIP_THEMES = {
 
 /** Hex colors matching status tokens (for charts — light defaults). */
 export const MEMBER_FILTER_CHART_COLORS = {
-  Active: '#059669',
-  Unpaid: '#ea580c',
-  'Due Soon': '#0284c7',
-  Expired: '#e11d48',
-  Suspended: '#e11d48',
+  Active: '#10b981',
+  Unpaid: '#f97316',
+  'Due Soon': '#38bdf8',
+  Expired: '#fb7185',
+  Suspended: '#fb7185',
 };
