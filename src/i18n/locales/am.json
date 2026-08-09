@@ -1056,6 +1056,10 @@
       "exportNote": "ሪፖርቶች ከላይ የተመረጡትን ቀናት እና ማጣሪያዎች ይጠቀማሉ።",
       "memberFilter": "የአባል ማጣሪያ",
       "memberOverviewSubtitle": "ንቁ፣ ያልተከፈለ፣ በቅርብ የሚያልቅ እና ጊዜው ያለፈ — እያንዳንዱ አባል አንድ ጊዜ።",
+      "revenueStatusLine": "{{revenue}} · {{count}} ክፍያዎች · አማካይ {{average}} · {{period}}",
+      "revenueChartsNote": "ለተመረጠው ጊዜ ክፍፍሎች እና አዝማሚያዎች።",
+      "topMembers": "ከፍተኛ አባላት",
+      "revenueTrend": "የገቢ አዝማሚያ",
       "subtitle": "የአባላት አዝማሚያዎች፣ የገቢ ሁኔታዎች እና ሪፖርቶች።",
       "title": "ሪፖርት"
     },

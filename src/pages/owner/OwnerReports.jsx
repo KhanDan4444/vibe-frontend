@@ -5,11 +5,8 @@ import { useGym } from '../../context/GymContext';
 import {
   Users,
   UserPlus,
-  DollarSign,
-  Download,
   FileText,
   RefreshCw,
-  Calendar,
   AlertCircle,
   AlertTriangle,
   XCircle,
@@ -22,19 +19,17 @@ import { useRevenuePeriodParams } from '../../hooks/useRevenuePeriodParams';
 import { DateField } from '../../components/DateField';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import MetricCard from '../../components/MetricCard';
+import PageHeader from '../../components/PageHeader';
 import ChartCard from '../../components/reports/ChartCard';
 import ReportDonut from '../../components/reports/ReportDonut';
 import RevenueBarChart from '../../components/reports/RevenueBarChart';
 import RevenueTrendChart from '../../components/reports/RevenueTrendChart';
 import {
-  downloadMembersCsv,
-  downloadMembersPdf,
-  downloadOwnerRevenueCsv,
-  downloadOwnerRevenuePdf,
   downloadFullOwnerReportCsv,
   downloadFullOwnerReportPdf,
   formatMoney,
 } from '../../utils/ownerReportExport';
+import { formatMoneyShort } from '../../utils/formatMoney';
 import {
   aggregateMembersOverview,
   aggregateMembersByPlan,
@@ -49,7 +44,7 @@ import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
-import { selectSurface } from '../../utils/surfaceClasses';
+import { selectSurface, headingText } from '../../utils/surfaceClasses';
 
 const MEMBER_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allMembers', query: {} },
@@ -85,7 +80,6 @@ export default function OwnerReports() {
   const memberFilterMeta = MEMBER_STATUS_FILTERS.find((f) => f.id === memberFilter) || MEMBER_STATUS_FILTERS[0];
   const periodPresetMeta = PERIOD_PRESETS.find((p) => p.id === periodPreset) || PERIOD_PRESETS[0];
   const periodLabel = t(periodPresetMeta.labelKey);
-  const periodSlug = periodLabel.toLowerCase().replace(/\s+/g, '-');
   const loading = memberLoading || revenueLoading;
   const canExport = memberLoaded && revenueLoaded && (members.length > 0 || payments.length > 0);
 
@@ -109,7 +103,7 @@ export default function OwnerReports() {
     } finally {
       if (memberReportGuard.isLatest(requestId)) setMemberLoading(false);
     }
-  }, [apiFetch, memberFilterMeta, memberReportGuard, getBranchQueryParams]);
+  }, [apiFetch, memberFilterMeta, memberReportGuard, getBranchQueryParams, t]);
 
   const loadRevenueReport = useCallback(async () => {
     setRevenueLoading(true);
@@ -128,7 +122,7 @@ export default function OwnerReports() {
     } finally {
       setRevenueLoading(false);
     }
-  }, [apiFetch, buildRevenueParams, getBranchQueryParams]);
+  }, [apiFetch, buildRevenueParams, getBranchQueryParams, t]);
 
   const refreshAll = useCallback(() => {
     loadMemberReport();
@@ -174,48 +168,55 @@ export default function OwnerReports() {
     }
   };
 
+  const revenueStatusLine = revenueSummary
+    ? t('pages.reports.revenueStatusLine', {
+        revenue: formatMoneyShort(revenueSummary.total),
+        count: revenueSummary.count,
+        average: formatMoneyShort(revenueSummary.average),
+        period: periodLabel,
+      })
+    : null;
+
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight text-app-text-strong sm:text-2xl">{t('pages.reports.title')}</h1>
-          <p className="text-sm text-app-muted mt-1 max-w-xl">
-            {t('pages.reports.subtitle')}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <Button variant="secondary" onClick={refreshAll} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            {t('common.refresh')}
-          </Button>
-          <Button
-            variant="secondary"
-            disabled={!canExport || exporting === 'full-csv'}
-            onClick={() => withExport('full-csv', () => downloadFullOwnerReportCsv(members, payments, exportMeta))}
-          >
-            <FileStack className="h-4 w-4" />
-            {t('common.exportCsv')}
-          </Button>
-          <Button
-            disabled={!canExport || exporting === 'full-pdf'}
-            onClick={() => withExport('full-pdf', () => downloadFullOwnerReportPdf(members, payments, exportMeta))}
-          >
-            <FileText className="h-4 w-4" />
-            {t('common.exportPdf')}
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-7 sm:space-y-8">
+      <PageHeader
+        title={t('pages.reports.title')}
+        subtitle={t('pages.reports.subtitle')}
+        actions={
+          <>
+            <Button variant="secondary" onClick={refreshAll} disabled={loading}>
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              {t('common.refresh')}
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={!canExport || exporting === 'full-csv'}
+              onClick={() => withExport('full-csv', () => downloadFullOwnerReportCsv(members, payments, exportMeta))}
+            >
+              <FileStack className="h-4 w-4" />
+              {t('common.exportCsv')}
+            </Button>
+            <Button
+              disabled={!canExport || exporting === 'full-pdf'}
+              onClick={() => withExport('full-pdf', () => downloadFullOwnerReportPdf(members, payments, exportMeta))}
+            >
+              <FileText className="h-4 w-4" />
+              {t('common.exportPdf')}
+            </Button>
+          </>
+        }
+      />
 
       {(memberError || revenueError) && (
         <div className="flex flex-col gap-2">
           {memberError && (
-            <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-400/30 dark:bg-rose-400/10 dark:text-rose-200">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {memberError}
             </div>
           )}
           {revenueError && (
-            <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+            <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-400/30 dark:bg-rose-400/10 dark:text-rose-200">
               <AlertCircle className="h-4 w-4 shrink-0" />
               {revenueError}
             </div>
@@ -223,48 +224,32 @@ export default function OwnerReports() {
         </div>
       )}
 
-      <section className="space-y-5">
+      <section className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-teal-100 p-2 text-teal-700">
-              <Users className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-app-text-strong">{t('nav.members')}</h2>
-              <p className="text-xs text-app-muted">{t('pages.reports.exportNote')}</p>
-            </div>
+          <div>
+            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+              {t('nav.members')}
+            </h2>
+            <p className="mt-0.5 text-xs text-app-muted">{t('pages.reports.memberOverviewSubtitle')}</p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={memberFilter}
-              onChange={(e) => setMemberFilter(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[10rem]`}
-            >
-              {MEMBER_STATUS_FILTERS.map((f) => (
-                <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
-              ))}
-            </select>
-            <Button
-              variant="secondary"
-              disabled={!memberLoaded || members.length === 0 || exporting === 'member-csv'}
-              onClick={() => withExport('member-csv', () => downloadMembersCsv(members, exportMeta))}
-            >
-              <Download className="h-4 w-4" />
-              {t('common.exportCsv')}
-            </Button>
-            <Button
-              variant="secondary"
-              disabled={!memberLoaded || members.length === 0 || exporting === 'member-pdf'}
-              onClick={() => withExport('member-pdf', () => downloadMembersPdf(members, { filterLabel: t(memberFilterMeta.labelKey), ...exportMeta }))}
-            >
-              <FileText className="h-4 w-4" />
-              {t('common.exportPdf')}
-            </Button>
-          </div>
+          <label className="sr-only" htmlFor="reports-member-filter">
+            {t('pages.reports.memberFilter')}
+          </label>
+          <select
+            id="reports-member-filter"
+            value={memberFilter}
+            onChange={(e) => setMemberFilter(e.target.value)}
+            className={`ui-select ${selectSurface} min-w-[10rem]`}
+          >
+            {MEMBER_STATUS_FILTERS.map((f) => (
+              <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
+            ))}
+          </select>
         </div>
 
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+        <div className="app-metric-grid grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 xl:grid-cols-6">
           <MetricCard
+            variant="dense"
             label={t('metrics.newMembers')}
             value={summary.newMembersThisMonth ?? 0}
             icon={UserPlus}
@@ -272,41 +257,49 @@ export default function OwnerReports() {
             trend={summary.newMembersTrendPercent ?? null}
             trendCaption={summary.newMembersDeltaLabel || t('metrics.vsLastMonth')}
           />
-          <MetricCard label={t('metrics.totalMembers')} value={memberStats.total} icon={Users} color="teal" />
-          <MetricCard label={t('metrics.activeMembers')} value={memberStats.active} icon={Users} color="emerald" />
+          <MetricCard variant="dense" label={t('metrics.totalMembers')} value={memberStats.total} icon={Users} color="teal" />
+          <MetricCard variant="dense" label={t('metrics.activeMembers')} value={memberStats.active} icon={Users} color="emerald" />
+          <MetricCard
+            variant="dense"
+            label={t('metrics.unpaid')}
+            value={memberStats.unpaid}
+            icon={AlertCircle}
+            color="violet"
+            badge={memberStats.unpaid > 0 ? t('metrics.actionRequired') : null}
+          />
+          <MetricCard variant="dense" label={t('metrics.dueSoon')} value={memberStats.dueSoon} icon={AlertTriangle} color="sky" />
+          <MetricCard variant="dense" label={t('metrics.expired')} value={memberStats.expired} icon={XCircle} color="rose" />
         </div>
 
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
-          <MetricCard label={t('metrics.unpaid')} value={memberStats.unpaid} icon={AlertCircle} color="violet" badge={memberStats.unpaid > 0 ? t('metrics.actionRequired') : null} />
-          <MetricCard label={t('metrics.dueSoon')} value={memberStats.dueSoon} icon={AlertTriangle} color="sky" />
-          <MetricCard label={t('metrics.expired')} value={memberStats.expired} icon={XCircle} color="rose" />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ChartCard title={t('table.status')} subtitle={t('pages.reports.memberOverviewSubtitle')} empty={overviewChart.length === 0}>
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+          <ChartCard compact title={t('table.status')} empty={overviewChart.length === 0}>
             <ReportDonut data={overviewChart} colors={MEMBER_FILTER_CHART_COLORS} showCounts />
           </ChartCard>
-          <ChartCard title={t('table.plan')} subtitle={t('nav.plans')} empty={planChart.length === 0}>
+          <ChartCard compact title={t('table.plan')} empty={planChart.length === 0}>
             <ReportDonut data={planChart} colors={planColors} showCounts />
           </ChartCard>
         </div>
       </section>
 
-      <section className="space-y-5">
+      <section className="space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-emerald-100 p-2 text-emerald-600">
-              <DollarSign className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-app-text-strong">{t('nav.revenue')}</h2>
-              <p className="text-xs text-app-muted">{t('pages.reports.exportNote')}</p>
-            </div>
+          <div className="min-w-0">
+            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+              {t('nav.revenue')}
+            </h2>
+            {revenueStatusLine ? (
+              <p className="mt-1 text-sm text-app-muted">{revenueStatusLine}</p>
+            ) : (
+              <p className="mt-1 text-xs text-app-muted">{t('pages.reports.revenueChartsNote')}</p>
+            )}
           </div>
           <div className="flex flex-wrap items-end gap-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-app-muted">{t('period.reportPeriod')}</label>
+              <label className="mb-1 block text-xs font-medium text-app-muted" htmlFor="reports-period">
+                {t('period.reportPeriod')}
+              </label>
               <select
+                id="reports-period"
                 value={periodPreset}
                 onChange={(e) => setPeriodPreset(e.target.value)}
                 className={`ui-select ${selectSurface} min-w-[10rem]`}
@@ -339,42 +332,11 @@ export default function OwnerReports() {
                 </div>
               </>
             )}
-            <Button
-              variant="secondary"
-              disabled={!revenueLoaded || payments.length === 0 || exporting === 'rev-csv'}
-              onClick={() => withExport('rev-csv', () => downloadOwnerRevenueCsv(payments, periodSlug, revenueSummary, exportMeta))}
-            >
-              <Download className="h-4 w-4" />
-              {t('common.exportCsv')}
-            </Button>
-            <Button
-              variant="secondary"
-              disabled={!revenueLoaded || payments.length === 0 || exporting === 'rev-pdf'}
-              onClick={() => withExport('rev-pdf', () => downloadOwnerRevenuePdf(payments, { periodLabel, summary: revenueSummary, ...exportMeta }))}
-            >
-              <FileText className="h-4 w-4" />
-              {t('common.exportPdf')}
-            </Button>
           </div>
         </div>
 
-        {revenueSummary && (
-          <div className="grid gap-3 sm:grid-cols-3">
-            <MetricCard
-              label={t('metrics.totalRevenue')}
-              value={formatMoney(revenueSummary.total)}
-              hint={periodLabel}
-              icon={DollarSign}
-              color="emerald"
-              showHintBelow
-            />
-            <MetricCard label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="teal" />
-            <MetricCard label={t('metrics.averagePayment')} value={formatMoney(revenueSummary.average)} icon={DollarSign} color="violet" />
-          </div>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ChartCard title={t('metrics.revenueByMethod')} subtitle={t('table.method')} empty={methodChart.length === 0}>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+          <ChartCard title={t('metrics.revenueByMethod')} empty={methodChart.length === 0}>
             <ReportDonut
               data={methodChart}
               colors={PAYMENT_METHOD_COLORS}
@@ -382,16 +344,16 @@ export default function OwnerReports() {
               formatValue={formatMoney}
             />
           </ChartCard>
-          <ChartCard title={t('table.member')} subtitle={t('metrics.revenue')} empty={topMembersChart.length === 0}>
+          <ChartCard title={t('pages.reports.topMembers')} empty={topMembersChart.length === 0}>
             <RevenueBarChart data={topMembersChart} formatMoney={formatMoney} />
           </ChartCard>
-          <ChartCard title={t('metrics.revenue')} subtitle={t('period.reportPeriod')} empty={trendChart.length === 0}>
+          <ChartCard title={t('pages.reports.revenueTrend')} empty={trendChart.length === 0}>
             <RevenueTrendChart data={trendChart} gradientId="ownerRevGrad" />
           </ChartCard>
         </div>
       </section>
 
-      <p className="text-center text-xs text-app-muted pb-2">
+      <p className="pb-1 text-center text-xs text-app-muted">
         {t('pages.reports.exportNote')}
       </p>
     </div>
