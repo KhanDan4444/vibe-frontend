@@ -5,7 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString, clampIsoDate, isDateRangeValid } from '../utils/date';
 
 const DEFAULT_CLASS =
-  'block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20';
+  'block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text-strong placeholder:text-app-muted focus:outline-none focus:ring-0 focus:border-app-input-border';
+
+const OPEN_CLASS = '!border-teal-600 ring-2 ring-teal-600/20';
+const FOCUS_CLASS = 'focus-visible:!border-teal-600 focus-visible:ring-2 focus-visible:ring-teal-600/20';
 
 const POPOVER_MIN_WIDTH = 288;
 const POPOVER_EST_HEIGHT = 320;
@@ -229,9 +232,17 @@ export function DateField({
         onClick={() => {
           if (!pickerDisabled) setOpen((current) => !current);
         }}
-        className={`flex w-full min-h-[42px] items-center justify-between gap-2 text-left${
- pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
- } ${className}`}
+        className={[
+          'flex w-full min-h-[42px] items-center justify-between gap-2 text-left',
+          FOCUS_CLASS,
+          pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+          className,
+          // Open owns teal — suppress admin-field :focus flicker while the popover is up.
+          'focus:!border-app-input-border focus:!ring-0',
+          open && rangeValid ? OPEN_CLASS : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
         <span className={!clampedValue ? 'text-app-muted' : ''}>{display}</span>
         <Calendar className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />

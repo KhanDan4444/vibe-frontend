@@ -901,7 +901,7 @@ export default function MemberModal({
           )}
 
           {isPage ? (
-            <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 shadow-[0_-10px_30px_rgba(15,23,42,0.08)] backdrop-blur dark:shadow-[0_-10px_30px_rgba(0,0,0,0.35)] sm:-mx-6 sm:px-6">
+            <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-center text-xs text-app-muted sm:text-left">
                   {t('modals.member.stepOf', { current: enrollStep, total: 3 })}

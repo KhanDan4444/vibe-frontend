@@ -148,7 +148,7 @@ export default function StaffModal({
                 setBranchId(e.target.value);
                 clearFieldError(setLocalFieldErrors, 'branchId');
               }}
-              className={`${fc('branchId')}cursor-pointer`}
+              className={`ui-select ${fc('branchId')} cursor-pointer`}
             >
               {activeBranches.map((branch) => (
                 <option key={branch.id} value={branch.id}>
@@ -169,7 +169,7 @@ export default function StaffModal({
               required
               value={staffRole}
               onChange={(e) => setStaffRole(e.target.value)}
-              className={`${fc('staffRole')}cursor-pointer`}
+              className={`ui-select ${fc('staffRole')} cursor-pointer`}
             >
               {STAFF_ROLE_OPTIONS.map((opt) => (
                 <option key={opt.id} value={opt.id}>

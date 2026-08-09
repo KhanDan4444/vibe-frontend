@@ -73,7 +73,10 @@ export default function SearchableSelect({
         }}
         className={[
           'admin-field mt-1 flex w-full cursor-pointer items-center justify-between gap-2 text-left',
-          error ? 'border-rose-400 focus:border-rose-500 focus:ring-rose-500/20' : '',
+          // Open state owns the teal ring — button :focus flickers when search input takes focus.
+          'focus:!border-app-input-border focus:!ring-0 focus:outline-none',
+          open && !error ? '!border-teal-600 ring-2 ring-teal-600/20' : '',
+          error ? '!border-rose-400 ring-2 ring-rose-500/20' : '',
           disabled ? 'cursor-not-allowed opacity-60' : '',
         ]
           .filter(Boolean)
@@ -82,7 +85,9 @@ export default function SearchableSelect({
         <span className={selected ? 'text-app-text-strong' : 'text-app-muted'}>
           {selected?.label || placeholder || t('common.select')}
         </span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-app-muted transition ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180 text-teal-600 dark:text-teal-400' : 'text-app-muted'}`}
+        />
       </button>
 
       {open ? (

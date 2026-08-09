@@ -186,6 +186,20 @@
     outline: none;
   }
 
+  /*
+   * Native <select> focus chrome (esp. Firefox dark) often paints a light/white
+   * border that ignores Tailwind focus:border-teal-*. Match text-input focus.
+   */
+  select:focus {
+    border-color: #0d9488 !important;
+    box-shadow: 0 0 0 2px rgb(13 148 136 / 0.2);
+  }
+
+  html.dark select:focus {
+    border-color: #0d9488 !important;
+    box-shadow: 0 0 0 2px rgb(13 148 136 / 0.25);
+  }
+
   html.dark body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
