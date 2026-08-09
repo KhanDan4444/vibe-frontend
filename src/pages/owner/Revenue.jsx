@@ -359,23 +359,15 @@ export default function Revenue() {
       </div>
 
       {methodRows.length > 0 && (
-        <div className="space-y-2.5 px-0.5">
+        <div className="max-w-xl space-y-2.5 px-0.5">
           <h3 className="text-xs font-medium uppercase tracking-wide text-app-muted">
             {t('metrics.revenueByMethod')}
           </h3>
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {methodRows.map((row, index) => (
-              <div key={row.method}>
-                <div className="mb-1 flex items-center justify-between gap-3">
-                  <span className="text-sm text-app-text">{translatePaymentMethod(row.method)}</span>
-                  <div className="flex shrink-0 items-baseline gap-2 text-right">
-                    <span className="text-xs text-app-muted">{row.percent}%</span>
-                    <span className="text-sm font-semibold text-app-text">
-                      {formatMoneyShort(row.amount)}
-                    </span>
-                  </div>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-app-border-subtle">
+              <div key={row.method} className="flex items-center gap-3">
+                <PaymentMethodBadge method={row.method} className="w-[9.25rem] shrink-0 justify-start" />
+                <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-app-border-subtle">
                   <div
                     className={`h-1.5 rounded-full transition-all duration-500 ${
                       index === 0
@@ -384,6 +376,12 @@ export default function Revenue() {
                     }`}
                     style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
                   />
+                </div>
+                <div className="flex w-[6.5rem] shrink-0 flex-col items-end leading-tight sm:w-28 sm:flex-row sm:items-baseline sm:justify-end sm:gap-1.5">
+                  <span className="text-xs text-app-muted">{row.percent}%</span>
+                  <span className="text-sm font-semibold text-app-text">
+                    {formatMoneyShort(row.amount)}
+                  </span>
                 </div>
               </div>
             ))}
