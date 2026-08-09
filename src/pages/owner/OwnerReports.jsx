@@ -31,6 +31,7 @@ import {
 } from '../../utils/ownerReportExport';
 import { formatMoneyShort } from '../../utils/formatMoney';
 import {
+  aggregateMembersOverview,
   aggregateMembersByPlan,
   aggregateRevenueByMethod,
   aggregateRevenueByMember,
@@ -41,6 +42,7 @@ import {
 } from '../../utils/reportChartData';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
 import { selectSurface, headingText } from '../../utils/surfaceClasses';
 
@@ -136,20 +138,9 @@ export default function OwnerReports() {
   }, [loadRevenueReport]);
 
   const memberStats = useMemo(() => memberReportStats(members), [members]);
+  const overviewChart = useMemo(() => aggregateMembersOverview(members), [members]);
   const planChart = useMemo(() => aggregateMembersByPlan(members), [members]);
   const planColors = useMemo(() => planChartColors(planChart), [planChart]);
-  const planTotal = useMemo(
-    () => planChart.reduce((sum, row) => sum + (Number(row.value) || 0), 0),
-    [planChart],
-  );
-  const planRows = useMemo(
-    () =>
-      planChart.map((row) => ({
-        ...row,
-        percent: planTotal > 0 ? Math.round((row.value / planTotal) * 100) : 0,
-      })),
-    [planChart, planTotal],
-  );
   const methodChart = useMemo(() => aggregateRevenueByMethod(revenueSummary), [revenueSummary]);
   const topMembersChart = useMemo(() => aggregateRevenueByMember(payments), [payments]);
   const trendChart = useMemo(() => aggregateRevenueByDate(payments), [payments]);
@@ -187,7 +178,7 @@ export default function OwnerReports() {
     : null;
 
   return (
-    <div className="space-y-6 sm:space-y-7">
+    <div className="space-y-7 sm:space-y-8">
       <PageHeader
         title={t('pages.reports.title')}
         subtitle={t('pages.reports.subtitle')}
@@ -233,7 +224,7 @@ export default function OwnerReports() {
         </div>
       )}
 
-      <section className="space-y-3.5">
+      <section className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
@@ -280,44 +271,17 @@ export default function OwnerReports() {
           <MetricCard variant="dense" label={t('metrics.expired')} value={memberStats.expired} icon={XCircle} color="rose" />
         </div>
 
-        {planRows.length > 0 && (
-          <div className="max-w-xl space-y-2.5">
-            <h3 className="text-xs font-medium uppercase tracking-wide text-app-muted">
-              {t('pages.reports.planMix')}
-            </h3>
-            <div className="flex h-5 w-full gap-0.5 overflow-hidden rounded-full bg-app-border-subtle sm:h-6">
-              {planRows.map((row) => (
-                <div
-                  key={row.name}
-                  title={`${row.name} ${row.percent}%`}
-                  className="h-full min-w-0"
-                  style={{
-                    flexGrow: Math.max(row.percent, row.value > 0 ? 1.5 : 0),
-                    flexBasis: 0,
-                    backgroundColor: planColors[row.name],
-                  }}
-                />
-              ))}
-            </div>
-            <ul className="flex flex-wrap gap-x-4 gap-y-1.5">
-              {planRows.map((row) => (
-                <li key={row.name} className="inline-flex items-center gap-1.5 text-xs text-app-muted">
-                  <span
-                    className="h-2 w-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: planColors[row.name] }}
-                    aria-hidden
-                  />
-                  <span className="truncate text-app-text">{row.name}</span>
-                  <span className="tabular-nums">{row.value}</span>
-                  <span className="tabular-nums opacity-70">{row.percent}%</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
+          <ChartCard compact title={t('table.status')} empty={overviewChart.length === 0}>
+            <ReportDonut data={overviewChart} colors={MEMBER_FILTER_CHART_COLORS} showCounts />
+          </ChartCard>
+          <ChartCard compact title={t('table.plan')} empty={planChart.length === 0}>
+            <ReportDonut data={planChart} colors={planColors} showCounts />
+          </ChartCard>
+        </div>
       </section>
 
-      <section className="space-y-3.5">
+      <section className="space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div className="min-w-0">
             <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
@@ -371,15 +335,7 @@ export default function OwnerReports() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:gap-4 lg:grid-cols-3">
-          <ChartCard
-            tall
-            className="lg:col-span-2"
-            title={t('pages.reports.revenueTrend')}
-            empty={trendChart.length === 0}
-          >
-            <RevenueTrendChart data={trendChart} gradientId="ownerRevGrad" />
-          </ChartCard>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
           <ChartCard title={t('metrics.revenueByMethod')} empty={methodChart.length === 0}>
             <ReportDonut
               data={methodChart}
@@ -388,12 +344,11 @@ export default function OwnerReports() {
               formatValue={formatMoney}
             />
           </ChartCard>
-          <ChartCard
-            className="lg:col-span-3"
-            title={t('pages.reports.topMembers')}
-            empty={topMembersChart.length === 0}
-          >
+          <ChartCard title={t('pages.reports.topMembers')} empty={topMembersChart.length === 0}>
             <RevenueBarChart data={topMembersChart} formatMoney={formatMoney} />
+          </ChartCard>
+          <ChartCard title={t('pages.reports.revenueTrend')} empty={trendChart.length === 0}>
+            <RevenueTrendChart data={trendChart} gradientId="ownerRevGrad" />
           </ChartCard>
         </div>
       </section>
