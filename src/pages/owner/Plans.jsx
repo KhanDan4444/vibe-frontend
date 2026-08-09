@@ -169,17 +169,40 @@ export default function Plans() {
     }
   };
 
+  const sortSelect = plans.length > 0 ? (
+    <>
+      <label className="sr-only" htmlFor="plans-sort">
+        {t('pages.plans.sortLabel')}
+      </label>
+      <select
+        id="plans-sort"
+        value={sort}
+        onChange={(e) => setSort(e.target.value)}
+        className={`ui-select ${selectSurface} min-w-[11rem]`}
+      >
+        {SORT_OPTIONS.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {t(opt.labelKey)}
+          </option>
+        ))}
+      </select>
+    </>
+  ) : null;
+
   return (
     <div className="space-y-4 sm:space-y-5">
       <PageHeader
         title={t('pages.plans.title')}
         subtitle={statusLine}
         actions={
-          canManagePlans ? (
-            <Button onClick={() => { setError(''); setIsAddModalOpen(true); }}>
-              <Plus className="h-4 w-4" /> {t('pages.plans.add')}
-            </Button>
-          ) : null
+          <>
+            {sortSelect}
+            {canManagePlans ? (
+              <Button onClick={() => { setError(''); setIsAddModalOpen(true); }}>
+                <Plus className="h-4 w-4" /> {t('pages.plans.add')}
+              </Button>
+            ) : null}
+          </>
         }
       />
 
@@ -196,112 +219,84 @@ export default function Plans() {
           ))}
         </div>
       ) : plans.length > 0 ? (
-        <>
-          <div className="flex justify-end">
-            <label className="sr-only" htmlFor="plans-sort">
-              {t('pages.plans.sortLabel')}
-            </label>
-            <select
-              id="plans-sort"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[11rem]`}
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {t(opt.labelKey)}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+          {sortedPlans.map((plan) => {
+            const members = plan.activeMemberCount ?? 0;
+            const perMonth = monthlyRate(plan);
+            const isPopular = plan.id === popularPlanId;
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-            {sortedPlans.map((plan) => {
-              const members = plan.activeMemberCount ?? 0;
-              const perMonth = monthlyRate(plan);
-              const isPopular = plan.id === popularPlanId;
-
-              return (
-                <Card
-                  key={plan.id}
-                  className={`relative p-5 ${
-                    isPopular
-                      ? 'ring-2 ring-teal-500/50 dark:ring-teal-400/40'
-                      : ''
-                  }`}
-                >
-                  {isPopular ? (
-                    <span className="absolute -top-2.5 left-4 rounded-full bg-teal-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white dark:bg-teal-500">
-                      {t('pages.plans.popular')}
-                    </span>
+            return (
+              <Card
+                key={plan.id}
+                className={`flex flex-col p-5 ${
+                  isPopular ? 'ring-2 ring-teal-500/35 dark:ring-teal-400/30' : ''
+                }`}
+              >
+                <div className="min-w-0">
+                  <p className="text-2xl font-black tracking-tight text-app-text-strong sm:text-[1.65rem]">
+                    {formatMoney(plan.price)}
+                  </p>
+                  {perMonth != null ? (
+                    <p className="mt-0.5 text-xs text-app-muted">
+                      {t('pages.plans.perMonth', { amount: formatMoney(perMonth) })}
+                    </p>
                   ) : null}
+                </div>
 
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-2xl font-black tracking-tight text-app-text-strong sm:text-[1.65rem]">
-                        {formatMoney(plan.price)}
-                      </p>
-                      {perMonth != null ? (
-                        <p className="mt-0.5 text-xs text-app-muted">
-                          {t('pages.plans.perMonth', { amount: formatMoney(perMonth) })}
-                        </p>
-                      ) : (
-                        <p className="mt-0.5 text-xs text-app-muted">
-                          {t('common.month', { count: plan.duration })}
-                        </p>
-                      )}
-                    </div>
-                    {canManagePlans ? (
-                      <div className="flex shrink-0 gap-0.5">
-                        <button
-                          type="button"
-                          onClick={() => handleEditClick(plan)}
-                          className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-teal-700 dark:hover:text-teal-300"
-                          title={t('pages.plans.editPlanTitle')}
-                          aria-label={t('pages.plans.editPlanTitle')}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeletePlanClick(plan)}
-                          className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-rose-600 dark:hover:text-rose-400"
-                          title={t('pages.plans.deletePlanTitle')}
-                          aria-label={t('pages.plans.deletePlanTitle')}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                <div className="mt-3 min-w-0">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <h3
+                      className="truncate text-base font-semibold text-app-text-strong"
+                      title={plan.name}
+                    >
+                      {plan.name}
+                    </h3>
+                    {isPopular ? (
+                      <span className="text-xs font-medium text-teal-700 dark:text-teal-300">
+                        {t('pages.plans.popular')}
+                      </span>
                     ) : null}
                   </div>
-
-                  <h3
-                    className="mt-4 truncate text-base font-semibold text-app-text-strong"
-                    title={plan.name}
-                  >
-                    {plan.name}
-                  </h3>
-
                   {plan.description ? (
                     <p className="mt-1 line-clamp-2 text-sm leading-snug text-app-muted">
                       {plan.description}
                     </p>
                   ) : null}
+                </div>
 
-                  <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex rounded-md bg-teal-50 px-2 py-1 text-xs font-semibold text-teal-800 dark:bg-teal-500/15 dark:text-teal-300">
-                      {t('common.month', { count: plan.duration })}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-xs text-app-muted">
-                      <Users className="h-3.5 w-3.5" />
-                      {t('pages.plans.activeMembers', { count: members })}
-                    </span>
+                <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-app-muted">
+                  <span>{t('common.month', { count: plan.duration })}</span>
+                  <span aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-1">
+                    <Users className="h-3.5 w-3.5" />
+                    {t('pages.plans.activeMembers', { count: members })}
+                  </span>
+                </p>
+
+                {canManagePlans ? (
+                  <div className="mt-4 flex items-center gap-2 border-t border-app-border-subtle pt-3">
+                    <button
+                      type="button"
+                      onClick={() => handleEditClick(plan)}
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-app-text hover:bg-app-surface hover:text-teal-700 dark:hover:text-teal-300"
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                      {t('common.edit')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePlanClick(plan)}
+                      className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-app-muted hover:bg-app-surface hover:text-rose-600 dark:hover:text-rose-400"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      {t('common.delete')}
+                    </button>
                   </div>
-                </Card>
-              );
-            })}
-          </div>
-        </>
+                ) : null}
+              </Card>
+            );
+          })}
+        </div>
       ) : (
         <div className={cardSurface}>
           <EmptyState
