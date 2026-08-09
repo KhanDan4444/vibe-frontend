@@ -35,7 +35,7 @@ export default function RevenueBarChart({ data, formatMoney }) {
         data={rows}
         layout="vertical"
         margin={{ left: 8, right: 20, top: 4, bottom: 4 }}
-        barCategoryGap="28%"
+        barCategoryGap="12%"
       >
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.grid} />
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
