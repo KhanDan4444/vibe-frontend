@@ -30,14 +30,19 @@ export default function RevenueBarChart({ data, formatMoney }) {
         <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke={chartTheme.grid} />
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
         <YAxis type="category" dataKey="name" width={88} tick={{ fontSize: 10, fill: chartTheme.tick }} />
-        <Tooltip contentStyle={chartTheme.tooltip.contentStyle} formatter={(v) => [formatMoney(v), t('charts.revenue')]} />
-        <Bar dataKey="value" radius={[0, 4, 4, 0]} activeBar={false} stroke="none">
+        <Tooltip
+          cursor={false}
+          contentStyle={chartTheme.tooltip.contentStyle}
+          formatter={(v) => [formatMoney(v), t('charts.revenue')]}
+        />
+        <Bar dataKey="value" radius={[0, 4, 4, 0]} activeBar={false} isAnimationActive={false} stroke="none">
           {rows.map((entry, index) => (
             <Cell
               key={entry.name || index}
               fill="#0d9488"
               fillOpacity={rankFill(index, rows.length)}
               stroke="none"
+              style={{ outline: 'none' }}
             />
           ))}
         </Bar>
