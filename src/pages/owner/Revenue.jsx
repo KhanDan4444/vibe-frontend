@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { DollarSign, Search, CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX, TrendingUp } from 'lucide-react';
+import { Search, CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX } from 'lucide-react';
 import PaymentModal from '../../components/PaymentModal';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
@@ -24,6 +24,7 @@ import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } fro
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
 import { formatMoney, formatMoneyShort } from '../../utils/formatMoney';
+import { formatTrendForDisplay } from '../../utils/trendDisplay';
 import { toDateString, formatDisplayDate } from '../../utils/date';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { DateField } from '../../components/DateField';
@@ -162,19 +163,11 @@ export default function Revenue() {
       }));
   }, [byMethod, periodRevenue]);
 
-  const topMethod = methodRows[0];
-  const statusLine =
-    transactionCount > 0 && topMethod
-      ? t('pages.revenue.statusLine', {
-          revenue: formatMoneyShort(periodRevenue),
-          count: transactionCount,
-          method: translatePaymentMethod(topMethod.method),
-          percent: topMethod.percent,
-        })
-      : t('pages.revenue.statusLineEmpty', {
-          revenue: formatMoneyShort(periodRevenue),
-          count: transactionCount,
-        });
+  const statusLine = t('pages.revenue.statusLineEmpty', {
+    revenue: formatMoneyShort(periodRevenue),
+    count: transactionCount,
+  });
+  const trendDisplay = formatTrendForDisplay(trendStr);
 
   const attentionMembers = unpaidMembers.filter(
     (m) => m.status === 'Expired' || m.status === 'Due Soon'
@@ -242,7 +235,7 @@ export default function Revenue() {
     : [];
 
   return (
-    <div className="space-y-5 sm:space-y-6">
+    <div className="space-y-4 sm:space-y-5">
       <PageHeader
         title={t('pages.revenue.title')}
         subtitle={statusLine}
@@ -255,10 +248,13 @@ export default function Revenue() {
 
       {error ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
 
-      <Card className="flex flex-col gap-4 p-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <label className="text-sm font-medium text-app-text">{t('period.reportPeriod')}</label>
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="text-sm text-app-muted" htmlFor="revenue-period">
+            {t('period.reportPeriod')}
+          </label>
           <select
+            id="revenue-period"
             className={`ui-select ${selectSurface}`}
             value={periodPreset}
             onChange={(e) => setPeriodPreset(e.target.value)}
@@ -286,7 +282,7 @@ export default function Revenue() {
             />
           </div>
         )}
-      </Card>
+      </div>
 
       {attentionMembers.length > 0 && (
         <div className="admin-alert-amber">
@@ -336,25 +332,26 @@ export default function Revenue() {
               variant="emphasis"
               label={t('pages.revenue.periodRevenue', { period: periodLabel })}
               value={formatMoneyShort(periodRevenue)}
-              icon={TrendingUp}
-              color="teal"
-              trend={trendStr}
-              trendCaption={trendStr ? t('metrics.vsLastMonth') : null}
+              color="slate"
+              trend={trendDisplay.label}
+              trendCaption={
+                trendDisplay.extreme
+                  ? t('pages.revenue.trendThinBaseline')
+                  : trendDisplay.label
+                    ? t('metrics.vsLastMonth')
+                    : null
+              }
             />
             <MetricCard
               variant="dense"
               label={t('metrics.transactions')}
               value={transactionCount}
-              icon={CreditCard}
-              color="sky"
-              hint={t('pages.revenue.inSelectedPeriod')}
-              showHintBelow
+              color="slate"
             />
             <MetricCard
               variant="dense"
               label={t('metrics.averagePayment')}
               value={formatMoneyShort(averagePayment)}
-              icon={DollarSign}
               color="slate"
             />
           </>
@@ -362,30 +359,34 @@ export default function Revenue() {
       </div>
 
       {methodRows.length > 0 && (
-        <Card quiet className="p-4 sm:p-5">
-          <h3 className={`mb-3 text-sm font-semibold ${headingText}`}>{t('metrics.revenueByMethod')}</h3>
-          <div className="space-y-3">
-            {methodRows.map((row) => (
+        <div className="space-y-2.5 px-0.5">
+          <h3 className="text-xs font-medium uppercase tracking-wide text-app-muted">
+            {t('metrics.revenueByMethod')}
+          </h3>
+          <div className="space-y-2.5">
+            {methodRows.map((row, index) => (
               <div key={row.method}>
-                <div className="mb-1.5 flex items-center justify-between gap-3">
-                  <PaymentMethodBadge method={row.method} />
+                <div className="mb-1 flex items-center justify-between gap-3">
+                  <span className="text-sm text-app-text">{translatePaymentMethod(row.method)}</span>
                   <div className="flex shrink-0 items-baseline gap-2 text-right">
-                    <span className="text-xs font-semibold text-app-muted">{row.percent}%</span>
-                    <span className={`font-display text-sm font-bold tracking-tight ${headingText}`}>
+                    <span className="text-xs text-app-muted">{row.percent}%</span>
+                    <span className="text-sm font-semibold text-app-text">
                       {formatMoneyShort(row.amount)}
                     </span>
                   </div>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-app-border-subtle">
+                <div className="h-1 w-full overflow-hidden rounded-full bg-app-border-subtle">
                   <div
-                    className="h-1.5 rounded-full bg-brand transition-all duration-500"
+                    className={`h-1 rounded-full transition-all duration-500 ${
+                      index === 0 ? 'bg-app-text/40 dark:bg-white/30' : 'bg-app-text/20 dark:bg-white/14'
+                    }`}
                     style={{ width: `${Math.min(100, Math.max(row.percent, row.amount > 0 ? 2 : 0))}%` }}
                   />
                 </div>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       <Card className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">

@@ -580,6 +580,7 @@
       "subtitle": "Track payments and export reports.",
       "statusLine": "{{revenue}} · {{count}} payments · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · {{count}} payments",
+      "trendThinBaseline": "vs a quieter last month",
       "enrollLink": "enroll members",
       "subtitleWithEnroll": "Track payments from {{link}} and export reports.",
       "attentionBanner": "{{count}} member(s) enrolled without payment for their current term.",

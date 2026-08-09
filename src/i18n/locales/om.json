@@ -580,6 +580,7 @@
       "subtitle": "Kaffaltiiwwan hordofaa fi gabaasota ergaa.",
       "statusLine": "{{revenue}} · kaffaltii {{count}} · {{method}} {{percent}}%",
       "statusLineEmpty": "{{revenue}} · kaffaltii {{count}}",
+      "trendThinBaseline": "waniin ji'a darbe xiqqaa wajjin",
       "enrollLink": "miseensota galmeessaa",
       "subtitleWithEnroll": "Kaffaltiiwwan {{link}} irraa hordofaa fi gabaasota ergaa.",
       "attentionBanner": "Miseensi (miseensonni) {{count}} yeroo ammatiif kaffaltii malee galmaa'aniiru.",
