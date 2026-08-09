@@ -8,6 +8,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { isPlatformAdmin, hasGymPortalAccess } from '../../utils/roles';
 import AuthScreen from '../../components/auth/AuthScreen';
 import LoginBrandPanel from '../../components/auth/LoginBrandPanel';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import {
   validateLoginFields,
   mutationErrorState,
@@ -35,7 +36,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/45 caret-white shadow-none transition-[border-color,background-color,box-shadow] focus:border-teal-300/55 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-400/25';
+    'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/40 caret-white shadow-none transition-[border-color,background-color,box-shadow] focus:border-teal-600/70 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-700/35';
 
   const focusFirstInvalid = (errors) => {
     requestAnimationFrame(() => {
@@ -86,6 +87,12 @@ export default function Login() {
 
   return (
     <AuthScreen hero>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end px-4 pt-4 sm:px-6 sm:pt-5">
+        <div className="pointer-events-auto">
+          <LanguageSwitcher tone="auth" />
+        </div>
+      </div>
+
       <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
         <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-2 duration-500">
           <LoginBrandPanel />
@@ -105,9 +112,9 @@ export default function Login() {
             </div>
           )}
 
-          <form className="space-y-3" onSubmit={handleSubmit} noValidate>
+          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
             <div>
-              <label htmlFor="login-email" className="sr-only">
+              <label htmlFor="login-email" className="mb-1.5 block text-sm font-medium text-white/80">
                 {t('auth.emailOrUsername')}
               </label>
               <input
@@ -118,7 +125,7 @@ export default function Login() {
                 aria-invalid={Boolean(emailError)}
                 aria-describedby={emailError ? 'login-email-error' : undefined}
                 className={inputClass(inputBase, fieldErrors, 'email')}
-                placeholder={t('auth.emailOrUsername')}
+                placeholder={t('auth.emailOrUsernamePlaceholder')}
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
@@ -128,7 +135,7 @@ export default function Login() {
               <FieldError id="login-email-error" message={emailError} className="text-sm text-rose-300" />
             </div>
             <div>
-              <label htmlFor="login-password" className="sr-only">
+              <label htmlFor="login-password" className="mb-1.5 block text-sm font-medium text-white/80">
                 {t('auth.password')}
               </label>
               <div className="relative">
@@ -150,7 +157,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/45 transition-colors hover:text-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-400/30"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-white/45 transition-colors hover:text-teal-200 focus:outline-none focus:ring-2 focus:ring-teal-700/40"
                   aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -159,18 +166,18 @@ export default function Login() {
               <FieldError id="login-password-error" message={passwordError} className="text-sm text-rose-300" />
             </div>
 
-            <div className="flex items-center justify-between gap-3 pt-1">
+            <div className="flex items-center justify-between gap-3 pt-0.5">
               <label htmlFor="login-remember" className="flex cursor-pointer items-center gap-2 text-sm text-white/75">
                 <input
                   id="login-remember"
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-teal-500 focus:ring-teal-400/40"
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#0f766e] focus:ring-teal-700/40"
                 />
                 {t('auth.rememberMe')}
               </label>
-              <Link to="/forgot-password" className="text-sm font-semibold text-teal-300 hover:text-teal-200">
+              <Link to="/forgot-password" className="text-sm font-semibold text-[#0f766e] hover:text-[#0d9488]">
                 {t('auth.forgotPassword')}
               </Link>
             </div>
@@ -178,14 +185,14 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl border-0 bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white shadow-none transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-600/40 disabled:opacity-50"
+              className="mt-1 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl border-0 bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white shadow-none transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-700/45 disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path
-                      className="opacity-75"
+                      opacity="0.75"
                       fill="currentColor"
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
@@ -200,13 +207,13 @@ export default function Login() {
 
           <p className="mt-6 text-center text-sm text-white/70">
             {t('auth.noAccount')}{' '}
-            <Link to="/register-gym" className="font-semibold text-teal-300 hover:text-teal-200">
+            <Link to="/register-gym" className="font-semibold text-[#0f766e] hover:text-[#0d9488]">
               {t('auth.registerGymLink')}
             </Link>
           </p>
 
           {import.meta.env.DEV && (
-            <div className="mt-8 animate-pulse space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-white/55">
+            <div className="mt-8 space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-white/55">
               <p className="flex items-center gap-1 font-semibold text-white/80">
                 Developer Quick-Access (Sandbox Active):
               </p>

@@ -12,9 +12,9 @@ const OPTIONS = [
 
 /**
  * Header language picker — icon button with dropdown.
- * @param {{ compact?: boolean }} props
+ * @param {{ compact?: boolean, tone?: 'default' | 'auth' }} props
  */
-export default function LanguageSwitcher({ compact = false }) {
+export default function LanguageSwitcher({ compact = false, tone = 'default' }) {
   const { t } = useTranslation();
   const { language, setLanguage } = usePreferences();
   const [open, setOpen] = useState(false);
@@ -38,11 +38,15 @@ export default function LanguageSwitcher({ compact = false }) {
     };
   }, [open, close]);
 
-  const btnClass = compact
-    ? 'rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-slate-600 dark:active:bg-app-raised'
-    : 'rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-slate-200';
+  const isAuth = tone === 'auth';
 
-  const iconClass = compact ? 'h-6 w-6' : 'h-5 w-5';
+  const btnClass = isAuth
+    ? 'rounded-xl p-2.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-teal-600/40'
+    : compact
+      ? 'rounded-lg p-2.5 text-slate-400 active:bg-slate-100 active:text-slate-600 dark:active:bg-app-raised'
+      : 'rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-app-raised dark:hover:text-slate-200';
+
+  const iconClass = compact || isAuth ? 'h-6 w-6' : 'h-5 w-5';
 
   return (
     <div className="relative" ref={ref}>

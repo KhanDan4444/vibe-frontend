@@ -223,8 +223,11 @@
 }
 
 @layer components {
+  /* Opaque dark hero — no alpha over document theme, soft teal corner wash. */
   .auth-hero-bg {
-    background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
+    background:
+      radial-gradient(ellipse 90% 65% at 0% 0%, #1f4f4a 0%, transparent 58%),
+      linear-gradient(155deg, #14343a 0%, #0f172a 48%, #0b1220 100%);
   }
 
   .auth-login-input {
