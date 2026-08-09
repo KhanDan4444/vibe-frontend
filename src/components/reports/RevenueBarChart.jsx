@@ -2,12 +2,12 @@ import { useState } from 'react';
 import {
   BarChart,
   Bar,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Rectangle,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useChartTheme } from '../../utils/chartTheme';
@@ -18,7 +18,7 @@ const BAR_FILL = '#14b8a6';
 /** Rank-aware teal: strongest at the top, quieter down the list. */
 function rankFill(index, total) {
   if (total <= 1) return 1;
-  return Math.max(0.42, 1 - (index / (total - 1)) * 0.5);
+  return Math.max(0.45, 1 - (index / (total - 1)) * 0.45);
 }
 
 /** Horizontal bar chart for top revenue entities (gyms or members). */
@@ -35,7 +35,7 @@ export default function RevenueBarChart({ data, formatMoney }) {
         <XAxis type="number" tickFormatter={(v) => formatMoneyTick(v)} tick={{ fontSize: 11, fill: chartTheme.tick }} />
         <YAxis type="category" dataKey="name" width={88} tick={{ fontSize: 10, fill: chartTheme.tick }} />
         <Tooltip
-          cursor={{ fill: chartTheme.isDark ? 'rgba(45, 212, 191, 0.05)' : 'rgba(20, 184, 166, 0.05)' }}
+          cursor={false}
           contentStyle={{
             ...chartTheme.tooltip.contentStyle,
             boxShadow: chartTheme.isDark
@@ -47,32 +47,31 @@ export default function RevenueBarChart({ data, formatMoney }) {
         />
         <Bar
           dataKey="value"
-          radius={[0, 4, 4, 0]}
           stroke="none"
+          isAnimationActive={false}
           activeBar={false}
           onMouseEnter={(_, index) => setActiveIndex(index)}
           onMouseLeave={() => setActiveIndex(null)}
           style={{ cursor: 'pointer', outline: 'none' }}
-        >
-          {rows.map((entry, index) => {
-            const base = rankFill(index, rows.length);
-            const opacity =
-              activeIndex == null
-                ? base
-                : index === activeIndex
-                  ? Math.min(1, base + 0.18)
-                  : base * 0.7;
+          shape={(props) => {
+            const { x, y, width, height, index } = props;
+            const active = index === activeIndex;
+            const grow = active ? 5 : 0;
             return (
-              <Cell
-                key={entry.name || index}
+              <Rectangle
+                x={x}
+                y={y - grow / 2}
+                width={width}
+                height={height + grow}
+                radius={[0, 5, 5, 0]}
                 fill={BAR_FILL}
-                fillOpacity={opacity}
+                fillOpacity={active ? 1 : rankFill(index, rows.length)}
                 stroke="none"
-                style={{ outline: 'none', transition: 'fill-opacity 280ms ease' }}
+                style={{ outline: 'none' }}
               />
             );
-          })}
-        </Bar>
+          }}
+        />
       </BarChart>
     </ResponsiveContainer>
   );

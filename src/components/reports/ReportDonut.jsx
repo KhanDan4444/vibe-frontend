@@ -21,7 +21,6 @@ function renderSlice(props) {
     startAngle,
     endAngle,
     fill,
-    isActive,
   } = props;
 
   return (
@@ -29,11 +28,10 @@ function renderSlice(props) {
       cx={cx}
       cy={cy}
       innerRadius={innerRadius}
-      outerRadius={isActive ? outerRadius + 3 : outerRadius}
+      outerRadius={outerRadius}
       startAngle={startAngle}
       endAngle={endAngle}
       fill={fill}
-      style={{ transition: 'opacity 280ms ease' }}
     />
   );
 }
@@ -63,12 +61,11 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
               cx="50%"
               cy="50%"
               innerRadius={46}
-              outerRadius={70}
+              outerRadius={68}
               paddingAngle={2.5}
               stroke={chartTheme.isDark ? '#1a1d24' : '#ffffff'}
               strokeWidth={2}
               shape={renderSlice}
-              activeIndex={activeIndex ?? undefined}
               onMouseEnter={(_, index) => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
               style={{ cursor: 'pointer', outline: 'none' }}
@@ -77,12 +74,12 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
                 <Cell
                   key={entry.name}
                   fill={sliceColor(entry, i)}
-                  fillOpacity={activeIndex == null || activeIndex === i ? 1 : 0.72}
-                  style={{ outline: 'none', transition: 'fill-opacity 280ms ease' }}
+                  style={{ outline: 'none' }}
                 />
               ))}
             </Pie>
             <Tooltip
+              cursor={false}
               contentStyle={{
                 ...chartTheme.tooltip.contentStyle,
                 boxShadow: chartTheme.isDark
@@ -99,16 +96,11 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
       <ul className="mt-2 flex max-h-[5.5rem] flex-col gap-1.5 overflow-y-auto px-0.5">
         {rows.map((entry, i) => {
           const active = activeIndex === i;
-          const dimmed = activeIndex != null && !active;
           return (
             <li
               key={entry.name}
-              className={`flex cursor-pointer items-center gap-2 text-xs transition-[opacity,color] duration-300 ease-out ${
-                active
-                  ? 'text-app-text-strong'
-                  : dimmed
-                    ? 'text-app-muted opacity-60'
-                    : 'text-slate-600 dark:text-app-muted'
+              className={`flex cursor-pointer items-center gap-2 text-xs transition-colors duration-200 ${
+                active ? 'text-app-text-strong' : 'text-slate-600 dark:text-app-muted'
               }`}
               onMouseEnter={() => setActiveIndex(i)}
               onMouseLeave={() => setActiveIndex(null)}
