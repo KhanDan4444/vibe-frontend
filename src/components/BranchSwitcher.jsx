@@ -14,6 +14,9 @@ export default function BranchSwitcher({ branches, selectedBranchId, onChange, c
   const activeBranches = branches.filter((b) => b.is_active !== false);
   const inactiveBranches = branches.filter((b) => b.is_active === false);
 
+  // Single-location gyms: nothing useful to switch — hide the control.
+  if (activeBranches.length <= 1 && inactiveBranches.length === 0) return null;
+
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <MapPin className="hidden h-4 w-4 shrink-0 text-app-muted sm:block" aria-hidden />
