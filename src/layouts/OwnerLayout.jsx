@@ -1,5 +1,5 @@
 // src/layouts/OwnerLayout.jsx
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { Suspense, useState, useMemo, useRef, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
@@ -40,6 +40,14 @@ import {
   SIDEBAR_LABEL_VISIBLE,
   SIDEBAR_LABEL_HIDDEN,
 } from '../hooks/useSidebarCollapsed';
+
+function OwnerRouteFallback() {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center text-sm text-app-muted">
+      Loading…
+    </div>
+  );
+}
 
 export default function OwnerLayout() {
   const { t } = useTranslation();
@@ -345,7 +353,9 @@ export default function OwnerLayout() {
               </div>
             </div>
           )}
-          <Outlet />
+          <Suspense fallback={<OwnerRouteFallback />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
 

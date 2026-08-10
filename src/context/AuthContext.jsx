@@ -68,11 +68,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let cancelled = false;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 15_000);
+
     (async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/session`, {
           credentials: API_FETCH_CREDENTIALS,
           headers: withAuthHeaders(),
+          signal: controller.signal,
         });
         if (!response.ok) {
           if (response.status === 401) clearAccessToken();
@@ -84,14 +88,17 @@ export const AuthProvider = ({ children }) => {
           setGymSubscription(data.subscription || null);
         }
       } catch {
-        /* not signed in */
+        /* not signed in or session timed out */
       } finally {
+        window.clearTimeout(timeoutId);
         if (!cancelled) setLoading(false);
       }
     })();
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timeoutId);
+      controller.abort();
     };
   }, []);
 
