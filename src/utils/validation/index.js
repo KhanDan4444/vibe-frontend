@@ -51,6 +51,8 @@ export {
 export { validateMemberForm } from './member';
 export {
   validateGymSignupDetails,
+  validateGymSignupGymStep,
+  validateGymSignupAccountStep,
   validateAdminGymRegister,
   validateGymProfileEdit,
   validateOwnerProfile,

@@ -270,6 +270,8 @@
     "signupSubtitle": "ስልክዎን ያረጋግጡ፣ ከዚያ የጂም መለያዎን ይፍጠሩ።",
     "signupStepVerify": "ስልክ ያረጋግጡ",
     "signupStepDetails": "መለያ ይፍጠሩ",
+    "signupStepGym": "የጂም ዝርዝር",
+    "signupStepAccount": "የባለቤት መለያ",
     "signupSectionGym": "የጂም ዝርዝር",
     "signupSectionAccount": "የባለቤት መለያ",
     "signupPhoneHint": "የኢትዮጵያ የሞባይል ቁጥር (ለምሳሌ 0912345678)። የማረጋገጫ ኮድ እንልካለን።",

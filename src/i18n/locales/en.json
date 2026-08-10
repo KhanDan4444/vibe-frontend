@@ -54,6 +54,8 @@
     "signupSubtitle": "Verify your phone, then create your gym account.",
     "signupStepVerify": "Verify phone",
     "signupStepDetails": "Create account",
+    "signupStepGym": "Gym details",
+    "signupStepAccount": "Owner account",
     "signupSectionGym": "Gym details",
     "signupSectionAccount": "Owner account",
     "signupPhoneHint": "Ethiopian mobile number (e.g. 0912345678). We will send a verification code.",

@@ -1,7 +1,7 @@
 import { ok, fail, firstFailure } from './result';
 import { validateRequiredName } from './names';
 import { validateRequiredEthiopianPhone, validateOptionalEthiopianPhone } from './phone';
-import { validateUsername, validateOptionalEmail } from './auth';
+import { validateUsername, validateOptionalEmail, validateOtpCode } from './auth';
 import { validatePassword, validatePasswordMatch } from './passwords';
 import { validateRequiredPayment, validatePaymentDateNotFuture } from './payment';
 
@@ -33,6 +33,32 @@ export function validateGymSignupDetails({
     validatePassword(password),
     validatePasswordMatch(password, confirm),
     saasPlanId ? ok() : fail('validation.selectSaasPlan', 'saasPlanId')
+  );
+}
+
+/**
+ * Register step: OTP + gym name + plan (before owner account fields).
+ * @param {{ code: string, gymName: string, saasPlanId?: string|number|null }} fields
+ */
+export function validateGymSignupGymStep({ code, gymName, saasPlanId }) {
+  return firstFailure(
+    validateOtpCode(code),
+    validateRequiredName(gymName, { field: 'gymName' }),
+    saasPlanId ? ok() : fail('validation.selectSaasPlan', 'saasPlanId')
+  );
+}
+
+/**
+ * Register step: owner account fields only.
+ * @param {{ ownerName: string, username: string, email?: string, password: string, confirm: string }} fields
+ */
+export function validateGymSignupAccountStep({ ownerName, username, email, password, confirm }) {
+  return firstFailure(
+    validateRequiredName(ownerName, { field: 'ownerName' }),
+    validateUsername(username),
+    validateOptionalEmail(email),
+    validatePassword(password),
+    validatePasswordMatch(password, confirm)
   );
 }
 

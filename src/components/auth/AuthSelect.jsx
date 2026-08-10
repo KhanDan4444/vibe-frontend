@@ -72,7 +72,7 @@ export default function AuthSelect({
         <ul
           role="listbox"
           aria-labelledby={fieldId}
-          className="absolute left-0 right-0 z-40 mt-2 max-h-56 overflow-y-auto rounded-2xl border border-white/15 bg-[#15202b] py-1.5 shadow-xl"
+          className="absolute left-0 right-0 z-40 mt-2 max-h-56 overflow-y-auto rounded-2xl border border-white/15 bg-[#0f172a] py-1.5 shadow-2xl ring-1 ring-white/10"
         >
           {options.map((opt) => {
             const active = String(opt.value) === String(value);
@@ -85,8 +85,8 @@ export default function AuthSelect({
                   className={[
                     'flex w-full items-center justify-between gap-2 px-4 py-2.5 text-left text-sm transition-colors',
                     active
-                      ? 'bg-[#0f766e]/25 font-medium text-[#5eead4]'
-                      : 'text-white/85 hover:bg-white/10',
+                      ? 'bg-[#0f766e]/30 font-medium text-[#5eead4]'
+                      : 'text-white hover:bg-white/10',
                   ].join(' ')}
                   onClick={() => {
                     onChange(String(opt.value));

@@ -305,12 +305,13 @@
 
   .auth-link {
     font-weight: 600;
-    color: #0f766e;
+    /* Lighter than CTA fill so links stay readable on dark glass */
+    color: #2dd4bf;
     transition: color 150ms ease;
   }
 
   .auth-link:hover {
-    color: #0d9488;
+    color: #5eead4;
   }
 
   .auth-label {
@@ -340,12 +341,12 @@
 
   .auth-banner-success {
     border-radius: 1rem;
-    border: 1px solid rgb(52 211 153 / 0.35);
-    background: rgb(16 185 129 / 0.12);
+    border: 1px solid rgb(15 118 110 / 0.45);
+    background: rgb(15 118 110 / 0.18);
     padding: 0.875rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #a7f3d0;
+    color: #99f6e4;
   }
 
   .auth-section-title {
