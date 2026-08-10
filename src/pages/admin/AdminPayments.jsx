@@ -41,7 +41,7 @@ import { AdminTableRowsSkeleton, AdminListSkeleton } from '../../components/Load
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { selectSurface, tableRowHover, iconActionIdle, iconActionDanger, headingText } from '../../utils/surfaceClasses';
+import { selectSurface, tableRowHover, iconActionIdle, iconActionDanger, headingText, cardSurface } from '../../utils/surfaceClasses';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -580,12 +580,12 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           <p className="text-xs text-app-muted">{t('admin.paymentsEditHint')}</p>
         </div>
 
-        <div className="lg:hidden divide-y divide-app-border-subtle">
+        <div className="lg:hidden space-y-3 p-3">
           {initialLoading ? (
             <AdminListSkeleton rows={6} />
           ) : filteredPayments.length > 0 ? (
             filteredPayments.map((payment) => (
-              <div key={payment.id} className="p-3.5">
+              <div key={payment.id} className={`${cardSurface} p-3.5`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-semibold text-app-text-strong">{payment.gymName}</p>

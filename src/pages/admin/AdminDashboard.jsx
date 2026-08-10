@@ -616,14 +616,14 @@ export default function AdminDashboard() {
                     </button>
                   </div>
 
-                  <div className="lg:hidden divide-y divide-app-border-subtle">
+                  <div className="lg:hidden space-y-3 p-3">
                     {alertGyms.length > 0 ? (
                       alertGyms.map((gym) => (
                         <button
                           key={gym.id}
                           type="button"
                           onClick={() => openGymDetail(gym.id)}
-                          className="flex w-full items-start justify-between gap-3 p-4 text-left active:bg-app-surface/60"
+                          className={`${cardSurface} flex w-full items-start justify-between gap-3 p-4 text-left active:bg-app-surface/60`}
                         >
                           <div className="min-w-0">
                             <div className="flex items-center gap-3">
@@ -835,31 +835,32 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <Card className="overflow-hidden">
-                  <div className="flex items-center justify-between gap-3 border-b border-app-border-subtle px-4 py-3 sm:px-6">
-                    <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
-                      {t('admin.gymsSection')}
-                    </h2>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={fetchGyms}
-                      aria-label={t('common.refresh')}
-                    >
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
+                    {t('admin.gymsSection')}
+                  </h2>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={fetchGyms}
+                    aria-label={t('common.refresh')}
+                  >
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
 
-                  <div className="lg:hidden divide-y divide-app-border-subtle">
+                <div className="lg:hidden space-y-3">
                     {loading && gyms.length === 0 ? (
-                      <AdminListSkeleton rows={5} />
+                      <Card className="overflow-hidden">
+                        <AdminListSkeleton rows={5} />
+                      </Card>
                     ) : displayedGyms.length > 0 ? (
                       displayedGyms.map((gym) => {
                         const isUnpaid = gym.isUnpaid;
                         return (
                           <div
                             key={gym.id}
-                            className={`p-4 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
+                            className={`${cardSurface} p-4 active:bg-app-surface/60 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
                           >
                             <button
                               type="button"
@@ -935,23 +936,26 @@ export default function AdminDashboard() {
                         );
                       })
                     ) : (
-                      <EmptyState
-                        icon={AlertCircle}
-                        compact
-                        title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
-                        body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
-                        action={
-                          noGymsYet ? (
-                            <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
-                              {t('admin.registerGym')}
-                            </Button>
-                          ) : null
-                        }
-                      />
+                      <div className={cardSurface}>
+                        <EmptyState
+                          icon={AlertCircle}
+                          compact
+                          title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
+                          body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                          action={
+                            noGymsYet ? (
+                              <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
+                                {t('admin.registerGym')}
+                              </Button>
+                            ) : null
+                          }
+                        />
+                      </div>
                     )}
-                  </div>
+                </div>
 
-                  <div className="hidden lg:block overflow-x-auto">
+                <Card className="hidden overflow-hidden lg:block">
+                  <div className="overflow-x-auto">
                     <table className="admin-data-table admin-gyms-table min-w-[800px]">
                       <thead>
                         <tr>
@@ -1107,6 +1111,20 @@ export default function AdminDashboard() {
                     </p>
                   </div>
                 </Card>
+
+                <div className={`lg:hidden ${cardSurface}`}>
+                  <div className="px-4 py-3">
+                    <PaginationControls
+                      page={gymPage}
+                      totalPages={gymTotalPages}
+                      total={gymTotal}
+                      limit={GYM_PAGE_SIZE}
+                      onPageChange={setGymPage}
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
                 </>
               )}
             </>
