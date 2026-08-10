@@ -46,8 +46,7 @@ function FieldLabel({ htmlFor, icon: Icon, children, hint, required = false }) {
   );
 }
 
-const inputClass =
-  'mt-1.5 block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2.5 text-sm text-app-text-strong shadow-sm transition-colors placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20 disabled:bg-app-surface disabled:text-app-muted';
+const inputClass = `mt-1.5 app-field disabled:bg-app-surface disabled:text-app-muted`;
 
 function PasswordField({ id, label, value, onChange, show, onToggleShow, autoComplete, fieldErrors, field, onClearError }) {
   const { t } = useTranslation();

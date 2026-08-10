@@ -13,10 +13,11 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
   const totalAfter = alreadyCollected + pending;
 
   if (!termStart) return null;
+  if (termPayments.length === 0 && pending === 0) return null;
 
   return (
-    <div className="rounded-xl border border-app-border-subtle bg-app-surface p-4">
-      <p className="text-xs font-bold uppercase tracking-wide text-app-muted mb-3">
+    <div className="rounded-lg border border-app-border-subtle bg-app-surface px-3 py-3">
+      <p className="mb-2.5 text-sm font-medium text-app-text-strong">
         {t('modals.changePlan.termPaymentSummaryTitle')}
       </p>
 
@@ -52,7 +53,7 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
           <span className="font-medium text-app-text">
             {t('modals.changePlan.termPaymentThisChange')}
           </span>
-          <span className="font-semibold text-emerald-600 dark:text-emerald-400">+{formatMoney(pending)}</span>
+          <span className="font-semibold text-app-text-strong">+{formatMoney(pending)}</span>
         </div>
       ) : null}
 
@@ -63,7 +64,7 @@ export default function ChangePlanPaymentSummary({ payments, termStart, pendingA
         <span className="text-base font-bold text-app-text-strong">{formatMoney(totalAfter)}</span>
       </div>
 
-      <p className="mt-3 text-xs leading-relaxed text-app-muted">
+      <p className="mt-2.5 text-xs leading-relaxed text-app-muted">
         {t('modals.changePlan.termPaymentRevenueNote')}
       </p>
     </div>

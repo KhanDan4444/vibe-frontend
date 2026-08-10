@@ -10,7 +10,15 @@ import {
   boundsForTermStartWithPayment,
   paymentDateForTermStart,
 } from '../utils/datePickerBounds';
-import { validateChangePlanPayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
+import {
+  validateChangePlanPayment,
+  showValidationError,
+  inputClass,
+  fieldErrorMessage,
+  clearFieldError,
+  clearAllFieldErrors,
+  FORM_INPUT_CLASS,
+} from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
@@ -20,10 +28,32 @@ import { mapPaymentFromApi } from '../utils/apiMappers';
 import { getMemberPayments } from '../services/memberService';
 import { formatMoney } from '../utils/formatMoney';
 import ChangePlanPaymentSummary from './ChangePlanPaymentSummary';
+import ChangePlanAmountHint from './ChangePlanAmountHint';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import { modalBody } from '../utils/modalLayout';
+
+const termModeBtn =
+  'rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
+const termModeActive = 'bg-app-raised text-app-text-strong shadow-sm';
+const termModeIdle = 'text-app-muted hover:text-app-text';
+
+function switchToMidTerm(setters) {
+  const { setCustomTermStart, setStartDate, setPaymentDate, setAmountEdited, member, today } = setters;
+  setCustomTermStart(false);
+  setStartDate(member.startDate);
+  setPaymentDate(today);
+  setAmountEdited(false);
+}
+
+function switchToNewTerm(setters) {
+  const { setCustomTermStart, setStartDate, setPaymentDate, setAmountEdited, today } = setters;
+  setCustomTermStart(true);
+  setStartDate(today);
+  setPaymentDate(today);
+  setAmountEdited(false);
+}
 
 /**
  * Switch an active, paid member to a different plan mid-term and record payment.
@@ -78,16 +108,28 @@ export default function ChangePlanModal({
   const termStartBounds = boundsForTermStartWithPayment();
   const paymentBounds = boundsForPaymentOnTerm(effectiveStartDate);
 
+  const termModeSetters = useMemo(
+    () => ({
+      setCustomTermStart,
+      setStartDate,
+      setPaymentDate,
+      setAmountEdited,
+      member,
+      today,
+    }),
+    [member, today]
+  );
+
   const initDefaults = useCallback(() => {
     if (!member) return;
     const current = plans.find((p) => p.id === member.planId);
     const options = plans.filter((p) => p.id !== member.planId);
     const first = options[0];
-    const today = todayString();
+    const todayVal = todayString();
     setPlanId(first ? String(first.id) : '');
     setCustomTermStart(false);
-    setStartDate(member.startDate || today);
-    setPaymentDate(today);
+    setStartDate(member.startDate || todayVal);
+    setPaymentDate(todayVal);
     setMethod('Cash');
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
@@ -174,11 +216,14 @@ export default function ChangePlanModal({
   };
 
   const isBusy = saving || submitting;
-
-  const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
+  const displayError =
+    (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
+  const midTermHint = member.isUnpaid
+    ? t('modals.changePlan.midTermHintUnpaid')
+    : t('modals.changePlan.midTermHintPaid');
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="lg">
       <div className={`${modalBody} relative`}>
         <button
           type="button"
@@ -188,67 +233,95 @@ export default function ChangePlanModal({
           <X className="h-5 w-5" />
         </button>
 
-        <div className="flex items-center gap-2 mb-1 pr-8">
-          <ArrowLeftRight className="h-5 w-5 text-teal-700" />
-          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changePlan.title')}</h2>
+        <div className="mb-4 flex items-center gap-2 pr-8">
+          <ArrowLeftRight className="h-5 w-5 shrink-0 text-teal-800/75 dark:text-teal-600/80" aria-hidden />
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changePlan.title')}</h2>
+            <p className="mt-0.5 text-sm text-app-muted">
+              {t('modals.changePlan.subtitle', { name: member.name })}
+            </p>
+          </div>
         </div>
-        <p className="text-sm text-app-muted mb-4">
-          {t('modals.changePlan.subtitle', { name: member.name })}
-        </p>
 
-        {currentPlan && (
-          <div className="ui-info-panel mb-4">
-            {t('modals.changePlan.currentPlan')}: <span className="font-medium">{currentPlan.name}</span>
-            {member.isUnpaid ? (
-              <>
-                {' · '}
-                <span className="font-medium text-amber-700 dark:text-amber-300">{t('modals.billing.noPaymentRecordedYet')}</span>
-              </>
-            ) : (
-              <>
-                {' · '}
+        {currentPlan ? (
+          member.isUnpaid ? (
+            <div className="ui-alert-amber mb-4 space-y-1.5">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+                <span className="font-medium">{t('modals.changePlan.currentPlan')}</span>
+                <span className="font-semibold">{currentPlan.name}</span>
+                {member.startDate && member.startDate !== '—' ? (
+                  <>
+                    <span className="opacity-50" aria-hidden>
+                      ·
+                    </span>
+                    <span>
+                      {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
+                    </span>
+                  </>
+                ) : null}
+              </div>
+              <p className="text-xs leading-relaxed">{t('modals.billing.unpaidChangeBanner')}</p>
+            </div>
+          ) : (
+            <div className="mb-4 flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm">
+              <span className="text-app-muted">{t('modals.changePlan.currentPlan')}</span>
+              <span className="font-semibold text-app-text-strong">{currentPlan.name}</span>
+              <span className="text-app-border-subtle" aria-hidden>
+                ·
+              </span>
+              <span className="text-app-muted">
                 {t('modals.billing.paidThrough')}{' '}
-                <span className="font-medium">{formatDisplayDate(member.endDate)}</span>
-              </>
-            )}
-          </div>
-        )}
+                <span className="font-medium text-app-text">{formatDisplayDate(member.endDate)}</span>
+              </span>
+              {member.startDate && member.startDate !== '—' ? (
+                <>
+                  <span className="text-app-border-subtle" aria-hidden>
+                    ·
+                  </span>
+                  <span className="text-app-muted">
+                    {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
+                  </span>
+                </>
+              ) : null}
+            </div>
+          )
+        ) : null}
 
-        {otherPlans.length === 0 && (
-          <div className="ui-alert-amber mb-4">
-            {t('modals.billing.addAnotherMembershipPlan')}
-          </div>
-        )}
+        {otherPlans.length === 0 ? (
+          <div className="ui-alert-amber mb-4">{t('modals.billing.addAnotherMembershipPlan')}</div>
+        ) : null}
 
-        {member.isUnpaid && (
-          <div className="ui-alert-amber mb-4">
-            {t('modals.billing.unpaidChangeBanner')}
-          </div>
-        )}
+        {displayError ? <div className="ui-alert-rose mb-4">{displayError}</div> : null}
 
-        {displayError && (
-          <div className="ui-alert-rose mb-4">
-            {displayError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
+        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-5">
           <div>
-            <label className="form-label">
-              {t('modals.changePlan.newPlan')}
-              <RequiredMark />
-            </label>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <label className="form-label mb-0" htmlFor="change-plan-select">
+                {t('modals.changePlan.newPlan')}
+                <RequiredMark />
+              </label>
+              {newEndDate && newEndDate !== '—' ? (
+                <span className="inline-flex items-center rounded-full border border-app-border-subtle bg-app-surface px-2.5 py-0.5 text-xs font-medium text-app-text">
+                  {upgradeHint?.isDowngrade && upgradeHint?.keepTermEnd
+                    ? t('modals.changePlan.termEndUnchangedChip', { date: formatDisplayDate(newEndDate) })
+                    : t('modals.changePlan.termEndChip', { date: formatDisplayDate(newEndDate) })}
+                </span>
+              ) : null}
+            </div>
             <select
+              id="change-plan-select"
               required
               disabled={otherPlans.length === 0}
-              className={`${fc('planId')}disabled:bg-app-surface disabled:text-app-muted`}
+              className={`${fc('planId')} disabled:bg-app-surface disabled:text-app-muted`}
               value={planId}
               onChange={(e) => {
                 setPlanId(e.target.value);
                 clearFieldError(setLocalFieldErrors, 'planId');
               }}
             >
-              <option value="" disabled>{t('modals.renew.selectPlan')}</option>
+              <option value="" disabled>
+                {t('modals.renew.selectPlan')}
+              </option>
               {otherPlans.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} — {formatMoney(p.price)} / {p.duration}mo
@@ -258,52 +331,46 @@ export default function ChangePlanModal({
             <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (customTermStart) {
-                setCustomTermStart(false);
-                setStartDate(member.startDate);
-                setPaymentDate(today);
-              } else {
-                setCustomTermStart(true);
-                setStartDate(today);
-                setPaymentDate(today);
-              }
-              setAmountEdited(false);
-            }}
-            className="text-xs font-medium text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300"
-          >
-            {customTermStart
-              ? t('modals.changePlan.switchMidTerm')
-              : t('modals.changePlan.newTermFromDate')}
-          </button>
-
-          {!customTermStart ? (
-            <div className="ui-info-panel">
-              <p className="font-medium">
-                {member.isUnpaid ? t('modals.changePlan.switchBeforePayment') : t('modals.changePlan.switchOnCurrentTerm')}
-              </p>
-              <p className="mt-1 text-xs text-app-muted">
-                {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
-                {member.isUnpaid
-                  ? ` ${t('modals.changePlan.unpaidPickPlan')}`
-                  : ` ${t('modals.changePlan.paidPickPlan')}`}
-              </p>
+          <div>
+            <p className="form-label mb-1.5">{t('modals.changePlan.termModeLabel')}</p>
+            <div
+              className="grid grid-cols-2 gap-1 rounded-lg border border-app-border-subtle bg-app-surface p-1"
+              role="group"
+              aria-label={t('modals.changePlan.termModeLabel')}
+            >
+              <button
+                type="button"
+                onClick={() => switchToMidTerm(termModeSetters)}
+                className={`${termModeBtn} ${!customTermStart ? termModeActive : termModeIdle}`}
+                aria-pressed={!customTermStart}
+              >
+                {t('modals.changePlan.termModeMidTerm')}
+              </button>
+              <button
+                type="button"
+                onClick={() => switchToNewTerm(termModeSetters)}
+                className={`${termModeBtn} ${customTermStart ? termModeActive : termModeIdle}`}
+                aria-pressed={customTermStart}
+              >
+                {t('modals.changePlan.termModeNewTerm')}
+              </button>
             </div>
-          ) : (
+            <p className="mt-1.5 text-xs text-app-muted">
+              {!customTermStart ? midTermHint : t('modals.changePlan.freshTermHint')}
+            </p>
+            {customTermStart && !member.isUnpaid && member.endDate && member.endDate !== '—' ? (
+              <p className="mt-1 text-xs leading-relaxed text-amber-800 dark:text-amber-200/90">
+                {t('modals.changePlan.customTermPaidWarning', { date: formatDisplayDate(member.endDate) })}
+              </p>
+            ) : null}
+          </div>
+
+          {customTermStart ? (
             <div>
-              {customTermStart && !member.isUnpaid && member.endDate && member.endDate !== '—' ? (
-                <div className="ui-alert-amber mb-3">
-                  {t('modals.changePlan.customTermPaidWarning', {
-                    date: formatDisplayDate(member.endDate),
-                  })}
-                </div>
-              ) : null}
               <label className="form-label">
-              {t('modals.changePlan.effectiveDate')}
-              <RequiredMark />
-            </label>
+                {t('modals.changePlan.effectiveDate')}
+                <RequiredMark />
+              </label>
               <DateField
                 required
                 max={termStartBounds.max}
@@ -316,137 +383,41 @@ export default function ChangePlanModal({
                 }}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
-              <p className="mt-1 text-xs text-app-muted">
-                {t('modals.changePlan.freshTermHint')}
-              </p>
             </div>
-          )}
+          ) : null}
 
-          <div>
-            <label className="form-label">
-              {t('modals.changePlan.paymentDateReceived')}
-              <RequiredMark />
-            </label>
-            <DateField
-              required
-              min={paymentBounds.min}
-              max={paymentBounds.max}
-              className={fc('paymentDate')}
-              value={paymentDate}
-              onChange={(v) => {
-                setPaymentDate(v);
-                clearFieldError(setLocalFieldErrors, 'paymentDate');
-              }}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
-            <p className="mt-1 text-xs text-app-muted">
-              {t('modals.changePlan.paymentCollectedHint')}
-            </p>
-            {hasChangePlanPaymentOnDate ? (
-              <p className="mt-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
-                {t('validation.changePlanDuplicate')}
-              </p>
-            ) : null}
-          </div>
-
-          {newEndDate && newEndDate !== '—' && (
-            <div className="ui-alert-indigo">
-              {upgradeHint?.isDowngrade && upgradeHint?.keepTermEnd ? (
-                <>
-                  {t('modals.changePlan.termEndUnchanged')} <span className="font-semibold">{formatDisplayDate(newEndDate)}</span>
-                </>
-              ) : (
-                <>
-                  {t('modals.changePlan.newTermEnds')} <span className="font-semibold">{formatDisplayDate(newEndDate)}</span>
-                </>
-              )}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="form-label">
-              {t('modals.changePlan.amountDue')}
-              <RequiredMark />
-            </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
+                {t('modals.changePlan.paymentDateReceived')}
+                <RequiredMark />
+              </label>
+              <DateField
                 required
-                className={fc('amount')}
-                value={amount}
-                onChange={(e) => {
-                  setAmountEdited(true);
-                  setAmount(e.target.value);
-                  clearFieldError(setLocalFieldErrors, 'amount');
+                min={paymentBounds.min}
+                max={paymentBounds.max}
+                className={fc('paymentDate')}
+                value={paymentDate}
+                onChange={(v) => {
+                  setPaymentDate(v);
+                  clearFieldError(setLocalFieldErrors, 'paymentDate');
                 }}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
-              {upgradeHint?.freshTerm ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedFreshTerm', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
-                    paidThrough: formatDisplayDate(member.endDate),
-                  })}
+              <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
+              <p className="mt-1 text-xs text-app-muted">{t('modals.changePlan.paymentCollectedHint')}</p>
+              {hasChangePlanPaymentOnDate ? (
+                <p className="mt-1 text-xs font-medium text-amber-700 dark:text-amber-300">
+                  {t('validation.changePlanDuplicate')}
                 </p>
-              ) : upgradeHint?.prePayment ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedPrePayment', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
-                  })}
-                </p>
-              ) : upgradeHint?.isDowngrade ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedDowngradeTerm', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    endDate: formatDisplayDate(member.endDate),
-                    planName: currentPlan?.name || '—',
-                  })}
-                </p>
-              ) : upgradeHint ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedUpgradeTerm', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    newPrice: formatMoney(upgradeHint.newPlanPrice),
-                    credit: formatMoney(upgradeHint.credit),
-                    days: upgradeHint.remainingDays,
-                    dayLabel: t(
-                      upgradeHint.remainingDays === 1 ? 'modals.billing.day' : 'modals.billing.days'
-                    ),
-                    planName: currentPlan?.name || '—',
-                  })}
-                  {!amountEdited && (
-                    <span className="text-app-muted"> {t('modals.billing.suggestedUpgradeAdjust')}</span>
-                  )}
-                </p>
-              ) : (
-                <p className="mt-1 text-xs text-app-muted">{t('modals.changePlan.amountCollectedHint')}</p>
-              )}
-              {upgradeHint && amountEdited && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAmountEdited(false);
-                    setAmount(String(upgradeHint.suggestedAmount));
-                  }}
-                  className="mt-1 text-xs font-medium text-teal-700 hover:text-teal-800"
-                >
-                  {t('modals.billing.useSuggestedAmount', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                  })}
-                </button>
-              )}
+              ) : null}
             </div>
             <div>
               <label className="form-label">
-              {t('modals.member.method')}
-              <RequiredMark />
-            </label>
+                {t('modals.member.method')}
+                <RequiredMark />
+              </label>
               <select
-                className="mt-1 block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm focus:border-teal-600 focus:outline-none cursor-pointer"
+                className={fc('method')}
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -459,13 +430,46 @@ export default function ChangePlanModal({
             </div>
           </div>
 
+          <div>
+            <label className="form-label">
+              {t('modals.changePlan.amountDue')}
+              <RequiredMark />
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              className={fc('amount')}
+              value={amount}
+              onChange={(e) => {
+                setAmountEdited(true);
+                setAmount(e.target.value);
+                clearFieldError(setLocalFieldErrors, 'amount');
+              }}
+            />
+            <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
+            <ChangePlanAmountHint
+              upgradeHint={upgradeHint}
+              amountEdited={amountEdited}
+              selectedPlan={selectedPlan}
+              currentPlan={currentPlan}
+              member={member}
+              t={t}
+              onUseSuggested={() => {
+                setAmountEdited(false);
+                setAmount(String(upgradeHint.suggestedAmount));
+              }}
+            />
+          </div>
+
           <ChangePlanPaymentSummary
             payments={memberPayments}
             termStart={termStart}
             pendingAmount={parseFloat(amount) || 0}
           />
 
-          <div className="pt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
+          <div className="flex flex-col-reverse gap-2 border-t border-app-border-subtle pt-4 sm:flex-row sm:justify-end sm:gap-3">
             <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
               {t('common.cancel')}
             </Button>

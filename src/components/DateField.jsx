@@ -4,11 +4,11 @@ import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString, clampIsoDate, isDateRangeValid } from '../utils/date';
 
-const DEFAULT_CLASS =
-  'block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text-strong placeholder:text-app-muted focus:outline-none focus:ring-0 focus:border-app-input-border';
+const DEFAULT_CLASS = 'app-field';
 
-const OPEN_CLASS = '!border-teal-600 ring-2 ring-teal-600/20';
-const FOCUS_CLASS = 'focus-visible:!border-teal-600 focus-visible:ring-2 focus-visible:ring-teal-600/20';
+const OPEN_CLASS = '!border-teal-600 !shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(13_148_136/0.2)] dark:!shadow-[inset_0_1px_2px_rgb(0_0_0/0.28),0_0_0_2px_rgb(13_148_136/0.25)]';
+const FOCUS_CLASS =
+  'focus-visible:!border-teal-600 focus-visible:!shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(13_148_136/0.2)] dark:focus-visible:!shadow-[inset_0_1px_2px_rgb(0_0_0/0.28),0_0_0_2px_rgb(13_148_136/0.25)]';
 
 const POPOVER_MIN_WIDTH = 288;
 const POPOVER_EST_HEIGHT = 320;
@@ -234,11 +234,10 @@ export function DateField({
         }}
         className={[
           'flex w-full min-h-[42px] items-center justify-between gap-2 text-left',
+          DEFAULT_CLASS,
           FOCUS_CLASS,
           pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className,
-          // Open owns teal — suppress admin-field :focus flicker while the popover is up.
-          'focus:!border-app-input-border focus:!ring-0',
           open && rangeValid ? OPEN_CLASS : '',
         ]
           .filter(Boolean)

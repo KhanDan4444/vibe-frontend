@@ -98,7 +98,7 @@ export default function ResetPasswordModal({
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2.5 pr-10 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
+                className={inputClass('app-field pr-10', fieldErrors, 'password')}
               />
               <button
                 type="button"

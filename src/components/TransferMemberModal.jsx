@@ -96,7 +96,7 @@ export default function TransferMemberModal({
                   required
                   value={branchId}
                   onChange={(e) => setBranchId(e.target.value)}
-                  className="block w-full rounded-lg border border-app-input-border bg-app-input py-2.5 pl-9 pr-3 text-sm focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20"
+                  className="app-field py-2.5 pl-9 pr-3"
                 >
                   {activeBranches.map((branch) => (
                     <option key={branch.id} value={branch.id}>

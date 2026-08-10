@@ -1,10 +1,12 @@
 /** Tailwind classes applied when a field has a validation error. */
 export const FIELD_INPUT_ERROR_CLASS =
-  '!border-rose-400 ring-1 ring-rose-400/40 focus:!border-rose-400 focus:!ring-rose-400/35 dark:!border-rose-400';
+  '!border-rose-400 !shadow-[0_0_0_2px_rgb(244_63_94/0.25)] focus:!border-rose-400 focus:!shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(244_63_94/0.25)] dark:focus:!shadow-[inset_0_1px_2px_rgb(0_0_0/0.28),0_0_0_2px_rgb(244_63_94/0.25)]';
 
-/** Default text input styling used in modals and auth forms. */
-export const FORM_INPUT_CLASS =
-  'mt-1 block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20';
+/** Default text/select styling for modals and app forms (not auth glass). */
+export const FORM_INPUT_CLASS = 'mt-1 app-field';
+
+/** Select-friendly variant — same chrome, pointer cursor. */
+export const FORM_SELECT_CLASS = 'mt-1 app-field cursor-pointer';
 
 /** @param {string} base @param {Record<string, string>} fieldErrors @param {string} field */
 export function inputClass(base, fieldErrors, field) {

@@ -33,7 +33,7 @@ export default function StaffModal({
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
-  const fc = (field) => inputClass('mt-1.5 block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2.5 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, field);
+  const fc = (field) => inputClass(FORM_INPUT_CLASS, fieldErrors, field);
 
   const activeBranches = branches.filter((b) => b.is_active !== false);
   const defaultBranchId = activeBranches.find((b) => b.is_default)?.id ?? activeBranches[0]?.id ?? '';
@@ -264,7 +264,7 @@ export default function StaffModal({
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('block w-full rounded-lg border border-app-input-border bg-app-input px-3 py-2.5 pr-10 text-sm text-app-text-strong placeholder:text-app-muted focus:border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-600/20', fieldErrors, 'password')}
+                className={inputClass(`${FORM_INPUT_CLASS} pr-10`, fieldErrors, 'password')}
               />
               <button
                 type="button"

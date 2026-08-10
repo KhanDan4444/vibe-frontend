@@ -69,5 +69,6 @@ export {
   applyValidationResult,
   normalizeApiField,
   FORM_INPUT_CLASS,
+  FORM_SELECT_CLASS,
   FIELD_INPUT_ERROR_CLASS,
 } from './fieldErrors';

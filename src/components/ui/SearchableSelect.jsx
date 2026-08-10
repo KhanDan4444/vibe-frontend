@@ -73,10 +73,11 @@ export default function SearchableSelect({
         }}
         className={[
           'admin-field mt-1 flex w-full cursor-pointer items-center justify-between gap-2 text-left',
-          // Open state owns the teal ring — button :focus flickers when search input takes focus.
-          'focus:!border-app-input-border focus:!ring-0 focus:outline-none',
-          open && !error ? '!border-teal-600 ring-2 ring-teal-600/20' : '',
-          error ? '!border-rose-400 ring-2 ring-rose-500/20' : '',
+          'focus-visible:!border-teal-600 focus-visible:!shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(13_148_136/0.2)]',
+          open && !error
+            ? '!border-teal-600 !shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(13_148_136/0.2)]'
+            : '',
+          error ? '!border-rose-400 !shadow-[0_0_0_2px_rgb(244_63_94/0.2)]' : '',
           disabled ? 'cursor-not-allowed opacity-60' : '',
         ]
           .filter(Boolean)
