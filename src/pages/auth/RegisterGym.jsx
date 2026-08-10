@@ -253,6 +253,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'code');
                 }}
                 className={fc('code')}
+                placeholder={t('modals.registerGym.otpPlaceholder')}
                 aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'code'))}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'code')} className="text-sm text-rose-300" />
@@ -271,6 +272,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'gymName');
                 }}
                 className={fc('gymName')}
+                placeholder={t('modals.registerGym.gymNamePlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} className="text-sm text-rose-300" />
             </div>
@@ -331,6 +333,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'ownerName');
                 }}
                 className={fc('ownerName')}
+                placeholder={t('modals.registerGym.ownerNamePlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} className="text-sm text-rose-300" />
             </div>
@@ -349,6 +352,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'username');
                 }}
                 className={fc('username')}
+                placeholder={t('modals.registerGym.usernamePlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'username')} className="text-sm text-rose-300" />
             </div>
@@ -366,6 +370,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'email');
                 }}
                 className={fc('email')}
+                placeholder={t('modals.registerGym.emailPlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'email')} className="text-sm text-rose-300" />
             </div>
@@ -384,6 +389,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'password');
                 }}
                 className={fc('password')}
+                placeholder={t('modals.registerGym.passwordPlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} className="text-sm text-rose-300" />
             </div>
@@ -402,6 +408,7 @@ export default function RegisterGym() {
                   clearFieldError(setFieldErrors, 'confirmPassword');
                 }}
                 className={fc('confirmPassword')}
+                placeholder={t('modals.registerGym.confirmPasswordPlaceholder')}
               />
               <FieldError
                 message={fieldErrorMessage(fieldErrors, 'confirmPassword')}
