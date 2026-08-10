@@ -88,6 +88,10 @@ export const GymProvider = ({ children }) => {
   );
 
   const reloadBranches = useCallback(async () => {
+    if (!isGymOwner(user?.role)) {
+      setBranches([]);
+      return;
+    }
     try {
       const res = await listBranches(apiFetch);
       const data = await parseApiResponse(res);
@@ -97,7 +101,7 @@ export const GymProvider = ({ children }) => {
     } catch {
       /* non-blocking */
     }
-  }, [apiFetch]);
+  }, [apiFetch, user?.role]);
 
   useEffect(() => {
     if (!user?.gym_id) return;
@@ -108,7 +112,8 @@ export const GymProvider = ({ children }) => {
   }, [user?.gym_id]);
 
   useEffect(() => {
-    if (user) reloadBranches();
+    if (!user || !isGymOwner(user?.role)) return;
+    reloadBranches();
   }, [user, reloadBranches]);
 
   // Drop stale branch selection (e.g. after DB reset or branch deleted).
@@ -491,10 +496,6 @@ export const GymProvider = ({ children }) => {
     [apiFetch, refreshSummary]
   );
 
-  if (subscription?.accessDenied) {
-    return <SubscriptionLockout gymName={subscription.gymName} />;
-  }
-
   const gymBooting = subscriptionLoading || loading;
 
   const value = useMemo(
@@ -567,6 +568,10 @@ export const GymProvider = ({ children }) => {
       branchReadOnly,
     ]
   );
+
+  if (subscription?.accessDenied) {
+    return <SubscriptionLockout gymName={subscription.gymName} />;
+  }
 
   return <GymContext.Provider value={value}>{children}</GymContext.Provider>;
 };

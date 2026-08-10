@@ -61,9 +61,19 @@ export default function Login() {
 
     clearAllFieldErrors(setFieldErrors);
     setLoading(true);
+    const startedAt = Date.now();
 
     try {
       const profile = await login(email.trim(), password, rememberMe);
+
+      // Keep "Processing…" visible briefly so fast logins don’t flash past it.
+      const elapsed = Date.now() - startedAt;
+      const minVisibleMs = 500;
+      if (elapsed < minVisibleMs) {
+        await new Promise((resolve) => {
+          window.setTimeout(resolve, minVisibleMs - elapsed);
+        });
+      }
 
       if (isPlatformAdmin(profile?.role)) {
         navigate('/admin/dashboard', { replace: true });
@@ -72,12 +82,12 @@ export default function Login() {
       } else {
         navigate('/', { replace: true });
       }
+      // Leave loading true until this screen unmounts after navigation.
     } catch (err) {
       const next = mutationErrorState(err, { email: 'email' });
       setError(next.error);
       setFieldErrors(next.fieldErrors);
       focusFirstInvalid(next.fieldErrors);
-    } finally {
       setLoading(false);
     }
   };
@@ -185,7 +195,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-700/40 disabled:opacity-50"
+              aria-busy={loading}
+              className="mt-1 flex min-h-[48px] w-full cursor-pointer items-center justify-center rounded-2xl bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-700/40 disabled:cursor-wait disabled:opacity-95"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
