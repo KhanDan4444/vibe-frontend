@@ -11,37 +11,31 @@ import RequiredMark from '../ui/RequiredMark';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { isGymOwner, isGymStaff } from '../../utils/roles';
 import {
-  Building2,
-  User,
-  Mail,
-  Phone,
   Eye,
   EyeOff,
   Check,
   X as XIcon,
-  AtSign,
 } from 'lucide-react';
 import ResponsiveModal from '../ResponsiveModal';
 import Button from '../ui/Button';
-import { modalBody, modalHeader } from '../../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 
 function Alert({ children }) {
   return (
-    <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700" role="alert">
+    <div className="ui-alert-rose" role="alert">
       {children}
     </div>
   );
 }
 
-function FieldLabel({ htmlFor, icon: Icon, children, hint, required = false }) {
+function FieldLabel({ htmlFor, children, hint, required = false }) {
   return (
     <label htmlFor={htmlFor} className="form-label">
       <span className="inline-flex items-center gap-1.5">
-        {Icon && <Icon className="h-3.5 w-3.5 text-app-muted" aria-hidden />}
         {children}
         {required ? <RequiredMark /> : null}
       </span>
-      {hint && <span className="mt-0.5 block text-xs font-normal text-app-muted">{hint}</span>}
+      {hint ? <span className="mt-0.5 block text-xs font-normal text-app-muted">{hint}</span> : null}
     </label>
   );
 }
@@ -126,18 +120,18 @@ function AccountModal({ open, title, description, onClose, children }) {
           <h2 id="account-modal-title" className="text-lg font-bold text-app-text-strong">
             {title}
           </h2>
-          {description && <p className="mt-0.5 text-sm text-app-muted">{description}</p>}
+          {description ? <p className="mt-0.5 text-sm text-app-muted">{description}</p> : null}
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface/80 hover:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
           aria-label={t('aria.close')}
         >
           <XIcon className="h-5 w-5" />
         </button>
       </div>
-      <div className={modalBody}>{children}</div>
+      {children}
     </ResponsiveModal>
   );
 }
@@ -158,8 +152,6 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
   const [accountEmail, setAccountEmail] = useState(user?.email || '');
   const [username, setUsername] = useState(user?.username || '');
   const [savedProfile, setSavedProfile] = useState(null);
-
-  const currentUsername = savedProfile?.username || user?.username || '';
 
   const profileDirty = useMemo(() => {
     if (!savedProfile) return false;
@@ -288,140 +280,149 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
       }
     >
       {loading && !error && !savedProfile ? (
-        <ProfileSkeleton />
+        <div className={modalBody}>
+          <ProfileSkeleton />
+        </div>
       ) : showGymProfile && !savedProfile ? (
-        <div className="space-y-4">
+        <div className={`${modalBody} space-y-4`}>
           {error ? <Alert>{error}</Alert> : null}
-          <p className="text-sm text-app-muted">
-            {t('account.profileLoadFailed')}
-          </p>
+          <p className="text-sm text-app-muted">{t('account.profileLoadFailed')}</p>
           <Button type="button" variant="secondary" loading={loading} disabled={loading} onClick={() => void loadProfile()}>
             {t('common.retry')}
           </Button>
         </div>
       ) : showGymProfile ? (
-        <form className="space-y-4" onSubmit={handleSubmit} onChangeCapture={markTouched}>
-          {error && !Object.keys(fieldErrors).length && <Alert>{error}</Alert>}
-          <div>
-            <FieldLabel htmlFor="modal-gym-name" icon={Building2} required>
-              {t('account.gymName')}
-            </FieldLabel>
-            <input
-              id="modal-gym-name"
-              type="text"
-              required
-              value={gymName}
-              onChange={(e) => {
-                setGymName(e.target.value);
-                clearFieldError(setFieldErrors, 'gymName');
-              }}
-              className={fc('gymName')}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
+        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+          <div className={`${modalBody} space-y-5`}>
+            {error && !Object.keys(fieldErrors).length ? <Alert>{error}</Alert> : null}
+
+            <section className="space-y-4">
+              <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionGym')}</h3>
+              <div>
+                <FieldLabel htmlFor="modal-gym-name" required>
+                  {t('account.gymName')}
+                </FieldLabel>
+                <input
+                  id="modal-gym-name"
+                  type="text"
+                  required
+                  value={gymName}
+                  onChange={(e) => {
+                    setGymName(e.target.value);
+                    clearFieldError(setFieldErrors, 'gymName');
+                  }}
+                  className={fc('gymName')}
+                />
+                <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <FieldLabel htmlFor="modal-owner-name" required>
+                    {t('account.yourName')}
+                  </FieldLabel>
+                  <input
+                    id="modal-owner-name"
+                    type="text"
+                    required
+                    value={ownerName}
+                    onChange={(e) => {
+                      setOwnerName(e.target.value);
+                      clearFieldError(setFieldErrors, 'ownerName');
+                    }}
+                    className={fc('ownerName')}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
+                </div>
+                <div>
+                  <FieldLabel htmlFor="modal-gym-phone" required>
+                    {t('account.gymPhone')}
+                  </FieldLabel>
+                  <input
+                    id="modal-gym-phone"
+                    type="tel"
+                    required
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder={t('auth.phonePlaceholder')}
+                    value={phone}
+                    onChange={(e) => {
+                      setPhone(e.target.value);
+                      clearFieldError(setFieldErrors, 'phone');
+                    }}
+                    className={fc('phone')}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-4 border-t border-app-border-subtle pt-5">
+              <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionSignIn')}</h3>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <FieldLabel htmlFor="modal-login-username" required>
+                    {t('account.username')}
+                  </FieldLabel>
+                  <input
+                    id="modal-login-username"
+                    type="text"
+                    required
+                    autoComplete="username"
+                    pattern="[a-z0-9._]{3,30}"
+                    title={t('account.usernamePattern')}
+                    value={username}
+                    onChange={(e) => {
+                      setUsername(e.target.value.toLowerCase());
+                      clearFieldError(setFieldErrors, 'username');
+                    }}
+                    className={fc('username')}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
+                </div>
+                <div>
+                  <FieldLabel htmlFor="modal-login-email" hint={t('account.loginEmailHint')}>
+                    {t('account.loginEmail')}
+                  </FieldLabel>
+                  <input
+                    id="modal-login-email"
+                    type="email"
+                    autoComplete="email"
+                    value={accountEmail}
+                    onChange={(e) => {
+                      setAccountEmail(e.target.value);
+                      clearFieldError(setFieldErrors, 'email');
+                    }}
+                    className={fc('email')}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+                </div>
+              </div>
+            </section>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <FieldLabel htmlFor="modal-owner-name" icon={User} required>
-                {t('account.yourName')}
-              </FieldLabel>
-              <input
-                id="modal-owner-name"
-                type="text"
-                required
-                value={ownerName}
-                onChange={(e) => {
-                  setOwnerName(e.target.value);
-                  clearFieldError(setFieldErrors, 'ownerName');
-                }}
-                className={fc('ownerName')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
-            </div>
-            <div>
-              <FieldLabel htmlFor="modal-gym-phone" icon={Phone} required>
-                {t('account.gymPhone')}
-              </FieldLabel>
-              <input
-                id="modal-gym-phone"
-                type="tel"
-                required
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder={t('auth.phonePlaceholder')}
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                  clearFieldError(setFieldErrors, 'phone');
-                }}
-                className={fc('phone')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
-            </div>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <FieldLabel
-                htmlFor="modal-login-username"
-                icon={AtSign}
-                required
-                hint={currentUsername ? t('account.currentUsername', { username: currentUsername }) : undefined}
+
+          <div className={modalFooter}>
+            {profileDirty ? (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleReset}
+                disabled={saving}
+                className="w-full sm:mr-auto sm:w-auto"
               >
-                {t('account.username')}
-              </FieldLabel>
-              <input
-                id="modal-login-username"
-                type="text"
-                required
-                autoComplete="username"
-                pattern="[a-z0-9._]{3,30}"
-                title={t('account.usernamePattern')}
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value.toLowerCase());
-                  clearFieldError(setFieldErrors, 'username');
-                }}
-                className={fc('username')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
-            </div>
-            <div>
-              <FieldLabel
-                htmlFor="modal-login-email"
-                icon={Mail}
-                hint={t('account.loginEmailHint')}
-              >
-                {t('account.loginEmail')}
-              </FieldLabel>
-              <input
-                id="modal-login-email"
-                type="email"
-                autoComplete="email"
-                value={accountEmail}
-                onChange={(e) => {
-                  setAccountEmail(e.target.value);
-                  clearFieldError(setFieldErrors, 'email');
-                }}
-                className={fc('email')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 border-t border-app-border-subtle pt-4">
-            <Button type="submit" disabled={saving || !profileDirty}>
-              {saving ? t('auth.saving') : t('common.save')}
-            </Button>
-            {profileDirty && (
-              <Button type="button" variant="secondary" onClick={handleReset} disabled={saving}>
                 {t('account.discard')}
               </Button>
-            )}
+            ) : null}
+            <Button type="button" variant="secondary" onClick={onClose} disabled={saving} className="w-full sm:w-auto">
+              {t('common.cancel')}
+            </Button>
+            <Button type="submit" disabled={saving || !profileDirty} className="w-full sm:w-auto">
+              {saving ? t('auth.saving') : t('common.save')}
+            </Button>
           </div>
         </form>
       ) : (
-        <div>
-          <FieldLabel htmlFor="modal-admin-email" icon={Mail}>
-            {t('account.loginEmail')}
-          </FieldLabel>
+        <div className={modalBody}>
+          <FieldLabel htmlFor="modal-admin-email">{t('account.loginEmail')}</FieldLabel>
           <input
             id="modal-admin-email"
             type="email"
@@ -500,56 +501,58 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
       title={t('account.changePasswordTitle')}
       description={t('account.changePasswordDesc')}
     >
-      <form className="space-y-4" onSubmit={handleSubmit} onChangeCapture={markTouched}>
-        {error && !Object.keys(fieldErrors).length && <Alert>{error}</Alert>}
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-4`}>
+          {error && !Object.keys(fieldErrors).length ? <Alert>{error}</Alert> : null}
 
-        <PasswordField
-          id="modal-current-password"
-          label={t('account.currentPassword')}
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          show={showCurrent}
-          onToggleShow={() => setShowCurrent((v) => !v)}
-          autoComplete="current-password"
-          fieldErrors={fieldErrors}
-          field="currentPassword"
-          onClearError={(f) => clearFieldError(setFieldErrors, f)}
-        />
+          <PasswordField
+            id="modal-current-password"
+            label={t('account.currentPassword')}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            show={showCurrent}
+            onToggleShow={() => setShowCurrent((v) => !v)}
+            autoComplete="current-password"
+            fieldErrors={fieldErrors}
+            field="currentPassword"
+            onClearError={(f) => clearFieldError(setFieldErrors, f)}
+          />
 
-        <PasswordField
-          id="modal-new-password"
-          label={t('auth.newPassword')}
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          show={showNew}
-          onToggleShow={() => setShowNew((v) => !v)}
-          autoComplete="new-password"
-          fieldErrors={fieldErrors}
-          field="newPassword"
-          onClearError={(f) => clearFieldError(setFieldErrors, f)}
-        />
+          <PasswordField
+            id="modal-new-password"
+            label={t('auth.newPassword')}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            show={showNew}
+            onToggleShow={() => setShowNew((v) => !v)}
+            autoComplete="new-password"
+            fieldErrors={fieldErrors}
+            field="newPassword"
+            onClearError={(f) => clearFieldError(setFieldErrors, f)}
+          />
 
-        <PasswordField
-          id="modal-confirm-password"
-          label={t('account.confirmNewPassword')}
-          value={confirm}
-          onChange={(e) => setConfirm(e.target.value)}
-          show={showConfirm}
-          onToggleShow={() => setShowConfirm((v) => !v)}
-          autoComplete="new-password"
-          fieldErrors={fieldErrors}
-          field="confirmPassword"
-          onClearError={(f) => clearFieldError(setFieldErrors, f)}
-        />
+          <PasswordField
+            id="modal-confirm-password"
+            label={t('account.confirmNewPassword')}
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            show={showConfirm}
+            onToggleShow={() => setShowConfirm((v) => !v)}
+            autoComplete="new-password"
+            fieldErrors={fieldErrors}
+            field="confirmPassword"
+            onClearError={(f) => clearFieldError(setFieldErrors, f)}
+          />
 
-        <PasswordChecklist password={newPassword} confirm={confirm} />
+          <PasswordChecklist password={newPassword} confirm={confirm} />
+        </div>
 
-        <div className="flex flex-wrap items-center gap-3 border-t border-app-border-subtle pt-4">
-          <Button type="submit" disabled={loading || !passwordReady}>
-            {loading ? t('account.updating') : t('auth.updatePassword')}
-          </Button>
-          <Button type="button" variant="ghost" onClick={onClose}>
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} disabled={loading} className="w-full sm:w-auto">
             {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={loading || !passwordReady} className="w-full sm:w-auto">
+            {loading ? t('account.updating') : t('auth.updatePassword')}
           </Button>
         </div>
       </form>

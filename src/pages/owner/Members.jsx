@@ -1,11 +1,11 @@
 // src/pages/owner/Members.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Search, UserPlus, AlertCircle } from 'lucide-react';
+import { Search, UserPlus, AlertCircle, HelpCircle } from 'lucide-react';
 import UnpaidBadge from '../../components/UnpaidBadge';
 import MemberPhoto from '../../components/MemberPhoto';
 import EmptyState from '../../components/EmptyState';
@@ -427,6 +427,24 @@ export default function Members() {
     });
   };
 
+  const needsPlanSetup = !readOnly && !gymLoading && plans.length === 0;
+  const isFilteredEmpty = statusFilter !== 'All' || Boolean(debouncedSearch);
+  const emptyIcon = needsPlanSetup && !isFilteredEmpty ? HelpCircle : AlertCircle;
+  const emptyTitle = isFilteredEmpty
+    ? t('pages.members.emptyFiltered')
+    : needsPlanSetup
+      ? t('pages.members.noPlansEmptyTitle')
+      : t('pages.members.emptyTitle');
+  const emptyBody = isFilteredEmpty
+    ? t('pages.members.emptyFilteredBody')
+    : needsPlanSetup
+      ? t('pages.members.noPlansEmptyBody')
+      : t('pages.members.emptyBody');
+  const emptyAction =
+    needsPlanSetup && !isFilteredEmpty && !readOnly ? (
+      <Button onClick={() => navigate('/dashboard/plans')}>{t('actions.goToPlans')}</Button>
+    ) : null;
+
   return (
     <div className="space-y-4 sm:space-y-5">
       <PageHeader
@@ -434,35 +452,20 @@ export default function Members() {
         subtitle={statusLine}
         actions={
           !readOnly ? (
-            <Button
-              onClick={() => navigate('/dashboard/members/enroll')}
-              disabled={gymLoading || plans.length === 0}
-              title={!gymLoading && plans.length === 0 ? t('pages.members.createPlanFirst') : undefined}
-            >
-              <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
-            </Button>
+            needsPlanSetup ? (
+              <Button variant="secondary" onClick={() => navigate('/dashboard/plans')}>
+                {t('actions.goToPlans')}
+              </Button>
+            ) : (
+              <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
+                <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
+              </Button>
+            )
           ) : null
         }
       />
 
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => fetchMembers()} /> : null}
-
-      {!readOnly && !gymLoading && plans.length === 0 && (
-        <div className="admin-alert-amber flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-2">
-            <AlertCircle className="admin-alert-amber-icon mt-0.5 h-5 w-5 shrink-0" />
-            <p className="admin-alert-amber-title text-sm">
-              {t('pages.members.noPlansWarning')}
-            </p>
-          </div>
-          <Link
-            to="/dashboard/plans"
-            className="shrink-0 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors text-center"
-          >
-            {t('actions.goToPlans')}
-          </Link>
-        </div>
-      )}
 
       <FilterChipBar>
         <FilterChip
@@ -626,18 +629,11 @@ export default function Members() {
         ) : (
           <Card className="overflow-hidden">
             <EmptyState
-              icon={AlertCircle}
+              icon={emptyIcon}
               compact
-              title={
-                statusFilter !== 'All' || debouncedSearch
-                  ? t('pages.members.emptyFiltered')
-                  : t('pages.members.emptyTitle')
-              }
-              body={
-                statusFilter !== 'All' || debouncedSearch
-                  ? t('pages.members.emptyFilteredBody')
-                  : t('pages.members.emptyBody')
-              }
+              title={emptyTitle}
+              body={emptyBody}
+              action={emptyAction}
             />
           </Card>
         )}
@@ -733,18 +729,11 @@ export default function Members() {
                 <tr>
                   <td colSpan={showBranchColumn ? 7 : 6} className="p-0">
                     <EmptyState
-                      icon={AlertCircle}
+                      icon={emptyIcon}
                       compact
-                      title={
-                        statusFilter !== 'All' || debouncedSearch
-                          ? t('pages.members.emptyFiltered')
-                          : t('pages.members.emptyTitle')
-                      }
-                      body={
-                        statusFilter !== 'All' || debouncedSearch
-                          ? t('pages.members.emptyFilteredBody')
-                          : t('pages.members.emptyBody')
-                      }
+                      title={emptyTitle}
+                      body={emptyBody}
+                      action={emptyAction}
                     />
                   </td>
                 </tr>
