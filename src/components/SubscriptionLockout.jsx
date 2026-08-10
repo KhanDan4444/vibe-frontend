@@ -25,7 +25,7 @@ export default function SubscriptionLockout({ gymName }) {
         <h1 className="text-2xl font-bold text-amber-200/70">{t('lockout.title')}</h1>
 
         {gymName ? (
-          <p className="mt-3 text-sm font-medium text-white/70">{gymName}</p>
+          <p className="mt-3 text-base font-medium text-white/70">{gymName}</p>
         ) : null}
 
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-white/60">
