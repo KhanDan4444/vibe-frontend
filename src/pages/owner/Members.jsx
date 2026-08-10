@@ -429,44 +429,41 @@ export default function Members() {
 
   const needsPlanSetup = !readOnly && !gymLoading && plans.length === 0;
   const isFilteredEmpty = statusFilter !== 'All' || Boolean(debouncedSearch);
-  const emptyIcon = needsPlanSetup && !isFilteredEmpty ? HelpCircle : AlertCircle;
-  const emptyTitle = isFilteredEmpty
-    ? t('pages.members.emptyFiltered')
-    : needsPlanSetup
-      ? t('pages.members.noPlansEmptyTitle')
-      : t('pages.members.emptyTitle');
-  const emptyBody = isFilteredEmpty
-    ? t('pages.members.emptyFilteredBody')
-    : needsPlanSetup
-      ? t('pages.members.noPlansEmptyBody')
-      : t('pages.members.emptyBody');
-  const emptyAction =
-    needsPlanSetup && !isFilteredEmpty && !readOnly ? (
-      <Button onClick={() => navigate('/dashboard/plans')}>{t('actions.goToPlans')}</Button>
-    ) : null;
+  const emptyIcon = AlertCircle;
+  const emptyTitle = isFilteredEmpty ? t('pages.members.emptyFiltered') : t('pages.members.emptyTitle');
+  const emptyBody = isFilteredEmpty ? t('pages.members.emptyFilteredBody') : t('pages.members.emptyBody');
 
   return (
     <div className="space-y-4 sm:space-y-5">
       <PageHeader
         title={t('pages.members.title')}
-        subtitle={statusLine}
+        subtitle={needsPlanSetup ? t('pages.members.noPlansSetupSubtitle') : statusLine}
         actions={
-          !readOnly ? (
-            needsPlanSetup ? (
-              <Button variant="secondary" onClick={() => navigate('/dashboard/plans')}>
-                {t('actions.goToPlans')}
-              </Button>
-            ) : (
-              <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
-                <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
-              </Button>
-            )
+          !readOnly && !needsPlanSetup ? (
+            <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
+              <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
+            </Button>
           ) : null
         }
       />
 
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => fetchMembers()} /> : null}
 
+      {needsPlanSetup ? (
+        <div className={cardSurface}>
+          <EmptyState
+            icon={HelpCircle}
+            title={t('pages.members.noPlansEmptyTitle')}
+            body={t('pages.members.noPlansEmptyBody')}
+            action={
+              !readOnly ? (
+                <Button onClick={() => navigate('/dashboard/plans')}>{t('actions.goToPlans')}</Button>
+              ) : null
+            }
+          />
+        </div>
+      ) : (
+        <>
       <FilterChipBar>
         <FilterChip
           variant="all"
@@ -633,7 +630,6 @@ export default function Members() {
               compact
               title={emptyTitle}
               body={emptyBody}
-              action={emptyAction}
             />
           </Card>
         )}
@@ -733,7 +729,6 @@ export default function Members() {
                       compact
                       title={emptyTitle}
                       body={emptyBody}
-                      action={emptyAction}
                     />
                   </td>
                 </tr>
@@ -752,6 +747,8 @@ export default function Members() {
           />
         </div>
       </Card>
+        </>
+      )}
 
       <MemberModal
         isOpen={modalState.isOpen && !!modalState.member}

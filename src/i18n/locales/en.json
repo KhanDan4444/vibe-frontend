@@ -572,6 +572,7 @@
       "noPlansWarning": "No membership plans yet. Add at least one plan before you can enroll members.",
       "noPlansEmptyTitle": "Create a plan first",
       "noPlansEmptyBody": "Add at least one membership plan before you can enroll members.",
+      "noPlansSetupSubtitle": "Set up a membership plan to start enrolling.",
       "createPlanFirst": "Create a membership plan first",
       "backToList": "Back to members",
       "loading": "Loading members…",

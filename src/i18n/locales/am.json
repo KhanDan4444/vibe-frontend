@@ -1160,6 +1160,7 @@
       "noPlansWarning": "ምንም የአባልነት ዕቅድ የለም። አባላትን ከመመዝገብዎ በፊት ቢያንስ አንድ ዕቅድ ይጨምሩ።",
       "noPlansEmptyTitle": "መጀመሪያ ዕቅድ ይፍጠሩ",
       "noPlansEmptyBody": "አባላትን ከመመዝገብዎ በፊት ቢያንስ አንድ የአባልነት ዕቅድ ያክሉ።",
+      "noPlansSetupSubtitle": "ለመመዝገብ መጀመሪያ የአባልነት ዕቅድ ያዘጋጁ።",
       "paymentRecorded": "ለ{{name}} ክፍያ ተመዝግቧል።",
       "planChanged": "{{name}} ወደ አዲሱ ዕቅድ ተቀይሯል።",
       "planChangedPaid": "{{name}} ወደ አዲሱ ዕቅድ ተቀይሯል እና ክፍያው ተመዝግቧል።",
