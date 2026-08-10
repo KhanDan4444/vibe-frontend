@@ -137,13 +137,19 @@ export default function AdminLayout() {
     collapseToggleRef,
   } = useSidebarCollapsed();
   const [unpaidCount, setUnpaidCount] = useState(0);
+  const [gymAttentionCount, setGymAttentionCount] = useState(0);
 
   const loadBadge = useCallback(async () => {
     try {
       const res = await getAdminDashboard(apiFetch);
       const data = await parseApiResponse(res);
       if (res.ok) {
-        setUnpaidCount(Number(data?.unpaidCatchUpGyms ?? data?.gymCounts?.unpaid ?? 0));
+        const counts = data?.gymCounts || {};
+        const unpaid = Number(data?.unpaidCatchUpGyms ?? counts.unpaid ?? 0);
+        const dueSoon = Number(data?.dueSoonGyms ?? counts.dueSoon ?? 0);
+        const expired = Number(counts.expired ?? 0) + Number(counts.suspended ?? 0);
+        setUnpaidCount(unpaid);
+        setGymAttentionCount(unpaid + dueSoon + expired);
       }
     } catch {
       /* badge is non-critical */
@@ -157,7 +163,13 @@ export default function AdminLayout() {
   const adminNavItems = useMemo(
     () => [
       { section: 'dashboard', to: ADMIN_SECTION_PATH.dashboard, icon: LayoutDashboard, labelKey: 'nav.dashboard' },
-      { section: 'gyms', to: ADMIN_SECTION_PATH.gyms, icon: Building2, labelKey: 'nav.gyms' },
+      {
+        section: 'gyms',
+        to: ADMIN_SECTION_PATH.gyms,
+        icon: Building2,
+        labelKey: 'nav.gyms',
+        badge: gymAttentionCount > 0 ? { count: gymAttentionCount, tone: 'rose' } : null,
+      },
       { section: 'plans', to: ADMIN_SECTION_PATH.plans, icon: CreditCard, labelKey: 'nav.saasPlans' },
       {
         section: 'payments',
@@ -169,7 +181,7 @@ export default function AdminLayout() {
       { section: 'messages', to: ADMIN_SECTION_PATH.messages, icon: MessageSquare, labelKey: 'nav.smsLog' },
       { section: 'reports', to: ADMIN_SECTION_PATH.reports, icon: FileBarChart, labelKey: 'nav.reports' },
     ],
-    [unpaidCount]
+    [unpaidCount, gymAttentionCount]
   );
 
   return (
