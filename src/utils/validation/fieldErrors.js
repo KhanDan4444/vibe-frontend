@@ -3,10 +3,10 @@ export const FIELD_INPUT_ERROR_CLASS =
   '!border-rose-400 !shadow-[0_0_0_2px_rgb(244_63_94/0.25)] focus:!border-rose-400 focus:!shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(244_63_94/0.25)] dark:focus:!shadow-[inset_0_1px_2px_rgb(0_0_0/0.28),0_0_0_2px_rgb(244_63_94/0.25)]';
 
 /** Default text/select styling for modals and app forms (not auth glass). */
-export const FORM_INPUT_CLASS = 'mt-1 app-field';
+export const FORM_INPUT_CLASS = 'mt-1 w-full app-field';
 
 /** Select-friendly variant — same chrome, pointer cursor. */
-export const FORM_SELECT_CLASS = 'mt-1 app-field cursor-pointer';
+export const FORM_SELECT_CLASS = 'mt-1 w-full app-field cursor-pointer';
 
 /** @param {string} base @param {Record<string, string>} fieldErrors @param {string} field */
 export function inputClass(base, fieldErrors, field) {

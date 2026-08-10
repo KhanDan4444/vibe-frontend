@@ -248,7 +248,7 @@ export default function RenewGymModal({
               <RequiredMark />
             </label>
               <select
-                className="mt-1 app-field cursor-pointer"
+                className="mt-1 w-full app-field cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -265,7 +265,7 @@ export default function RenewGymModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <input
               type="text"
-              className="mt-1 app-field"
+              className="mt-1 w-full app-field"
               placeholder={t('modals.renewGym.referencePlaceholder')}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

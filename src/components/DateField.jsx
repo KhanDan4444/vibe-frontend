@@ -4,7 +4,7 @@ import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDate, formatLocalDate, parseLocalDate, todayString, clampIsoDate, isDateRangeValid } from '../utils/date';
 
-const DEFAULT_CLASS = 'app-field';
+const DEFAULT_CLASS = 'w-full app-field';
 
 const OPEN_CLASS = '!border-teal-600 !shadow-[inset_0_1px_2px_rgb(15_23_42/0.04),0_0_0_2px_rgb(13_148_136/0.2)] dark:!shadow-[inset_0_1px_2px_rgb(0_0_0/0.28),0_0_0_2px_rgb(13_148_136/0.25)]';
 const FOCUS_CLASS =

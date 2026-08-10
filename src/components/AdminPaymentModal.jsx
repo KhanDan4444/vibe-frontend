@@ -33,7 +33,7 @@ export default function AdminPaymentModal({
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const fieldErrors = localFieldErrors;
-  const inputBase = 'app-field';
+  const inputBase = 'w-full app-field';
   const fc = (field, extra = '') => inputClass(`${inputBase} ${extra}`, fieldErrors, field);
 
   const isEdit = !!payment;
@@ -238,7 +238,7 @@ export default function AdminPaymentModal({
             <label className="form-label">{t('common.notesOptional')}</label>
             <textarea
               rows="2"
-              className="app-field"
+              className="w-full app-field"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />

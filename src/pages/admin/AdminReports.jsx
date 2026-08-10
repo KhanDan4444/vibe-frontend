@@ -346,7 +346,7 @@ export default function AdminReports({ onBootingChange }) {
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="app-field"
+                    className="w-full app-field"
                   />
                 </div>
                 <div>
@@ -356,7 +356,7 @@ export default function AdminReports({ onBootingChange }) {
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="app-field"
+                    className="w-full app-field"
                   />
                 </div>
               </>

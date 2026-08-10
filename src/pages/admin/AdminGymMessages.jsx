@@ -114,7 +114,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             id="admin-sms-gym-filter"
             value={gymFilter}
             onChange={(e) => setGymFilter(e.target.value)}
-            className="app-field"
+            className="w-full app-field"
           >
             <option value="all">{t('filters.allGyms')}</option>
             {gyms.map((gym) => (
@@ -132,7 +132,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             id="admin-sms-type-filter"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="app-field"
+            className="w-full app-field"
           >
             {ADMIN_SMS_TYPE_FILTER_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

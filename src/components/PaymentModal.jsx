@@ -162,7 +162,7 @@ export default function PaymentModal({
               id="payment-member"
               required
               disabled={!!payment || !!defaultMemberId}
-              className="mt-1 app-field cursor-pointer disabled:bg-app-surface disabled:text-app-muted"
+              className="mt-1 w-full app-field cursor-pointer disabled:bg-app-surface disabled:text-app-muted"
               value={selectedMemberId}
               onChange={(e) => handleMemberChange(e.target.value)}
             >
@@ -197,7 +197,7 @@ export default function PaymentModal({
                   required
                   min="0.01"
                   step="0.01"
-                  className={inputClass('app-field pl-8 pr-3', fieldErrors, 'amount')}
+                  className={inputClass('w-full app-field pl-8 pr-3', fieldErrors, 'amount')}
                   placeholder="0.00"
                   value={amount}
                   onChange={(e) => {
@@ -216,7 +216,7 @@ export default function PaymentModal({
               </label>
               <select
                 id="payment-method"
-                className="mt-1 app-field cursor-pointer"
+                className="mt-1 w-full app-field cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >

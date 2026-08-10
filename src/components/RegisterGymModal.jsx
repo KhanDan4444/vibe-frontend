@@ -330,7 +330,7 @@ export default function RegisterGymModal({ isOpen, onClose, onSubmit, saasPlans,
                     <RequiredMark />
                   </label>
                     <select
-                      className="mt-1 app-field cursor-pointer"
+                      className="mt-1 w-full app-field cursor-pointer"
                       value={method}
                       onChange={(e) => setMethod(e.target.value)}
                     >

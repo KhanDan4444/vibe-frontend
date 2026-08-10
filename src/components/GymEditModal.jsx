@@ -167,7 +167,7 @@ export default function GymEditModal({
               <RequiredMark />
             </label>
             <select
-              className="mt-1 app-field cursor-pointer"
+              className="mt-1 w-full app-field cursor-pointer"
               value={subscriptionStatus}
               onChange={(e) => setSubscriptionStatus(e.target.value)}
             >

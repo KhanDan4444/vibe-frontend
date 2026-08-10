@@ -98,7 +98,7 @@ export default function ResetPasswordModal({
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
                 }}
-                className={inputClass('app-field pr-10', fieldErrors, 'password')}
+                className={inputClass('w-full app-field pr-10', fieldErrors, 'password')}
               />
               <button
                 type="button"

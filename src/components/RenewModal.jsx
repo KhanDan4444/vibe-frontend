@@ -163,7 +163,7 @@ export default function RenewModal({
             </label>
             <select
               required
-              className="mt-1 app-field cursor-pointer"
+              className="mt-1 w-full app-field cursor-pointer"
               value={planId}
               onChange={(e) => setPlanId(e.target.value)}
             >
@@ -185,7 +185,7 @@ export default function RenewModal({
               <DateField
                 required
                 min={renewStartBounds.min}
-                className="mt-1 app-field cursor-pointer"
+                className="mt-1 w-full app-field cursor-pointer"
                 value={startDate}
                 onChange={(v) => {
                   setStartDate(v);
@@ -269,7 +269,7 @@ export default function RenewModal({
                 <RequiredMark />
               </label>
               <select
-                className="mt-1 app-field cursor-pointer"
+                className="mt-1 w-full app-field cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >

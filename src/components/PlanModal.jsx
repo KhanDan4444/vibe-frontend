@@ -167,7 +167,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
             <div>
               <label className="form-label">{t('modals.plan.description')}</label>
               <textarea
-                className="mt-1 app-field h-20 resize-none"
+                className="mt-1 w-full app-field h-20 resize-none"
                 placeholder={t('modals.plan.descriptionPlaceholder')}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

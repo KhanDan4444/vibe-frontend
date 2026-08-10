@@ -317,7 +317,7 @@ export default function OwnerReports() {
                     value={customStart}
                     onChange={setCustomStart}
                     max={boundsForCustomRangeFrom(customEnd).max}
-                    className="app-field"
+                    className="w-full app-field"
                   />
                 </div>
                 <div>
@@ -327,7 +327,7 @@ export default function OwnerReports() {
                     onChange={setCustomEnd}
                     min={boundsForCustomRangeTo(customStart).min}
                     max={boundsForCustomRangeTo(customStart).max}
-                    className="app-field"
+                    className="w-full app-field"
                   />
                 </div>
               </>

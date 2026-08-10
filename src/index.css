@@ -711,7 +711,6 @@
   .app-field,
   .admin-field {
     display: block;
-    width: 100%;
     min-height: 2.5rem;
     border-radius: 0.75rem;
     border: 1px solid var(--color-app-input-border);

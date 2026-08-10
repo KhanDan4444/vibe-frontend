@@ -46,7 +46,7 @@ function FieldLabel({ htmlFor, icon: Icon, children, hint, required = false }) {
   );
 }
 
-const inputClass = `mt-1.5 app-field disabled:bg-app-surface disabled:text-app-muted`;
+const inputClass = `mt-1.5 w-full app-field disabled:bg-app-surface disabled:text-app-muted`;
 
 function PasswordField({ id, label, value, onChange, show, onToggleShow, autoComplete, fieldErrors, field, onClearError }) {
   const { t } = useTranslation();
