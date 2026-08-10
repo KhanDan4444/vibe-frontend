@@ -8,7 +8,11 @@ import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import { CURRENCY_CODE } from '../utils/formatMoney';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+
+const NUMBER_FIELD_CLASS =
+  '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none';
 
 /**
  * A modular modal handling both Plan creation and editing.
@@ -87,7 +91,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
     (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-50">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-50">
       <div className={`${modalHeader} flex items-center justify-between gap-3`}>
         <h2 className="text-lg font-bold text-app-text-strong">{modalTitle}</h2>
         <button
@@ -136,8 +140,9 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
                 type="number"
                 required
                 min="1"
+                inputMode="numeric"
                 placeholder="1"
-                className={fc('duration')}
+                className={`${fc('duration')} ${NUMBER_FIELD_CLASS}`}
                 value={duration}
                 onChange={(e) => {
                   setDuration(e.target.value);
@@ -151,19 +156,29 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
                 {t('modals.plan.price')}
                 <RequiredMark />
               </label>
-              <input
-                type="number"
-                required
-                min="0"
-                step="0.01"
-                placeholder="29.99"
-                className={fc('price')}
-                value={price}
-                onChange={(e) => {
-                  setPrice(e.target.value);
-                  clearFieldError(setLocalFieldErrors, 'price');
-                }}
-              />
+              <div className="relative mt-1">
+                <input
+                  type="number"
+                  required
+                  min="0"
+                  step="0.01"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  className={`${inputClass(`w-full app-field pr-12 ${NUMBER_FIELD_CLASS}`, fieldErrors, 'price')}`}
+                  value={price}
+                  onChange={(e) => {
+                    setPrice(e.target.value);
+                    clearFieldError(setLocalFieldErrors, 'price');
+                  }}
+                  aria-describedby="plan-price-currency"
+                />
+                <span
+                  id="plan-price-currency"
+                  className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-medium text-app-muted"
+                >
+                  {CURRENCY_CODE}
+                </span>
+              </div>
               <FieldError message={fieldErrorMessage(fieldErrors, 'price')} />
             </div>
           </div>
