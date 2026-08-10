@@ -43,7 +43,7 @@ const itemClass =
   'flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-app-text-strong transition-colors hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
 
 const iconChip =
-  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface dark:bg-app-bg';
+  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-teal-800/75 dark:bg-app-bg dark:text-teal-600/80';
 
 /**
  * Top-right profile menu: profile, change password, logout.
@@ -167,7 +167,7 @@ export default function UserProfileMenu({ compact = false }) {
                 onClick={cycleTheme}
                 className={itemClass}
               >
-                <span className={`${iconChip} text-teal-700 dark:text-teal-300`}>
+                <span className={iconChip}>
                   <ThemeIcon className="h-4 w-4" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1 truncate text-left">{themeActionLabel}</span>
@@ -184,13 +184,13 @@ export default function UserProfileMenu({ compact = false }) {
                 {t('profile.account')}
               </p>
               <button type="button" role="menuitem" onClick={openProfile} className={itemClass}>
-                <span className={`${iconChip} text-teal-700 dark:text-teal-300`}>
+                <span className={iconChip}>
                   <User className="h-4 w-4" aria-hidden />
                 </span>
                 {profileLabel}
               </button>
               <button type="button" role="menuitem" onClick={openPassword} className={itemClass}>
-                <span className={`${iconChip} text-teal-700 dark:text-teal-300`}>
+                <span className={iconChip}>
                   <KeyRound className="h-4 w-4" aria-hidden />
                 </span>
                 {t('profile.changePassword')}
@@ -206,7 +206,7 @@ export default function UserProfileMenu({ compact = false }) {
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-950/40"
               >
-                <span className={`${iconChip} text-rose-600 dark:text-rose-400`}>
+                <span className={`${iconChip} text-rose-700/85 dark:text-rose-500/75`}>
                   <LogOut className="h-4 w-4" aria-hidden />
                 </span>
                 {t('profile.logout')}
