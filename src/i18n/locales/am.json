@@ -1252,7 +1252,9 @@
     "logout": "ውጣ",
     "platformAdmin": "የመድረክ አስተዳዳሪ",
     "themeDark": "ጨለማ",
-    "themeLight": "ብርሃን"
+    "themeLight": "ብርሃን",
+    "switchToLight": "ወደ ብርሃን ቀይር",
+    "switchToDark": "ወደ ጨለማ ቀይር"
   },
   "roles": {
     "frontDesk": "የፊት ዴስክ"

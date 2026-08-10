@@ -6,7 +6,7 @@ import { usePreferences } from '../context/PreferencesContext';
 import { isGymOwner, isGymStaff, isPlatformAdmin } from '../utils/roles';
 import { ProfilePanel, PasswordPanel } from './account/AccountPanels';
 import { useFlash } from '../context/FlashContext';
-import { menuItem, menuSurface } from '../utils/surfaceClasses';
+import { menuSurface } from '../utils/surfaceClasses';
 import { User, KeyRound, LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
 
 function roleSubtitle(role, t) {
@@ -16,20 +16,15 @@ function roleSubtitle(role, t) {
   return t('profile.account');
 }
 
-function themeIcon(theme) {
-  return theme === 'dark' ? Moon : Sun;
-}
-
-function themeLabel(theme, t) {
-  return theme === 'dark' ? t('profile.themeDark') : t('profile.themeLight');
-}
-
 function initialsFrom(name, email, username) {
   const source = (name || email || username || 'U').trim();
   const parts = source.split(/\s+/).filter(Boolean);
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return source.charAt(0).toUpperCase();
 }
+
+const itemClass =
+  'flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-app-text-strong transition-colors hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
 
 /**
  * Top-right profile menu: profile, change password, logout.
@@ -49,7 +44,9 @@ export default function UserProfileMenu({ compact = false }) {
 
   const displayName = user?.name || user?.email || user?.username || 'User';
   const subtitle = roleSubtitle(user?.role, t);
-  const ThemeIcon = themeIcon(theme);
+  const isDark = theme === 'dark';
+  const ThemeIcon = isDark ? Sun : Moon;
+  const themeActionLabel = isDark ? t('profile.switchToLight') : t('profile.switchToDark');
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
@@ -127,59 +124,82 @@ export default function UserProfileMenu({ compact = false }) {
         {menuOpen && (
           <div
             role="menu"
-            className={`absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl py-1 shadow-lg animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
+            className={`absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-2xl py-2 shadow-xl animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
           >
-            <div className="border-b px-4 py-3 border-app-border-subtle">
+            <div className="border-b border-app-border-subtle px-4 pb-3 pt-2.5">
               <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
-              <p className="truncate text-xs text-app-muted">{user?.email}</p>
+              <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-app-muted">
+                {subtitle}
+              </p>
+              {user?.username ? (
+                <p className="mt-1 truncate text-xs font-medium text-app-text" title={user.username}>
+                  @{user.username}
+                </p>
+              ) : null}
+              {user?.email ? (
+                <p className="mt-0.5 break-all text-xs text-app-muted" title={user.email}>
+                  {user.email}
+                </p>
+              ) : null}
             </div>
 
-            <div className="border-b py-1.5 border-app-border-subtle">
-              <p className="mb-1 px-4 text-[10px] font-bold uppercase tracking-wider text-app-muted">
+            <div className="px-2 py-2">
+              <p className="mb-1 px-2.5 text-[10px] font-bold uppercase tracking-wider text-app-muted">
                 {t('profile.appearance')}
               </p>
               <button
                 type="button"
                 role="menuitem"
                 onClick={cycleTheme}
-                className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
+                className={itemClass}
               >
-                <ThemeIcon className="h-4 w-4 text-app-muted" aria-hidden />
-                {themeLabel(theme, t)}
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-teal-700 dark:bg-app-bg dark:text-teal-300">
+                  <ThemeIcon className="h-4 w-4" aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1 text-left">
+                  <span className="block leading-tight">{themeActionLabel}</span>
+                  <span className="mt-0.5 block text-[11px] font-normal text-app-muted">
+                    {isDark ? t('profile.themeDark') : t('profile.themeLight')}
+                  </span>
+                </span>
               </button>
             </div>
 
-            <button
-              type="button"
-              role="menuitem"
-              onClick={openProfile}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
-            >
-              <User className="h-4 w-4 text-app-muted" aria-hidden />
-              {profileLabel}
-            </button>
+            <div className="mx-3 border-t border-app-border-subtle" />
 
-            <button
-              type="button"
-              role="menuitem"
-              onClick={openPassword}
-              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm ${menuItem}`}
-            >
-              <KeyRound className="h-4 w-4 text-app-muted" aria-hidden />
-              {t('profile.changePassword')}
-            </button>
+            <div className="px-2 py-2">
+              <p className="mb-1 px-2.5 text-[10px] font-bold uppercase tracking-wider text-app-muted">
+                {t('profile.account')}
+              </p>
+              <button type="button" role="menuitem" onClick={openProfile} className={itemClass}>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-app-muted dark:bg-app-bg">
+                  <User className="h-4 w-4" aria-hidden />
+                </span>
+                {profileLabel}
+              </button>
+              <button type="button" role="menuitem" onClick={openPassword} className={itemClass}>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-app-muted dark:bg-app-bg">
+                  <KeyRound className="h-4 w-4" aria-hidden />
+                </span>
+                {t('profile.changePassword')}
+              </button>
+            </div>
 
-            <div className="my-1 border-t border-app-border-subtle" />
+            <div className="mx-3 border-t border-app-border-subtle" />
 
-            <button
-              type="button"
-              role="menuitem"
-              onClick={handleLogout}
-              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40"
-            >
-              <LogOut className="h-4 w-4" aria-hidden />
-              {t('profile.logout')}
-            </button>
+            <div className="px-2 pb-1 pt-2">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleLogout}
+                className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-950/40"
+              >
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                  <LogOut className="h-4 w-4" aria-hidden />
+                </span>
+                {t('profile.logout')}
+              </button>
+            </div>
           </div>
         )}
       </div>

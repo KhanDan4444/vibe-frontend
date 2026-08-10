@@ -95,6 +95,8 @@
     "appearance": "Appearance",
     "themeLight": "Light",
     "themeDark": "Dark",
+    "switchToLight": "Switch to light",
+    "switchToDark": "Switch to dark",
     "language": "Language",
     "english": "English",
     "amharic": "አማርኛ",
