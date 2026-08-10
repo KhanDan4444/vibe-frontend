@@ -12,6 +12,7 @@
     "gymProfile": "የጂም መገለጫ",
     "gymProfileDesc": "የጂም ስም፣ የእውቂያ ዝርዝሮች እና የመግቢያ መረጃዎን ያዘምኑ።",
     "loginEmail": "የመግቢያ ኢሜይል",
+    "loginEmailHint": "አማራጭ — ለእውቂያ እና የይለፍ ቃል ማስመለስ።",
     "optional": "አማራጭ",
     "passwordDifferent": "አዲሱ የይለፍ ቃል ከአሁኑ የይለፍ ቃል የተለየ መሆን አለበት።",
     "passwordMin8": "ቢያንስ 8 ቁምፊዎች",

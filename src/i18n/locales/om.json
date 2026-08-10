@@ -1242,6 +1242,7 @@
     "currentUsername": "Ammaa: {{username}}",
     "usernamePattern": "Arfiilee 3–30: qubeewwan, lakkoofsota, tuqaalee, fi underscoring",
     "loginEmail": "Imeelii seensaa",
+    "loginEmailHint": "Filannoo — qunnamtii fi jecha darbii deebisuuf.",
     "discard": "Dhiisi",
     "profileSaved": "Profaayiliin milkaa'inaan ol ka'ameera.",
     "profileLoadFailed": "Profaayilii jiimii fe'uu hin dandeenye.",

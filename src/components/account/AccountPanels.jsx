@@ -249,7 +249,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
         name: ownerName.trim(),
         gym_name: gymName.trim(),
         phone: trimmedPhone,
-        email: accountEmail.trim(),
+        email: accountEmail.trim() || null,
         username: username.trim().toLowerCase(),
       });
       const data = await parseApiResponse(res);
@@ -385,13 +385,16 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
               <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
             </div>
             <div>
-              <FieldLabel htmlFor="modal-login-email" icon={Mail} required>
+              <FieldLabel
+                htmlFor="modal-login-email"
+                icon={Mail}
+                hint={t('account.loginEmailHint')}
+              >
                 {t('account.loginEmail')}
               </FieldLabel>
               <input
                 id="modal-login-email"
                 type="email"
-                required
                 autoComplete="email"
                 value={accountEmail}
                 onChange={(e) => {

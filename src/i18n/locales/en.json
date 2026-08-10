@@ -1242,6 +1242,7 @@
     "currentUsername": "Current: {{username}}",
     "usernamePattern": "3–30 characters: letters, numbers, dots, and underscores",
     "loginEmail": "Login email",
+    "loginEmailHint": "Optional — for contact and password recovery.",
     "discard": "Discard",
     "profileSaved": "Profile saved successfully.",
     "profileLoadFailed": "Could not load gym profile.",
