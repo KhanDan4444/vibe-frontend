@@ -5,15 +5,11 @@ import LanguageSwitcher from '../LanguageSwitcher';
  */
 export default function AuthFormShell({ children }) {
   return (
-    <div className="relative w-full max-w-md">
-      <div className="pointer-events-none absolute inset-x-0 -top-2 z-20 flex justify-end sm:-top-3">
-        <div className="pointer-events-auto">
-          <LanguageSwitcher tone="auth" />
-        </div>
+    <div className="w-full max-w-md space-y-5 rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-xl backdrop-blur-sm sm:p-8">
+      <div className="-mb-1 flex justify-end">
+        <LanguageSwitcher tone="auth" />
       </div>
-      <div className="w-full space-y-6 rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-xl backdrop-blur-sm sm:p-8">
-        {children}
-      </div>
+      {children}
     </div>
   );
 }

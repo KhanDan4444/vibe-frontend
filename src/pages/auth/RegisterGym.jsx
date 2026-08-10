@@ -20,6 +20,7 @@ import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
+import AuthSelect from '../../components/auth/AuthSelect';
 import { formatMoney } from '../../utils/formatMoney';
 
 export default function RegisterGym() {
@@ -251,21 +252,20 @@ export default function RegisterGym() {
                   {t('table.plan')}
                   <RequiredMark />
                 </label>
-                <select
+                <AuthSelect
                   id="signup-plan"
                   value={saasPlanId}
-                  onChange={(e) => {
-                    setSaasPlanId(e.target.value);
+                  onChange={(next) => {
+                    setSaasPlanId(next);
                     clearFieldError(setFieldErrors, 'saasPlanId');
                   }}
-                  className={fc('saasPlanId')}
-                >
-                  {plans.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} — {formatMoney(p.price)} / {p.duration}mo
-                    </option>
-                  ))}
-                </select>
+                  options={plans.map((p) => ({
+                    value: String(p.id),
+                    label: `${p.name} — ${formatMoney(p.price)} / ${p.duration}mo`,
+                  }))}
+                  error={Boolean(fieldErrorMessage(fieldErrors, 'saasPlanId'))}
+                  aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'saasPlanId'))}
+                />
                 <FieldError message={fieldErrorMessage(fieldErrors, 'saasPlanId')} className="text-sm text-rose-300" />
               </div>
             </div>
