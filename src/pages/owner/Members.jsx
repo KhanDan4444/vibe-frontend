@@ -5,7 +5,7 @@ import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Search, UserPlus, AlertCircle, HelpCircle } from 'lucide-react';
+import { Search, AlertCircle, HelpCircle } from 'lucide-react';
 import UnpaidBadge from '../../components/UnpaidBadge';
 import MemberPhoto from '../../components/MemberPhoto';
 import EmptyState from '../../components/EmptyState';
@@ -441,7 +441,7 @@ export default function Members() {
         actions={
           !readOnly && !needsPlanSetup ? (
             <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
-              <UserPlus className="h-4 w-4" /> {t('actions.enroll')}
+              {t('actions.enroll')}
             </Button>
           ) : null
         }

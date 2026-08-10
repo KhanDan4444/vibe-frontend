@@ -214,9 +214,11 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
         title={t('admin.saasPlansPageTitle')}
         subtitle={statusLine}
         actions={
-          <Button onClick={openCreate}>
-            {t('admin.createSaasPlan')}
-          </Button>
+          plans.length > 0 ? (
+            <Button onClick={openCreate}>
+              {t('admin.createSaasPlan')}
+            </Button>
+          ) : null
         }
       />
 

@@ -32,6 +32,7 @@ import ChangePlanAmountHint from './ChangePlanAmountHint';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 const termModeBtn =
@@ -437,12 +438,10 @@ export default function ChangePlanModal({
               {t('modals.changePlan.amountDue')}
               <RequiredMark />
             </label>
-            <input
-              type="number"
-              min="0"
-              step="0.01"
+            <MoneyAmountInput
               required
-              className={fc('amount')}
+              min="0"
+              fieldErrors={fieldErrors}
               value={amount}
               onChange={(e) => {
                 setAmountEdited(true);

@@ -8,7 +8,7 @@ import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { CURRENCY_CODE } from '../utils/formatMoney';
+import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 const NUMBER_FIELD_CLASS =
@@ -156,29 +156,17 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
                 {t('modals.plan.price')}
                 <RequiredMark />
               </label>
-              <div className="relative mt-1">
-                <input
-                  type="number"
-                  required
-                  min="0"
-                  step="0.01"
-                  inputMode="decimal"
-                  placeholder="0.00"
-                  className={`${inputClass(`w-full app-field pr-12 ${NUMBER_FIELD_CLASS}`, fieldErrors, 'price')}`}
-                  value={price}
-                  onChange={(e) => {
-                    setPrice(e.target.value);
-                    clearFieldError(setLocalFieldErrors, 'price');
-                  }}
-                  aria-describedby="plan-price-currency"
-                />
-                <span
-                  id="plan-price-currency"
-                  className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-medium text-app-muted"
-                >
-                  {CURRENCY_CODE}
-                </span>
-              </div>
+              <MoneyAmountInput
+                required
+                min="0"
+                field="price"
+                fieldErrors={fieldErrors}
+                value={price}
+                onChange={(e) => {
+                  setPrice(e.target.value);
+                  clearFieldError(setLocalFieldErrors, 'price');
+                }}
+              />
               <FieldError message={fieldErrorMessage(fieldErrors, 'price')} />
             </div>
           </div>

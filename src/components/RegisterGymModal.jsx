@@ -28,6 +28,7 @@ import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../i18n/helpers.
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import MoneyAmountInput from './ui/MoneyAmountInput';
 import Card from './ui/Card';
 import PageHeader from './PageHeader';
 import EnrollStepProgress from './EnrollStepProgress';
@@ -440,12 +441,10 @@ export default function RegisterGymModal({
                 {t('modals.member.amount')}
                 <RequiredMark />
               </label>
-              <input
-                type="number"
-                min="0.01"
-                step="0.01"
+              <MoneyAmountInput
                 required={!isPage}
-                className={fc('amount')}
+                min="0.01"
+                fieldErrors={fieldErrors}
                 value={amount}
                 onChange={(e) => {
                   setAmount(e.target.value);

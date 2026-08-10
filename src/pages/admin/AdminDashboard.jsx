@@ -4,7 +4,6 @@ import {
   Building2,
   TrendingUp,
   AlertTriangle,
-  Plus,
   X,
   Users,
   Search,
@@ -57,6 +56,7 @@ import {
   iconActionIdle,
   iconActionDanger,
   iconActionSuccess,
+  cardSurface,
 } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
@@ -485,6 +485,9 @@ export default function AdminDashboard() {
         .slice(0, 5);
 
   const gymsFiltered = statusFilter !== 'All' || Boolean(debouncedSearch);
+  const noGymsYet = !loading && !gymsFiltered && gyms.length === 0;
+  const canRegisterGym = !(saasPlansLoaded && saasPlans.length === 0);
+  const openRegisterGym = () => navigate(`${ADMIN_SECTION_PATH.gyms}/register`);
 
   return (
     <>
@@ -721,12 +724,11 @@ export default function AdminDashboard() {
                 title={t('admin.gymsTitle')}
                 subtitle={t('admin.gymsSubtitle')}
                 actions={
-                  <Button
-                    onClick={() => navigate(`${ADMIN_SECTION_PATH.gyms}/register`)}
-                    disabled={saasPlansLoaded && saasPlans.length === 0}
-                  >
-                    <Plus className="h-4 w-4" /> {t('admin.registerGym')}
-                  </Button>
+                  !noGymsYet ? (
+                    <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
+                      {t('admin.registerGym')}
+                    </Button>
+                  ) : null
                 }
               />
 
@@ -734,259 +736,157 @@ export default function AdminDashboard() {
                 <ErrorRetryBanner message={error} onRetry={retryAdminLoad} />
               ) : null}
 
-              <FilterChipBar>
-                <FilterChip
-                  variant="all"
-                  label={t('filters.all')}
-                  count={totalGymsCount}
-                  active={statusFilter === 'All'}
-                  onClick={() => {
-                    setGymPage(1);
-                    setStatusFilter('All');
-                  }}
-                />
-                <FilterChip
-                  variant="active"
-                  label={t('filters.active')}
-                  count={gymCounts.active ?? 0}
-                  active={statusFilter === 'active'}
-                  onClick={() => {
-                    setGymPage(1);
-                    setStatusFilter('active');
-                  }}
-                />
-                <FilterChip
-                  variant="unpaid"
-                  label={t('filters.unpaid')}
-                  count={unpaidCount}
-                  active={statusFilter === UNPAID}
-                  onClick={() => {
-                    setGymPage(1);
-                    setStatusFilter(UNPAID);
-                  }}
-                />
-                <FilterChip
-                  variant="due_soon"
-                  label={t('filters.dueSoon')}
-                  count={dueSoonFilterCount}
-                  active={statusFilter === DUE_SOON}
-                  onClick={() => {
-                    setGymPage(1);
-                    setStatusFilter(DUE_SOON);
-                  }}
-                />
-                <FilterChip
-                  variant="expired"
-                  label={t('filters.expired')}
-                  count={expiredLicenseCount}
-                  active={statusFilter === EXPIRED}
-                  onClick={() => {
-                    setGymPage(1);
-                    setStatusFilter(EXPIRED);
-                  }}
-                />
-              </FilterChipBar>
-
-              <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-                <div className="relative w-full sm:max-w-md">
-                  <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-                    <Search className="h-5 w-5" />
-                  </span>
-                  <input
-                    type="text"
-                    className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-                    placeholder={t('admin.searchGymsPlaceholder')}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+              {noGymsYet ? (
+                <div className={cardSurface}>
+                  <EmptyState
+                    icon={AlertCircle}
+                    title={t('admin.noGymsEmptyTitle')}
+                    body={t('admin.noGymsEmptyBody')}
+                    action={
+                      <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
+                        {t('admin.registerGym')}
+                      </Button>
+                    }
                   />
                 </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <select
-                    className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`}
-                    value={gymSort}
-                    onChange={(e) => {
+              ) : (
+                <>
+                <FilterChipBar>
+                  <FilterChip
+                    variant="all"
+                    label={t('filters.all')}
+                    count={totalGymsCount}
+                    active={statusFilter === 'All'}
+                    onClick={() => {
                       setGymPage(1);
-                      setGymSort(e.target.value);
+                      setStatusFilter('All');
                     }}
-                    aria-label={t('admin.sortGymsAria')}
-                  >
-                    {ADMIN_GYM_SORT_OPTIONS.map((opt) => (
-                      <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+                  />
+                  <FilterChip
+                    variant="active"
+                    label={t('filters.active')}
+                    count={gymCounts.active ?? 0}
+                    active={statusFilter === 'active'}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter('active');
+                    }}
+                  />
+                  <FilterChip
+                    variant="unpaid"
+                    label={t('filters.unpaid')}
+                    count={unpaidCount}
+                    active={statusFilter === UNPAID}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(UNPAID);
+                    }}
+                  />
+                  <FilterChip
+                    variant="due_soon"
+                    label={t('filters.dueSoon')}
+                    count={dueSoonFilterCount}
+                    active={statusFilter === DUE_SOON}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(DUE_SOON);
+                    }}
+                  />
+                  <FilterChip
+                    variant="expired"
+                    label={t('filters.expired')}
+                    count={expiredLicenseCount}
+                    active={statusFilter === EXPIRED}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(EXPIRED);
+                    }}
+                  />
+                </FilterChipBar>
 
-              <Card className="overflow-hidden">
-                <div className="flex items-center justify-between gap-3 border-b border-app-border-subtle px-4 py-3 sm:px-6">
-                  <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
-                    {t('admin.gymsSection')}
-                  </h2>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={fetchGyms}
-                    aria-label={t('common.refresh')}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </div>
-
-                <div className="lg:hidden divide-y divide-app-border-subtle">
-                  {loading && gyms.length === 0 ? (
-                    <AdminListSkeleton rows={5} />
-                  ) : displayedGyms.length > 0 ? (
-                    displayedGyms.map((gym) => {
-                      const isUnpaid = gym.isUnpaid;
-                      return (
-                        <div
-                          key={gym.id}
-                          className={`p-4 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => openGymDetail(gym.id)}
-                            className="w-full text-left"
-                          >
-                            <div className="flex items-start gap-3">
-                              <InitialsAvatar name={gym.name} size="md" />
-                              <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-2">
-                                  <span className="font-bold text-app-text-strong">{gym.name}</span>
-                                  {isUnpaid && <UnpaidBadge compact />}
-                                  <StatusBadge status={gym.subscription_status} />
-                                </div>
-                                <p className="mt-1 text-sm text-app-text">{gym.owner_name}</p>
-                                <p className="mt-0.5 text-sm text-teal-700">{gym.saas_plan_name || '—'}</p>
-                                <p className="mt-1 text-xs text-app-muted">
-                                  {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                          <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
-                            {isUnpaid && gym.subscription_status?.toLowerCase() === 'active' && !canRenewGym(gym) && (
-                              <button
-                                type="button"
-                                onClick={() => setCollectState({ isOpen: true, gym, error: '' })}
-                                className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
-                                title={t('actions.collectPayment')}
-                              >
-                                <DollarSign className="h-4 w-4" />
-                              </button>
-                            )}
-                            {canChangeSaasPlan(gym) &&
-                              saasPlans.filter((p) => p.id !== gym.saas_plan_id).length > 0 && (
-                              <button
-                                type="button"
-                                onClick={() => openChangePlanModal(gym)}
-                                className={iconActionIdle}
-                                title={t('admin.changeSaasPlanTitle')}
-                              >
-                                <ArrowLeftRight className="h-4 w-4" />
-                              </button>
-                            )}
-                            {canRenewGym(gym) && (
-                              <button
-                                type="button"
-                                onClick={() => openRenewGymModal(gym)}
-                                className={iconActionSuccess}
-                                title={t('admin.renewLicenseTitle')}
-                              >
-                                <RefreshCw className="h-4 w-4" />
-                              </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => setGymEditState({ isOpen: true, gym, error: '' })}
-                              className={iconActionIdle}
-                              title={t('common.edit')}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setGymToDelete(gym)}
-                              className={iconActionDanger}
-                              title={t('common.delete')}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <EmptyState
-                      icon={AlertCircle}
-                      compact
-                      title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
-                      body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+                  <div className="relative w-full sm:max-w-md">
+                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
+                      <Search className="h-5 w-5" />
+                    </span>
+                    <input
+                      type="text"
+                      className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
+                      placeholder={t('admin.searchGymsPlaceholder')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                  )}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <select
+                      className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`}
+                      value={gymSort}
+                      onChange={(e) => {
+                        setGymPage(1);
+                        setGymSort(e.target.value);
+                      }}
+                      aria-label={t('admin.sortGymsAria')}
+                    >
+                      {ADMIN_GYM_SORT_OPTIONS.map((opt) => (
+                        <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
-                <div className="hidden lg:block overflow-x-auto">
-                  <table className="admin-data-table admin-gyms-table min-w-[800px]">
-                    <thead>
-                      <tr>
-                        <th>{t('table.gym')}</th>
-                        <th>{t('table.owner')}</th>
-                        <th>{t('table.saasPlan')}</th>
-                        <th>{t('table.members')}</th>
-                        <th>{t('table.status')}</th>
-                        <th className="text-right">{t('table.actions')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {loading && gyms.length === 0 ? (
-                        <AdminTableRowsSkeleton rows={8} cols={6} />
-                      ) : displayedGyms.length > 0 ? (
-                        displayedGyms.map((gym) => {
-                          const isUnpaid = gym.isUnpaid;
-                          return (
-                          <tr
+                <Card className="overflow-hidden">
+                  <div className="flex items-center justify-between gap-3 border-b border-app-border-subtle px-4 py-3 sm:px-6">
+                    <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
+                      {t('admin.gymsSection')}
+                    </h2>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={fetchGyms}
+                      aria-label={t('common.refresh')}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  <div className="lg:hidden divide-y divide-app-border-subtle">
+                    {loading && gyms.length === 0 ? (
+                      <AdminListSkeleton rows={5} />
+                    ) : displayedGyms.length > 0 ? (
+                      displayedGyms.map((gym) => {
+                        const isUnpaid = gym.isUnpaid;
+                        return (
+                          <div
                             key={gym.id}
-                            onClick={() => openGymDetail(gym.id)}
-                            className={`cursor-pointer transition-colors ${
-                              selectedGymId === gym.id ? 'bg-teal-50 dark:bg-teal-600/10' : ''
-                            } ${isUnpaid ? 'admin-row-unpaid' : 'hover:bg-teal-50/60 dark:hover:bg-teal-600/10'}`}
+                            className={`p-4 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
                           >
-                            <td>
-                              <div className="flex items-center gap-3 min-w-0">
+                            <button
+                              type="button"
+                              onClick={() => openGymDetail(gym.id)}
+                              className="w-full text-left"
+                            >
+                              <div className="flex items-start gap-3">
                                 <InitialsAvatar name={gym.name} size="md" />
-                                <div className="flex min-w-0 flex-wrap items-center gap-2">
-                                  <span className="truncate font-bold text-app-text-strong">{gym.name}</span>
-                                  {isUnpaid && <UnpaidBadge compact />}
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex flex-wrap items-center gap-2">
+                                    <span className="font-bold text-app-text-strong">{gym.name}</span>
+                                    {isUnpaid && <UnpaidBadge compact />}
+                                    <StatusBadge status={gym.subscription_status} />
+                                  </div>
+                                  <p className="mt-1 text-sm text-app-text">{gym.owner_name}</p>
+                                  <p className="mt-0.5 text-sm text-teal-700">{gym.saas_plan_name || '—'}</p>
+                                  <p className="mt-1 text-xs text-app-muted">
+                                    {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
+                                  </p>
                                 </div>
                               </div>
-                            </td>
-                            <td className="truncate text-app-text">{gym.owner_name}</td>
-                            <td className="truncate text-app-text">
-                              {gym.saas_plan_name || '—'}
-                            </td>
-                            <td>
-                              <span className="inline-flex items-center gap-1.5 text-sm text-app-text">
-                                <Users className="h-3.5 w-3.5 shrink-0 text-app-muted" />
-                                {Number(gym.active_member_count ?? 0)}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="flex flex-wrap items-center gap-1.5">
-                                <StatusBadge status={gym.subscription_status} />
-                                {isUnpaid && <UnpaidBadge />}
-                              </div>
-                            </td>
-                            <td>
-                              <div className="admin-row-actions">
+                            </button>
+                            <div className="admin-row-actions mt-3" onClick={(e) => e.stopPropagation()}>
                               {isUnpaid && gym.subscription_status?.toLowerCase() === 'active' && !canRenewGym(gym) && (
                                 <button
                                   type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setCollectState({ isOpen: true, gym, error: '' });
-                                  }}
+                                  onClick={() => setCollectState({ isOpen: true, gym, error: '' })}
                                   className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
                                   title={t('actions.collectPayment')}
                                 >
@@ -997,10 +897,7 @@ export default function AdminDashboard() {
                                 saasPlans.filter((p) => p.id !== gym.saas_plan_id).length > 0 && (
                                 <button
                                   type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openChangePlanModal(gym);
-                                  }}
+                                  onClick={() => openChangePlanModal(gym)}
                                   className={iconActionIdle}
                                   title={t('admin.changeSaasPlanTitle')}
                                 >
@@ -1010,10 +907,7 @@ export default function AdminDashboard() {
                               {canRenewGym(gym) && (
                                 <button
                                   type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    openRenewGymModal(gym);
-                                  }}
+                                  onClick={() => openRenewGymModal(gym)}
                                   className={iconActionSuccess}
                                   title={t('admin.renewLicenseTitle')}
                                 >
@@ -1022,60 +916,199 @@ export default function AdminDashboard() {
                               )}
                               <button
                                 type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setGymEditState({ isOpen: true, gym, error: '' });
-                                }}
+                                onClick={() => setGymEditState({ isOpen: true, gym, error: '' })}
                                 className={iconActionIdle}
-                                title={t('admin.editGymDetailsTitle')}
+                                title={t('common.edit')}
                               >
                                 <Edit className="h-4 w-4" />
                               </button>
                               <button
                                 type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setGymToDelete(gym);
-                                }}
+                                onClick={() => setGymToDelete(gym)}
                                 className={iconActionDanger}
-                                title={t('admin.deleteGymActionTitle')}
+                                title={t('common.delete')}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
-                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <EmptyState
+                        icon={AlertCircle}
+                        compact
+                        title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
+                        body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                        action={
+                          noGymsYet ? (
+                            <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
+                              {t('admin.registerGym')}
+                            </Button>
+                          ) : null
+                        }
+                      />
+                    )}
+                  </div>
+
+                  <div className="hidden lg:block overflow-x-auto">
+                    <table className="admin-data-table admin-gyms-table min-w-[800px]">
+                      <thead>
+                        <tr>
+                          <th>{t('table.gym')}</th>
+                          <th>{t('table.owner')}</th>
+                          <th>{t('table.saasPlan')}</th>
+                          <th>{t('table.members')}</th>
+                          <th>{t('table.status')}</th>
+                          <th className="text-right">{t('table.actions')}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loading && gyms.length === 0 ? (
+                          <AdminTableRowsSkeleton rows={8} cols={6} />
+                        ) : displayedGyms.length > 0 ? (
+                          displayedGyms.map((gym) => {
+                            const isUnpaid = gym.isUnpaid;
+                            return (
+                            <tr
+                              key={gym.id}
+                              onClick={() => openGymDetail(gym.id)}
+                              className={`cursor-pointer transition-colors ${
+                                selectedGymId === gym.id ? 'bg-teal-50 dark:bg-teal-600/10' : ''
+                              } ${isUnpaid ? 'admin-row-unpaid' : 'hover:bg-teal-50/60 dark:hover:bg-teal-600/10'}`}
+                            >
+                              <td>
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <InitialsAvatar name={gym.name} size="md" />
+                                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                                    <span className="truncate font-bold text-app-text-strong">{gym.name}</span>
+                                    {isUnpaid && <UnpaidBadge compact />}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="truncate text-app-text">{gym.owner_name}</td>
+                              <td className="truncate text-app-text">
+                                {gym.saas_plan_name || '—'}
+                              </td>
+                              <td>
+                                <span className="inline-flex items-center gap-1.5 text-sm text-app-text">
+                                  <Users className="h-3.5 w-3.5 shrink-0 text-app-muted" />
+                                  {Number(gym.active_member_count ?? 0)}
+                                </span>
+                              </td>
+                              <td>
+                                <div className="flex flex-wrap items-center gap-1.5">
+                                  <StatusBadge status={gym.subscription_status} />
+                                  {isUnpaid && <UnpaidBadge />}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="admin-row-actions">
+                                {isUnpaid && gym.subscription_status?.toLowerCase() === 'active' && !canRenewGym(gym) && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setCollectState({ isOpen: true, gym, error: '' });
+                                    }}
+                                    className="text-amber-600 hover:bg-amber-100 hover:text-amber-800 dark:hover:bg-amber-950/40 cursor-pointer"
+                                    title={t('actions.collectPayment')}
+                                  >
+                                    <DollarSign className="h-4 w-4" />
+                                  </button>
+                                )}
+                                {canChangeSaasPlan(gym) &&
+                                  saasPlans.filter((p) => p.id !== gym.saas_plan_id).length > 0 && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openChangePlanModal(gym);
+                                    }}
+                                    className={iconActionIdle}
+                                    title={t('admin.changeSaasPlanTitle')}
+                                  >
+                                    <ArrowLeftRight className="h-4 w-4" />
+                                  </button>
+                                )}
+                                {canRenewGym(gym) && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openRenewGymModal(gym);
+                                    }}
+                                    className={iconActionSuccess}
+                                    title={t('admin.renewLicenseTitle')}
+                                  >
+                                    <RefreshCw className="h-4 w-4" />
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setGymEditState({ isOpen: true, gym, error: '' });
+                                  }}
+                                  className={iconActionIdle}
+                                  title={t('admin.editGymDetailsTitle')}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setGymToDelete(gym);
+                                  }}
+                                  className={iconActionDanger}
+                                  title={t('admin.deleteGymActionTitle')}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
+                                </div>
+                              </td>
+                            </tr>
+                            );
+                          })
+                        ) : (
+                          <tr>
+                            <td colSpan={6} className="p-0">
+                              <EmptyState
+                                icon={AlertCircle}
+                                compact
+                                title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
+                                body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                                action={
+                                  noGymsYet ? (
+                                    <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
+                                      {t('admin.registerGym')}
+                                    </Button>
+                                  ) : null
+                                }
+                              />
                             </td>
                           </tr>
-                          );
-                        })
-                      ) : (
-                        <tr>
-                          <td colSpan={6} className="p-0">
-                            <EmptyState
-                              icon={AlertCircle}
-                              compact
-                              title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
-                              body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
-                            />
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="border-t border-app-border-subtle px-4 py-3">
-                  <PaginationControls
-                    page={gymPage}
-                    totalPages={gymTotalPages}
-                    total={gymTotal}
-                    limit={GYM_PAGE_SIZE}
-                    onPageChange={setGymPage}
-                    disabled={loading}
-                  />
-                  <p className="mt-2 text-xs text-app-muted">
-                    {t('admin.rowActionsHint')}
-                  </p>
-                </div>
-              </Card>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="border-t border-app-border-subtle px-4 py-3">
+                    <PaginationControls
+                      page={gymPage}
+                      totalPages={gymTotalPages}
+                      total={gymTotal}
+                      limit={GYM_PAGE_SIZE}
+                      onPageChange={setGymPage}
+                      disabled={loading}
+                    />
+                    <p className="mt-2 text-xs text-app-muted">
+                      {t('admin.rowActionsHint')}
+                    </p>
+                  </div>
+                </Card>
+                </>
+              )}
             </>
           
           )}

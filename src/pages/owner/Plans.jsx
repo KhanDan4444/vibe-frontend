@@ -175,7 +175,7 @@ export default function Plans() {
         title={t('pages.plans.title')}
         subtitle={statusLine}
         actions={
-          canManagePlans ? (
+          canManagePlans && plans.length > 0 ? (
             <Button onClick={() => { setError(''); setIsAddModalOpen(true); }}>
               {t('pages.plans.add')}
             </Button>

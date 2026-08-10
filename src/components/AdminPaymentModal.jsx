@@ -1,7 +1,7 @@
 // src/components/AdminPaymentModal.jsx — collect or edit SaaS payment
 import React, { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
-import { X, DollarSign, Building2 } from 'lucide-react';
+import { X, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, toDateString, formatDisplayDate } from '../utils/date';
 import { boundsForPaymentOnTerm } from '../utils/datePickerBounds';
@@ -12,6 +12,7 @@ import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 export default function AdminPaymentModal({
@@ -169,21 +170,16 @@ export default function AdminPaymentModal({
               {t('modals.payment.amount')}
               <RequiredMark />
             </label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-app-muted" />
-                <input
-                  type="number"
-                  required
-                  min="0.01"
-                  step="0.01"
-                  className={fc('amount', 'pl-10 pr-4')}
-                  value={amount}
-                  onChange={(e) => {
-                    setAmount(e.target.value);
-                    clearFieldError(setLocalFieldErrors, 'amount');
-                  }}
-                />
-              </div>
+              <MoneyAmountInput
+                required
+                min="0.01"
+                fieldErrors={fieldErrors}
+                value={amount}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                  clearFieldError(setLocalFieldErrors, 'amount');
+                }}
+              />
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
             </div>
             <div>

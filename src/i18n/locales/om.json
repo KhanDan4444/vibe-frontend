@@ -730,7 +730,8 @@
         "all": "Haala hunda",
         "active": "Kan hojiirra jiru qofa",
         "inactive": "Kan hojiirra hin jirre qofa"
-      }
+      },
+      "createFirst": "Damee Galmeessi"
     },
     "team": {
       "title": "Hojjettoota",
@@ -752,7 +753,8 @@
       "emptyTitle": "Hojjettonni hin jiran",
       "emptyBody": "Hojjettoota deskii fuulduraa afeeri si'a ta'u miseensota teessuma duraatiin bulchuu danda'u.",
       "emptyBranchTitle": "Damee kana irratti hojjetoonni hin jiran",
-      "emptyBranchBody": "Gara dameewwan hundaatti jijjiiri, ykn hojjettoota bakka kanaaf ramadi."
+      "emptyBranchBody": "Gara dameewwan hundaatti jijjiiri, ykn hojjettoota bakka kanaaf ramadi.",
+      "createFirst": "Hojjetaa Galmeessi"
     },
     "activity": {
       "title": "Sosocho'iinsota",

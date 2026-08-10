@@ -375,6 +375,12 @@ export default function Branches() {
     navigate('/dashboard/team');
   };
 
+  const noBranchesYet = !loading && branches.length === 0;
+  const openCreateBranch = () => {
+    setModalError('');
+    setModal({ open: true, branch: null });
+  };
+
   const colCount = readOnly ? 4 : 5;
 
   return (
@@ -383,13 +389,8 @@ export default function Branches() {
         title={t('pages.branches.title')}
         subtitle={statusLine}
         actions={
-          !readOnly ? (
-            <Button
-              onClick={() => {
-                setModalError('');
-                setModal({ open: true, branch: null });
-              }}
-            >
+          !readOnly && !noBranchesYet ? (
+            <Button onClick={openCreateBranch}>
               {t('pages.branches.add')}
             </Button>
           ) : null
@@ -398,193 +399,218 @@ export default function Branches() {
 
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void load()} /> : null}
 
-      <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
-          <div className="min-w-0">
-            <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
-              {t('pages.branches.locations')}
-            </h2>
-            <p className="mt-0.5 text-xs text-app-muted">{t('pages.branches.subtitle')}</p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-            <div className="relative w-full sm:max-w-md">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-                <Search className="h-5 w-5" />
-              </span>
-              <input
-                type="search"
-                className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-                placeholder={t('pages.branches.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label={t('pages.branches.searchPlaceholder')}
-              />
-            </div>
-            <label className="sr-only" htmlFor="branch-status-filter">
-              {t('table.status')}
-            </label>
-            <select
-              id="branch-status-filter"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[9rem]`}
-            >
-              <option value="all">{t('pages.branches.filters.all')}</option>
-              <option value="active">{t('pages.branches.filters.active')}</option>
-              <option value="inactive">{t('pages.branches.filters.inactive')}</option>
-            </select>
-          </div>
+      {noBranchesYet ? (
+        <div className={cardSurface}>
+          <EmptyState
+            icon={MapPin}
+            title={t('pages.branches.emptyTitle')}
+            body={t('pages.branches.emptyBody')}
+            action={
+              !readOnly ? (
+                <Button onClick={openCreateBranch}>{t('pages.branches.createFirst')}</Button>
+              ) : null
+            }
+          />
         </div>
+      ) : (
+        <div className={`overflow-hidden ${cardSurface}`}>
+          <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
+            <div className="min-w-0">
+              <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
+                {t('pages.branches.locations')}
+              </h2>
+              <p className="mt-0.5 text-xs text-app-muted">{t('pages.branches.subtitle')}</p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+              <div className="relative w-full sm:max-w-md">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
+                  <Search className="h-5 w-5" />
+                </span>
+                <input
+                  type="search"
+                  className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
+                  placeholder={t('pages.branches.searchPlaceholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label={t('pages.branches.searchPlaceholder')}
+                />
+              </div>
+              <label className="sr-only" htmlFor="branch-status-filter">
+                {t('table.status')}
+              </label>
+              <select
+                id="branch-status-filter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className={`ui-select ${selectSurface} min-w-[9rem]`}
+              >
+                <option value="all">{t('pages.branches.filters.all')}</option>
+                <option value="active">{t('pages.branches.filters.active')}</option>
+                <option value="inactive">{t('pages.branches.filters.inactive')}</option>
+              </select>
+            </div>
+          </div>
 
-        {loading ? (
-          <>
-            <div className="lg:hidden">
-              <AdminListSkeleton rows={4} />
-            </div>
-            <div className="hidden overflow-x-auto lg:block">
-              <table className="admin-data-table">
-                <tbody>
-                  <AdminTableRowsSkeleton rows={4} cols={colCount} />
-                </tbody>
-              </table>
-            </div>
-          </>
-        ) : filteredBranches.length === 0 ? (
-          <EmptyState icon={MapPin} compact title={emptyTitle} body={emptyBody} />
-        ) : (
-          <>
-            <div className="lg:hidden divide-y divide-app-border-subtle">
-              {filteredBranches.map((branch) => {
-                const meta = branchMetaLine(branch);
-                return (
-                  <div key={branch.id} className="p-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <p className="font-medium text-app-text-strong">
-                          <span className="truncate">{branch.name}</span>
-                          {branch.is_default ? (
-                            <span className={DEFAULT_BADGE}>{t('common.default')}</span>
-                          ) : null}
-                        </p>
-                        {meta ? (
-                          <p className="mt-1 text-xs leading-snug text-app-muted">{meta}</p>
-                        ) : null}
-                        <p className="mt-1.5 text-sm text-app-muted">
-                          <button
-                            type="button"
-                            onClick={() => openMembers(branch)}
-                            className="font-medium text-teal-700 hover:underline dark:text-teal-300"
-                          >
-                            {branch.member_count ?? 0} {t('table.members')}
-                          </button>
-                          {' · '}
-                          <button
-                            type="button"
-                            onClick={() => openStaff(branch)}
-                            className="font-medium text-teal-700 hover:underline dark:text-teal-300"
-                          >
-                            {branch.staff_count ?? 0} {t('nav.team')}
-                          </button>
-                        </p>
-                        <span className={`mt-2 ${branch.is_active ? STATUS_ACTIVE : STATUS_INACTIVE}`}>
-                          {branch.is_active ? t('status.active') : t('common.inactive')}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <BranchActions
-                        branch={branch}
-                        readOnly={readOnly}
-                        t={t}
-                        onEdit={() => {
-                          setModalError('');
-                          setModal({ open: true, branch });
-                        }}
-                        onSetDefault={() => void setAsDefault(branch)}
-                        onToggleActive={() => void toggleActive(branch)}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="hidden overflow-x-auto lg:block">
-              <table className="admin-data-table owner-branches-table min-w-[780px]">
-                <thead>
-                  <tr>
-                    <th>{t('table.name')}</th>
-                    <th>{t('table.members')}</th>
-                    <th>{t('nav.team')}</th>
-                    <th>{t('table.status')}</th>
-                    {!readOnly && <th className="text-right">{t('table.actions')}</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredBranches.map((branch) => {
-                    const meta = branchMetaLine(branch);
-                    return (
-                      <tr key={branch.id} className={tableRowHover}>
-                        <td className="font-medium text-app-text-strong">
-                          <div className="flex min-w-0 flex-wrap items-center">
+          {loading ? (
+            <>
+              <div className="lg:hidden">
+                <AdminListSkeleton rows={4} />
+              </div>
+              <div className="hidden overflow-x-auto lg:block">
+                <table className="admin-data-table">
+                  <tbody>
+                    <AdminTableRowsSkeleton rows={4} cols={colCount} />
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : filteredBranches.length === 0 ? (
+            <EmptyState
+              icon={MapPin}
+              compact
+              title={emptyTitle}
+              body={emptyBody}
+              action={
+                noBranchesYet && !readOnly ? (
+                  <Button onClick={openCreateBranch}>{t('pages.branches.createFirst')}</Button>
+                ) : null
+              }
+            />
+          ) : (
+            <>
+              <div className="lg:hidden divide-y divide-app-border-subtle">
+                {filteredBranches.map((branch) => {
+                  const meta = branchMetaLine(branch);
+                  return (
+                    <div key={branch.id} className="p-4">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-medium text-app-text-strong">
                             <span className="truncate">{branch.name}</span>
                             {branch.is_default ? (
                               <span className={DEFAULT_BADGE}>{t('common.default')}</span>
                             ) : null}
-                          </div>
+                          </p>
                           {meta ? (
-                            <p className="mt-0.5 max-w-sm truncate text-xs font-normal text-app-muted">
-                              {meta}
-                            </p>
+                            <p className="mt-1 text-xs leading-snug text-app-muted">{meta}</p>
                           ) : null}
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => openMembers(branch)}
-                            className="font-medium text-teal-700 hover:underline dark:text-teal-300"
-                          >
-                            {branch.member_count ?? 0}
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => openStaff(branch)}
-                            className="font-medium text-teal-700 hover:underline dark:text-teal-300"
-                          >
-                            {branch.staff_count ?? 0}
-                          </button>
-                        </td>
-                        <td>
-                          <span className={branch.is_active ? STATUS_ACTIVE : STATUS_INACTIVE}>
+                          <p className="mt-1.5 text-sm text-app-muted">
+                            <button
+                              type="button"
+                              onClick={() => openMembers(branch)}
+                              className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+                            >
+                              {branch.member_count ?? 0} {t('table.members')}
+                            </button>
+                            {' · '}
+                            <button
+                              type="button"
+                              onClick={() => openStaff(branch)}
+                              className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+                            >
+                              {branch.staff_count ?? 0} {t('nav.team')}
+                            </button>
+                          </p>
+                          <span className={`mt-2 ${branch.is_active ? STATUS_ACTIVE : STATUS_INACTIVE}`}>
                             {branch.is_active ? t('status.active') : t('common.inactive')}
                           </span>
-                        </td>
-                        {!readOnly && (
-                          <td>
-                            <BranchActions
-                              branch={branch}
-                              readOnly={readOnly}
-                              t={t}
-                              onEdit={() => {
-                                setModalError('');
-                                setModal({ open: true, branch });
-                              }}
-                              onSetDefault={() => void setAsDefault(branch)}
-                              onToggleActive={() => void toggleActive(branch)}
-                            />
+                        </div>
+                      </div>
+                      <div className="mt-3">
+                        <BranchActions
+                          branch={branch}
+                          readOnly={readOnly}
+                          t={t}
+                          onEdit={() => {
+                            setModalError('');
+                            setModal({ open: true, branch });
+                          }}
+                          onSetDefault={() => void setAsDefault(branch)}
+                          onToggleActive={() => void toggleActive(branch)}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="hidden overflow-x-auto lg:block">
+                <table className="admin-data-table owner-branches-table min-w-[780px]">
+                  <thead>
+                    <tr>
+                      <th>{t('table.name')}</th>
+                      <th>{t('table.members')}</th>
+                      <th>{t('nav.team')}</th>
+                      <th>{t('table.status')}</th>
+                      {!readOnly && <th className="text-right">{t('table.actions')}</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredBranches.map((branch) => {
+                      const meta = branchMetaLine(branch);
+                      return (
+                        <tr key={branch.id} className={tableRowHover}>
+                          <td className="font-medium text-app-text-strong">
+                            <div className="flex min-w-0 flex-wrap items-center">
+                              <span className="truncate">{branch.name}</span>
+                              {branch.is_default ? (
+                                <span className={DEFAULT_BADGE}>{t('common.default')}</span>
+                              ) : null}
+                            </div>
+                            {meta ? (
+                              <p className="mt-0.5 max-w-sm truncate text-xs font-normal text-app-muted">
+                                {meta}
+                              </p>
+                            ) : null}
                           </td>
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-      </div>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => openMembers(branch)}
+                              className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+                            >
+                              {branch.member_count ?? 0}
+                            </button>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => openStaff(branch)}
+                              className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+                            >
+                              {branch.staff_count ?? 0}
+                            </button>
+                          </td>
+                          <td>
+                            <span className={branch.is_active ? STATUS_ACTIVE : STATUS_INACTIVE}>
+                              {branch.is_active ? t('status.active') : t('common.inactive')}
+                            </span>
+                          </td>
+                          {!readOnly && (
+                            <td>
+                              <BranchActions
+                                branch={branch}
+                                readOnly={readOnly}
+                                t={t}
+                                onEdit={() => {
+                                  setModalError('');
+                                  setModal({ open: true, branch });
+                                }}
+                                onSetDefault={() => void setAsDefault(branch)}
+                                onToggleActive={() => void toggleActive(branch)}
+                              />
+                            </td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       <BranchModal
         isOpen={modal.open}

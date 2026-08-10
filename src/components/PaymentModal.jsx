@@ -1,7 +1,7 @@
 // src/components/PaymentModal.jsx
 import { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
-import { X, DollarSign } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { boundsForPaymentOnTerm } from '../utils/datePickerBounds';
@@ -12,6 +12,7 @@ import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
@@ -191,25 +192,17 @@ export default function PaymentModal({
                 {t('modals.payment.amount')}
                 <RequiredMark />
               </label>
-              <div className="relative mt-1">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-                  <DollarSign className="h-4 w-4" />
-                </span>
-                <input
-                  id="payment-amount"
-                  type="number"
-                  required
-                  min="0.01"
-                  step="0.01"
-                  className={inputClass('w-full app-field pl-8 pr-3', fieldErrors, 'amount')}
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => {
-                    setAmount(e.target.value);
-                    clearFieldError(setLocalFieldErrors, 'amount');
-                  }}
-                />
-              </div>
+              <MoneyAmountInput
+                id="payment-amount"
+                required
+                min="0.01"
+                fieldErrors={fieldErrors}
+                value={amount}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                  clearFieldError(setLocalFieldErrors, 'amount');
+                }}
+              />
               <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
             </div>
 

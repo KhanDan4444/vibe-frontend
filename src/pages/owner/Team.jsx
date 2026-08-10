@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
-import { UserPlus, Edit, UserX, UserCheck, Users } from 'lucide-react';
+import { Edit, UserX, UserCheck, Users } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { listTeam, createStaff, updateStaff } from '../../services/teamService';
 import StaffModal from '../../components/StaffModal';
@@ -124,20 +124,20 @@ export default function Team() {
     }
   };
 
+  const noStaffYet = !loading && staff.length === 0;
+  const openCreateStaff = () => {
+    setModalError('');
+    setModalState({ isOpen: true, member: null });
+  };
+
   return (
     <div className="space-y-5 sm:space-y-6">
       <PageHeader
         title={t('pages.team.title')}
         subtitle={t('pages.team.subtitle')}
         actions={
-          !readOnly ? (
-            <Button
-              onClick={() => {
-                setModalError('');
-                setModalState({ isOpen: true, member: null });
-              }}
-            >
-              <UserPlus className="h-4 w-4" />
+          !readOnly && !noStaffYet ? (
+            <Button onClick={openCreateStaff}>
               {t('pages.team.add')}
             </Button>
           ) : null
@@ -146,6 +146,20 @@ export default function Team() {
 
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void loadTeam()} /> : null}
 
+      {noStaffYet ? (
+        <Card className="overflow-hidden">
+          <EmptyState
+            icon={Users}
+            title={t('pages.team.emptyTitle')}
+            body={t('pages.team.emptyBody')}
+            action={
+              !readOnly ? (
+                <Button onClick={openCreateStaff}>{t('pages.team.createFirst')}</Button>
+              ) : null
+            }
+          />
+        </Card>
+      ) : (
       <Card className="overflow-hidden">
         <div className="admin-panel-header">
           <h2 className="text-sm font-semibold text-app-text-strong">{t('pages.team.sectionTitle')}</h2>
@@ -167,16 +181,8 @@ export default function Team() {
         ) : visibleStaff.length === 0 ? (
           <EmptyState
             icon={Users}
-            title={
-              staff.length > 0 && selectedBranchId !== 'all'
-                ? t('pages.team.emptyBranchTitle')
-                : t('pages.team.emptyTitle')
-            }
-            body={
-              staff.length > 0 && selectedBranchId !== 'all'
-                ? t('pages.team.emptyBranchBody')
-                : t('pages.team.emptyBody')
-            }
+            title={t('pages.team.emptyBranchTitle')}
+            body={t('pages.team.emptyBranchBody')}
           />
         ) : (
           <>
@@ -300,6 +306,7 @@ export default function Team() {
           </>
         )}
       </Card>
+      )}
 
       <StaffModal
         isOpen={modalState.isOpen}
