@@ -136,11 +136,6 @@ export default function UserProfileMenu({ compact = false }) {
                   @{user.username}
                 </p>
               ) : null}
-              {user?.email ? (
-                <p className="mt-0.5 break-all text-xs text-app-muted" title={user.email}>
-                  {user.email}
-                </p>
-              ) : null}
             </div>
 
             <div className="px-2 py-2">
