@@ -16,17 +16,20 @@ function roleSubtitle(role, t) {
   return t('profile.account');
 }
 
-function roleBadgeClass(role) {
-  if (isPlatformAdmin(role)) {
-    return 'bg-violet-800 text-violet-100 dark:bg-violet-950 dark:text-violet-200';
-  }
-  if (isGymOwner(role)) {
-    return 'bg-teal-800 text-teal-100 dark:bg-teal-950 dark:text-teal-200';
-  }
-  if (isGymStaff(role)) {
-    return 'bg-sky-800 text-sky-100 dark:bg-sky-950 dark:text-sky-200';
-  }
-  return 'bg-app-surface text-app-muted';
+function roleDotClass(role) {
+  if (isPlatformAdmin(role)) return 'bg-violet-500 dark:bg-violet-400';
+  if (isGymOwner(role)) return 'bg-teal-600 dark:bg-teal-400';
+  if (isGymStaff(role)) return 'bg-sky-500 dark:bg-sky-400';
+  return 'bg-app-muted';
+}
+
+function RoleLabel({ role, children, className = '' }) {
+  return (
+    <span className={`inline-flex max-w-full items-center gap-1.5 truncate text-[10px] font-medium text-app-muted ${className}`}>
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${roleDotClass(role)}`} aria-hidden />
+      <span className="truncate">{children}</span>
+    </span>
+  );
 }
 
 function initialsFrom(name, email, username) {
@@ -123,11 +126,9 @@ export default function UserProfileMenu({ compact = false }) {
                 <div className="max-w-[140px] truncate text-sm font-semibold leading-tight text-app-text-strong">
                   {displayName}
                 </div>
-                <span
-                  className={`mt-0.5 inline-flex max-w-[140px] truncate rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${roleBadgeClass(user?.role)}`}
-                >
+                <RoleLabel role={user?.role} className="mt-0.5 max-w-[140px]">
                   {subtitle}
-                </span>
+                </RoleLabel>
               </div>
               <ChevronDown
                 className={`hidden h-4 w-4 text-app-muted transition-transform sm:block ${
@@ -146,11 +147,9 @@ export default function UserProfileMenu({ compact = false }) {
           >
             <div className="border-b border-app-border-subtle px-4 pb-3 pt-2.5">
               <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
-              <span
-                className={`mt-1.5 inline-flex rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${roleBadgeClass(user?.role)}`}
-              >
+              <RoleLabel role={user?.role} className="mt-1">
                 {subtitle}
-              </span>
+              </RoleLabel>
               {user?.username ? (
                 <p className="mt-1.5 truncate text-xs font-medium text-app-text" title={user.username}>
                   @{user.username}
