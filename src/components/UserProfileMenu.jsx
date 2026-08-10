@@ -25,8 +25,8 @@ function roleDotClass(role) {
 
 function RoleLabel({ role, children, className = '' }) {
   return (
-    <span className={`inline-flex max-w-full items-center gap-1.5 truncate text-[10px] font-medium text-app-muted ${className}`}>
-      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${roleDotClass(role)}`} aria-hidden />
+    <span className={`inline-flex max-w-full items-center gap-2 truncate text-xs font-medium leading-tight text-app-muted ${className}`}>
+      <span className={`h-2 w-2 shrink-0 rounded-full ${roleDotClass(role)}`} aria-hidden />
       <span className="truncate">{children}</span>
     </span>
   );
