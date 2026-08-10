@@ -16,6 +16,19 @@ function roleSubtitle(role, t) {
   return t('profile.account');
 }
 
+function roleBadgeClass(role) {
+  if (isPlatformAdmin(role)) {
+    return 'bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-200';
+  }
+  if (isGymOwner(role)) {
+    return 'bg-teal-100 text-teal-800 dark:bg-teal-500/20 dark:text-teal-200';
+  }
+  if (isGymStaff(role)) {
+    return 'bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-200';
+  }
+  return 'bg-app-surface text-app-muted dark:bg-app-bg';
+}
+
 function initialsFrom(name, email, username) {
   const source = (name || email || username || 'U').trim();
   const parts = source.split(/\s+/).filter(Boolean);
@@ -110,9 +123,11 @@ export default function UserProfileMenu({ compact = false }) {
                 <div className="max-w-[140px] truncate text-sm font-semibold leading-tight text-app-text-strong">
                   {displayName}
                 </div>
-                <div className="text-[10px] font-medium uppercase tracking-wider text-app-muted">
+                <span
+                  className={`mt-0.5 inline-flex max-w-[140px] truncate rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${roleBadgeClass(user?.role)}`}
+                >
                   {subtitle}
-                </div>
+                </span>
               </div>
               <ChevronDown
                 className={`hidden h-4 w-4 text-app-muted transition-transform sm:block ${
@@ -131,11 +146,13 @@ export default function UserProfileMenu({ compact = false }) {
           >
             <div className="border-b border-app-border-subtle px-4 pb-3 pt-2.5">
               <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
-              <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-app-muted">
+              <span
+                className={`mt-1.5 inline-flex rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${roleBadgeClass(user?.role)}`}
+              >
                 {subtitle}
-              </p>
+              </span>
               {user?.username ? (
-                <p className="mt-1 truncate text-xs font-medium text-app-text" title={user.username}>
+                <p className="mt-1.5 truncate text-xs font-medium text-app-text" title={user.username}>
                   @{user.username}
                 </p>
               ) : null}
