@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   Menu,
   MessageSquare,
-  ShieldCheck,
   X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -251,10 +250,7 @@ export default function AdminLayout() {
       </aside>
 
       <div className={`transition-[padding] duration-[180ms] ease-out motion-reduce:transition-none ${contentPadClass}`}>
-        <div className={`sticky top-0 z-10 hidden h-16 items-center justify-between px-8 lg:flex ${shellHeader}`}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-teal-600/20 bg-teal-600/10 px-3 py-1 text-xs font-semibold text-teal-700 dark:text-teal-300">
-            <ShieldCheck className="h-3.5 w-3.5" /> {t('admin.platformAdmin')}
-          </div>
+        <div className={`sticky top-0 z-10 hidden h-16 items-center justify-end px-8 lg:flex ${shellHeader}`}>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <UserProfileMenu />

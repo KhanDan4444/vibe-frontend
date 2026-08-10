@@ -18,15 +18,15 @@ function roleSubtitle(role, t) {
 
 function roleBadgeClass(role) {
   if (isPlatformAdmin(role)) {
-    return 'bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-200';
+    return 'bg-violet-800 text-violet-100 dark:bg-violet-950 dark:text-violet-200';
   }
   if (isGymOwner(role)) {
-    return 'bg-teal-100 text-teal-800 dark:bg-teal-500/20 dark:text-teal-200';
+    return 'bg-teal-800 text-teal-100 dark:bg-teal-950 dark:text-teal-200';
   }
   if (isGymStaff(role)) {
-    return 'bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-200';
+    return 'bg-sky-800 text-sky-100 dark:bg-sky-950 dark:text-sky-200';
   }
-  return 'bg-app-surface text-app-muted dark:bg-app-bg';
+  return 'bg-app-surface text-app-muted';
 }
 
 function initialsFrom(name, email, username) {
