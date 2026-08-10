@@ -197,7 +197,7 @@ export default function Plans() {
         </div>
       ) : plans.length > 0 ? (
         <>
-          <div className="flex justify-end">
+          <div className="flex justify-start">
             <label className="sr-only" htmlFor="plans-sort">
               {t('pages.plans.sortLabel')}
             </label>

@@ -59,7 +59,7 @@ export default function Members() {
   const { apiFetch, user } = useAuth();
   const {
     plans, summary, refreshSummary, updateMember, deleteMember, renewMember, changeMemberPlan, addPayment, transferMember, showFlash,
-    readOnly, branchReadOnly, getBranchQueryParams, branches, selectedBranchId, loading: gymLoading,
+    readOnly, branchReadOnly, getBranchQueryParams, branches, selectedBranchId, loading: gymLoading, error: gymError,
   } = useGym();
   const location = useLocation();
   const navigate = useNavigate();
@@ -445,7 +445,7 @@ export default function Members() {
         }
       />
 
-      {error ? <ErrorRetryBanner message={error} onRetry={() => fetchMembers()} /> : null}
+      {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => fetchMembers()} /> : null}
 
       {!readOnly && !gymLoading && plans.length === 0 && (
         <div className="admin-alert-amber flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -517,7 +517,7 @@ export default function Members() {
         />
       </FilterChipBar>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-app-border-subtle pb-4">
+      <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
         <div className="relative w-full sm:max-w-md">
           <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
             <Search className="h-5 w-5" />
@@ -531,7 +531,7 @@ export default function Members() {
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+        <div className="flex flex-wrap items-center gap-2">
         <select
           className={`ui-select ${selectSurface} min-w-[10rem]`}
           value={listSort}

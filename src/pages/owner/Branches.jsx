@@ -208,7 +208,7 @@ export default function Branches() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { apiFetch } = useAuth();
-  const { showFlash, reloadBranches, readOnly, setSelectedBranchId } = useGym();
+  const { showFlash, reloadBranches, readOnly, setSelectedBranchId, error: gymError } = useGym();
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -395,7 +395,7 @@ export default function Branches() {
         }
       />
 
-      {error ? <ErrorRetryBanner message={error} onRetry={() => void load()} /> : null}
+      {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void load()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
         <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
@@ -405,7 +405,7 @@ export default function Branches() {
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.branches.subtitle')}</p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
             <div className="relative w-full sm:max-w-md">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                 <Search className="h-5 w-5" />

@@ -38,7 +38,7 @@ export const cardHeader =
 export const inputSurface = 'w-full app-field';
 
 export const selectSurface =
-  'app-field ui-select h-10 w-auto max-w-full cursor-pointer appearance-none bg-[length:16px] bg-[right_10px_center] bg-no-repeat pr-9';
+  'app-field ui-select h-10 w-fit max-w-full shrink-0 cursor-pointer appearance-none bg-[length:16px] bg-[right_10px_center] bg-no-repeat pr-9';
 
 export const menuSurface =
   'rounded-xl bg-app-raised ring-1 ring-app-border-subtle shadow-sm shadow-black/[0.04] dark:shadow-none';

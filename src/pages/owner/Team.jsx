@@ -19,7 +19,7 @@ import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/Load
 export default function Team() {
   const { t } = useTranslation();
   const { apiFetch } = useAuth();
-  const { showFlash, branches, readOnly, selectedBranchId } = useGym();
+  const { showFlash, branches, readOnly, selectedBranchId, error: gymError } = useGym();
 
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -144,7 +144,7 @@ export default function Team() {
         }
       />
 
-      {error ? <ErrorRetryBanner message={error} onRetry={() => void loadTeam()} /> : null}
+      {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void loadTeam()} /> : null}
 
       <Card className="overflow-hidden">
         <div className="admin-panel-header">

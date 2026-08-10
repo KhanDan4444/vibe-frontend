@@ -318,12 +318,14 @@ export default function OwnerLayout() {
         <main className="safe-bottom app-page p-4 sm:p-6 lg:p-8">
           <OfflineStatusBar />
           {displayError ? (
-            <ErrorRetryBanner
-              message={displayError}
-              onRetry={async () => {
-                await handleRetryBoot();
-              }}
-            />
+            <div className="mb-6">
+              <ErrorRetryBanner
+                message={displayError}
+                onRetry={async () => {
+                  await handleRetryBoot();
+                }}
+              />
+            </div>
           ) : null}
           {readOnly && !branchReadOnly && (
             <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">

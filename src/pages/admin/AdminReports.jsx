@@ -243,7 +243,7 @@ export default function AdminReports({ onBootingChange }) {
 
       {/* Gym analytics */}
       <section className="space-y-5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-teal-100 p-2 text-teal-700">
               <Building2 className="h-5 w-5" />
@@ -315,7 +315,7 @@ export default function AdminReports({ onBootingChange }) {
 
       {/* Revenue analytics */}
       <section className="space-y-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-3">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-emerald-100 p-2 text-emerald-600">
               <DollarSign className="h-5 w-5" />

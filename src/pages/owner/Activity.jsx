@@ -75,7 +75,7 @@ export default function Activity() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { apiFetch, user } = useAuth();
-  const { getBranchQueryParams, selectedBranchId } = useGym();
+  const { getBranchQueryParams, selectedBranchId, error: gymError } = useGym();
   const showBranchColumnPref = isGymOwner(user?.role) && selectedBranchId === 'all';
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
@@ -192,7 +192,7 @@ export default function Activity() {
         }
       />
 
-      {error ? <ErrorRetryBanner message={error} onRetry={() => void loadActivity()} /> : null}
+      {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void loadActivity()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
         <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
@@ -202,7 +202,7 @@ export default function Activity() {
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.activity.subtitle')}</p>
           </div>
-          <div className="flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
             <div className="relative w-full sm:max-w-md">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                 <Search className="h-5 w-5" />

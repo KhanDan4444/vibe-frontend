@@ -8,7 +8,7 @@ import PaginationControls from '../../components/PaginationControls';
 import { formatDisplayDateTime } from '../../utils/date';
 import { formatAdminSmsMessageType, ADMIN_SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
-import { cardSurface, tableRowHover, pageTitle, mutedText } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover, pageTitle, mutedText, selectSurface } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -114,7 +114,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             id="admin-sms-gym-filter"
             value={gymFilter}
             onChange={(e) => setGymFilter(e.target.value)}
-            className="w-full app-field"
+            className={`ui-select ${selectSurface} min-w-[10rem]`}
           >
             <option value="all">{t('filters.allGyms')}</option>
             {gyms.map((gym) => (
@@ -132,7 +132,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             id="admin-sms-type-filter"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full app-field"
+            className={`ui-select ${selectSurface} min-w-[10rem]`}
           >
             {ADMIN_SMS_TYPE_FILTER_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

@@ -30,7 +30,7 @@ export default function BranchSwitcher({ branches, selectedBranchId, onChange, c
           const value = e.target.value;
           onChange(value === 'all' ? 'all' : parseInt(value, 10));
         }}
-        className={`ui-select max-w-full flex-1 truncate sm:max-w-xs ${selectSurface}`}
+        className={`ui-select w-full max-w-full flex-1 truncate sm:max-w-xs ${selectSurface}`}
       >
         <option value="all">{t('branch.allBranches')}</option>
         {activeBranches.map((branch) => (

@@ -225,7 +225,7 @@ export default function OwnerReports() {
       )}
 
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <div>
             <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
               {t('nav.members')}
@@ -239,7 +239,7 @@ export default function OwnerReports() {
             id="reports-member-filter"
             value={memberFilter}
             onChange={(e) => setMemberFilter(e.target.value)}
-            className={`ui-select ${selectSurface} min-w-[10rem]`}
+            className={`ui-select ${selectSurface} min-w-[10rem] shrink-0`}
           >
             {MEMBER_STATUS_FILTERS.map((f) => (
               <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
@@ -282,7 +282,7 @@ export default function OwnerReports() {
       </section>
 
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-3">
           <div className="min-w-0">
             <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
               {t('nav.revenue')}

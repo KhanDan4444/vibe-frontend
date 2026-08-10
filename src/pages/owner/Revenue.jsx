@@ -47,7 +47,7 @@ function methodShareColor(method) {
 export default function Revenue() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
-  const { plans, updatePayment, deletePayment, showFlash, refreshSummary, readOnly, getBranchQueryParams, selectedBranchId, branches } = useGym();
+  const { plans, updatePayment, deletePayment, showFlash, refreshSummary, readOnly, getBranchQueryParams, selectedBranchId, branches, error: gymError } = useGym();
   const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
   const showBranchColumn = isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
   const canManageRevenue = isGymOwner(user?.role) && !readOnly;
@@ -122,6 +122,7 @@ export default function Revenue() {
 
   const fetchPayments = useCallback(async () => {
     setListLoading(true);
+    setError('');
     try {
       const listRes = await getPayments(apiFetch, buildQueryParams());
       const listData = await parseApiResponse(listRes);
@@ -326,7 +327,7 @@ export default function Revenue() {
         </div>
       )}
 
-      {error ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
+      {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
 
       {attentionMembers.length > 0 && (
         <div className="admin-alert-amber">
@@ -493,7 +494,7 @@ export default function Revenue() {
               </p>
             )}
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
             <div className="relative w-full sm:max-w-md">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                 <Search className="h-5 w-5" />
