@@ -304,14 +304,43 @@
   }
 
   .auth-link {
+    display: inline;
     font-weight: 600;
-    /* Lighter than CTA fill so links stay readable on dark glass */
     color: #2dd4bf;
-    transition: color 150ms ease;
+    text-decoration: underline;
+    text-decoration-color: rgb(45 212 191 / 0.35);
+    text-underline-offset: 0.2em;
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
   }
 
   .auth-link:hover {
     color: #5eead4;
+    text-decoration-color: rgb(94 234 212 / 0.7);
+  }
+
+  /* Secondary text actions — hit target is the words only, not the full row */
+  .auth-text-btn {
+    display: inline;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #99f6e4;
+    text-decoration: underline;
+    text-decoration-color: rgb(153 246 228 / 0.35);
+    text-underline-offset: 0.2em;
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
+  }
+
+  .auth-text-btn:hover {
+    color: #ccfbf1;
+    text-decoration-color: rgb(204 251 241 / 0.75);
   }
 
   .auth-label {

@@ -197,32 +197,36 @@ export default function ForgotPassword() {
             <button type="submit" disabled={loading || !sessionId} className="auth-cta-btn">
               {loading ? t('auth.saving') : t('auth.updatePassword')}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStep('username');
-                setCode('');
-                setPassword('');
-                setConfirm('');
-                setMessage('');
-                setError('');
-                clearAllFieldErrors(setFieldErrors);
-              }}
-              className="w-full text-center text-sm text-white/45 transition-colors hover:text-white/70"
-            >
-              {t('auth.resendOtp')}
-            </button>
+            <p className="text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('username');
+                  setCode('');
+                  setPassword('');
+                  setConfirm('');
+                  setMessage('');
+                  setError('');
+                  clearAllFieldErrors(setFieldErrors);
+                }}
+                className="auth-text-btn"
+              >
+                {t('auth.resendOtp')}
+              </button>
+            </p>
           </form>
         )}
 
         <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-          <button
-            type="button"
-            onClick={() => setShowSupportOption((show) => !show)}
-            className="auth-link w-full text-left text-sm"
-          >
-            {t('auth.tryOtherOption')}
-          </button>
+          <p>
+            <button
+              type="button"
+              onClick={() => setShowSupportOption((show) => !show)}
+              className="auth-text-btn"
+            >
+              {t('auth.tryOtherOption')}
+            </button>
+          </p>
           {showSupportOption && (
             <div className="space-y-2 text-sm text-white/50">
               <p className="font-semibold text-white/80">{t('auth.supportResetTitle')}</p>

@@ -300,19 +300,21 @@ export default function RegisterGym() {
             <button type="submit" className="auth-cta-btn">
               {t('common.continue')}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStep('phone');
-                setCode('');
-                setError('');
-                setMessage('');
-                clearAllFieldErrors(setFieldErrors);
-              }}
-              className="w-full text-center text-sm text-white/45 transition-colors hover:text-white/70"
-            >
-              {t('auth.resendOtp')}
-            </button>
+            <p className="text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('phone');
+                  setCode('');
+                  setError('');
+                  setMessage('');
+                  clearAllFieldErrors(setFieldErrors);
+                }}
+                className="auth-text-btn"
+              >
+                {t('auth.resendOtp')}
+              </button>
+            </p>
           </form>
         )}
 
@@ -419,17 +421,19 @@ export default function RegisterGym() {
             <button type="submit" disabled={loading} className="auth-cta-btn">
               {loading ? t('auth.processing') : t('auth.createGymAccount')}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStep('gym');
-                setError('');
-                clearAllFieldErrors(setFieldErrors);
-              }}
-              className="w-full text-center text-sm text-white/45 transition-colors hover:text-white/70"
-            >
-              {t('common.back')}
-            </button>
+            <p className="text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep('gym');
+                  setError('');
+                  clearAllFieldErrors(setFieldErrors);
+                }}
+                className="auth-text-btn"
+              >
+                {t('common.back')}
+              </button>
+            </p>
           </form>
         )}
 
