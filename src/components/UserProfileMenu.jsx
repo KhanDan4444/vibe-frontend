@@ -26,6 +26,9 @@ function initialsFrom(name, email, username) {
 const itemClass =
   'flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-app-text-strong transition-colors hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
 
+const iconChip =
+  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface dark:bg-app-bg';
+
 /**
  * Top-right profile menu: profile, change password, logout.
  * @param {{ compact?: boolean }} props - compact shows avatar only (mobile)
@@ -148,14 +151,12 @@ export default function UserProfileMenu({ compact = false }) {
                 onClick={cycleTheme}
                 className={itemClass}
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-teal-700 dark:bg-app-bg dark:text-teal-300">
+                <span className={`${iconChip} text-teal-700 dark:text-teal-300`}>
                   <ThemeIcon className="h-4 w-4" aria-hidden />
                 </span>
-                <span className="min-w-0 flex-1 text-left">
-                  <span className="block leading-tight">{themeActionLabel}</span>
-                  <span className="mt-0.5 block text-[11px] font-normal text-app-muted">
-                    {isDark ? t('profile.themeDark') : t('profile.themeLight')}
-                  </span>
+                <span className="min-w-0 flex-1 truncate text-left">{themeActionLabel}</span>
+                <span className="shrink-0 rounded-md bg-app-surface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-app-muted dark:bg-app-bg">
+                  {isDark ? t('profile.themeDark') : t('profile.themeLight')}
                 </span>
               </button>
             </div>
@@ -167,13 +168,13 @@ export default function UserProfileMenu({ compact = false }) {
                 {t('profile.account')}
               </p>
               <button type="button" role="menuitem" onClick={openProfile} className={itemClass}>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-app-muted dark:bg-app-bg">
+                <span className={`${iconChip} text-teal-700 dark:text-teal-300`}>
                   <User className="h-4 w-4" aria-hidden />
                 </span>
                 {profileLabel}
               </button>
               <button type="button" role="menuitem" onClick={openPassword} className={itemClass}>
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-app-muted dark:bg-app-bg">
+                <span className={`${iconChip} text-teal-700 dark:text-teal-300`}>
                   <KeyRound className="h-4 w-4" aria-hidden />
                 </span>
                 {t('profile.changePassword')}
@@ -189,7 +190,7 @@ export default function UserProfileMenu({ compact = false }) {
                 onClick={handleLogout}
                 className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/30 dark:text-rose-400 dark:hover:bg-rose-950/40"
               >
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                <span className={`${iconChip} text-rose-600 dark:text-rose-400`}>
                   <LogOut className="h-4 w-4" aria-hidden />
                 </span>
                 {t('profile.logout')}
