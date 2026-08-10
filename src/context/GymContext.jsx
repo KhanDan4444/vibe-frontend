@@ -1,5 +1,5 @@
 // src/context/GymContext.jsx
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { useAuth } from './AuthContext';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
 import { getPlans, createPlan, updatePlan as updatePlanReq, deletePlan as deletePlanReq } from '../services/planService';
@@ -39,6 +39,19 @@ const SUBSCRIPTION_READ_ONLY_MESSAGE =
 const BRANCH_READ_ONLY_MESSAGE =
   'This branch is inactive. Reactivate it under Branches, or transfer members to an active location.';
 
+function readStoredBranchId(gymId) {
+  if (!gymId || typeof window === 'undefined') return 'all';
+  try {
+    const saved = localStorage.getItem(branchStorageKey(gymId));
+    if (!saved) return 'all';
+    if (saved === 'all') return 'all';
+    const parsed = parseInt(saved, 10);
+    return Number.isFinite(parsed) ? parsed : 'all';
+  } catch {
+    return 'all';
+  }
+}
+
 const GymContext = createContext(null);
 
 export const GymProvider = ({ children }) => {
@@ -56,6 +69,7 @@ export const GymProvider = ({ children }) => {
   const subscriptionReadOnlyRef = useRef(false);
   const branchReadOnlyRef = useRef(false);
   const bootDoneRef = useRef(false);
+  const getBranchQueryParamsRef = useRef(() => ({}));
 
   const selectedBranch = useMemo(() => {
     if (selectedBranchId === 'all') return null;
@@ -76,6 +90,7 @@ export const GymProvider = ({ children }) => {
     () => (isGymOwner(user?.role) ? branchQueryParams(selectedBranchId) : {}),
     [user?.role, selectedBranchId]
   );
+  getBranchQueryParamsRef.current = getBranchQueryParams;
 
   const setSelectedBranchId = useCallback(
     (branchId) => {
@@ -103,12 +118,11 @@ export const GymProvider = ({ children }) => {
     }
   }, [apiFetch, user?.role]);
 
-  useEffect(() => {
+  // Restore before passive boot effects so dashboard metrics use the saved branch.
+  useLayoutEffect(() => {
     if (!user?.gym_id) return;
-    const saved = localStorage.getItem(branchStorageKey(user.gym_id));
-    if (saved) {
-      setSelectedBranchIdState(saved === 'all' ? 'all' : parseInt(saved, 10) || 'all');
-    }
+    const stored = readStoredBranchId(user.gym_id);
+    setSelectedBranchIdState((prev) => (prev === stored ? prev : stored));
   }, [user?.gym_id]);
 
   useEffect(() => {
@@ -175,9 +189,10 @@ export const GymProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
+      const branchParams = getBranchQueryParamsRef.current();
       const jobs = [
         includePlans ? fetchPlans() : Promise.resolve(null),
-        getDashboardMetrics(apiFetch, getBranchQueryParams()).then(async (dashboardRes) => {
+        getDashboardMetrics(apiFetch, branchParams).then(async (dashboardRes) => {
           const dashboardData = await parseApiResponse(dashboardRes);
           return { dashboardRes, dashboardData };
         }),
@@ -200,7 +215,7 @@ export const GymProvider = ({ children }) => {
         if (
           dashboardData.error === 'Branch not found.' &&
           isGymOwner(user?.role) &&
-          selectedBranchId !== 'all'
+          Object.keys(branchParams).length > 0
         ) {
           setSelectedBranchId('all');
           setLoading(false);
@@ -226,7 +241,7 @@ export const GymProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, fetchPlans, getBranchQueryParams, user?.role, selectedBranchId, setSelectedBranchId]);
+  }, [apiFetch, fetchPlans, user?.role, setSelectedBranchId]);
 
   // Initial boot + subscription — plans + summary.
   useEffect(() => {
@@ -294,7 +309,7 @@ export const GymProvider = ({ children }) => {
 
   const refreshSummary = useCallback(async () => {
     try {
-      const res = await getDashboardMetrics(apiFetch, getBranchQueryParams());
+      const res = await getDashboardMetrics(apiFetch, getBranchQueryParamsRef.current());
       const data = await parseApiResponse(res);
       if (res.ok) {
         setSummary({ ...EMPTY_SUMMARY, ...data });
@@ -302,7 +317,7 @@ export const GymProvider = ({ children }) => {
     } catch {
       /* non-blocking */
     }
-  }, [apiFetch, getBranchQueryParams]);
+  }, [apiFetch]);
 
   const assertWritable = ({ allowOnInactiveBranch = false } = {}) => {
     if (subscriptionReadOnlyRef.current) {

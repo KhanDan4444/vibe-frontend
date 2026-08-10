@@ -120,7 +120,7 @@ export default function Members() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch, statusFilter]);
+  }, [debouncedSearch, statusFilter, selectedBranchId]);
 
   const displayedMembers = useMemo(
     () => sortMembersList(members.filter((m) => !pendingDeleteIds.has(m.id)), listSort),

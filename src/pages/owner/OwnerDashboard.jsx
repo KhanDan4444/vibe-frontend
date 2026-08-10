@@ -99,7 +99,14 @@ export default function OwnerDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className={pageTitle}>{gymName || t('pages.dashboard.title')}</h1>
+        {gymName ? (
+          <h1 className={pageTitle}>{gymName}</h1>
+        ) : (
+          <div
+            className="app-skeleton h-10 w-52 max-w-[70%] rounded-lg sm:h-11 sm:w-72"
+            aria-hidden
+          />
+        )}
         <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
       </div>
 
