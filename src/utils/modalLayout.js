@@ -15,7 +15,7 @@ export const modalPanelXl = `${modalPanelBase} max-w-xl`;
 export const modalPanel2xl = `${modalPanelBase} max-w-2xl sm:max-h-[min(92vh,800px)]`;
 export const modalPanel3xl = `${modalPanelBase} max-w-3xl sm:max-h-[min(92vh,900px)]`;
 
-export const modalBody = 'overflow-y-auto p-4 text-app-text sm:p-6';
+export const modalBody = 'min-h-0 flex-1 overflow-y-auto p-4 text-app-text sm:p-6';
 
 export const modalHeader =
   'shrink-0 border-b border-app-border-subtle px-4 py-4 sm:px-6 sm:py-5';

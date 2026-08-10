@@ -842,6 +842,8 @@
       "branch": "ቅርንጫፍ",
       "createTitle": "ሰራተኛ መዝግብ",
       "editTitle": "ሰራተኛ አርትዕ",
+      "subtitle": "ለዚህ ጂም የፊት ዴስክ መግቢያ ይፍጠሩ።",
+      "signInSection": "የመግቢያ መረጃ",
       "role": "ሚና",
       "roleFrontDeskHint": "በፊት ዴስክ አባላትን፣ እድሳትን እና ክፍያዎችን ያስተዳድሩ።",
       "email": "ኢሜይል",

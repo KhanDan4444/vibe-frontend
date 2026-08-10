@@ -999,6 +999,8 @@
     "staff": {
       "createTitle": "Add staff",
       "editTitle": "Edit staff",
+      "subtitle": "Create a front desk login for this gym.",
+      "signInSection": "Sign-in credentials",
       "role": "Role",
       "roleFrontDeskHint": "Handle members, renewals, and payments at the front desk.",
       "name": "Name",

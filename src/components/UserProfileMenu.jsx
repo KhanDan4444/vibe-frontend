@@ -18,8 +18,8 @@ function roleSubtitle(role, t) {
 
 function roleDotClass(role) {
   if (isPlatformAdmin(role)) return 'bg-violet-500 dark:bg-violet-400';
-  if (isGymOwner(role)) return 'bg-amber-500 dark:bg-amber-400';
-  if (isGymStaff(role)) return 'bg-sky-500 dark:bg-sky-400';
+  if (isGymOwner(role)) return 'bg-sky-500 dark:bg-sky-400';
+  if (isGymStaff(role)) return 'bg-amber-500 dark:bg-amber-400';
   return 'bg-app-muted';
 }
 
@@ -43,7 +43,7 @@ const itemClass =
   'flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium text-app-text-strong transition-colors hover:bg-app-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
 
 const iconChip =
-  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-app-surface text-teal-800/75 dark:bg-app-bg dark:text-teal-600/80';
+  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-teal-800/75 dark:bg-white/10 dark:text-teal-300/75';
 
 /**
  * Top-right profile menu: profile, change password, logout.
@@ -171,7 +171,7 @@ export default function UserProfileMenu({ compact = false }) {
                   <ThemeIcon className="h-4 w-4" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1 truncate text-left">{themeActionLabel}</span>
-                <span className="shrink-0 rounded-md bg-app-surface px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-app-muted dark:bg-app-bg">
+                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-app-muted dark:bg-white/10">
                   {isDark ? t('profile.themeDark') : t('profile.themeLight')}
                 </span>
               </button>

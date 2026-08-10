@@ -999,6 +999,8 @@
     "staff": {
       "createTitle": "Hojjetaa Galmeessi",
       "editTitle": "Hojjeetaa gulaali",
+      "subtitle": "Jimii kanaaf seensa deskii fuulduraa uumi.",
+      "signInSection": "Odeeffannoo seensaa",
       "role": "Gahee",
       "roleFrontDeskHint": "Miseensota, haaromsaa, fi kaffaltii deskii fuulduraatti bulchi.",
       "name": "Maqaa",

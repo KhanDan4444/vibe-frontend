@@ -82,6 +82,7 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
           });
         }}
         onChangeCapture={markTouched}
+        className="flex min-h-0 flex-1 flex-col"
       >
         <div className={`${modalBody} space-y-4`}>
           {(validationError || error) && !Object.keys(fieldErrors).length && (
@@ -136,7 +137,7 @@ function BranchModal({ isOpen, onClose, branch, onSubmit, saving, error }) {
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={saving || !name.trim()} className="w-full sm:w-auto">
+          <Button type="submit" disabled={saving} className="w-full sm:w-auto">
             {saving ? t('common.processing') : isEdit ? t('modals.staff.saveUpdate') : t('pages.branches.formAdd')}
           </Button>
         </div>
