@@ -2,7 +2,6 @@ import React from 'react';
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import Button from './ui/Button';
 
 /**
  * Full lockout screen when the gym SaaS license is expired.
@@ -17,13 +16,13 @@ export default function SubscriptionLockout({ gymName }) {
         <img
           src="/brand-lockup-mark.png?v=restore"
           alt="ንቁ"
-          className="mx-auto mb-6 h-11 w-auto max-w-[11rem] object-contain object-center sm:h-12 sm:max-w-[12rem]"
+          className="mx-auto mb-4 h-11 w-auto max-w-[11rem] object-contain object-center sm:h-12 sm:max-w-[12rem]"
         />
-
-        <p className="text-[10px] font-bold uppercase tracking-wider text-amber-200/70">
-          {t('lockout.eyebrow')}
+        <p className="mb-6 text-sm font-semibold tracking-wide text-[#5eead4]/90">
+          {t('auth.brandSlogan')}
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-white">{t('lockout.title')}</h1>
+
+        <h1 className="text-2xl font-bold text-amber-200/70">{t('lockout.title')}</h1>
 
         {gymName ? (
           <p className="mt-3 text-sm font-medium text-white/70">{gymName}</p>
@@ -34,7 +33,7 @@ export default function SubscriptionLockout({ gymName }) {
         </p>
 
         <details className="mx-auto mt-4 max-w-sm group">
-          <summary className="cursor-pointer list-none text-center text-sm font-medium text-white/55 transition-colors hover:text-white/80 [&::-webkit-details-marker]:hidden">
+          <summary className="auth-link cursor-pointer list-none text-center text-sm [&::-webkit-details-marker]:hidden">
             {t('lockout.helpLink')}
           </summary>
           <p className="mt-2 text-center text-xs leading-relaxed text-white/45">
@@ -42,15 +41,14 @@ export default function SubscriptionLockout({ gymName }) {
           </p>
         </details>
 
-        <Button
+        <button
           type="button"
-          variant="secondary"
           onClick={logout}
-          className="mt-8 w-full border-white/15 bg-white/[0.08] text-white hover:bg-white/[0.12] sm:w-auto"
+          className="mt-8 inline-flex min-h-[48px] w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#0f766e] px-4 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#0d9488] focus:outline-none focus:ring-2 focus:ring-teal-700/40 sm:w-auto"
         >
           <LogOut className="h-4 w-4" aria-hidden />
           {t('lockout.signOut')}
-        </Button>
+        </button>
       </div>
     </div>
   );

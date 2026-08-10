@@ -1332,7 +1332,7 @@
   },
   "lockout": {
     "eyebrow": "Access paused",
-    "title": "License expired",
+    "title": "License Expired",
     "body": "Your gym license has expired, so the portal is locked until it is renewed.",
     "helpLink": "How do I restore access?",
     "hint": "Contact your platform admin to renew the license. Once renewed, sign in again to reopen the portal.",
