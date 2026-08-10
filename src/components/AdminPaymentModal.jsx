@@ -1,7 +1,7 @@
 // src/components/AdminPaymentModal.jsx — collect or edit SaaS payment
 import React, { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
-import { X, Calendar, DollarSign, Building2 } from 'lucide-react';
+import { X, DollarSign, Building2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, toDateString, formatDisplayDate } from '../utils/date';
 import { boundsForPaymentOnTerm } from '../utils/datePickerBounds';
@@ -46,7 +46,6 @@ export default function AdminPaymentModal({
       : null) ||
     (gym?.saas_start_date ? String(gym.saas_start_date).split('T')[0] : null);
   const paymentBounds = boundsForPaymentOnTerm(termStart);
-  const today = todayString();
   const planId = gym?.saas_subscription?.saas_plan_id || gym?.saas_plan_id;
 
   const initDefaults = useCallback(() => {
@@ -81,18 +80,10 @@ export default function AdminPaymentModal({
   if (!isOpen || (!gym && !payment)) return null;
 
   const isBusy = saving || submitting;
-  const canSubmit =
-    !isBusy &&
-    validateStandalonePayment({
-      amount,
-      date,
-      minStartDate: termStart,
-      afterStartKey: 'validation.paymentDateAfterLicenseStartOrInvalid',
-    }).ok;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (isBusy) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     const paymentResult = validateStandalonePayment({
@@ -144,13 +135,15 @@ export default function AdminPaymentModal({
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
         </button>
       </div>
 
-      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className={`${modalBody} flex-1 space-y-5`}>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-5`}>
           {displayError && (
             <div className="ui-alert-rose">
               {displayError}
@@ -198,20 +191,17 @@ export default function AdminPaymentModal({
               {t('modals.payment.date')}
               <RequiredMark />
             </label>
-              <div className="relative">
-                <Calendar className="pointer-events-none absolute left-3 top-2.5 z-10 h-5 w-5 text-app-muted" />
-                <DateField
-                  required
-                  min={paymentBounds.min}
-                  max={paymentBounds.max}
-                  className={fc('date', 'pl-10 pr-4')}
-                  value={date}
-                  onChange={(v) => {
-                    setDate(v);
-                    clearFieldError(setLocalFieldErrors, 'date');
-                  }}
-                />
-              </div>
+              <DateField
+                required
+                min={paymentBounds.min}
+                max={paymentBounds.max}
+                className={fc('date')}
+                value={date}
+                onChange={(v) => {
+                  setDate(v);
+                  clearFieldError(setLocalFieldErrors, 'date');
+                }}
+              />
               <FieldError message={fieldErrorMessage(fieldErrors, 'date')} />
             </div>
           </div>
@@ -222,7 +212,7 @@ export default function AdminPaymentModal({
               <RequiredMark />
             </label>
             <select
-              className="app-field cursor-pointer"
+              className="ui-select w-full app-field cursor-pointer"
               value={method}
               onChange={(e) => setMethod(e.target.value)}
             >
@@ -243,12 +233,13 @@ export default function AdminPaymentModal({
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
+        </div>
 
         <div className={modalFooter}>
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
+          <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
             {isBusy ? t('common.processing') : isEdit ? t('common.save') : t('modals.adminPayment.save')}
           </Button>
         </div>

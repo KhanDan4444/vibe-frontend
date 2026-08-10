@@ -26,6 +26,7 @@ const MemberMessages = lazyWithRetry(() => import('./pages/owner/MemberMessages'
 const Branches = lazyWithRetry(() => import('./pages/owner/Branches'));
 const AdminLayout = lazyWithRetry(() => import('./layouts/AdminLayout'));
 const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
+const AdminRegisterGym = lazyWithRetry(() => import('./pages/admin/RegisterGym'));
 const AdminSaasPlans = lazyWithRetry(() => import('./pages/admin/AdminSaasPlans'));
 const AdminPayments = lazyWithRetry(() => import('./pages/admin/AdminPayments'));
 const AdminReports = lazyWithRetry(() => import('./pages/admin/AdminReports'));
@@ -172,6 +173,7 @@ export default function App() {
                 <Route index element={<Navigate to="dashboard" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="gyms" element={<AdminDashboard />} />
+                <Route path="gyms/register" element={<AdminRegisterGym />} />
                 <Route path="plans" element={<AdminSaasPlans />} />
                 <Route path="revenue" element={<AdminPayments />} />
                 <Route path="reports" element={<AdminReports />} />

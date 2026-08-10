@@ -43,11 +43,9 @@ export default function ResetPasswordModal({
     saving,
   });
 
-  const canSubmit = !saving && validatePassword(password).ok;
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (saving) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     if (!showValidationError(validatePassword(password), setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
@@ -59,14 +57,14 @@ export default function ResetPasswordModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
-      <form onSubmit={handleSubmit} onChangeCapture={markTouched}>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
         <div className={`${modalHeader} flex items-center justify-between gap-3`}>
           <h2 className="text-lg font-bold text-app-text-strong">{title}</h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-app-muted hover:bg-app-surface hover:text-app-text"
-            aria-label={t('common.close')}
+            className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+            aria-label={t('aria.close')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -76,7 +74,7 @@ export default function ResetPasswordModal({
           {subtitle && <p className="mb-4 text-sm text-app-muted">{subtitle}</p>}
 
           {displayError && (
-            <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+            <div className="ui-alert-rose mb-4">
               {displayError}
             </div>
           )}
@@ -103,7 +101,7 @@ export default function ResetPasswordModal({
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-app-muted hover:text-app-text"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface hover:text-app-text"
                 aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -118,7 +116,7 @@ export default function ResetPasswordModal({
           <Button type="button" variant="secondary" onClick={onClose} disabled={saving} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
+          <Button type="submit" disabled={saving} className="w-full sm:w-auto">
             {saving ? t('common.saving') : t('modals.resetPassword.submit')}
           </Button>
         </div>

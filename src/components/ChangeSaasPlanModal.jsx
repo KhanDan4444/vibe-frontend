@@ -1,26 +1,70 @@
 // src/components/ChangeSaasPlanModal.jsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, ArrowLeftRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { todayString, formatDisplayDate } from '../utils/date';
+import { useAuth } from '../context/AuthContext';
+import { todayString, formatDisplayDate, toDateString } from '../utils/date';
 import {
   boundsForPaymentOnTerm,
   boundsForTermStartWithPayment,
   paymentDateForTermStart,
 } from '../utils/datePickerBounds';
-import { validateChangePlanPayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
+import {
+  validateChangePlanPayment,
+  showValidationError,
+  inputClass,
+  fieldErrorMessage,
+  clearFieldError,
+  clearAllFieldErrors,
+  FORM_INPUT_CLASS,
+} from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import { suggestChangeSaasPlanAmount, previewSaasLicenseEnd } from '../utils/saasRenew';
+import { parseApiResponse } from '../utils/api';
+import { getSaasPayments } from '../services/gymAdminService';
+import { formatMoney } from '../utils/formatMoney';
+import ChangePlanPaymentSummary from './ChangePlanPaymentSummary';
+import ChangePlanAmountHint from './ChangePlanAmountHint';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { modalBody } from '../utils/modalLayout';
-import { formatMoney } from '../utils/formatMoney';
+import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
-/** Switch an active, paid gym to a different SaaS plan mid-term. */
+const termModeBtn =
+  'rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
+const termModeActive = 'bg-app-raised text-app-text-strong shadow-sm';
+const termModeIdle = 'text-app-muted hover:text-app-text';
+
+function switchToMidTerm(setters) {
+  const { setCustomTermStart, setStartDate, setPaymentDate, setAmountEdited, licenseStart, today } = setters;
+  setCustomTermStart(false);
+  setStartDate(licenseStart || today);
+  setPaymentDate(today);
+  setAmountEdited(false);
+}
+
+function switchToNewTerm(setters) {
+  const { setCustomTermStart, setStartDate, setPaymentDate, setAmountEdited, today } = setters;
+  setCustomTermStart(true);
+  setStartDate(today);
+  setPaymentDate(today);
+  setAmountEdited(false);
+}
+
+function mapGymSaasPayment(p) {
+  if (!p) return null;
+  return {
+    id: p.id,
+    amount: Number(p.amount),
+    date: toDateString(p.date),
+    source: p.source || 'collect',
+  };
+}
+
+/** Switch an active gym to a different SaaS plan mid-term (admin). */
 export default function ChangeSaasPlanModal({
   isOpen,
   onClose,
@@ -31,6 +75,7 @@ export default function ChangeSaasPlanModal({
   error,
 }) {
   const { t } = useTranslation();
+  const { apiFetch } = useAuth();
   const [planId, setPlanId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [amount, setAmount] = useState('');
@@ -44,6 +89,7 @@ export default function ChangeSaasPlanModal({
   const [amountEdited, setAmountEdited] = useState(false);
   const [customTermStart, setCustomTermStart] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [gymPayments, setGymPayments] = useState([]);
 
   const currentPlanId = gym?.saas_plan_id;
   const otherPlans = saasPlans.filter((p) => p.id !== currentPlanId);
@@ -57,6 +103,7 @@ export default function ChangeSaasPlanModal({
   );
 
   const effectiveStartDate = customTermStart ? startDate : licenseStart;
+  const termStart = effectiveStartDate && effectiveStartDate !== '—' ? effectiveStartDate : null;
   const newEndDate = previewSaasLicenseEnd({
     gym,
     currentPlan,
@@ -67,6 +114,18 @@ export default function ChangeSaasPlanModal({
   const today = todayString();
   const termStartBounds = boundsForTermStartWithPayment();
   const paymentBounds = boundsForPaymentOnTerm(effectiveStartDate);
+
+  const termModeSetters = useMemo(
+    () => ({
+      setCustomTermStart,
+      setStartDate,
+      setPaymentDate,
+      setAmountEdited,
+      licenseStart,
+      today,
+    }),
+    [licenseStart, today]
+  );
 
   const initDefaults = useCallback(() => {
     if (!gym) return;
@@ -95,6 +154,33 @@ export default function ChangeSaasPlanModal({
   });
 
   useEffect(() => {
+    if (!isOpen || !gym?.id || !apiFetch) {
+      setGymPayments([]);
+      return undefined;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await getSaasPayments(apiFetch, { gym_id: gym.id, limit: 50, page: 1 });
+        const data = await parseApiResponse(res);
+        if (cancelled) return;
+        if (res.ok && Array.isArray(data.items)) {
+          setGymPayments(data.items.map(mapGymSaasPayment).filter(Boolean));
+        } else if (res.ok && Array.isArray(data)) {
+          setGymPayments(data.map(mapGymSaasPayment).filter(Boolean));
+        } else {
+          setGymPayments([]);
+        }
+      } catch {
+        if (!cancelled) setGymPayments([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, gym?.id, apiFetch]);
+
+  useEffect(() => {
     if (!planId || amountEdited) return;
     const plan = saasPlans.find((p) => p.id === parseInt(planId, 10));
     if (!plan) return;
@@ -104,32 +190,19 @@ export default function ChangeSaasPlanModal({
 
   if (!isOpen || !gym) return null;
 
-  const termStart = customTermStart ? startDate : licenseStart;
-  const isSameTerm = termStart === licenseStart;
-  const isBusy = saving || submitting;
-  const canSubmit =
-    !isBusy &&
-    otherPlans.length > 0 &&
-    validateChangePlanPayment({
-      planId,
-      termStart,
-      paymentDate,
-      amount,
-      isSameTerm,
-      license: true,
-    }).ok;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (submitting || saving) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
+    const termStartValue = customTermStart ? startDate : licenseStart;
+    const sameTerm = termStartValue === licenseStart;
     const planResult = validateChangePlanPayment({
       planId,
-      termStart,
+      termStart: termStartValue,
       paymentDate,
       amount,
-      isSameTerm,
+      isSameTerm: sameTerm,
       license: true,
     });
     if (!showValidationError(planResult, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
@@ -150,81 +223,124 @@ export default function ChangeSaasPlanModal({
     }
   };
 
-  const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
+  const isBusy = saving || submitting;
+  const displayError =
+    (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
   const gymName = gym.name || gym.gym_name;
+  const midTermHint = gym.isUnpaid
+    ? t('modals.changePlan.midTermHintUnpaid')
+    : t('modals.changePlan.midTermHintPaid');
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`}>
+    <ResponsiveModal open={isOpen} onClose={onClose} size="lg">
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+        <div className="flex min-w-0 items-start gap-2">
+          <ArrowLeftRight className="mt-0.5 h-5 w-5 shrink-0 text-teal-800/75 dark:text-teal-600/80" aria-hidden />
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changeSaasPlan.title')}</h2>
+            <p className="mt-0.5 text-sm text-app-muted">
+              {t('modals.changeSaasPlan.subtitle', { name: gymName })}
+            </p>
+          </div>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
         </button>
+      </div>
 
-        <div className="flex items-center gap-2 mb-1 pr-8">
-          <ArrowLeftRight className="h-5 w-5 text-teal-700" />
-          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changeSaasPlan.title')}</h2>
-        </div>
-        <p className="text-sm text-app-muted mb-4">
-          {t('modals.changeSaasPlan.subtitle', { name: gymName })}
-        </p>
-
-        {currentPlan && (
-          <div className="ui-info-panel mb-4">
-            {t('modals.changePlan.currentPlan')}: <span className="font-medium">{currentPlan.name}</span>
-            {gym.isUnpaid ? (
-              <>
-                {' · '}
-                <span className="font-medium text-amber-700 dark:text-amber-300">{t('modals.billing.noPaymentRecordedYet')}</span>
-              </>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-5`}>
+          {currentPlan ? (
+            gym.isUnpaid ? (
+              <div className="ui-alert-amber space-y-1.5">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+                  <span className="font-medium">{t('modals.changePlan.currentPlan')}</span>
+                  <span className="font-semibold">{currentPlan.name}</span>
+                  {licenseStart && licenseStart !== '—' ? (
+                    <>
+                      <span className="opacity-50" aria-hidden>
+                        ·
+                      </span>
+                      <span>
+                        {t('modals.changeSaasPlan.licenseStarted', {
+                          date: formatDisplayDate(licenseStart),
+                        })}
+                      </span>
+                    </>
+                  ) : null}
+                </div>
+                <p className="text-xs leading-relaxed">{t('modals.billing.unpaidChangeBanner')}</p>
+              </div>
             ) : (
-              <>
-                {' · '}
-                {t('modals.billing.paidThrough')}{' '}
-                <span className="font-medium">{formatDisplayDate(gym.saasEndDate)}</span>
-              </>
-            )}
-          </div>
-        )}
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm">
+                <span className="text-app-muted">{t('modals.changePlan.currentPlan')}</span>
+                <span className="font-semibold text-app-text-strong">{currentPlan.name}</span>
+                <span className="text-app-border-subtle" aria-hidden>
+                  ·
+                </span>
+                <span className="text-app-muted">
+                  {t('modals.billing.paidThrough')}{' '}
+                  <span className="font-medium text-app-text">{formatDisplayDate(gym.saasEndDate)}</span>
+                </span>
+                {licenseStart && licenseStart !== '—' ? (
+                  <>
+                    <span className="text-app-border-subtle" aria-hidden>
+                      ·
+                    </span>
+                    <span className="text-app-muted">
+                      {t('modals.changeSaasPlan.licenseStarted', {
+                        date: formatDisplayDate(licenseStart),
+                      })}
+                    </span>
+                  </>
+                ) : null}
+              </div>
+            )
+          ) : null}
 
-        {otherPlans.length === 0 && (
-          <div className="ui-alert-amber mb-4">
-            {t('modals.billing.addAnotherSaasPlan')}
-          </div>
-        )}
+          {otherPlans.length === 0 ? (
+            <div className="ui-alert-amber">{t('modals.billing.addAnotherSaasPlan')}</div>
+          ) : null}
 
-        {gym.isUnpaid && (
-          <div className="ui-alert-amber mb-4">
-            {t('modals.billing.unpaidChangeBanner')}
-          </div>
-        )}
+          {displayError ? <div className="ui-alert-rose">{displayError}</div> : null}
 
-        {displayError && (
-          <div className="ui-alert-rose mb-4">
-            {displayError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
-            <label className="form-label">
-              {t('modals.changePlan.newPlan')}
-              <RequiredMark />
-            </label>
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <label className="form-label mb-0" htmlFor="change-saas-plan-select">
+                {t('modals.changePlan.newPlan')}
+                <RequiredMark />
+              </label>
+              {newEndDate && newEndDate !== '—' ? (
+                <span className="inline-flex items-center rounded-full border border-app-border-subtle bg-app-surface px-2.5 py-0.5 text-xs font-medium text-app-text">
+                  {upgradeHint?.isDowngrade && upgradeHint?.keepLicenseEnd
+                    ? t('modals.changeSaasPlan.licenseEndUnchangedChip', {
+                        date: formatDisplayDate(newEndDate),
+                      })
+                    : t('modals.changeSaasPlan.licenseEndChip', {
+                        date: formatDisplayDate(newEndDate),
+                      })}
+                </span>
+              ) : null}
+            </div>
             <select
+              id="change-saas-plan-select"
               required
               disabled={otherPlans.length === 0}
-              className={`${fc('planId')}disabled:bg-app-surface disabled:text-app-muted`}
+              className={`ui-select ${fc('planId')} disabled:bg-app-surface disabled:text-app-muted`}
               value={planId}
               onChange={(e) => {
                 setPlanId(e.target.value);
                 clearFieldError(setLocalFieldErrors, 'planId');
               }}
             >
-              <option value="" disabled>{t('modals.renew.selectPlan')}</option>
+              <option value="" disabled>
+                {t('modals.renew.selectPlan')}
+              </option>
               {otherPlans.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name} — {formatMoney(p.price)} / {p.duration}mo
@@ -234,52 +350,48 @@ export default function ChangeSaasPlanModal({
             <FieldError message={fieldErrorMessage(fieldErrors, 'planId')} />
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (customTermStart) {
-                setCustomTermStart(false);
-                setStartDate(licenseStart);
-                setPaymentDate(today);
-              } else {
-                setCustomTermStart(true);
-                setStartDate(today);
-                setPaymentDate(today);
-              }
-              setAmountEdited(false);
-            }}
-            className="text-xs font-medium text-teal-700 hover:text-teal-800 dark:text-teal-400 dark:hover:text-teal-300"
-          >
-            {customTermStart
-              ? t('modals.changeSaasPlan.switchMidTerm')
-              : t('modals.changeSaasPlan.newLicenseFromDate')}
-          </button>
-
-          {!customTermStart ? (
-            <div className="ui-info-panel">
-              <p className="font-medium">
-                {gym.isUnpaid ? t('modals.changeSaasPlan.switchBeforePayment') : t('modals.changeSaasPlan.switchOnCurrentLicense')}
-              </p>
-              <p className="mt-1 text-xs text-app-muted">
-                {t('modals.changeSaasPlan.licenseStarted', { date: formatDisplayDate(licenseStart) })}
-                {gym.isUnpaid
-                  ? ` ${t('modals.changeSaasPlan.unpaidPickPlan')}`
-                  : ` ${t('modals.changeSaasPlan.paidPickPlan')}`}
-              </p>
+          <div>
+            <p className="form-label mb-1.5">{t('modals.changePlan.termModeLabel')}</p>
+            <div
+              className="grid grid-cols-2 gap-1 rounded-lg border border-app-border-subtle bg-app-surface p-1"
+              role="group"
+              aria-label={t('modals.changePlan.termModeLabel')}
+            >
+              <button
+                type="button"
+                onClick={() => switchToMidTerm(termModeSetters)}
+                className={`${termModeBtn} ${!customTermStart ? termModeActive : termModeIdle}`}
+                aria-pressed={!customTermStart}
+              >
+                {t('modals.changePlan.termModeMidTerm')}
+              </button>
+              <button
+                type="button"
+                onClick={() => switchToNewTerm(termModeSetters)}
+                className={`${termModeBtn} ${customTermStart ? termModeActive : termModeIdle}`}
+                aria-pressed={customTermStart}
+              >
+                {t('modals.changePlan.termModeNewTerm')}
+              </button>
             </div>
-          ) : (
+            <p className="mt-1.5 text-xs text-app-muted">
+              {!customTermStart ? midTermHint : t('modals.changeSaasPlan.freshLicenseHint')}
+            </p>
+            {customTermStart && !gym.isUnpaid && gym.saasEndDate && gym.saasEndDate !== '—' ? (
+              <p className="mt-1 text-xs leading-relaxed text-amber-800 dark:text-amber-200/90">
+                {t('modals.changeSaasPlan.customTermPaidWarningLicense', {
+                  date: formatDisplayDate(gym.saasEndDate),
+                })}
+              </p>
+            ) : null}
+          </div>
+
+          {customTermStart ? (
             <div>
-              {customTermStart && !gym.isUnpaid && gym.saasEndDate && gym.saasEndDate !== '—' ? (
-                <div className="ui-alert-amber mb-3">
-                  {t('modals.changeSaasPlan.customTermPaidWarningLicense', {
-                    date: formatDisplayDate(gym.saasEndDate),
-                  })}
-                </div>
-              ) : null}
               <label className="form-label">
-              {t('modals.changeSaasPlan.newLicenseStarts')}
-              <RequiredMark />
-            </label>
+                {t('modals.changeSaasPlan.newLicenseStarts')}
+                <RequiredMark />
+              </label>
               <DateField
                 required
                 max={termStartBounds.max}
@@ -292,123 +404,36 @@ export default function ChangeSaasPlanModal({
                 }}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'startDate')} />
-              <p className="mt-1 text-xs text-app-muted">
-                {t('modals.changeSaasPlan.freshLicenseHint')}
-              </p>
             </div>
-          )}
+          ) : null}
 
-          <div>
-            <label className="form-label">
-              {t('modals.changeSaasPlan.paymentDateReceived')}
-              <RequiredMark />
-            </label>
-            <DateField
-              required
-              min={paymentBounds.min}
-              max={paymentBounds.max}
-              className={fc('paymentDate')}
-              value={paymentDate}
-              onChange={(v) => {
-                setPaymentDate(v);
-                clearFieldError(setLocalFieldErrors, 'paymentDate');
-              }}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
-            <p className="mt-1 text-xs text-app-muted">
-              {t('modals.changeSaasPlan.paymentCollectedHint')}
-            </p>
-          </div>
-
-          {newEndDate && newEndDate !== '—' && (
-            <div className="ui-alert-indigo">
-              {upgradeHint?.isDowngrade && upgradeHint?.keepLicenseEnd ? (
-                <>
-                  {t('modals.changeSaasPlan.licenseEndUnchanged')} <span className="font-semibold">{formatDisplayDate(newEndDate)}</span>
-                </>
-              ) : (
-                <>
-                  {t('modals.changeSaasPlan.newLicenseEnds')} <span className="font-semibold">{formatDisplayDate(newEndDate)}</span>
-                </>
-              )}
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="form-label">
-              {t('modals.changePlan.amountDue')}
-              <RequiredMark />
-            </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
+                {t('modals.changeSaasPlan.paymentDateReceived')}
+                <RequiredMark />
+              </label>
+              <DateField
                 required
-                className={fc('amount')}
-                value={amount}
-                onChange={(e) => {
-                  setAmountEdited(true);
-                  setAmount(e.target.value);
-                  clearFieldError(setLocalFieldErrors, 'amount');
+                min={paymentBounds.min}
+                max={paymentBounds.max}
+                className={fc('paymentDate')}
+                value={paymentDate}
+                onChange={(v) => {
+                  setPaymentDate(v);
+                  clearFieldError(setLocalFieldErrors, 'paymentDate');
                 }}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
-              {upgradeHint?.freshTerm ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedFreshTermLicense', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
-                    paidThrough: formatDisplayDate(gym.saasEndDate),
-                  })}
-                </p>
-              ) : upgradeHint?.prePayment ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedPrePayment', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
-                  })}
-                </p>
-              ) : upgradeHint?.isDowngrade ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedDowngradeLicense', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    endDate: formatDisplayDate(gym.saasEndDate) || '—',
-                    planName: currentPlan?.name || '—',
-                  })}
-                </p>
-              ) : upgradeHint ? (
-                <p className="mt-1.5 text-xs text-app-muted">
-                  {t('modals.billing.suggestedUpgradeLicense', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                    newPrice: formatMoney(upgradeHint.newPlanPrice),
-                    credit: formatMoney(upgradeHint.credit),
-                    days: upgradeHint.remainingDays,
-                  })}
-                </p>
-              ) : null}
-              {upgradeHint && amountEdited && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAmountEdited(false);
-                    setAmount(String(upgradeHint.suggestedAmount));
-                  }}
-                  className="mt-1 text-xs font-medium text-teal-700 hover:text-teal-800"
-                >
-                  {t('modals.billing.useSuggestedAmount', {
-                    amount: formatMoney(upgradeHint.suggestedAmount),
-                  })}
-                </button>
-              )}
+              <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
+              <p className="mt-1 text-xs text-app-muted">{t('modals.changeSaasPlan.paymentCollectedHint')}</p>
             </div>
             <div>
               <label className="form-label">
-              {t('modals.member.method')}
-              <RequiredMark />
-            </label>
+                {t('modals.member.method')}
+                <RequiredMark />
+              </label>
               <select
-                className="mt-1 w-full app-field cursor-pointer"
+                className={`ui-select ${fc('method')}`}
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -422,6 +447,40 @@ export default function ChangeSaasPlanModal({
           </div>
 
           <div>
+            <label className="form-label">
+              {t('modals.changePlan.amountDue')}
+              <RequiredMark />
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              className={fc('amount')}
+              value={amount}
+              onChange={(e) => {
+                setAmountEdited(true);
+                setAmount(e.target.value);
+                clearFieldError(setLocalFieldErrors, 'amount');
+              }}
+            />
+            <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
+            <ChangePlanAmountHint
+              upgradeHint={upgradeHint}
+              amountEdited={amountEdited}
+              selectedPlan={selectedPlan}
+              currentPlan={currentPlan}
+              endDate={gym.saasEndDate}
+              license
+              t={t}
+              onUseSuggested={() => {
+                setAmountEdited(false);
+                setAmount(String(upgradeHint.suggestedAmount));
+              }}
+            />
+          </div>
+
+          <div>
             <label className="form-label">{t('common.notesOptional')}</label>
             <input
               type="text"
@@ -432,16 +491,22 @@ export default function ChangeSaasPlanModal({
             />
           </div>
 
-          <div className="pt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
-              {isBusy ? t('common.processing') : t('modals.changeSaasPlan.save')}
-            </Button>
-          </div>
-        </form>
-      </div>
+          <ChangePlanPaymentSummary
+            payments={gymPayments}
+            termStart={termStart}
+            pendingAmount={parseFloat(amount) || 0}
+          />
+        </div>
+
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+            {isBusy ? t('common.processing') : t('modals.changeSaasPlan.save')}
+          </Button>
+        </div>
+      </form>
     </ResponsiveModal>
   );
 }

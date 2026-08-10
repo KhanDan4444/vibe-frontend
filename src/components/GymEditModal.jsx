@@ -2,13 +2,13 @@ import React, { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { toDateString, formatDisplayDate } from '../utils/date';
-import { formatPhoneForInput, validateGymProfileEdit, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
+import { formatDisplayDate } from '../utils/date';
+import { formatPhoneForInput, validateGymProfileEdit, validateRequiredEthiopianPhone, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { modalBody } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
  * Edit gym tenant contact details (admin). SaaS plan changes use Change plan or Renew.
@@ -57,11 +57,10 @@ export default function GymEditModal({
     sub.plan ||
     saasPlans.find((p) => p.id === sub.saas_plan_id)?.name ||
     '—';
-  const canSubmit = !saving && validateGymProfileEdit({ gymName: name, ownerName, phone }).ok;
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (saving) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
     if (!showValidationError(validateGymProfileEdit({ gymName: name, ownerName, phone }), setValidationError, t, { setFieldErrors: setLocalFieldErrors })) {
@@ -78,24 +77,29 @@ export default function GymEditModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+        <div className="min-w-0 pr-2">
+          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.gymEdit.title')}</h2>
+          <p className="mt-1 text-sm text-app-muted">{t('modals.gymEdit.subtitle')}</p>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="text-lg font-bold text-app-text-strong mb-1 pr-8">{t('modals.gymEdit.title')}</h2>
-        <p className="mb-5 text-sm text-app-muted">{t('modals.gymEdit.subtitle')}</p>
+      </div>
 
-        {(validationError || error) && !Object.keys(fieldErrors).length && (
-          <div className="ui-alert-rose mb-4">
-            {validationError || error}
-          </div>
-        )}
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-4`}>
+          {(validationError || error) && !Object.keys(fieldErrors).length && (
+            <div className="ui-alert-rose">
+              {validationError || error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
             <label className="form-label">
               {t('modals.gymEdit.gymName')}
@@ -104,12 +108,14 @@ export default function GymEditModal({
             <input
               type="text"
               required
+              placeholder={t('modals.registerGym.gymNamePlaceholder')}
               className={fc('gymName')}
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
                 clearFieldError(setLocalFieldErrors, 'gymName');
               }}
+              aria-invalid={Boolean(fieldErrors.gymName)}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} />
           </div>
@@ -121,12 +127,14 @@ export default function GymEditModal({
             <input
               type="text"
               required
+              placeholder={t('modals.registerGym.ownerNamePlaceholder')}
               className={fc('ownerName')}
               value={ownerName}
               onChange={(e) => {
                 setOwnerName(e.target.value);
                 clearFieldError(setLocalFieldErrors, 'ownerName');
               }}
+              aria-invalid={Boolean(fieldErrors.ownerName)}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
           </div>
@@ -144,19 +152,32 @@ export default function GymEditModal({
               className={fc('phone')}
               value={phone}
               onChange={(e) => {
-                setPhone(e.target.value);
-                clearFieldError(setLocalFieldErrors, 'phone');
+                const next = e.target.value;
+                setPhone(next);
+                const trimmed = next.trim();
+                if (!trimmed) {
+                  clearFieldError(setLocalFieldErrors, 'phone');
+                  return;
+                }
+                const result = validateRequiredEthiopianPhone(trimmed);
+                if (result.ok) {
+                  clearFieldError(setLocalFieldErrors, 'phone');
+                } else {
+                  showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
+                }
               }}
+              aria-invalid={Boolean(fieldErrors.phone)}
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
+            <p className="mt-1 text-xs text-app-muted">{t('modals.gymEdit.phoneHint')}</p>
           </div>
 
           <div className="ui-info-panel">
             <p>
-              <span className="font-medium">SaaS plan:</span> {planName}
+              <span className="font-medium">{t('modals.gymEdit.saasPlanLabel')}</span> {planName}
             </p>
             <p className="mt-1">
-              <span className="font-medium">License:</span>{' '}
+              <span className="font-medium">{t('modals.gymEdit.licenseLabel')}</span>{' '}
               {formatDisplayDate(sub.start_date)} → {formatDisplayDate(sub.end_date)}
             </p>
           </div>
@@ -167,29 +188,29 @@ export default function GymEditModal({
               <RequiredMark />
             </label>
             <select
-              className="mt-1 w-full app-field cursor-pointer"
+              className={`ui-select ${FORM_INPUT_CLASS} cursor-pointer`}
               value={subscriptionStatus}
               onChange={(e) => setSubscriptionStatus(e.target.value)}
             >
-              <option value="active">Active — full platform access</option>
-              <option value="suspended">Suspended — read-only (view data, no changes)</option>
-              <option value="expired">Expired — full lockout until renewed</option>
+              <option value="active">{t('modals.gymEdit.statusActive')}</option>
+              <option value="suspended">{t('modals.gymEdit.statusSuspended')}</option>
+              <option value="expired">{t('modals.gymEdit.statusExpired')}</option>
             </select>
             <p className="mt-1.5 text-xs text-app-muted">
-              Suspended gyms can still log in and view data. Expired gyms cannot access the platform.
+              {t('modals.gymEdit.statusHint')}
             </p>
           </div>
+        </div>
 
-          <div className="pt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
-              {saving ? t('common.processing') : t('common.save')}
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+            {saving ? t('common.processing') : t('common.save')}
+          </Button>
+        </div>
+      </form>
     </ResponsiveModal>
   );
 }

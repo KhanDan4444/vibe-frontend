@@ -150,11 +150,16 @@
     "loadingSaasPlans": "የSaaS ዕቅዶችን በመጫን ላይ…",
     "newGyms": "አዲስ ጂሞች",
     "noGyms": "እስካሁን የተመዘገበ ጂም የለም።",
+    "noGymsEmptyTitle": "እስካሁን ጂም የለም",
+    "noGymsEmptyBody": "እስካሁን የተመዘገበ ጂም የለም።",
     "noGymsExpiring": "በጣም ጥሩ! በ3 ቀናት ውስጥ ጊዜያቸው የሚያበቃ ወይም የሚያልቁ ጂሞች የሉም።",
     "noGymsMatch": "ከማጣሪያው ጋር የሚዛመድ ጂም አልተገኘም።",
+    "noGymsMatchBody": "ማጣሪያውን ወይም ፍለጋውን ያጽዱ።",
+    "expiringSectionHint": "በቅርብ ጊዜ የሚያልቁ ወይም ጊዜያቸው ያለፈባቸው ጂሞች",
     "noImmediateRenewals": "በቅርብ ጊዜ ዳግም ምዝገባ አያስፈልግም።",
     "noMemberData": "የአባል ውሂብ የለም — ገበታውን ለማየት መጀመሪያ ጂሞችን ይመዝግቡ።",
     "noSaasPlansBody": "አዲስ ጂሞችን ከመመዝገብዎ በፊት እባክዎ ዕቅድ ይፍጠሩ።",
+    "createFirstSaasPlan": "የመጀመሪያ የSaaS ዕቅድ ይፍጠሩ",
     "noSaasPlansTitle": "ምንም የSaaS ዕቅድ የለም",
     "noSaasPlansWarning": "ጂሞችን ከመመዝገብዎ በፊት ቢያንስ አንድ የSaaS ዕቅድ መፍጠር አለብዎት።",
     "noTransactions": "በዚህ ጊዜ ውስጥ ምንም ግብይት የለም።",
@@ -164,6 +169,12 @@
     "paymentsEditHint": "ስህተትን ለማረም ብቻ ያርሙ ወይም ይሰርዙ — አዲስ ክፍያዎች በጂም ዝርዝሩ በኩል ይመዘገባሉ።",
     "paymentsSubtitle": "ከጂሞች የተሰበሰቡ የSaaS ክፍያዎች።",
     "paymentsTitle": "የመድረክ ገቢ",
+    "statusLineEmpty": "{{revenue}} · {{count}} ክፍያዎች",
+    "paymentHistory": "የክፍያ ታሪክ",
+    "paymentHistoryCount": "በዚህ እይታ {{count}}",
+    "methodFilterTip": "ክፍያዎችን ለማጣራት ዘዴን ይጫኑ",
+    "emptyTitle": "እስካሁን ክፍያ የለም",
+    "emptyBody": "ጂሞች ሲመዘገቡ ወይም ሲያድሱ ክፍያዎች እዚህ ይታያሉ።",
     "planDistribution": "የዕቅድ ስርጭት",
     "planNotes": "ዕቅድ / ማስታወሻዎች",
     "platformAdmin": "የመድረክ አስተዳዳሪ",
@@ -190,6 +201,12 @@
     "rowActionsHint": "ለዝርዝር መረጃ ረድፉን ይጫኑ፣ ወይም ፈጣን ድርጊቶችን ለመፈጸም \"አርትዕ\" / \"ሰርዝ\" ይጠቀሙ።",
     "saasPlansPageSubtitle": "በመድረኩ ላይ ጂሞችን ሲመዘግቡ የሚቀርቡ ዕቅዶች (የፈቃድ ደረጃዎች)።",
     "saasPlansPageTitle": "ለጂሞች የሚሆኑ የSaaS ዕቅዶች",
+    "saasPlansStatusLine": "{{count}} ዕቅዶች · {{from}} – {{to}} · {{gyms}} ጂሞች ተመዝግበዋል",
+    "saasPlansStatusLineSingle": "{{count}} ዕቅዶች · {{price}} · {{gyms}} ጂሞች ተመዝግበዋል",
+    "saasPlansStatusLineEmpty": "ምንም የSaaS ዕቅድ የለም",
+    "saasPlansSort": {
+      "gymsDesc": "በብዙ ጂሞች"
+    },
     "saasPlansSubtitle": "ለጂም ደንበኞች የቀረቡ የዋጋ ደረጃዎች።",
     "saasPlansTitle": "የSaaS ዕቅዶች",
     "saasRevenue": "የSaaS ገቢ",
@@ -673,7 +690,11 @@
       "switchMidTerm": "← በዘመን መካከል ቀይር (የአሁኑ ፈቃድ መጀመሪያ ይቆይ)",
       "newLicenseFromDate": "ከሌላ ቀን ጀምሮ አዲስ የፈቃድ ዘመን ይጀምሩ →",
       "licenseEndUnchanged": "የፈቃድ ማለቂያ አልተቀየረም፦",
-      "newLicenseEnds": "አዲሱ ፈቃድ የሚያበቃው፦"
+      "newLicenseEnds": "አዲሱ ፈቃድ የሚያበቃው፦",
+      "licenseEndChip": "ፈቃዱ ያበቃል {{date}}",
+      "licenseEndUnchangedChip": "ፈቃዱ ያበቃል {{date}} (ያልተቀየረ)",
+      "suggestedFreshTermDetail": "ሙሉ የ{{planName}} ዋጋ · እስከ {{paidThrough}} የተከፈለው አይቀነስም",
+      "suggestedDowngradeDetail": "ተጨማሪ ክፍያ የለም · ፈቃዱ ያበቃል {{endDate}}"
     },
     "gymDetails": {
       "changePlan": "ዕቅድ ቀይር",
@@ -713,9 +734,16 @@
       "gymName": "የጂም ስም",
       "ownerEmail": "የባለቤት ኢሜይል",
       "phone": "ስልክ",
+      "phoneHint": "09… ወይም +251… ይጠቀሙ።",
       "subscriptionStatus": "የምዝገባ ሁኔታ",
       "subtitle": "የጂም መገለጫ እና ምዝገባን ያዘምኑ።",
-      "title": "ጂም አርትዕ"
+      "title": "ጂም አርትዕ",
+      "saasPlanLabel": "የSaaS ዕቅድ፦",
+      "licenseLabel": "ፈቃድ፦",
+      "statusActive": "ንቁ — ሙሉ የመድረክ መዳረሻ",
+      "statusSuspended": "ታግዷል — ለማንበብ ብቻ (ውሂብ ይታያል፣ ለውጥ አይቻልም)",
+      "statusExpired": "ጊዜው አልፏል — እስኪታደስ ድረስ ሙሉ መቆለፍ",
+      "statusHint": "ታግደው ያሉ ጂሞች መግባትና ውሂብ ማየት ይችላሉ። ጊዜው ያለፈባቸው ጂሞች መድረኩን መጠቀም አይችሉም።"
     },
     "member": {
       "amount": "መጠን",
@@ -813,7 +841,19 @@
       "usernamePlaceholder": "ለምሳሌ፦ iron_grip",
       "licenseStartHint": "ፈቃዱ በዚህ ቀን ይጀምራል። ነባሪው ዛሬ ነው።",
       "unpaidBanner": "ክፍያ ከመሰብሰብዎ በፊት ጂሙ በመገለጫው ወይም በጂሞች ዝርዝር ላይ <strong>ያልተከፈለ</strong> ተብሎ ይታያል። ክፍያ እስኪሰበሰብ ድረስ ፈቃድ ማደስ አይችሉም።",
-      "usernameHint": "ለመግቢያ ያገለግላል። በመላው መድረክ ላይ ልዩ (የማይደገም) መሆን አለበት።"
+      "usernameHint": "ለመግቢያ ያገለግላል። በመላው መድረክ ላይ ልዩ (የማይደገም) መሆን አለበት።",
+      "needSaasPlanFirst": "መጀመሪያ የSaaS ዕቅድ ይፍጠሩ፣ ከዚያ ጂሞችን ይመዝግቡ።",
+      "selectPlan": "ዕቅድ ይምረጡ",
+      "stepGym": "ጂም እና ባለቤት",
+      "stepPlan": "ዕቅድ",
+      "stepPayment": "ክፍያ",
+      "stepOf": "ደረጃ {{current}} ከ {{total}}",
+      "enrollProgress": "የጂም ምዝገባ ሂደት",
+      "successTitle": "ጂም ተመዝግቧል",
+      "successPaid": "የፈቃድ ክፍያ ተመዝግቧል።",
+      "successUnpaid": "ያለ ክፍያ ተመዝግቧል — በኋላ ከጂም መገለጫ ይሰብስቡ።",
+      "backToGyms": "ወደ ጂሞች ተመለስ",
+      "registerAnother": "ሌላ ጂም መዝግብ"
     },
     "renew": {
       "save": "አባልነት ያድሱ",
@@ -834,6 +874,7 @@
       "save": "ፈቃድ ያድሱ",
       "subtitle": "ለ{{name}} የSaaS ፈቃድ ያድሱ።",
       "title": "ፈቃድ ያድሱ",
+      "unpaidWarning": "የቀድሞው የፈቃድ ዘመን ክፍያ አልተመዘገበም።",
       "paymentDateAfterStart": "የክፍያ ቀን ከአዲሱ የፈቃድ መጀመሪያ ቀን ጋር እኩል ወይም ከዚያ በኋላ መሆን አለበት።",
       "paymentDateNotFuture": "የክፍያ ቀን የወደፊት ቀን መሆን አይችልም።",
       "validationRequired": "እባክዎ ዕቅድ ይምረጡ እና ትክክለኛ የክፍያ መጠንና ቀናትን ያስገቡ።"
@@ -1009,8 +1050,15 @@
     "adminGymMessages": {
       "title": "የመድረክ SMS መዝገብ",
       "subtitle": "ለጂም ባለቤቶች የተላኩ የፈቃድ ማስታወሻዎች እና የማረጋገጫ ኮዶች (የይለፍ ቃል መቀየሪያ፣ የጂም ምዝገባ)።",
+      "statusLine": "{{count}} መልእክቶች · {{filter}}",
+      "statusLineEmpty": "በዚህ እይታ መልእክት የለም",
+      "messageHistory": "የመልእክት ታሪክ",
       "empty": "እስካሁን የተላከ ምንም SMS የለም።",
-      "loadError": "የSMS መዝገብ መጫን አልተሳካም።"
+      "loadError": "የSMS መዝገብ መጫን አልተሳካም።",
+      "emptyTitle": "እስካሁን SMS የለም",
+      "emptyBody": "የመጀመሪያው የፈቃድ ማስታወሻ ወይም የማረጋገጫ ኮድ ከተላከ በኋላ የመድረክ SMS ታሪክ ይታያል።",
+      "emptyFilteredTitle": "ለዚህ ማጣሪያ መልእክት የለም",
+      "emptyFilteredBody": "ሌላ ጂም ወይም ዓይነት ይሞክሩ፣ ወይም ወደ ሁሉም ይመለሱ።"
     },
     "branches": {
       "add": "ቅርንጫፍ መዝግብ",

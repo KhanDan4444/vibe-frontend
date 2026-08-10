@@ -1,16 +1,58 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Dumbbell, Plus, Trash2, Edit, HelpCircle } from 'lucide-react';
+import { Trash2, Edit, HelpCircle, Building2 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import PlanModal from '../../components/PlanModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 import { getSaasPlans, createSaasPlan, updateSaasPlan, deleteSaasPlan } from '../../services/saasPlanService';
 import { useTranslation } from 'react-i18next';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { formatMoney } from '../../utils/formatMoney';
 import { runInBackground } from '../../utils/runInBackground';
-import Button from '../../components/ui/Button';
-import Card from '../../components/ui/Card';
+import { cardSurface, selectSurface } from '../../utils/surfaceClasses';
+
+const SORT_OPTIONS = [
+  { value: 'price_asc', labelKey: 'pages.plans.sort.priceAsc' },
+  { value: 'price_desc', labelKey: 'pages.plans.sort.priceDesc' },
+  { value: 'duration_asc', labelKey: 'pages.plans.sort.durationAsc' },
+  { value: 'duration_desc', labelKey: 'pages.plans.sort.durationDesc' },
+  { value: 'gyms_desc', labelKey: 'admin.saasPlansSort.gymsDesc' },
+  { value: 'name_asc', labelKey: 'pages.plans.sort.nameAsc' },
+];
+
+function gymCount(plan) {
+  return Number(plan.gym_count || 0);
+}
+
+function sortPlans(plans, sort) {
+  const list = [...plans];
+  switch (sort) {
+    case 'price_desc':
+      return list.sort((a, b) => b.price - a.price || a.name.localeCompare(b.name));
+    case 'duration_asc':
+      return list.sort((a, b) => a.duration - b.duration || a.price - b.price);
+    case 'duration_desc':
+      return list.sort((a, b) => b.duration - a.duration || a.price - b.price);
+    case 'gyms_desc':
+      return list.sort((a, b) => gymCount(b) - gymCount(a) || a.price - b.price);
+    case 'name_asc':
+      return list.sort((a, b) => a.name.localeCompare(b.name));
+    case 'price_asc':
+    default:
+      return list.sort((a, b) => a.price - b.price || a.name.localeCompare(b.name));
+  }
+}
+
+function monthlyRate(plan) {
+  const duration = Number(plan.duration) || 1;
+  if (duration <= 1) return null;
+  return plan.price / duration;
+}
 
 export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
   const { t } = useTranslation();
@@ -18,13 +60,12 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [deletePlan, setDeletePlan] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [sort, setSort] = useState('price_asc');
 
-  // Keep a mutable ref of the callback to prevent the fetchPlans recreation loop
   const onPlansChangeRef = useRef(onPlansChange);
 
   useEffect(() => {
@@ -56,6 +97,50 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
     onBootingChange?.(loading && plans.length === 0);
   }, [loading, plans.length, onBootingChange]);
 
+  const sortedPlans = useMemo(() => sortPlans(plans, sort), [plans, sort]);
+
+  const priceMin = useMemo(
+    () => (plans.length ? Math.min(...plans.map((p) => p.price)) : 0),
+    [plans],
+  );
+  const priceMax = useMemo(
+    () => (plans.length ? Math.max(...plans.map((p) => p.price)) : 0),
+    [plans],
+  );
+  const gymsOnPlans = useMemo(
+    () => plans.reduce((sum, p) => sum + gymCount(p), 0),
+    [plans],
+  );
+  const popularPlanId = useMemo(() => {
+    if (plans.length < 2) return null;
+    let best = null;
+    let bestCount = 0;
+    for (const plan of plans) {
+      const count = gymCount(plan);
+      if (count > bestCount) {
+        best = plan.id;
+        bestCount = count;
+      }
+    }
+    return bestCount > 0 ? best : null;
+  }, [plans]);
+
+  const statusLine =
+    plans.length > 0
+      ? priceMin === priceMax
+        ? t('admin.saasPlansStatusLineSingle', {
+            count: plans.length,
+            price: formatMoney(priceMin),
+            gyms: gymsOnPlans,
+          })
+        : t('admin.saasPlansStatusLine', {
+            count: plans.length,
+            from: formatMoney(priceMin),
+            to: formatMoney(priceMax),
+            gyms: gymsOnPlans,
+          })
+      : t('admin.saasPlansStatusLineEmpty');
+
   const handleCreate = async (payload) => {
     setSaving(true);
     setError('');
@@ -73,6 +158,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
   };
 
   const handleEditClick = (plan) => {
+    setError('');
     setSelectedPlan(plan);
   };
 
@@ -94,9 +180,9 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
   };
 
   const handleDeleteClick = (plan) => {
-    const gymCount = Number(plan.gym_count || 0);
-    if (gymCount > 0) {
-      setError(t('admin.cannotDeletePlan', { name: plan.name, count: gymCount }));
+    const count = gymCount(plan);
+    if (count > 0) {
+      setError(t('admin.cannotDeletePlan', { name: plan.name, count }));
       return;
     }
     setDeletePlan(plan);
@@ -106,6 +192,7 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
     if (!deletePlan) return;
     const planId = deletePlan.id;
     setDeletePlan(null);
+    setError('');
     try {
       const res = await deleteSaasPlan(apiFetch, planId);
       const data = await parseApiResponse(res);
@@ -116,130 +203,175 @@ export default function AdminSaasPlans({ onPlansChange, onBootingChange }) {
     }
   };
 
-  if (loading && plans.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-app-text-strong">{t('admin.saasPlansPageTitle')}</h2>
-            <p className="text-sm text-app-muted">{t('admin.saasPlansPageSubtitle')}</p>
-          </div>
-          <div className="app-skeleton h-10 w-36 rounded-lg" />
-        </div>
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+  const openCreate = () => {
+    setError('');
+    setIsAddOpen(true);
+  };
+
+  return (
+    <div className="space-y-4 sm:space-y-5">
+      <PageHeader
+        title={t('admin.saasPlansPageTitle')}
+        subtitle={statusLine}
+        actions={
+          <Button onClick={openCreate}>
+            {t('admin.createSaasPlan')}
+          </Button>
+        }
+      />
+
+      {error && !(isAddOpen || selectedPlan) ? (
+        <ErrorRetryBanner message={error} onRetry={fetchPlans} />
+      ) : null}
+
+      {loading && plans.length === 0 ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <PlanCardSkeleton key={i} />
           ))}
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-app-text-strong">{t('admin.saasPlansPageTitle')}</h2>
-          <p className="text-sm text-app-muted">
-            {t('admin.saasPlansPageSubtitle')}
-          </p>
-        </div>
-        <Button
-          onClick={() => {
-            setIsAddOpen(true);
-          }}
-        >
-          <Plus className="h-4 w-4" /> {t('admin.createSaasPlan')}
-        </Button>
-      </div>
-
-      {error && (
-        <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-          <p>{error}</p>
-          <button
-            type="button"
-            onClick={fetchPlans}
-            className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
-          >
-            {t('common.retry')}
-          </button>
-        </div>
-      )}
-
-      {plans.length > 0 ? (
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {plans.map((plan) => (
-            <Card
-              key={plan.id}
-              className="relative flex flex-col justify-between p-6"
+      ) : plans.length > 0 ? (
+        <>
+          <div className="flex justify-start">
+            <label className="sr-only" htmlFor="saas-plans-sort">
+              {t('pages.plans.sortLabel')}
+            </label>
+            <select
+              id="saas-plans-sort"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className={`ui-select ${selectSurface} min-w-[11rem]`}
             >
-              <div className="absolute right-3 top-3 flex gap-1 sm:right-4 sm:top-4">
-                <button
-                  type="button"
-                  onClick={() => handleEditClick(plan)}
-                  className="rounded-lg p-2.5 text-app-muted hover:bg-app-surface/60 hover:text-teal-700 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                  aria-label={t('common.edit')}
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {t(opt.labelKey)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+            {sortedPlans.map((plan) => {
+              const gyms = gymCount(plan);
+              const perMonth = monthlyRate(plan);
+              const isPopular = plan.id === popularPlanId;
+
+              return (
+                <Card
+                  key={plan.id}
+                  className={`relative p-5 ${
+                    isPopular ? 'ring-2 ring-teal-500/50 dark:ring-teal-400/40' : ''
+                  }`}
                 >
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteClick(plan)}
-                  className="rounded-lg p-2.5 text-app-muted hover:bg-app-surface/60 hover:text-rose-600 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                  aria-label={t('common.delete')}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="rounded-lg bg-teal-50 p-2.5 text-teal-700 dark:bg-teal-500/15 dark:text-teal-300">
-                    <Dumbbell className="h-6 w-6" />
-                  </span>
-                  <h3 className="font-bold text-app-text-strong text-lg pr-16">{plan.name}</h3>
-                </div>
-                {plan.description && (
-                  <p className="text-sm text-app-muted line-clamp-3">{plan.description}</p>
-                )}
-                <p className="text-xs text-app-muted">
-                  {t('common.gymSubscribed', { count: Number(plan.gym_count || 0) })}
-                </p>
-              </div>
-              <div className="mt-6 pt-6 border-t border-app-border-subtle flex items-baseline justify-between">
-                <span className="text-2xl font-black text-app-text-strong">
-                  {formatMoney(plan.price)}
-                </span>
-                <span className="rounded-full border px-2.5 py-1 text-xs font-semibold text-app-muted border-app-border-subtle bg-app-surface">
-                  {t('common.month', { count: plan.duration })}
-                </span>
-              </div>
-            </Card>
-          ))}
-        </div>
+                  {isPopular ? (
+                    <span className="absolute -top-2.5 left-4 rounded-full bg-teal-800 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-teal-50 dark:bg-teal-900 dark:text-teal-100">
+                      {t('pages.plans.popular')}
+                    </span>
+                  ) : null}
+
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-2xl font-black tracking-tight text-app-text-strong sm:text-[1.65rem]">
+                        {formatMoney(plan.price)}
+                      </p>
+                      {perMonth != null ? (
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {t('pages.plans.perMonth', { amount: formatMoney(perMonth) })}
+                        </p>
+                      ) : (
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {t('common.month', { count: plan.duration })}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex shrink-0 gap-0.5">
+                      <button
+                        type="button"
+                        onClick={() => handleEditClick(plan)}
+                        className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-teal-700 dark:hover:text-teal-300"
+                        title={t('admin.editSaasPlan')}
+                        aria-label={t('admin.editSaasPlan')}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteClick(plan)}
+                        className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-rose-600 dark:hover:text-rose-400"
+                        title={t('admin.deleteSaasPlanTitle')}
+                        aria-label={t('admin.deleteSaasPlanTitle')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <h3
+                    className="mt-4 truncate text-base font-semibold text-app-text-strong"
+                    title={plan.name}
+                  >
+                    {plan.name}
+                  </h3>
+
+                  {plan.description ? (
+                    <p className="mt-1 line-clamp-2 text-sm leading-snug text-app-muted">
+                      {plan.description}
+                    </p>
+                  ) : null}
+
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <span className="inline-flex rounded-md bg-teal-50 px-2 py-1 text-xs font-semibold text-teal-800 dark:bg-teal-500/15 dark:text-teal-300">
+                      {t('common.month', { count: plan.duration })}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-xs text-app-muted">
+                      <Building2 className="h-3.5 w-3.5" />
+                      {t('common.gymSubscribed', { count: gyms })}
+                    </span>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </>
       ) : (
-        <Card className="py-16 text-center">
-          <HelpCircle className="h-12 w-12 mx-auto text-app-muted/40 mb-3" />
-          <p className="font-medium text-app-text">{t('admin.noSaasPlansTitle')}</p>
-          <p className="mt-1 text-sm text-app-muted">{t('admin.noSaasPlansBody')}</p>
-        </Card>
+        <div className={cardSurface}>
+          <EmptyState
+            icon={HelpCircle}
+            title={t('admin.noSaasPlansTitle')}
+            body={t('admin.noSaasPlansBody')}
+            action={
+              <Button onClick={openCreate}>
+                {t('admin.createFirstSaasPlan')}
+              </Button>
+            }
+          />
+        </div>
       )}
 
       <PlanModal
         isOpen={isAddOpen}
         title={t('admin.createSaasPlan')}
-        onClose={() => setIsAddOpen(false)}
+        onClose={() => {
+          setIsAddOpen(false);
+          setError('');
+        }}
         onSubmit={handleCreate}
         saving={saving}
-        showDescription={true}
+        showDescription
+        error={isAddOpen ? error : ''}
       />
       <PlanModal
         isOpen={!!selectedPlan}
         plan={selectedPlan}
         title={t('admin.editSaasPlan')}
-        onClose={() => setSelectedPlan(null)}
+        onClose={() => {
+          setSelectedPlan(null);
+          setError('');
+        }}
         onSubmit={handleUpdate}
         saving={saving}
-        showDescription={true}
+        showDescription
+        error={selectedPlan ? error : ''}
       />
 
       <ConfirmDialog

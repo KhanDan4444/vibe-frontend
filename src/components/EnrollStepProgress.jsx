@@ -4,12 +4,12 @@
  */
 import { useTranslation } from 'react-i18next';
 
-export default function EnrollStepProgress({ steps, current, maxReached = current, onSelect }) {
+export default function EnrollStepProgress({ steps, current, maxReached = current, onSelect, label }) {
   const { t } = useTranslation();
   const furthest = Math.max(current, maxReached);
 
   return (
-    <nav aria-label={t('modals.member.enrollProgress')} className="mb-1">
+    <nav aria-label={label || t('modals.member.enrollProgress')} className="mb-1">
       <ol className="flex w-full items-start">
         {steps.map((step, index) => {
           const n = index + 1;

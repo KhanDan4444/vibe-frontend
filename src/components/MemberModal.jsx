@@ -35,7 +35,7 @@ import SearchableSelect from './ui/SearchableSelect';
 import RequiredMark from './ui/RequiredMark';
 import EnrollStepProgress from './EnrollStepProgress';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
-import { modalBody, modalFieldLabel } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter, modalFieldLabel } from '../utils/modalLayout';
 
 /**
  * Enroll (create) or edit a gym member.
@@ -405,14 +405,6 @@ export default function MemberModal({
 
   const displayError = validationError || error;
   const isBusy = saving || submitting || photoProcessing;
-
-  const memberFieldsReady = validateMemberForm({ name, phone }).ok;
-  const enrollExtrasReady =
-    plans.length > 0 &&
-    Boolean(planId) &&
-    Boolean(startDate) &&
-    (!showBranchPicker || Boolean(branchId));
-  const canSubmit = !isBusy && memberFieldsReady && (isEdit || enrollExtrasReady);
   const isPage = variant === 'page';
   const selectedPlan = plans.find((p) => String(p.id) === String(planId));
   const useSteps = isPage && !isEdit;
@@ -603,19 +595,8 @@ export default function MemberModal({
     )
   ) : null;
 
-  const formInner = (
+  const formFields = (
     <>
-        {displayError && (
-          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
-            {displayError}
-          </div>
-        )}
-
-        <form
-          onSubmit={handleSubmit}
-          onChangeCapture={markTouched}
-          className={isPage ? 'space-y-6' : 'space-y-4'}
-        >
           {(!useSteps || enrollStep === 1) && (
           <section className="space-y-4">
             {!isEdit && isPage && !useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
@@ -699,7 +680,7 @@ export default function MemberModal({
                 </label>
                 <select
                   required={!isEdit}
-                  className={`${fc('branchId')}cursor-pointer`}
+                  className={`ui-select ${fc('branchId')} cursor-pointer`}
                   value={branchId}
                   onChange={(e) => setBranchId(e.target.value)}
                 >
@@ -751,7 +732,7 @@ export default function MemberModal({
                         <RequiredMark />
                       </label>
                       <select
-                        className={`${fc('planId')}cursor-pointer`}
+                        className={`ui-select ${fc('planId')} cursor-pointer`}
                         value={planId}
                         onChange={(e) => {
                           setPlanId(e.target.value);
@@ -854,7 +835,7 @@ export default function MemberModal({
                         <RequiredMark />
                       </label>
                       <select
-                        className={`${fc('method')}cursor-pointer`}
+                        className={`ui-select ${fc('method')} cursor-pointer`}
                         value={method}
                         onChange={(e) => setMethod(e.target.value)}
                       >
@@ -899,71 +880,98 @@ export default function MemberModal({
               )}
             </section>
           )}
-
-          {isPage ? (
-            <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
-              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-center text-xs text-app-muted sm:text-left">
-                  {t('modals.member.stepOf', { current: enrollStep, total: 3 })}
-                </p>
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-                  {enrollStep > 1 ? (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => {
-                        setValidationError('');
-                        setEnrollStep((s) => s - 1);
-                      }}
-                      className="w-full sm:w-auto"
-                    >
-                      {t('common.back')}
-                    </Button>
-                  ) : null}
-                  {enrollStep < 3 ? (
-                    <Button
-                      type="button"
-                      disabled={isBusy || (enrollStep === 2 && !canContinueStep2)}
-                      onClick={goEnrollNext}
-                      className="w-full sm:w-auto"
-                    >
-                      {t('common.continue')}
-                    </Button>
-                  ) : (
-                    <Button
-                      type="button"
-                      disabled={!canSubmit}
-                      onClick={(e) => void handleSubmit(e)}
-                      className="w-full sm:w-auto"
-                    >
-                      {isBusy
-                        ? photoProcessing
-                          ? t('modals.member.processingPhoto')
-                          : t('common.processing')
-                        : t('modals.member.saveEnroll')}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end sm:gap-3">
-              <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-                {t('common.cancel')}
-              </Button>
-              <Button type="submit" disabled={!canSubmit} className="w-full sm:w-auto">
-                {isBusy
-                  ? photoProcessing
-                    ? t('modals.member.processingPhoto')
-                    : t('common.processing')
-                  : isEdit
-                  ? t('modals.member.saveUpdate')
-                  : t('modals.member.saveEnroll')}
-              </Button>
-            </div>
-          )}
-        </form>
     </>
+  );
+
+  const formInner = isPage ? (
+    <>
+      {displayError && (
+        <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
+          {displayError}
+        </div>
+      )}
+      <form
+        onSubmit={handleSubmit}
+        onChangeCapture={markTouched}
+        className="space-y-6"
+      >
+        {formFields}
+        <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-center text-xs text-app-muted sm:text-left">
+              {t('modals.member.stepOf', { current: enrollStep, total: 3 })}
+            </p>
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
+              {enrollStep > 1 ? (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    setValidationError('');
+                    setEnrollStep((s) => s - 1);
+                  }}
+                  className="w-full sm:w-auto"
+                >
+                  {t('common.back')}
+                </Button>
+              ) : null}
+              {enrollStep < 3 ? (
+                <Button
+                  type="button"
+                  disabled={isBusy || (enrollStep === 2 && !canContinueStep2)}
+                  onClick={goEnrollNext}
+                  className="w-full sm:w-auto"
+                >
+                  {t('common.continue')}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  disabled={isBusy}
+                  onClick={(e) => void handleSubmit(e)}
+                  className="w-full sm:w-auto"
+                >
+                  {isBusy
+                    ? photoProcessing
+                      ? t('modals.member.processingPhoto')
+                      : t('common.processing')
+                    : t('modals.member.saveEnroll')}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </form>
+    </>
+  ) : (
+    <form
+      onSubmit={handleSubmit}
+      onChangeCapture={markTouched}
+      className="flex min-h-0 flex-1 flex-col"
+    >
+      <div className={`${modalBody} space-y-4`}>
+        {displayError && (
+          <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
+            {displayError}
+          </div>
+        )}
+        {formFields}
+      </div>
+      <div className={modalFooter}>
+        <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+          {t('common.cancel')}
+        </Button>
+        <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+          {isBusy
+            ? photoProcessing
+              ? t('modals.member.processingPhoto')
+              : t('common.processing')
+            : isEdit
+            ? t('modals.member.saveUpdate')
+            : t('modals.member.saveEnroll')}
+        </Button>
+      </div>
+    </form>
   );
 
   if (isPage) {
@@ -1096,18 +1104,21 @@ export default function MemberModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-app-text-strong">{title}</h2>
+          <p className="mt-1 text-sm text-app-muted">{subtitle}</p>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text dark:hover:text-app-text-strong sm:right-3 sm:top-3"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text dark:hover:text-app-text-strong"
+          aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="pr-10 text-lg font-bold text-app-text-strong mb-1">{title}</h2>
-        <p className="text-sm text-app-muted mb-5">{subtitle}</p>
-        {formInner}
       </div>
+      {formInner}
     </ResponsiveModal>
   );
 }

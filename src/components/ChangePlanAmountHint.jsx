@@ -3,35 +3,50 @@ import { formatDisplayDate } from '../utils/date';
 
 /**
  * Scannable amount hint: bold suggested total + muted one-line explanation.
+ * Works for member change-plan and admin SaaS change-plan.
  */
 export default function ChangePlanAmountHint({
   upgradeHint,
   amountEdited,
   selectedPlan,
   currentPlan,
+  endDate,
   member,
   t,
   onUseSuggested,
+  license = false,
 }) {
+  const paidThrough = endDate ?? member?.endDate;
+
   if (!upgradeHint) {
-    return <p className="mt-1 text-xs text-app-muted">{t('modals.changePlan.amountCollectedHint')}</p>;
+    return (
+      <p className="mt-1 text-xs text-app-muted">
+        {t(license ? 'modals.changeSaasPlan.paymentCollectedHint' : 'modals.changePlan.amountCollectedHint')}
+      </p>
+    );
   }
 
   let detail = null;
   if (upgradeHint.freshTerm) {
-    detail = t('modals.changePlan.suggestedFreshTermDetail', {
-      planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
-      paidThrough: formatDisplayDate(member.endDate),
-    });
+    detail = t(
+      license ? 'modals.changeSaasPlan.suggestedFreshTermDetail' : 'modals.changePlan.suggestedFreshTermDetail',
+      {
+        planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
+        paidThrough: formatDisplayDate(paidThrough),
+      }
+    );
   } else if (upgradeHint.prePayment) {
     detail = t('modals.changePlan.suggestedPrePaymentDetail', {
       planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
     });
   } else if (upgradeHint.isDowngrade) {
-    detail = t('modals.changePlan.suggestedDowngradeDetail', {
-      endDate: formatDisplayDate(member.endDate),
-      planName: currentPlan?.name || '—',
-    });
+    detail = t(
+      license ? 'modals.changeSaasPlan.suggestedDowngradeDetail' : 'modals.changePlan.suggestedDowngradeDetail',
+      {
+        endDate: formatDisplayDate(paidThrough),
+        planName: currentPlan?.name || '—',
+      }
+    );
   } else {
     detail = t('modals.changePlan.suggestedUpgradeDetail', {
       credit: formatMoney(upgradeHint.credit),

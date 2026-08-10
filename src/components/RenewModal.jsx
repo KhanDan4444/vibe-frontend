@@ -1,5 +1,5 @@
 // src/components/RenewModal.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,7 @@ import { calculateEndDate } from '../utils/memberDates';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { modalBody } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
  * Modal to renew an expired or due-soon member and record payment in one step.
@@ -120,42 +120,46 @@ export default function RenewModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`}>
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <RefreshCw className="h-5 w-5 shrink-0 text-teal-700" />
+            <h2 className="text-lg font-bold text-app-text-strong">{t('modals.renew.title')}</h2>
+          </div>
+          <p className="mt-1 text-sm text-app-muted">
+            {t('modals.renew.subtitle', { name: member.name })}
+          </p>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
         </button>
+      </div>
 
-        <div className="flex items-center gap-2 mb-1 pr-8">
-          <RefreshCw className="h-5 w-5 text-teal-700" />
-          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.renew.title')}</h2>
-        </div>
-        <p className="text-sm text-app-muted mb-6">
-          {t('modals.renew.subtitle', { name: member.name })}
-        </p>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-4`}>
+          {showEarlyRenewNote && (
+            <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
+              {t('modals.billing.paidThroughRenewTerm', { date: formatDisplayDate(member.endDate) })}
+            </div>
+          )}
 
-        {showEarlyRenewNote && (
-          <div className="mb-4 rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
-            {t('modals.billing.paidThroughRenewTerm', { date: formatDisplayDate(member.endDate) })}
-          </div>
-        )}
+          {member.isUnpaid && (
+            <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700">
+              {t('modals.renew.unpaidWarning')}
+            </div>
+          )}
 
-        {member.isUnpaid && (
-          <div className="mb-4 rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700">
-            {t('modals.renew.unpaidWarning')}
-          </div>
-        )}
+          {displayError && (
+            <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700">
+              {displayError}
+            </div>
+          )}
 
-        {displayError && (
-          <div className="mb-4 rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700">
-            {displayError}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
             <label className="form-label">
               {t('modals.member.plan')}
@@ -163,7 +167,7 @@ export default function RenewModal({
             </label>
             <select
               required
-              className="mt-1 w-full app-field cursor-pointer"
+              className="ui-select mt-1 w-full app-field cursor-pointer"
               value={planId}
               onChange={(e) => setPlanId(e.target.value)}
             >
@@ -269,7 +273,7 @@ export default function RenewModal({
                 <RequiredMark />
               </label>
               <select
-                className="mt-1 w-full app-field cursor-pointer"
+                className="ui-select mt-1 w-full app-field cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -281,17 +285,17 @@ export default function RenewModal({
               </select>
             </div>
           </div>
+        </div>
 
-          <div className="pt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={isBusy || member.isUnpaid || plans.length === 0 || !paymentRangeValid} className="w-full sm:w-auto">
-              {isBusy ? t('common.processing') : t('modals.renew.save')}
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+            {isBusy ? t('common.processing') : t('modals.renew.save')}
+          </Button>
+        </div>
+      </form>
     </ResponsiveModal>
   );
 }

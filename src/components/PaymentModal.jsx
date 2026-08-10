@@ -1,5 +1,5 @@
 // src/components/PaymentModal.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { modalBody } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
  * Modal for recording a missed payment for the current membership term.
@@ -125,34 +125,38 @@ export default function PaymentModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
-      <div className={`${modalBody} relative`} onClick={(e) => e.stopPropagation()}>
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-app-text-strong">
+            {payment ? t('modals.payment.editTitle') : t('modals.payment.collectTitle')}
+          </h2>
+          {!payment && selectedMember && (
+            <p className="mt-1 text-xs text-app-muted">
+              {t('modals.payment.collectSubtitle', { name: selectedMember.name })}
+            </p>
+          )}
+          {payment && (
+            <p className="mt-1 text-xs text-app-muted">{t('modals.payment.editSubtitle')}</p>
+          )}
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="text-lg font-bold text-app-text-strong mb-1 pr-8">
-          {payment ? t('modals.payment.editTitle') : t('modals.payment.collectTitle')}
-        </h2>
-        {!payment && selectedMember && (
-          <p className="text-xs text-app-muted mb-5">
-            {t('modals.payment.collectSubtitle', { name: selectedMember.name })}
-          </p>
-        )}
-        {payment && (
-          <p className="text-xs text-app-muted mb-5">{t('modals.payment.editSubtitle')}</p>
-        )}
-        {!payment && !selectedMember && <div className="mb-5" />}
+      </div>
 
-        {displayError && (
-          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
-            {displayError}
-          </div>
-        )}
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-4`}>
+          {displayError && (
+            <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
+              {displayError}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
             <label htmlFor="payment-member" className="form-label">
               {t('table.member')}
@@ -162,7 +166,7 @@ export default function PaymentModal({
               id="payment-member"
               required
               disabled={!!payment || !!defaultMemberId}
-              className="mt-1 w-full app-field cursor-pointer disabled:bg-app-surface disabled:text-app-muted"
+              className="ui-select mt-1 w-full app-field cursor-pointer disabled:bg-app-surface disabled:text-app-muted"
               value={selectedMemberId}
               onChange={(e) => handleMemberChange(e.target.value)}
             >
@@ -216,7 +220,7 @@ export default function PaymentModal({
               </label>
               <select
                 id="payment-method"
-                className="mt-1 w-full app-field cursor-pointer"
+                className="ui-select mt-1 w-full app-field cursor-pointer"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -248,21 +252,21 @@ export default function PaymentModal({
             />
             <FieldError message={fieldErrorMessage(fieldErrors, 'date')} />
           </div>
+        </div>
 
-          <div className="pt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
-              {isBusy
-                ? t('common.processing')
-                : payment
-                ? t('common.save')
-                : t('modals.payment.save')}
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+            {isBusy
+              ? t('common.processing')
+              : payment
+              ? t('common.save')
+              : t('modals.payment.save')}
+          </Button>
+        </div>
+      </form>
     </ResponsiveModal>
   );
 }

@@ -1,5 +1,5 @@
 // src/components/ChangePlanModal.jsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, ArrowLeftRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +32,7 @@ import ChangePlanAmountHint from './ChangePlanAmountHint';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { modalBody } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 const termModeBtn =
   'rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
@@ -224,17 +224,9 @@ export default function ChangePlanModal({
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="lg">
-      <div className={`${modalBody} relative`}>
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
-        >
-          <X className="h-5 w-5" />
-        </button>
-
-        <div className="mb-4 flex items-center gap-2 pr-8">
-          <ArrowLeftRight className="h-5 w-5 shrink-0 text-teal-800/75 dark:text-teal-600/80" aria-hidden />
+      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+        <div className="flex min-w-0 items-start gap-2">
+          <ArrowLeftRight className="mt-0.5 h-5 w-5 shrink-0 text-teal-800/75 dark:text-teal-600/80" aria-hidden />
           <div className="min-w-0">
             <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changePlan.title')}</h2>
             <p className="mt-0.5 text-sm text-app-muted">
@@ -242,58 +234,68 @@ export default function ChangePlanModal({
             </p>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          aria-label={t('aria.close')}
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        {currentPlan ? (
-          member.isUnpaid ? (
-            <div className="ui-alert-amber mb-4 space-y-1.5">
-              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
-                <span className="font-medium">{t('modals.changePlan.currentPlan')}</span>
-                <span className="font-semibold">{currentPlan.name}</span>
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-5`}>
+          {currentPlan ? (
+            member.isUnpaid ? (
+              <div className="ui-alert-amber space-y-1.5">
+                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 text-sm">
+                  <span className="font-medium">{t('modals.changePlan.currentPlan')}</span>
+                  <span className="font-semibold">{currentPlan.name}</span>
+                  {member.startDate && member.startDate !== '—' ? (
+                    <>
+                      <span className="opacity-50" aria-hidden>
+                        ·
+                      </span>
+                      <span>
+                        {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
+                      </span>
+                    </>
+                  ) : null}
+                </div>
+                <p className="text-xs leading-relaxed">{t('modals.billing.unpaidChangeBanner')}</p>
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm">
+                <span className="text-app-muted">{t('modals.changePlan.currentPlan')}</span>
+                <span className="font-semibold text-app-text-strong">{currentPlan.name}</span>
+                <span className="text-app-border-subtle" aria-hidden>
+                  ·
+                </span>
+                <span className="text-app-muted">
+                  {t('modals.billing.paidThrough')}{' '}
+                  <span className="font-medium text-app-text">{formatDisplayDate(member.endDate)}</span>
+                </span>
                 {member.startDate && member.startDate !== '—' ? (
                   <>
-                    <span className="opacity-50" aria-hidden>
+                    <span className="text-app-border-subtle" aria-hidden>
                       ·
                     </span>
-                    <span>
+                    <span className="text-app-muted">
                       {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
                     </span>
                   </>
                 ) : null}
               </div>
-              <p className="text-xs leading-relaxed">{t('modals.billing.unpaidChangeBanner')}</p>
-            </div>
-          ) : (
-            <div className="mb-4 flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm">
-              <span className="text-app-muted">{t('modals.changePlan.currentPlan')}</span>
-              <span className="font-semibold text-app-text-strong">{currentPlan.name}</span>
-              <span className="text-app-border-subtle" aria-hidden>
-                ·
-              </span>
-              <span className="text-app-muted">
-                {t('modals.billing.paidThrough')}{' '}
-                <span className="font-medium text-app-text">{formatDisplayDate(member.endDate)}</span>
-              </span>
-              {member.startDate && member.startDate !== '—' ? (
-                <>
-                  <span className="text-app-border-subtle" aria-hidden>
-                    ·
-                  </span>
-                  <span className="text-app-muted">
-                    {t('modals.changePlan.termStarted', { date: formatDisplayDate(member.startDate) })}
-                  </span>
-                </>
-              ) : null}
-            </div>
-          )
-        ) : null}
+            )
+          ) : null}
 
-        {otherPlans.length === 0 ? (
-          <div className="ui-alert-amber mb-4">{t('modals.billing.addAnotherMembershipPlan')}</div>
-        ) : null}
+          {otherPlans.length === 0 ? (
+            <div className="ui-alert-amber">{t('modals.billing.addAnotherMembershipPlan')}</div>
+          ) : null}
 
-        {displayError ? <div className="ui-alert-rose mb-4">{displayError}</div> : null}
+          {displayError ? <div className="ui-alert-rose">{displayError}</div> : null}
 
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-5">
           <div>
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
               <label className="form-label mb-0" htmlFor="change-plan-select">
@@ -312,7 +314,7 @@ export default function ChangePlanModal({
               id="change-plan-select"
               required
               disabled={otherPlans.length === 0}
-              className={`${fc('planId')} disabled:bg-app-surface disabled:text-app-muted`}
+              className={`ui-select ${fc('planId')} disabled:bg-app-surface disabled:text-app-muted`}
               value={planId}
               onChange={(e) => {
                 setPlanId(e.target.value);
@@ -417,7 +419,7 @@ export default function ChangePlanModal({
                 <RequiredMark />
               </label>
               <select
-                className={fc('method')}
+                className={`ui-select ${fc('method')}`}
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -454,6 +456,7 @@ export default function ChangePlanModal({
               amountEdited={amountEdited}
               selectedPlan={selectedPlan}
               currentPlan={currentPlan}
+              endDate={member.endDate}
               member={member}
               t={t}
               onUseSuggested={() => {
@@ -468,17 +471,17 @@ export default function ChangePlanModal({
             termStart={termStart}
             pendingAmount={parseFloat(amount) || 0}
           />
+        </div>
 
-          <div className="flex flex-col-reverse gap-2 border-t border-app-border-subtle pt-4 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={isBusy || otherPlans.length === 0} className="w-full sm:w-auto">
-              {isBusy ? t('common.processing') : t('modals.changePlan.save')}
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+            {isBusy ? t('common.processing') : t('modals.changePlan.save')}
+          </Button>
+        </div>
+      </form>
     </ResponsiveModal>
   );
 }

@@ -20,6 +20,7 @@ import { DateField } from '../../components/DateField';
 import { boundsForCustomRangeFrom, boundsForCustomRangeTo } from '../../utils/datePickerBounds';
 import { ChartPanelSkeleton } from '../../components/LoadingSkeletons';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
+import PageHeader from '../../components/PageHeader';
 import ChartCard from '../../components/reports/ChartCard';
 import ReportDonut from '../../components/reports/ReportDonut';
 import RevenueBarChart from '../../components/reports/RevenueBarChart';
@@ -48,7 +49,8 @@ import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
-import { selectSurface, pageTitle, mutedText } from '../../utils/surfaceClasses';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
+import { selectSurface, headingText } from '../../utils/surfaceClasses';
 
 const GYM_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allGyms', query: {} },
@@ -175,83 +177,50 @@ export default function AdminReports({ onBootingChange }) {
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className={pageTitle}>{t('admin.reportsTitle')}</h1>
-          <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>
-            {t('admin.reportsChartsSubtitle')}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <Button variant="secondary" onClick={refreshAll} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            {t('common.refresh')}
-          </Button>
-          <Button
-            variant="secondary"
-            disabled={!canExport || exporting === 'full-csv'}
-            onClick={() => withExport('full-csv', () => downloadFullReportCsv(gyms, payments, exportMeta))}
-          >
-            <FileStack className="h-4 w-4" />
-            {t('admin.fullReportCsv')}
-          </Button>
-          <Button
-            disabled={!canExport || exporting === 'full-pdf'}
-            onClick={() => withExport('full-pdf', () => downloadFullReportPdf(gyms, payments, exportMeta))}
-          >
-            <FileText className="h-4 w-4" />
-            {t('admin.fullReportPdf')}
-          </Button>
-        </div>
-      </div>
+    <div className="space-y-6 sm:space-y-7">
+      <PageHeader
+        title={t('admin.reportsTitle')}
+        subtitle={t('admin.reportsChartsSubtitle')}
+        actions={
+          <>
+            <Button variant="secondary" onClick={refreshAll} disabled={loading}>
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              {t('common.refresh')}
+            </Button>
+            <Button
+              variant="secondary"
+              disabled={!canExport || exporting === 'full-csv'}
+              onClick={() => withExport('full-csv', () => downloadFullReportCsv(gyms, payments, exportMeta))}
+            >
+              <FileStack className="h-4 w-4" />
+              {t('admin.fullReportCsv')}
+            </Button>
+            <Button
+              disabled={!canExport || exporting === 'full-pdf'}
+              onClick={() => withExport('full-pdf', () => downloadFullReportPdf(gyms, payments, exportMeta))}
+            >
+              <FileText className="h-4 w-4" />
+              {t('admin.fullReportPdf')}
+            </Button>
+          </>
+        }
+      />
 
       {(gymError || revenueError) && (
         <div className="flex flex-col gap-2">
-          {gymError && (
-            <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                {gymError}
-              </div>
-              <button
-                type="button"
-                onClick={loadGymReport}
-                className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
-              >
-                {t('common.retry')}
-              </button>
-            </div>
-          )}
-          {revenueError && (
-            <div className="flex flex-col gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                {revenueError}
-              </div>
-              <button
-                type="button"
-                onClick={loadRevenueReport}
-                className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
-              >
-                {t('common.retry')}
-              </button>
-            </div>
-          )}
+          {gymError ? <ErrorRetryBanner message={gymError} onRetry={loadGymReport} /> : null}
+          {revenueError ? <ErrorRetryBanner message={revenueError} onRetry={loadRevenueReport} /> : null}
         </div>
       )}
 
       {/* Gym analytics */}
       <section className="space-y-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-teal-100 p-2 text-teal-700">
-              <Building2 className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-app-text-strong">{t('admin.gymRegistryOverview')}</h2>
-              <p className="text-xs text-app-muted">{t('admin.gymRegistrySubtitle')}</p>
-            </div>
+          <div>
+            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+              {t('admin.gymRegistryOverview')}
+            </h2>
+            <p className="mt-0.5 text-xs text-app-muted">{t('admin.gymRegistrySubtitle')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <select
@@ -282,15 +251,15 @@ export default function AdminReports({ onBootingChange }) {
           </div>
         </div>
 
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
+        <div className="app-metric-grid grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
           {!gymLoaded ? (
-            Array.from({ length: 4 }).map((_, i) => <MetricCardSkeleton key={i} />)
+            Array.from({ length: 4 }).map((_, i) => <MetricCardSkeleton key={i} variant="dense" />)
           ) : (
           <>
-          <MetricCard label={t('admin.gymsInReport')} value={gymStats.total} icon={Building2} color="teal" />
-          <MetricCard label={t('admin.activeStatus')} value={gymStats.active} icon={Building2} color="emerald" />
-          <MetricCard label={t('admin.unpaidLicenses')} value={gymStats.unpaid} icon={AlertCircle} color="violet" badge={gymStats.unpaid > 0 ? t('admin.actionBadge') : null} />
-          <MetricCard label={t('admin.platformMembers')} value={gymStats.members} icon={Users} color="teal" hint={t('admin.platformMembersHint')} showHintBelow />
+          <MetricCard variant="dense" label={t('admin.gymsInReport')} value={gymStats.total} icon={Building2} color="teal" />
+          <MetricCard variant="dense" label={t('admin.activeStatus')} value={gymStats.active} icon={Building2} color="emerald" />
+          <MetricCard variant="dense" label={t('admin.unpaidLicenses')} value={gymStats.unpaid} icon={AlertCircle} color="violet" badge={gymStats.unpaid > 0 ? t('admin.actionBadge') : null} />
+          <MetricCard variant="dense" label={t('admin.platformMembers')} value={gymStats.members} icon={Users} color="teal" hint={t('admin.platformMembersHint')} showHintBelow />
           </>
           )}
         </div>
@@ -303,10 +272,10 @@ export default function AdminReports({ onBootingChange }) {
           </div>
         ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          <ChartCard title={t('admin.bySubscriptionStatus')} subtitle={t('admin.gymOverviewSubtitle')} empty={overviewChart.length === 0}>
+          <ChartCard compact title={t('admin.bySubscriptionStatus')} subtitle={t('admin.gymOverviewSubtitle')} empty={overviewChart.length === 0}>
             <ReportDonut data={overviewChart} colors={MEMBER_FILTER_CHART_COLORS} showCounts />
           </ChartCard>
-          <ChartCard title={t('admin.bySaasPlan')} subtitle={t('admin.planDistribution')} empty={planChart.length === 0}>
+          <ChartCard compact title={t('admin.bySaasPlan')} subtitle={t('admin.planDistribution')} empty={planChart.length === 0}>
             <ReportDonut data={planChart} colors={planColors} showCounts />
           </ChartCard>
         </div>
@@ -316,14 +285,11 @@ export default function AdminReports({ onBootingChange }) {
       {/* Revenue analytics */}
       <section className="space-y-5">
         <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-3">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-emerald-100 p-2 text-emerald-600">
-              <DollarSign className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-app-text-strong">{t('admin.revenueOverview')}</h2>
-              <p className="text-xs text-app-muted">{t('admin.revenueChartsSubtitle')}</p>
-            </div>
+          <div className="min-w-0">
+            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+              {t('admin.revenueOverview')}
+            </h2>
+            <p className="mt-0.5 text-xs text-app-muted">{t('admin.revenueChartsSubtitle')}</p>
           </div>
           <div className="flex flex-wrap items-end gap-2">
             <div>
@@ -382,9 +348,9 @@ export default function AdminReports({ onBootingChange }) {
 
         {!revenueLoaded ? (
           <>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="app-metric-grid grid gap-2.5 sm:grid-cols-3 sm:gap-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <MetricCardSkeleton key={i} />
+                <MetricCardSkeleton key={i} variant="dense" />
               ))}
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
@@ -396,8 +362,9 @@ export default function AdminReports({ onBootingChange }) {
         ) : (
         <>
         {revenueSummary && (
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="app-metric-grid grid gap-2.5 sm:grid-cols-3 sm:gap-3">
             <MetricCard
+              variant="dense"
               label={t('metrics.totalRevenue')}
               value={formatMoney(revenueSummary.total)}
               hint={periodLabel}
@@ -405,8 +372,8 @@ export default function AdminReports({ onBootingChange }) {
               color="emerald"
               showHintBelow
             />
-            <MetricCard label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="teal" />
-            <MetricCard label={t('metrics.averagePayment')} value={formatMoney(revenueSummary.average)} icon={DollarSign} color="violet" />
+            <MetricCard variant="dense" label={t('metrics.transactions')} value={revenueSummary.count} icon={Calendar} color="teal" />
+            <MetricCard variant="dense" label={t('metrics.averagePayment')} value={formatMoney(revenueSummary.average)} icon={DollarSign} color="violet" />
           </div>
         )}
 

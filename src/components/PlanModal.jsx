@@ -8,7 +8,7 @@ import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
-import { modalBody } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 /**
  * A modular modal handling both Plan creation and editing.
@@ -23,8 +23,9 @@ import { modalBody } from '../utils/modalLayout';
  * @param {boolean} [props.showDescription=false] - Whether to show the description textarea (admin plans).
  * @param {string} [props.title] - Optional modal title override.
  * @param {boolean} [props.saving=false] - Disables submit and shows loading state.
+ * @param {string} [props.error] - Optional page-level error to show in the modal banner.
  */
-export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescription = false, title, saving = false }) {
+export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescription = false, title, saving = false, error }) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [duration, setDuration] = useState('');
@@ -82,25 +83,30 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
     onSubmit(payload);
   };
 
+  const displayError =
+    (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
+
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-50">
-      <div className={`${modalBody} relative sm:min-h-[280px]`}>
+      <div className={`${modalHeader} flex items-center justify-between gap-3`}>
+        <h2 className="text-lg font-bold text-app-text-strong">{modalTitle}</h2>
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-2 top-2 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text sm:right-0 sm:top-0"
+          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
         >
           <X className="h-5 w-5" />
         </button>
-        <h2 className="text-lg font-bold text-app-text-strong mb-6 pr-8">{modalTitle}</h2>
+      </div>
 
-        {validationError && (
-          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
-            {validationError}
-          </div>
-        )}
+      <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
+        <div className={`${modalBody} space-y-4`}>
+          {displayError && (
+            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+              {displayError}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-4">
           <div>
             <label className="form-label">
               {t('modals.plan.name')}
@@ -173,17 +179,17 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
               />
             </div>
           )}
+        </div>
 
-          <div className="pt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
-            <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit" disabled={saving} className="w-full sm:w-auto">
-              {saving ? t('common.processing') : isEdit ? t('modals.plan.saveUpdate') : t('modals.plan.saveCreate')}
-            </Button>
-          </div>
-        </form>
-      </div>
+        <div className={modalFooter}>
+          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+            {saving ? t('common.processing') : isEdit ? t('modals.plan.saveUpdate') : t('modals.plan.saveCreate')}
+          </Button>
+        </div>
+      </form>
     </ResponsiveModal>
   );
 }

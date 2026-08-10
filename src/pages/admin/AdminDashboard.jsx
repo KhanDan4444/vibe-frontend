@@ -19,7 +19,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { parseApiResponse } from '../../utils/api';
 import { formatMoneyShort } from '../../utils/formatMoney';
 import InitialsAvatar from '../../components/InitialsAvatar';
-import RegisterGymModal from '../../components/RegisterGymModal';
 import GymDetailsModal from '../../components/GymDetailsModal';
 import GymEditModal from '../../components/GymEditModal';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
@@ -39,7 +38,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { formatDisplayDate } from '../../utils/date';
-import { getGyms, getGymDetail, updateGym, deleteGym, enrollGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
+import { getGyms, getGymDetail, updateGym, deleteGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
 import { getSaasPlans } from '../../services/saasPlanService';
 import { gymNeedsCatchUpPayment } from '../../utils/saasPaymentReport';
 import { canRenewGym, canChangeSaasPlan, mapGymDetailForBilling } from '../../utils/saasRenew';
@@ -49,9 +48,21 @@ import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes'
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { cardSurface, tableRowHover, selectSurface, pageTitle, mutedText } from '../../utils/surfaceClasses';
+import {
+  tableRowHover,
+  selectSurface,
+  pageTitle,
+  mutedText,
+  headingText,
+  iconActionIdle,
+  iconActionDanger,
+  iconActionSuccess,
+} from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import ErrorRetryBanner from '../../components/ErrorRetryBanner';
+import EmptyState from '../../components/EmptyState';
+import PageHeader from '../../components/PageHeader';
 
 const UNPAID = 'Unpaid';
 const DUE_SOON = 'Due Soon';
@@ -91,8 +102,6 @@ export default function AdminDashboard() {
     all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0,
   });
 
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [registerError, setRegisterError] = useState('');
   const [saasPayments, setSaasPayments] = useState([]);
   const [renewState, setRenewState] = useState({ isOpen: false, gym: null, error: '' });
   const [changePlanState, setChangePlanState] = useState({ isOpen: false, gym: null, error: '' });
@@ -344,46 +353,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateGymSubmit = async (data) => {
-    setRegisterError('');
-    setSaving(true);
-    try {
-      const payload = {
-        gym_name: data.gymName,
-        owner_name: data.ownerName,
-        username: data.username,
-        password: data.password,
-        phone: data.phone,
-        saas_plan_id: data.saasPlanId,
-        skip_payment: data.skipPayment,
-      };
-      if (data.email) payload.email = data.email;
-      if (!data.skipPayment) {
-        payload.amount = data.amount;
-        payload.date = data.date;
-        payload.method = data.method;
-        payload.start_date = data.start_date || data.date;
-      } else {
-        payload.start_date = data.start_date;
-      }
-      const res = await enrollGym(apiFetch, payload);
-      const resData = await parseApiResponse(res);
-      if (!res.ok) throw new Error(resData.error || 'Failed to register gym');
-
-      setIsRegisterOpen(false);
-      flashThenRefresh(
-        flashFromKey(t, data.skipPayment ? 'gymRegistered' : 'gymRegisteredWithPayment', {
-          subtitleParams: { name: data.gymName },
-        }),
-        null
-      );
-    } catch (err) {
-      setRegisterError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleRenewSubmit = async (formData) => {
     if (!renewState.gym) return;
     setSaving(true);
@@ -515,19 +484,21 @@ export default function AdminDashboard() {
         .sort((a, b) => b.members - a.members)
         .slice(0, 5);
 
+  const gymsFiltered = statusFilter !== 'All' || Boolean(debouncedSearch);
+
   return (
     <>
-      <div className="space-y-8">
+      <div className={adminSection === 'dashboard' ? 'space-y-8' : 'space-y-4 sm:space-y-5'}>
           {adminSection === 'dashboard' ? (
 
             <>
-              <div className="mb-6">
+              <div>
                 <h1 className={pageTitle}>{t('nav.dashboard')}</h1>
                 <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('admin.dashboardSubtitle')}</p>
               </div>
 
               {saasPlansLoaded && saasPlans.length === 0 && (
-                <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-500/10 dark:text-amber-200">
                   {t('admin.noSaasPlansWarning')}{' '}
                   <button type="button" className="font-semibold underline" onClick={() => navigate(ADMIN_SECTION_PATH.plans)}>
                     {t('admin.goToSaasPlans')}
@@ -535,77 +506,80 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {error && (
-                <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-                  <p>{error}</p>
-                  <button
-                    type="button"
-                    onClick={retryAdminLoad}
-                    className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
-                  >
-                    {t('common.retry')}
-                  </button>
-                </div>
-              )}
+              {error ? (
+                <ErrorRetryBanner message={error} onRetry={retryAdminLoad} />
+              ) : null}
 
-              <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6">
+              <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
                 {adminBooting ? (
-                  Array.from({ length: 6 }).map((_, i) => <MetricCardSkeleton key={i} />)
+                  <>
+                    <MetricCardSkeleton variant="emphasis" className="col-span-2" />
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <MetricCardSkeleton key={i} variant="dense" />
+                    ))}
+                  </>
                 ) : (
                 <>
-                <MetricCard 
-                  label={t('admin.activeGyms')} 
-                  value={activeGyms} 
+                <MetricCard
+                  className="col-span-2"
+                  variant="emphasis"
+                  label={t('admin.activeGyms')}
+                  value={activeGyms}
                   subValue={`/${totalGyms}`}
                   hint={`${totalGyms > 0 ? ((activeGyms / totalGyms) * 100).toFixed(0) : 0}%`}
-                  icon={Building2} 
-                  color="emerald" 
+                  icon={Building2}
+                  color="emerald"
                   showProgressBar
                   progress={totalGyms > 0 ? (activeGyms / totalGyms) * 100 : 0}
                 />
-                <MetricCard 
-                  label={t('metrics.dueSoon')} 
-                  value={dueSoonGyms} 
-                  hint={dueSoonGyms > 0 ? null : t('admin.noImmediateRenewals')} 
-                  icon={AlertTriangle} 
-                  color="sky" 
+                <MetricCard
+                  variant="dense"
+                  label={t('metrics.dueSoon')}
+                  value={dueSoonGyms}
+                  hint={dueSoonGyms > 0 ? null : t('admin.noImmediateRenewals')}
+                  icon={AlertTriangle}
+                  color="sky"
                   badge={dueSoonGyms > 0 ? t('metrics.critical') : null}
                 />
-                <MetricCard 
-                  label={t('admin.suspendedExpired')} 
-                  value={suspendedGyms} 
-                  hint={suspendedGyms > 0 ? null : t('admin.healthy')} 
-                  icon={X} 
-                  color="rose" 
+                <MetricCard
+                  variant="dense"
+                  label={t('admin.suspendedExpired')}
+                  value={suspendedGyms}
+                  hint={suspendedGyms > 0 ? null : t('admin.healthy')}
+                  icon={X}
+                  color="rose"
                   badge={suspendedGyms > 0 ? t('metrics.actionRequired') : null}
                 />
-                <MetricCard 
-                  label={t('admin.newGyms')} 
+                <MetricCard
+                  variant="dense"
+                  label={t('admin.newGyms')}
                   value={platformMetrics?.newGymsThisMonth ?? 0}
                   icon={Building2}
                   color="violet"
                   trend={platformMetrics?.newGymsTrendPercent ?? null}
                   trendCaption={platformMetrics?.newGymsDeltaLabel || t('metrics.vsLastMonth')}
                 />
-                <MetricCard 
-                  label={t('admin.saasRevenue')} 
+                <MetricCard
+                  variant="dense"
+                  label={t('admin.saasRevenue')}
                   value={formatMoneyShort(platformMetrics?.saasIncomeThisMonth ?? 0)}
                   icon={DollarSign}
                   color="teal"
                   trend={platformMetrics?.saasRevenueTrendPercent ?? null}
                   trendCaption={t('metrics.vsLastMonth')}
                 />
-                <MetricCard 
-                  label={t('admin.estMrr')} 
-                  value={formatMoneyShort(estimatedMrc)} 
-                  hint={t('admin.fromActivePlans')} 
-                  icon={TrendingUp} 
-                  color="teal" 
+                <MetricCard
+                  variant="dense"
+                  label={t('admin.estMrr')}
+                  value={formatMoneyShort(estimatedMrc)}
+                  hint={t('admin.fromActivePlans')}
+                  icon={TrendingUp}
+                  color="teal"
                   showHintBelow
                 />
                 </>
                 )}
-              </section>
+              </div>
 
               {adminBooting ? (
               <div className="grid gap-6 md:grid-cols-5">
@@ -618,16 +592,22 @@ export default function AdminDashboard() {
               </div>
               ) : (
               <div className="grid gap-6 md:grid-cols-5">
-                <div className={`md:col-span-3 overflow-hidden ${cardSurface}`}>
+                <Card className="app-attention-panel md:col-span-3 overflow-hidden">
                   <div className="admin-panel-header">
-                    <h2 className="text-base font-semibold text-app-text-strong sm:text-lg">{t('admin.recentExpiringGyms')}</h2>
+                    <div className="min-w-0">
+                      <h2 className="font-display text-lg font-semibold tracking-tight text-app-text-strong sm:text-xl">
+                        {t('admin.recentExpiringGyms')}
+                      </h2>
+                      <p className={`mt-0.5 text-xs sm:text-sm ${mutedText}`}>{t('admin.expiringSectionHint')}</p>
+                    </div>
                     <button
+                      type="button"
                       onClick={() => {
                         setGymPage(1);
                         setStatusFilter(DUE_SOON);
                         navigate(ADMIN_SECTION_PATH.gyms);
                       }}
-                      className="shrink-0 text-sm font-medium text-app-muted transition-colors hover:text-teal-700 dark:hover:text-teal-400 cursor-pointer"
+                      className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-800 transition-colors hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15"
                     >
                       {t('admin.viewAll')}
                     </button>
@@ -711,11 +691,13 @@ export default function AdminDashboard() {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
 
-                <div className={`md:col-span-2 flex flex-col p-6 ${cardSurface}`}>
-                  <h2 className="text-lg font-semibold text-app-text-strong mb-5">{t('admin.topGymsByMembers')}</h2>
-                  <div className="flex-1 min-h-[250px]">
+                <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
+                  <h2 className={`font-display mb-3 text-base font-semibold tracking-tight ${headingText} sm:mb-4 sm:text-lg`}>
+                    {t('admin.topGymsByMembers')}
+                  </h2>
+                  <div className="min-h-[200px] flex-1 sm:min-h-[250px]">
                     <Suspense
                       fallback={
                         <p className="flex h-full items-center justify-center text-sm text-app-muted">
@@ -726,7 +708,7 @@ export default function AdminDashboard() {
                       <AdminMembersChart chartData={chartData} />
                     </Suspense>
                   </div>
-                </div>
+                </Card>
               </div>
               )}
 
@@ -735,34 +717,22 @@ export default function AdminDashboard() {
           ) : (
 
             <>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-                <div>
-                  <h1 className={pageTitle}>{t('admin.gymsTitle')}</h1>
-                  <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('admin.gymsSubtitle')}</p>
-                </div>
-                <Button
-                  onClick={() => {
-                    loadSaasPlansForForms();
-                    setIsRegisterOpen(true);
-                  }}
-                  disabled={saasPlans.length === 0}
-                >
-                  <Plus className="h-4 w-4" /> {t('admin.registerGym')}
-                </Button>
-              </div>
-
-              {error && (
-                <div className="mb-6 flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between">
-                  <p>{error}</p>
-                  <button
-                    type="button"
-                    onClick={retryAdminLoad}
-                    className="shrink-0 rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-700"
+              <PageHeader
+                title={t('admin.gymsTitle')}
+                subtitle={t('admin.gymsSubtitle')}
+                actions={
+                  <Button
+                    onClick={() => navigate(`${ADMIN_SECTION_PATH.gyms}/register`)}
+                    disabled={saasPlansLoaded && saasPlans.length === 0}
                   >
-                    {t('common.retry')}
-                  </button>
-                </div>
-              )}
+                    <Plus className="h-4 w-4" /> {t('admin.registerGym')}
+                  </Button>
+                }
+              />
+
+              {error ? (
+                <ErrorRetryBanner message={error} onRetry={retryAdminLoad} />
+              ) : null}
 
               <FilterChipBar>
                 <FilterChip
@@ -817,7 +787,7 @@ export default function AdminDashboard() {
                 />
               </FilterChipBar>
 
-              <Card className="mb-6 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
                 <div className="relative w-full sm:max-w-md">
                   <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
                     <Search className="h-5 w-5" />
@@ -831,7 +801,7 @@ export default function AdminDashboard() {
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <div className="flex flex-wrap items-center gap-2">
                   <select
                     className={`ui-select ${selectSurface} min-w-[10rem] cursor-pointer`}
                     value={gymSort}
@@ -846,14 +816,21 @@ export default function AdminDashboard() {
                     ))}
                   </select>
                 </div>
-              </Card>
+              </div>
 
               <Card className="overflow-hidden">
-                <div className="border-b border-app-border-subtle bg-app-surface/80 px-4 py-4 flex items-center justify-between sm:px-6">
-                  <h2 className="text-base font-bold text-app-text-strong sm:text-lg">{t('admin.gymsSection')}</h2>
-                  <button onClick={fetchGyms} className="rounded-lg p-2.5 text-app-muted active:bg-app-surface active:text-app-text sm:hover:bg-app-surface sm:hover:text-app-text">
+                <div className="flex items-center justify-between gap-3 border-b border-app-border-subtle px-4 py-3 sm:px-6">
+                  <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
+                    {t('admin.gymsSection')}
+                  </h2>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={fetchGyms}
+                    aria-label={t('common.refresh')}
+                  >
                     <RefreshCw className="h-4 w-4" />
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="lg:hidden divide-y divide-app-border-subtle">
@@ -904,7 +881,7 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => openChangePlanModal(gym)}
-                                className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
+                                className={iconActionIdle}
                                 title={t('admin.changeSaasPlanTitle')}
                               >
                                 <ArrowLeftRight className="h-4 w-4" />
@@ -914,7 +891,7 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => openRenewGymModal(gym)}
-                                className="text-app-muted hover:bg-app-surface hover:text-emerald-600 cursor-pointer"
+                                className={iconActionSuccess}
                                 title={t('admin.renewLicenseTitle')}
                               >
                                 <RefreshCw className="h-4 w-4" />
@@ -923,7 +900,7 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setGymEditState({ isOpen: true, gym, error: '' })}
-                              className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
+                              className={iconActionIdle}
                               title={t('common.edit')}
                             >
                               <Edit className="h-4 w-4" />
@@ -931,7 +908,7 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setGymToDelete(gym)}
-                              className="text-app-muted hover:bg-app-surface hover:text-rose-600 cursor-pointer"
+                              className={iconActionDanger}
                               title={t('common.delete')}
                             >
                               <Trash2 className="h-4 w-4" />
@@ -941,10 +918,12 @@ export default function AdminDashboard() {
                       );
                     })
                   ) : (
-                    <div className="py-16 text-center text-app-muted">
-                      <AlertCircle className="mx-auto mb-2 h-8 w-8 text-app-muted/40" />
-                      <p className="text-sm font-medium">{t('admin.noGymsMatch')}</p>
-                    </div>
+                    <EmptyState
+                      icon={AlertCircle}
+                      compact
+                      title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
+                      body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                    />
                   )}
                 </div>
 
@@ -1022,7 +1001,7 @@ export default function AdminDashboard() {
                                     e.stopPropagation();
                                     openChangePlanModal(gym);
                                   }}
-                                  className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
+                                  className={iconActionIdle}
                                   title={t('admin.changeSaasPlanTitle')}
                                 >
                                   <ArrowLeftRight className="h-4 w-4" />
@@ -1035,7 +1014,7 @@ export default function AdminDashboard() {
                                     e.stopPropagation();
                                     openRenewGymModal(gym);
                                   }}
-                                  className="text-app-muted hover:bg-app-surface hover:text-emerald-600 cursor-pointer"
+                                  className={iconActionSuccess}
                                   title={t('admin.renewLicenseTitle')}
                                 >
                                   <RefreshCw className="h-4 w-4" />
@@ -1047,7 +1026,7 @@ export default function AdminDashboard() {
                                   e.stopPropagation();
                                   setGymEditState({ isOpen: true, gym, error: '' });
                                 }}
-                                className="text-app-muted hover:bg-app-surface hover:text-teal-700 cursor-pointer"
+                                className={iconActionIdle}
                                 title={t('admin.editGymDetailsTitle')}
                               >
                                 <Edit className="h-4 w-4" />
@@ -1058,7 +1037,7 @@ export default function AdminDashboard() {
                                   e.stopPropagation();
                                   setGymToDelete(gym);
                                 }}
-                                className="text-app-muted hover:bg-app-surface hover:text-rose-600 cursor-pointer"
+                                className={iconActionDanger}
                                 title={t('admin.deleteGymActionTitle')}
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -1070,26 +1049,32 @@ export default function AdminDashboard() {
                         })
                       ) : (
                         <tr>
-                          <td colSpan={6} className="text-center py-16 text-app-muted font-medium">
-                            <AlertCircle className="h-8 w-8 mx-auto mb-2 text-app-muted/40" />
-                            {t('admin.noGymsMatch')}
+                          <td colSpan={6} className="p-0">
+                            <EmptyState
+                              icon={AlertCircle}
+                              compact
+                              title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
+                              body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                            />
                           </td>
                         </tr>
                       )}
                     </tbody>
                   </table>
                 </div>
-                <PaginationControls
-                  page={gymPage}
-                  totalPages={gymTotalPages}
-                  total={gymTotal}
-                  limit={GYM_PAGE_SIZE}
-                  onPageChange={setGymPage}
-                  disabled={loading}
-                />
-                <p className="px-6 py-3 text-xs text-app-muted border-t border-app-border-subtle">
-                  {t('admin.rowActionsHint')}
-                </p>
+                <div className="border-t border-app-border-subtle px-4 py-3">
+                  <PaginationControls
+                    page={gymPage}
+                    totalPages={gymTotalPages}
+                    total={gymTotal}
+                    limit={GYM_PAGE_SIZE}
+                    onPageChange={setGymPage}
+                    disabled={loading}
+                  />
+                  <p className="mt-2 text-xs text-app-muted">
+                    {t('admin.rowActionsHint')}
+                  </p>
+                </div>
               </Card>
             </>
           
@@ -1140,18 +1125,6 @@ export default function AdminDashboard() {
         saasPlans={saasPlans}
         saving={saving}
         error={collectState.error}
-      />
-
-      <RegisterGymModal
-        isOpen={isRegisterOpen}
-        onClose={() => {
-          setIsRegisterOpen(false);
-          setRegisterError('');
-        }}
-        onSubmit={handleCreateGymSubmit}
-        saasPlans={saasPlans}
-        saving={saving}
-        error={registerError}
       />
 
       <GymEditModal

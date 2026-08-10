@@ -1,5 +1,5 @@
 // src/components/GymDetailsModal.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Pencil,
@@ -42,6 +42,8 @@ import {
   SlidePanelActionGrid,
 } from './SlidePanel';
 
+const PAYMENTS_PREVIEW = 3;
+
 /**
  * Side drawer for gym tenant details (admin). Edit opens GymEditModal — same pattern as MemberDetailDrawer.
  */
@@ -68,6 +70,11 @@ export default function GymDetailsModal({
   const [resetSaving, setResetSaving] = useState(false);
   const [mutationError, setMutationError] = useState('');
   const [resetError, setResetError] = useState('');
+  const [showAllPayments, setShowAllPayments] = useState(false);
+
+  useEffect(() => {
+    setShowAllPayments(false);
+  }, [selectedGymId]);
 
   if (!selectedGymId) return null;
 
@@ -108,8 +115,17 @@ export default function GymDetailsModal({
   const termPaid = termPayments.reduce((s, p) => s + Number(p.amount), 0);
   const termPaymentCount = termPayments.length;
   const totalPaid = saasPayments.reduce((s, p) => s + Number(p.amount), 0);
-  const recentPayments = saasPayments.slice(0, 3);
-  const olderPaymentCount = Math.max(saasPayments.length - recentPayments.length, 0);
+  const visiblePayments = showAllPayments
+    ? saasPayments
+    : saasPayments.slice(0, PAYMENTS_PREVIEW);
+  const hiddenPaymentCount = Math.max(saasPayments.length - PAYMENTS_PREVIEW, 0);
+  const canShowChangePlan =
+    Boolean(gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0);
+  const canShowResetPassword = Boolean(onResetOwnerPassword && gymDetail?.owner_user_id);
+  const hasSecondaryActions = canShowChangePlan || canShowResetPassword;
+  const hasPrimaryLifecycle =
+    (canCollect && onCollectPayment) ||
+    Boolean(gymForActions && canRenewGym(gymForActions) && onRenew);
   const displayError = mutationError || (gymDetail ? detailError : '');
   const currency = (amount) => formatMoney(amount);
 
@@ -191,28 +207,23 @@ export default function GymDetailsModal({
                   </SlidePanelActionButton>
                 ) : null}
 
-                {((gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0) ||
-                  (onResetOwnerPassword && gymDetail?.owner_user_id)) && (
-                  <SlidePanelActionGrid>
-                    {gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0 && (
+                {hasSecondaryActions && (
+                  <SlidePanelActionGrid columns={2}>
+                    {canShowChangePlan && (
                       <SlidePanelActionButton
                         variant="tile"
                         icon={ArrowLeftRight}
-                        className={!(onResetOwnerPassword && gymDetail?.owner_user_id) ? 'col-span-2' : ''}
+                        className={!canShowResetPassword ? 'col-span-2' : ''}
                         onClick={() => onChangePlan(gymForActions)}
                       >
                         {t('modals.gymDetails.changePlan')}
                       </SlidePanelActionButton>
                     )}
-                    {onResetOwnerPassword && gymDetail?.owner_user_id && (
+                    {canShowResetPassword && (
                       <SlidePanelActionButton
                         variant="tile"
                         icon={KeyRound}
-                        className={
-                          !(gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0)
-                            ? 'col-span-2'
-                            : ''
-                        }
+                        className={!canShowChangePlan ? 'col-span-2' : ''}
                         onClick={() => {
                           setResetError('');
                           setIsResetOpen(true);
@@ -224,7 +235,9 @@ export default function GymDetailsModal({
                   </SlidePanelActionGrid>
                 )}
 
-                <div className="flex items-stretch gap-2">
+                <div
+                  className={`flex items-stretch gap-2 ${hasPrimaryLifecycle || hasSecondaryActions ? 'pt-0.5' : ''}`}
+                >
                   <SlidePanelActionButton
                     variant="secondary"
                     icon={Pencil}
@@ -237,12 +250,13 @@ export default function GymDetailsModal({
                     {t('modals.gymDetails.editGym')}
                   </SlidePanelActionButton>
                   <SlidePanelActionButton
-                    variant="dangerIcon"
+                    variant="danger"
                     icon={Trash2}
+                    className="shrink-0"
                     onClick={() => setIsDeleteOpen(true)}
-                    title={t('modals.gymDetails.deleteGym')}
-                    aria-label={t('modals.gymDetails.deleteGym')}
-                  />
+                  >
+                    {t('modals.gymDetails.deleteGym')}
+                  </SlidePanelActionButton>
                 </div>
               </div>
             </SlidePanelFooter>
@@ -297,13 +311,13 @@ export default function GymDetailsModal({
                         gymDetail.saas_subscription.plan
                       : '—'
                   }
-                  valueClassName="text-sm font-bold text-teal-700"
+                  valueClassName="text-sm font-bold text-teal-700 dark:text-teal-300"
                 />
                 <SlidePanelRow
                   icon={Calendar}
                   label={isFutureLicense ? t('modals.gymDetails.nextLicenseStarts') : t('modals.gymDetails.licenseStarts')}
                   value={formatDisplayDate(licenseStart)}
-                  valueClassName="text-sm font-medium text-app-text-strong"
+                  valueClassName="text-sm font-medium text-app-text"
                 />
                 <SlidePanelRow
                   icon={CalendarRange}
@@ -315,7 +329,7 @@ export default function GymDetailsModal({
                   icon={Building2}
                   label={t('modals.gymDetails.gymRegistered')}
                   value={formatDisplayDate(gymDetail.created_at)}
-                  valueClassName="text-sm font-medium text-app-text-strong"
+                  valueClassName="text-sm font-medium text-app-text"
                 />
               </SlidePanelCard>
             </SlidePanelSection>
@@ -336,9 +350,9 @@ export default function GymDetailsModal({
                   >
                     <p className="text-xs text-app-muted">{stat.label}</p>
                     <p
-                      className={`text-xl font-bold${
- stat.highlight ? 'text-orange-700 dark:text-orange-300' : 'text-app-text-strong'
- }`}
+                      className={`text-xl font-bold ${
+                        stat.highlight ? 'text-orange-700 dark:text-orange-300' : 'text-app-text-strong'
+                      }`}
                     >
                       {stat.value}
                     </p>
@@ -349,7 +363,7 @@ export default function GymDetailsModal({
 
             <SlidePanelSection title={t('modals.gymDetails.paymentHistory')}>
               {saasPayments.length > 0 ? (
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <SlidePanelCard>
                     <SlidePanelRow
                       icon={CircleDollarSign}
@@ -383,11 +397,8 @@ export default function GymDetailsModal({
                   </SlidePanelCard>
 
                   <div>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-app-muted">
-                      {t('drawer.recentPayments')}
-                    </p>
                     <SlidePanelList>
-                      {recentPayments.map((p) => {
+                      {visiblePayments.map((p) => {
                         const sourceLabel = paymentSourceLabel(p.source);
                         return (
                           <SlidePanelListItem
@@ -406,11 +417,22 @@ export default function GymDetailsModal({
                         );
                       })}
                     </SlidePanelList>
-                    {olderPaymentCount > 0 && (
-                      <p className="mt-2 text-right text-xs text-app-muted">
-                        {t('drawer.olderPayments', { count: olderPaymentCount, amount: currency(totalPaid) })}
-                      </p>
-                    )}
+                    {hiddenPaymentCount > 0 ? (
+                      <button
+                        type="button"
+                        onClick={() => setShowAllPayments((open) => !open)}
+                        className="mt-2 w-full text-center text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
+                      >
+                        {showAllPayments
+                          ? t('drawer.showLessPayments')
+                          : t('drawer.showMorePayments', { count: hiddenPaymentCount })}
+                        {!showAllPayments ? (
+                          <span className="ml-1 font-normal text-app-muted">
+                            · {currency(totalPaid)}
+                          </span>
+                        ) : null}
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               ) : (
