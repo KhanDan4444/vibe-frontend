@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +16,8 @@ import FieldError from './FieldError';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import SearchableSelect from './ui/SearchableSelect';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
-
-const SELECT_CLASS = `ui-select ${FORM_INPUT_CLASS} cursor-pointer`;
 
 /**
  * Create or edit a front desk staff login (owner sets credentials on-platform).
@@ -44,13 +43,19 @@ export default function StaffModal({
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
   const fc = (field) => inputClass(FORM_INPUT_CLASS, fieldErrors, field);
-  const sc = (field) => inputClass(SELECT_CLASS, fieldErrors, field);
 
   const activeBranches = branches.filter((b) => b.is_active !== false);
-  const defaultBranchId = activeBranches.find((b) => b.is_default)?.id ?? activeBranches[0]?.id ?? '';
+  const defaultBranchId = String(
+    activeBranches.find((b) => b.is_default)?.id ?? activeBranches[0]?.id ?? ''
+  );
+  const branchOptions = activeBranches.map((branch) => ({
+    value: String(branch.id),
+    label: branch.name,
+  }));
 
   const isEdit = !!staff;
   const selectedRole = STAFF_ROLE_OPTIONS.find((opt) => opt.id === staffRole) ?? STAFF_ROLE_OPTIONS[0];
+  const showRoleSelect = STAFF_ROLE_OPTIONS.length > 1;
 
   const initDefaults = useCallback(() => {
     if (staff) {
@@ -58,14 +63,14 @@ export default function StaffModal({
       setEmail(staff.email || '');
       setUsername(staff.username || '');
       setStaffRole(normalizeStaffRole(staff.staff_role));
-      setBranchId(staff.branch_id ? String(staff.branch_id) : String(defaultBranchId));
+      setBranchId(staff.branch_id ? String(staff.branch_id) : defaultBranchId);
       setPassword('');
     } else {
       setName('');
       setEmail('');
       setUsername('');
       setStaffRole(DEFAULT_STAFF_ROLE);
-      setBranchId(String(defaultBranchId));
+      setBranchId(defaultBranchId);
       setPassword('');
     }
     setShowPassword(false);
@@ -79,6 +84,12 @@ export default function StaffModal({
     initialize: initDefaults,
     saving,
   });
+
+  // If branches load after the modal opens, fill a missing default branch.
+  useEffect(() => {
+    if (!isOpen || !defaultBranchId) return;
+    setBranchId((current) => current || defaultBranchId);
+  }, [isOpen, defaultBranchId]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -146,42 +157,33 @@ export default function StaffModal({
           )}
 
           <section className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="min-w-0">
-                <label htmlFor="staff-branch" className="form-label">
-                  {t('modals.staff.branch')}
-                  <RequiredMark />
-                </label>
-                <select
-                  id="staff-branch"
-                  required
-                  value={branchId}
-                  onChange={(e) => {
-                    setBranchId(e.target.value);
-                    clearFieldError(setLocalFieldErrors, 'branchId');
-                  }}
-                  className={sc('branchId')}
-                >
-                  {activeBranches.map((branch) => (
-                    <option key={branch.id} value={branch.id}>
-                      {branch.name}
-                    </option>
-                  ))}
-                </select>
-                <FieldError message={fieldErrorMessage(fieldErrors, 'branchId')} />
-              </div>
+            <SearchableSelect
+              id="staff-branch"
+              label={t('modals.staff.branch')}
+              required
+              value={branchId}
+              options={branchOptions}
+              placeholder={t('common.select')}
+              error={Boolean(fieldErrors.branchId)}
+              onChange={(next) => {
+                setBranchId(String(next));
+                clearFieldError(setLocalFieldErrors, 'branchId');
+              }}
+            />
+            <FieldError message={fieldErrorMessage(fieldErrors, 'branchId')} />
 
-              <div className="min-w-0">
-                <label htmlFor="staff-role" className="form-label">
-                  {t('modals.staff.role')}
-                  <RequiredMark />
-                </label>
+            <div>
+              <p className="form-label">
+                {t('modals.staff.role')}
+                <RequiredMark />
+              </p>
+              {showRoleSelect ? (
                 <select
                   id="staff-role"
                   required
                   value={staffRole}
                   onChange={(e) => setStaffRole(e.target.value)}
-                  className={sc('staffRole')}
+                  className={inputClass(`ui-select ${FORM_INPUT_CLASS} cursor-pointer`, fieldErrors, 'staffRole')}
                 >
                   {STAFF_ROLE_OPTIONS.map((opt) => (
                     <option key={opt.id} value={opt.id}>
@@ -189,12 +191,21 @@ export default function StaffModal({
                     </option>
                   ))}
                 </select>
-                {selectedRole?.descriptionKey ? (
-                  <p className="mt-1.5 text-xs leading-relaxed text-app-muted">
-                    {t(selectedRole.descriptionKey)}
-                  </p>
-                ) : null}
-              </div>
+              ) : (
+                <div className="mt-1 rounded-xl border border-app-border-subtle bg-app-surface px-3.5 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" aria-hidden />
+                    <p className="text-sm font-semibold text-app-text-strong">
+                      {t(selectedRole.labelKey)}
+                    </p>
+                  </div>
+                  {selectedRole?.descriptionKey ? (
+                    <p className="mt-1.5 text-xs leading-relaxed text-app-muted">
+                      {t(selectedRole.descriptionKey)}
+                    </p>
+                  ) : null}
+                </div>
+              )}
             </div>
           </section>
 
@@ -234,7 +245,6 @@ export default function StaffModal({
                 className={fc('email')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
-              <p className="mt-1.5 text-xs leading-relaxed text-app-muted">{t('modals.staff.emailOptional')}</p>
             </div>
           </section>
 
