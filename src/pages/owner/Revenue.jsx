@@ -32,7 +32,7 @@ import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
-import { tableRowHover, selectSurface, iconActionIdle, iconActionDanger, headingText } from '../../utils/surfaceClasses';
+import { tableRowHover, selectSurface, iconActionIdle, iconActionDanger, headingText, cardSurface } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
@@ -526,12 +526,12 @@ export default function Revenue() {
           )}
         </div>
 
-        <div className="lg:hidden divide-y divide-app-border-subtle">
+        <div className="lg:hidden space-y-3 p-3">
           {listLoading ? (
             <AdminListSkeleton rows={5} />
           ) : displayedPayments.length > 0 ? (
             displayedPayments.map((payment) => (
-              <div key={payment.id} className="p-3.5">
+              <div key={payment.id} className={`${cardSurface} p-3.5`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-semibold text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</p>

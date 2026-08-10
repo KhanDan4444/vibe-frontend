@@ -478,11 +478,11 @@ export default function Branches() {
             />
           ) : (
             <>
-              <div className="lg:hidden divide-y divide-app-border-subtle">
+              <div className="lg:hidden space-y-3 p-3">
                 {filteredBranches.map((branch) => {
                   const meta = branchMetaLine(branch);
                   return (
-                    <div key={branch.id} className="p-4">
+                    <div key={branch.id} className={`${cardSurface} p-4`}>
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <p className="font-medium text-app-text-strong">

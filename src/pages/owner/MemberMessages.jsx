@@ -168,7 +168,7 @@ export default function MemberMessages() {
           </div>
         </div>
 
-        <div className="lg:hidden divide-y divide-app-border-subtle">
+        <div className="lg:hidden space-y-3 p-3">
           {loading && items.length === 0 ? (
             <AdminListSkeleton rows={5} />
           ) : items.length > 0 ? (
@@ -179,7 +179,7 @@ export default function MemberMessages() {
                   key={row.id}
                   type="button"
                   onClick={() => openMember(row.member_id)}
-                  className="flex w-full gap-3 p-4 text-left active:bg-app-surface/60"
+                  className={`${cardSurface} flex w-full gap-3 p-4 text-left active:bg-app-surface/60`}
                 >
                   <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
                     <MessageSquare className="h-4 w-4" />

@@ -260,7 +260,7 @@ export default function Activity() {
           </div>
         </div>
 
-        <div className="lg:hidden divide-y divide-app-border-subtle">
+        <div className="lg:hidden space-y-3 p-3">
           {loading && items.length === 0 ? (
             <AdminListSkeleton rows={5} />
           ) : items.length > 0 ? (
@@ -296,12 +296,12 @@ export default function Activity() {
                   key={entry.id}
                   type="button"
                   onClick={() => openActivityTarget(entry, navigate)}
-                  className="block w-full p-4 text-left active:bg-app-surface/60"
+                  className={`${cardSurface} block w-full p-4 text-left active:bg-app-surface/60`}
                 >
                   {content}
                 </button>
               ) : (
-                <div key={entry.id} className="p-4">
+                <div key={entry.id} className={`${cardSurface} p-4`}>
                   {content}
                 </div>
               );

@@ -10,7 +10,7 @@ import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { tableRowHover } from '../../utils/surfaceClasses';
+import { tableRowHover, cardSurface } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
@@ -186,9 +186,9 @@ export default function Team() {
           />
         ) : (
           <>
-            <div className="lg:hidden divide-y divide-app-border-subtle">
+            <div className="lg:hidden space-y-3 p-3">
               {visibleStaff.map((member) => (
-                <div key={member.id} className="p-4">
+                <div key={member.id} className={`${cardSurface} p-4`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-medium text-app-text-strong">{member.name}</p>
