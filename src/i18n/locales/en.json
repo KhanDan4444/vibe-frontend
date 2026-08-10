@@ -1331,8 +1331,11 @@
     "revenue": "Revenue"
   },
   "lockout": {
-    "title": "Subscription required",
-    "body": "Your gym license has expired. Contact platform support or renew to restore access.",
+    "eyebrow": "Access paused",
+    "title": "License expired",
+    "body": "Your gym license has expired, so the portal is locked until it is renewed.",
+    "helpLink": "How do I restore access?",
+    "hint": "Contact your platform admin to renew the license. Once renewed, sign in again to reopen the portal.",
     "signOut": "Sign out"
   },
   "flash": {

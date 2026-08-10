@@ -1331,8 +1331,11 @@
     "revenue": "Galii"
   },
   "lockout": {
-    "title": "Miseensummaan ni barbaachisa",
-    "body": "Eeyyamni jimii keetii dhumateera. Seensa deebisee argachuuf gargaarsa plaatfoormii qunnami ykn haaromsi.",
+    "eyebrow": "Seensi dhaabbateera",
+    "title": "Eeyyamni dhumateera",
+    "body": "Eeyyamni jimii keetii dhumateera, kanaaf portalli kun eeyyamni haaromfamutti cufameera.",
+    "helpLink": "Seensa akkamitti deebisee argadha?",
+    "hint": "Eeyyama haaromsuuf bulchaa plaatfoormii kee qunnami. Erga haaromfamee booda deebitee seentee portalli banami.",
     "signOut": "Bahi"
   },
   "flash": {
