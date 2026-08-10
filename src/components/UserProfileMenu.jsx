@@ -18,7 +18,7 @@ function roleSubtitle(role, t) {
 
 function roleDotClass(role) {
   if (isPlatformAdmin(role)) return 'bg-violet-500 dark:bg-violet-400';
-  if (isGymOwner(role)) return 'bg-teal-600 dark:bg-teal-400';
+  if (isGymOwner(role)) return 'bg-amber-500 dark:bg-amber-400';
   if (isGymStaff(role)) return 'bg-sky-500 dark:bg-sky-400';
   return 'bg-app-muted';
 }
