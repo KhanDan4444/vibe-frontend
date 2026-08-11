@@ -860,7 +860,7 @@ export default function AdminDashboard() {
                         return (
                           <div
                             key={gym.id}
-                            className={`${cardSurface} p-4 active:bg-app-surface/60 ${isUnpaid ? 'admin-row-unpaid' : ''} ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
+                            className={`${cardSurface} p-4 active:bg-app-surface/60 ${selectedGymId === gym.id ? 'ring-1 ring-inset ring-teal-200 dark:ring-teal-600/30' : ''}`}
                           >
                             <button
                               type="button"
@@ -872,7 +872,6 @@ export default function AdminDashboard() {
                                 <div className="min-w-0 flex-1">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-bold text-app-text-strong">{gym.name}</span>
-                                    {isUnpaid && <UnpaidBadge compact />}
                                     <StatusBadge status={gym.subscription_status} />
                                   </div>
                                   <p className="mt-1 text-sm text-app-text">{gym.owner_name}</p>
@@ -979,14 +978,13 @@ export default function AdminDashboard() {
                               onClick={() => openGymDetail(gym.id)}
                               className={`cursor-pointer transition-colors ${
                                 selectedGymId === gym.id ? 'bg-teal-50 dark:bg-teal-600/10' : ''
-                              } ${isUnpaid ? 'admin-row-unpaid' : 'hover:bg-teal-50/60 dark:hover:bg-teal-600/10'}`}
+                              } hover:bg-teal-50/60 dark:hover:bg-teal-600/10`}
                             >
                               <td>
                                 <div className="flex items-center gap-3 min-w-0">
                                   <InitialsAvatar name={gym.name} size="md" />
                                   <div className="flex min-w-0 flex-wrap items-center gap-2">
                                     <span className="truncate font-bold text-app-text-strong">{gym.name}</span>
-                                    {isUnpaid && <UnpaidBadge compact />}
                                   </div>
                                 </div>
                               </td>

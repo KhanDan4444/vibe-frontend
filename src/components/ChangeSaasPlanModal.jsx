@@ -36,7 +36,8 @@ import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 
 const termModeBtn =
   'rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
-const termModeActive = 'bg-app-raised text-app-text-strong shadow-sm';
+const termModeActive =
+  'bg-teal-700 text-white shadow-sm dark:bg-teal-600 dark:text-white';
 const termModeIdle = 'text-app-muted hover:text-app-text';
 
 function switchToMidTerm(setters) {

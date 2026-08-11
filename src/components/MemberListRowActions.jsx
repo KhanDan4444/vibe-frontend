@@ -209,7 +209,6 @@ export default function MemberListRowActions({
 
 /** Row tint + left edge for unpaid / expired / due soon. */
 export function memberAttentionRowClass(member, idleHoverClass = '') {
-  if (member.isUnpaid) return 'admin-row-unpaid';
   if (member.status === DISPLAY_STATUS.EXPIRED) return 'admin-row-expired';
   if (member.status === DISPLAY_STATUS.DUE_SOON) return 'admin-row-due-soon';
   return idleHoverClass;

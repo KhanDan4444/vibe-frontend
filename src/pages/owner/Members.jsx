@@ -583,7 +583,6 @@ export default function Members() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-semibold text-app-text-strong">{member.name}</span>
-                      {member.isUnpaid && <UnpaidBadge compact />}
                       <StatusBadge status={member.status} />
                     </div>
                     <p className="mt-0.5 text-xs text-app-muted truncate">
@@ -674,7 +673,6 @@ export default function Members() {
                           />
                           <div className="flex min-w-0 flex-wrap items-center gap-2">
                             <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
-                            {member.isUnpaid && <UnpaidBadge compact />}
                           </div>
                         </div>
                       </td>
