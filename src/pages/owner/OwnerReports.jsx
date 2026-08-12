@@ -50,10 +50,10 @@ import ToolbarPicker from '../../components/ToolbarPicker';
 
 const MEMBER_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allMembers', query: {} },
+  { id: 'active', labelKey: 'filters.activeOnly', query: { status: 'active' } },
   { id: 'unpaid', labelKey: 'filters.unpaid', query: { filter: 'unpaid' } },
   { id: 'due_soon', labelKey: 'filters.dueSoon', query: { filter: 'due_soon' } },
   { id: 'expired', labelKey: 'filters.expired', query: { filter: 'expired' } },
-  { id: 'active', labelKey: 'filters.activeOnly', query: { status: 'active' } },
 ];
 
 export default function OwnerReports() {
