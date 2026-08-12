@@ -9,6 +9,7 @@ import {
   persistLanguage,
   readGuestLanguage,
   readStoredLanguage,
+  ensureUserLanguageFromGuest,
 } from '../utils/langStorage';
 import {
   applyThemeClass,
@@ -37,6 +38,8 @@ export function PreferencesProvider({ children }) {
   );
   const userScopeRef = useRef(null);
   const skipThemePersistRef = useRef(true);
+  /** Prevents hydrate from overwriting the language just carried across login/logout. */
+  const skipHydrateLanguageRef = useRef(false);
   const languageRef = useRef(language);
   languageRef.current = language;
 
@@ -52,9 +55,24 @@ export function PreferencesProvider({ children }) {
     applyThemeClass(storedTheme);
     setIsDark(storedTheme === 'dark');
 
+    // Login: keep the language chosen on the auth screen (don't snap back to English).
+    if (user && previousScope === 'guest') {
+      skipHydrateLanguageRef.current = true;
+      const carried = normalizeLanguage(languageRef.current);
+      persistLanguage(carried, user);
+      persistGuestLanguage(carried);
+      setLanguageState(carried);
+      if (i18n.language !== carried) {
+        i18n.changeLanguage(carried);
+      }
+      setDocumentLanguage(carried);
+      return;
+    }
+
     // Logout: carry the current language onto the login/guest screen
     // (previously reset to browser default, dropping an Amharic choice).
     if (!user && previousScope && previousScope !== 'guest') {
+      skipHydrateLanguageRef.current = true;
       const carried = normalizeLanguage(languageRef.current);
       persistGuestLanguage(carried);
       setLanguageState(carried);
@@ -66,15 +84,22 @@ export function PreferencesProvider({ children }) {
   }, [user?.id, user?.gym_id, i18n]);
 
   useEffect(() => {
+    if (skipHydrateLanguageRef.current) {
+      skipHydrateLanguageRef.current = false;
+      return;
+    }
     const code = normalizeLanguage(
-      onAuthRoute || !user ? readGuestLanguage() : readStoredLanguage(user)
+      onAuthRoute || !user ? readGuestLanguage() : ensureUserLanguageFromGuest(user)
     );
     setLanguageState(code);
     if (i18n.language !== code) {
       i18n.changeLanguage(code);
     }
     setDocumentLanguage(code);
-  }, [user?.id, user?.gym_id, i18n, onAuthRoute]);
+    // onAuthRoute is read for source selection but omitted from deps so leaving
+    // /login after sign-in does not re-hydrate and fight the carried language.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional
+  }, [user?.id, user?.gym_id, i18n]);
 
   useEffect(() => {
     applyThemeClass(theme);

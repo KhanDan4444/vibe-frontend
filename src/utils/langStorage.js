@@ -59,7 +59,22 @@ export function readStoredLanguage(user) {
   const legacy = localStorage.getItem(LANGUAGE_STORAGE_KEY);
   if (legacy === 'am' || legacy === 'en' || legacy === 'om') return legacy;
 
-  return 'en';
+  // No per-user preference yet — keep the language chosen on login/guest screens.
+  return readGuestLanguage();
+}
+
+/** Seed user/gym language from guest/legacy when the scoped key is still empty. */
+export function ensureUserLanguageFromGuest(user) {
+  const code = readStoredLanguage(user);
+  const key = languageStorageKey(user);
+  if (key) {
+    const existing = localStorage.getItem(key);
+    if (existing !== 'am' && existing !== 'en' && existing !== 'om') {
+      localStorage.setItem(key, code);
+    }
+  }
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
+  return code;
 }
 
 export function readBootstrapLanguage() {
