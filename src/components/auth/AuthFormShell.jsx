@@ -1,22 +1,28 @@
 import LanguageSwitcher from '../LanguageSwitcher';
 
 /**
- * Shared card shell for forgot / register / reset — branded glass + language.
+ * Shared shell for forgot / register / reset — soft glass, matches login hierarchy.
  */
 export default function AuthFormShell({ children }) {
   return (
-    <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.04] p-6 shadow-xl backdrop-blur-sm sm:p-8">
-      <div className="absolute right-3 top-3 z-20 sm:right-4 sm:top-4">
-        <LanguageSwitcher tone="auth" />
+    <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
+      <div className="auth-form-enter relative w-full max-w-md">
+        <div className="absolute right-0 top-0 z-20">
+          <LanguageSwitcher tone="auth" />
+        </div>
+        <div className="mb-7 flex flex-col items-center pt-1 sm:mb-8">
+          <img
+            src="/brand-lockup-mark.png?v=restore"
+            alt="ንቁ"
+            className="h-14 w-auto max-w-[13rem] object-contain object-center sm:h-16 sm:max-w-[14rem]"
+          />
+          <div
+            aria-hidden
+            className="mt-5 h-px w-9 rounded-full bg-teal-300/70 sm:mt-6 sm:w-10"
+          />
+        </div>
+        <div className="auth-form-enter-delay space-y-5">{children}</div>
       </div>
-      <div className="mb-5 flex justify-center pt-1">
-        <img
-          src="/brand-lockup-mark.png?v=restore"
-          alt="ንቁ"
-          className="h-11 w-auto max-w-[11rem] object-contain object-center sm:h-12 sm:max-w-[12rem]"
-        />
-      </div>
-      <div className="space-y-5">{children}</div>
     </div>
   );
 }

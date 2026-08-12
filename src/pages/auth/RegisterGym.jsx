@@ -163,7 +163,9 @@ export default function RegisterGym() {
   if (plansLoading) {
     return (
       <AuthScreen>
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0f766e] border-t-transparent" />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0f766e] border-t-transparent" />
+        </div>
       </AuthScreen>
     );
   }
@@ -189,8 +191,8 @@ export default function RegisterGym() {
         <div className="space-y-3 text-center">
           <AuthStepDots activeIndex={stepIndex} steps={3} />
           <div>
-            <h2 className="text-2xl font-bold text-white">{t('auth.signupTitle')}</h2>
-            <p className="mt-2 text-sm text-white/55">{stepSubtitle}</p>
+            <h2 className="auth-title">{t('auth.signupTitle')}</h2>
+            <p className="auth-subtitle">{stepSubtitle}</p>
           </div>
         </div>
 

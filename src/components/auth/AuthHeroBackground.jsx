@@ -1,4 +1,4 @@
-/** Login-only hero: brand gradient (previous look). */
+/** Auth hero: teal → slate gradient + soft top glow. */
 export default function AuthHeroBackground({ children }) {
   return (
     <div className="auth-hero-bg safe-top safe-bottom relative flex min-h-[100dvh] flex-col">

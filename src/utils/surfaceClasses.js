@@ -11,16 +11,16 @@ export const shellPage =
 export const shellHeader =
   'border-b border-app-border-subtle bg-app-surface';
 
-/** Teal-ink sidebar — brand atmosphere via .app-sidebar (CSS), dark chrome. */
+/** Teal-ink sidebar — ties light paper to brand, stays dark chrome. */
 export const sidebarSurface =
-  'app-sidebar relative overflow-hidden text-slate-300 border-r border-white/[0.06] dark:text-app-text dark:border-app-border-subtle';
+  'bg-app-sidebar text-slate-300 border-r border-white/[0.06] dark:text-app-text dark:border-app-border-subtle';
 
 export const sidebarNavIdle =
-  'relative z-[1] text-slate-400 hover:bg-white/[0.06] hover:text-slate-100 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong';
+  'text-slate-400 hover:bg-white/[0.06] hover:text-slate-100 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong';
 
 /** Active nav: subtle fill + left accent bar. */
 export const sidebarNavActive =
-  'relative z-[1] bg-white/[0.08] text-white before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-teal-400 dark:bg-app-raised/90 dark:text-app-text-strong dark:before:bg-teal-400';
+  'relative bg-white/[0.08] text-white before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-teal-400 dark:bg-app-raised/90 dark:text-app-text-strong dark:before:bg-teal-400';
 
 export const cardSurface =
   'rounded-xl bg-app-raised ring-1 ring-app-border-subtle';

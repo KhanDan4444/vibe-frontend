@@ -81,8 +81,8 @@ export default function ForgotPassword() {
         <div className="space-y-3 text-center">
           <AuthStepDots activeIndex={onReset ? 1 : 0} />
           <div>
-            <h2 className="text-2xl font-bold text-white">{t('auth.forgotTitle')}</h2>
-            <p className="mt-2 text-sm text-white/55">{t('auth.forgotSubtitle')}</p>
+            <h2 className="auth-title">{t('auth.forgotTitle')}</h2>
+            <p className="auth-subtitle">{t('auth.forgotSubtitle')}</p>
             <p className="mt-1.5 text-xs text-white/40">{t('auth.forgotAdminHint')}</p>
           </div>
         </div>
@@ -217,7 +217,7 @@ export default function ForgotPassword() {
           </form>
         )}
 
-        <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+        <div className="space-y-3 rounded-2xl border border-white/[0.1] bg-white/[0.04] p-4">
           <p>
             <button
               type="button"
@@ -229,7 +229,7 @@ export default function ForgotPassword() {
           </p>
           {showSupportOption && (
             <div className="space-y-2 text-sm text-white/50">
-              <p className="font-semibold text-white/80">{t('auth.supportResetTitle')}</p>
+              <p className="font-semibold tracking-tight text-white/85">{t('auth.supportResetTitle')}</p>
               <p>{t('auth.supportResetBody')}</p>
               <p>{t('auth.supportResetAfter')}</p>
             </div>

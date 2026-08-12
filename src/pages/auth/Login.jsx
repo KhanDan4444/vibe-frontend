@@ -36,7 +36,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input block w-full rounded-2xl border border-white/20 bg-white/[0.1] px-4 py-3.5 text-base text-white placeholder-white/40 caret-white shadow-none transition-[border-color,background-color,box-shadow] focus:border-teal-600/70 focus:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-teal-700/35';
+    'auth-login-input block w-full rounded-2xl border border-white/[0.14] bg-white/[0.055] px-4 py-3.5 text-base font-normal text-white placeholder:text-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/50 focus:bg-white/[0.08] focus:outline-none focus:ring-0';
 
   const focusFirstInvalid = (errors) => {
     requestAnimationFrame(() => {
@@ -96,7 +96,7 @@ export default function Login() {
   const passwordError = fieldErrorMessage(fieldErrors, 'password');
 
   return (
-    <AuthScreen hero>
+    <AuthScreen>
       <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-end px-4 pt-4 sm:px-6 sm:pt-5">
         <div className="pointer-events-auto">
           <LanguageSwitcher tone="auth" />
@@ -104,9 +104,12 @@ export default function Login() {
       </div>
 
       <div className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
-        <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-2 duration-500">
-          <LoginBrandPanel />
+        <div className="relative w-full max-w-md">
+          <div className="auth-form-enter">
+            <LoginBrandPanel />
+          </div>
 
+          <div className="auth-form-enter-delay">
           {successMessage && (
             <div className="mb-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-sm font-medium text-emerald-300">
               {successMessage}
@@ -183,7 +186,7 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#0f766e] focus:ring-teal-700/40"
+                  className="h-4 w-4 rounded border-white/20 bg-white/10 text-[#0f766e] focus:ring-teal-700/40"
                 />
                 {t('auth.rememberMe')}
               </label>
@@ -242,6 +245,7 @@ export default function Login() {
               </p>
             </div>
           )}
+          </div>
         </div>
       </div>
     </AuthScreen>

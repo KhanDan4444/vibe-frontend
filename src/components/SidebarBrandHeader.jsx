@@ -40,20 +40,14 @@ export default function SidebarBrandHeader({
 
   return (
     <div
-      className={`relative z-[1] transition-all duration-[180ms] ease-out motion-reduce:transition-none ${
-        compact ? 'mb-3 flex flex-col items-center gap-1.5 pb-3' : 'mb-5 pr-9 pb-5'
+      className={`relative transition-all duration-[180ms] ease-out motion-reduce:transition-none ${
+        compact ? 'mb-3 flex flex-col items-center gap-1.5 pb-3' : 'mb-4 pr-9 pb-4'
       }`}
     >
-      {!compact ? (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -left-3 -top-4 h-28 w-44 rounded-full bg-teal-400/15 blur-2xl dark:bg-teal-400/10"
-        />
-      ) : null}
       <BrandLogo
         to={logoTo}
         variant={showLabels ? 'lockup' : 'icon'}
-        className={showLabels ? 'relative !max-w-[13.25rem] sm:!max-w-[13.75rem]' : 'relative'}
+        className={showLabels ? '!max-w-[13.25rem] sm:!max-w-[13.75rem]' : undefined}
       />
       {compact ? toggle : <div className="absolute right-0 top-0.5">{toggle}</div>}
       <SidebarShortcutCoach
@@ -68,8 +62,8 @@ export default function SidebarBrandHeader({
         aria-hidden
         className={
           compact
-            ? 'pointer-events-none absolute bottom-0 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-teal-400/45'
-            : 'pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-teal-400/35 to-transparent'
+            ? 'pointer-events-none absolute bottom-0 left-1/2 h-0.5 w-7 -translate-x-1/2 rounded-full bg-white/35'
+            : 'pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/22 to-transparent'
         }
       />
     </div>

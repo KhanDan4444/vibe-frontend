@@ -58,8 +58,8 @@ export default function ResetPassword() {
     <AuthScreen>
       <AuthFormShell>
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">{t('auth.resetTitle')}</h2>
-          <p className="mt-2 text-sm text-white/55">{t('auth.resetSubtitle')}</p>
+          <h2 className="auth-title">{t('auth.resetTitle')}</h2>
+          <p className="auth-subtitle">{t('auth.resetSubtitle')}</p>
         </div>
 
         {bannerError && (

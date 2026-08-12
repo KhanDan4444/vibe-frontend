@@ -239,13 +239,16 @@
 
 @layer components {
   .auth-hero-bg {
-    background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
+    background:
+      radial-gradient(ellipse 90% 70% at 50% -10%, rgb(45 212 191 / 0.16), transparent 55%),
+      linear-gradient(160deg, rgb(15 40 38) 0%, #0f172a 42%, #0b1220 100%);
   }
 
   .auth-login-input {
     color: #ffffff;
     caret-color: #ffffff;
-    background-color: rgb(255 255 255 / 0.07);
+    background-color: rgb(255 255 255 / 0.055);
+    letter-spacing: 0.01em;
   }
 
   /* Shared glass fields for forgot / register / reset (match login softness). */
@@ -253,30 +256,31 @@
     margin-top: 0.25rem;
     display: block;
     width: 100%;
+    min-height: 3rem;
     border-radius: 1rem;
-    border: 1px solid rgb(255 255 255 / 0.2);
-    background-color: rgb(255 255 255 / 0.1);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background-color: rgb(255 255 255 / 0.055);
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.375rem;
+    letter-spacing: 0.01em;
+    font-weight: 400;
     color: #ffffff;
     caret-color: #ffffff;
     box-shadow: none;
-    transition:
-      border-color 150ms ease,
-      background-color 150ms ease,
-      box-shadow 150ms ease;
+    transition: border-color 150ms ease, background-color 150ms ease;
   }
 
   .auth-field::placeholder {
-    color: rgb(255 255 255 / 0.4);
+    color: rgb(226 232 240 / 0.48);
+    font-weight: 400;
   }
 
   .auth-field:focus {
-    border-color: rgb(13 148 136 / 0.7);
-    background-color: rgb(255 255 255 / 0.14);
+    border-color: rgb(94 234 212 / 0.48);
+    background-color: rgb(255 255 255 / 0.08);
     outline: none;
-    box-shadow: 0 0 0 2px rgb(15 118 110 / 0.35);
+    box-shadow: none;
   }
 
   select.auth-field {
@@ -290,16 +294,17 @@
   /* Auth modules: shared deep teal CTAs + links */
   .auth-cta-btn {
     display: flex;
-    min-height: 44px;
+    min-height: 3rem;
     width: 100%;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     border-radius: 1rem;
     background-color: #0f766e;
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
     font-weight: 600;
+    letter-spacing: 0.01em;
     color: #fff;
     transition: background-color 150ms ease;
   }
@@ -353,14 +358,51 @@
     margin-bottom: 0.375rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: rgb(255 255 255 / 0.8);
+    letter-spacing: 0.02em;
+    color: rgb(226 232 240 / 0.78);
   }
 
   .auth-hint {
     margin-top: 0.375rem;
     font-size: 0.75rem;
     line-height: 1.25rem;
-    color: rgb(255 255 255 / 0.45);
+    letter-spacing: 0.01em;
+    color: rgb(226 232 240 / 0.52);
+  }
+
+  .auth-title {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: #f8fafc;
+  }
+
+  .auth-subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.375rem;
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    color: rgb(226 232 240 / 0.78);
+  }
+
+  /* Opacity-only enter — no slide (avoids layout jank on auth + shell pages). */
+  .auth-form-enter {
+    animation: auth-form-enter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .auth-form-enter-delay {
+    animation: auth-form-enter 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  }
+
+  @keyframes auth-form-enter {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .auth-banner-error {
@@ -694,20 +736,6 @@
   .filter-chip-row {
     @apply flex w-max min-w-full items-center gap-2 px-1;
     scroll-snap-type: x mandatory;
-  }
-
-  /* Brand plane for owner/admin rails — teal wash so the mark isn't alone on flat ink. */
-  .app-sidebar {
-    background-color: var(--color-app-sidebar);
-    background-image:
-      radial-gradient(ellipse 130% 90% at 12% -8%, rgb(20 184 166 / 0.2), transparent 58%),
-      linear-gradient(180deg, rgb(15 28 26 / 0.55) 0%, transparent 32%);
-  }
-
-  html.dark .app-sidebar {
-    background-image:
-      radial-gradient(ellipse 130% 90% at 12% -8%, rgb(45 212 191 / 0.14), transparent 58%),
-      linear-gradient(180deg, rgb(20 24 32 / 0.65) 0%, transparent 32%);
   }
 
   .filter-chip {
@@ -1126,20 +1154,18 @@
   @keyframes app-page-in {
     from {
       opacity: 0;
-      transform: translateY(6px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
     }
   }
 
   .app-page {
-    animation: app-page-in 0.34s ease-out;
+    animation: app-page-in 0.28s ease-out both;
   }
 
   .app-toolbar-in {
-    animation: app-page-in 0.3s ease-out both;
+    animation: app-page-in 0.28s ease-out both;
     animation-delay: 0.04s;
   }
 
@@ -1180,11 +1206,9 @@
   @keyframes app-metric-in {
     from {
       opacity: 0;
-      transform: translateY(8px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
     }
   }
 
@@ -1240,6 +1264,8 @@
   @media (prefers-reduced-motion: reduce) {
     .app-page,
     .app-toolbar-in,
+    .auth-form-enter,
+    .auth-form-enter-delay,
     .app-metric-grid > *,
     .enroll-success-in,
     .enroll-success-check,

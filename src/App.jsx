@@ -34,7 +34,7 @@ const AdminGymMessages = lazyWithRetry(() => import('./pages/admin/AdminGymMessa
 
 function RouteFallback() {
   return (
-    <div className="flex min-h-[50vh] items-center justify-center bg-slate-50 text-sm text-slate-500 dark:bg-app-bg dark:text-app-muted">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-app-bg text-sm text-app-muted">
       Loading…
     </div>
   );

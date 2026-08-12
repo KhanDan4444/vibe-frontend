@@ -112,7 +112,7 @@ function SidebarLink({
 
 function AdminRouteFallback() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center text-sm text-app-muted">
+    <div className="flex items-center justify-center py-10 text-sm text-app-muted" aria-busy="true">
       Loading…
     </div>
   );
@@ -210,12 +210,8 @@ export default function AdminLayout() {
             <button type="button" onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
               <X className="h-6 w-6" />
             </button>
-            <div className="relative z-[1] mb-7 mt-1">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -left-2 -top-3 h-24 w-40 rounded-full bg-teal-400/15 blur-2xl"
-              />
-              <BrandLogo to="/admin/dashboard" onClick={() => setSidebarOpen(false)} className="relative" />
+            <div className="mb-7 mt-1">
+              <BrandLogo to="/admin/dashboard" onClick={() => setSidebarOpen(false)} />
             </div>
             <nav className="mb-auto space-y-1">
               {adminNavItems.map((item) => (
