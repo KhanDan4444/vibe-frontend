@@ -5,14 +5,8 @@ import { useTranslation } from 'react-i18next';
 import {
   Pencil,
   Trash2,
-  Phone,
-  Calendar,
-  CalendarRange,
   CircleDollarSign,
-  Dumbbell,
-  Receipt,
   RefreshCw,
-  MapPin,
   ArrowRightLeft,
   ArrowLeftRight,
 } from 'lucide-react';
@@ -22,7 +16,7 @@ import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
-import { formatDisplayDate } from '../utils/date';
+import { formatFriendlyDate } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { getMemberPayments } from '../services/memberService';
 import ConfirmDialog from './ConfirmDialog';
@@ -66,7 +60,8 @@ export default function MemberDetailDrawer({
   canDelete = false,
   readOnly = false,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const friendlyDate = (value) => formatFriendlyDate(value, i18n.language);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -187,7 +182,7 @@ export default function MemberDetailDrawer({
           !readOnly || showTransfer ? (
           <SlidePanelFooter alerts={footerAlerts}>
             {!readOnly && (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {canCollectMissedPayment && onRecordPayment ? (
                   <SlidePanelActionButton
                     variant="hero"
@@ -243,11 +238,16 @@ export default function MemberDetailDrawer({
               </SlidePanelActionButton>
             )}
             {!readOnly && (
-              <div className={`flex items-stretch gap-2 ${hasPrimaryLifecycle || hasSecondaryActions ? 'pt-0.5' : ''}`}>
+              <div
+                className={`flex items-center justify-between gap-2 ${
+                  hasPrimaryLifecycle || hasSecondaryActions
+                    ? 'border-t border-app-border-subtle pt-2.5'
+                    : ''
+                }`}
+              >
                 <SlidePanelActionButton
                   variant="secondary"
                   icon={Pencil}
-                  className="flex-1"
                   onClick={() => {
                     setError('');
                     setIsEditOpen(true);
@@ -259,7 +259,6 @@ export default function MemberDetailDrawer({
                   <SlidePanelActionButton
                     variant="danger"
                     icon={Trash2}
-                    className="shrink-0"
                     onClick={() => setIsDeleteOpen(true)}
                   >
                     {t('drawer.deleteMember')}
@@ -279,7 +278,7 @@ export default function MemberDetailDrawer({
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="space-y-7">
           <SlidePanelProfileHeader
             name={member.name}
             avatar={
@@ -288,9 +287,15 @@ export default function MemberDetailDrawer({
                 apiFetch={apiFetch}
                 name={member.name}
                 hasPhoto={member.hasPhoto}
+                className="h-16 w-16 rounded-2xl object-cover"
+                fallbackClassName="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-teal-700 text-2xl font-bold text-white dark:bg-teal-600 dark:text-white"
               />
             }
-            lines={[{ icon: Phone, text: member.phone, mono: true, key: 'phone' }]}
+            lines={
+              member.phone
+                ? [{ text: member.phone, mono: true, key: 'phone' }]
+                : []
+            }
             badge={<StatusBadge status={member.status} />}
           />
 
@@ -298,29 +303,26 @@ export default function MemberDetailDrawer({
             <SlidePanelCard>
               {member.branchName && (
                 <SlidePanelRow
-                  icon={MapPin}
                   label={t('table.branch')}
                   value={member.branchName}
                   valueClassName="text-sm font-medium text-app-text-strong"
                 />
               )}
               <SlidePanelRow
-                icon={Dumbbell}
                 label={t('table.plan')}
                 value={planLabel}
-                valueClassName="text-sm font-bold text-teal-700 dark:text-teal-300"
+                valueClassName="text-sm font-semibold text-teal-700 dark:text-teal-300"
               />
               <SlidePanelRow
-                icon={Calendar}
-                label={t('table.startDate')}
-                value={formatDisplayDate(member.startDate)}
-                valueClassName="text-sm font-medium text-app-text"
-              />
-              <SlidePanelRow
-                icon={CalendarRange}
-                label={t('table.endDate')}
-                value={formatDisplayDate(member.endDate)}
-                valueClassName="text-sm font-semibold text-app-text-strong"
+                label={t('drawer.term')}
+                value={
+                  <>
+                    {friendlyDate(member.startDate)}
+                    <span className="mx-1.5 text-app-muted">–</span>
+                    {friendlyDate(member.endDate)}
+                  </>
+                }
+                valueClassName="text-sm font-medium text-app-text-strong"
               />
             </SlidePanelCard>
           </SlidePanelSection>
@@ -346,17 +348,15 @@ export default function MemberDetailDrawer({
               <div className="space-y-4">
                 <SlidePanelCard>
                   <SlidePanelRow
-                    icon={CircleDollarSign}
                     label={t('drawer.currentTerm')}
                     value={paidForCurrentTerm ? t('drawer.paid') : t('drawer.unpaid')}
                     valueClassName={
                       paidForCurrentTerm
-                        ? 'text-sm font-bold text-emerald-700 dark:text-emerald-300'
-                        : 'text-sm font-bold text-amber-700 dark:text-amber-300'
+                        ? 'text-sm font-semibold text-emerald-700 dark:text-emerald-300'
+                        : 'text-sm font-semibold text-amber-700 dark:text-amber-300'
                     }
                   />
                   <SlidePanelRow
-                    icon={Receipt}
                     label={t('drawer.thisTermPaid')}
                     value={
                       <>
@@ -370,9 +370,8 @@ export default function MemberDetailDrawer({
                     }
                   />
                   <SlidePanelRow
-                    icon={CalendarRange}
                     label={t('drawer.paidThrough')}
-                    value={formatDisplayDate(member.endDate)}
+                    value={friendlyDate(member.endDate)}
                   />
                 </SlidePanelCard>
 
@@ -383,11 +382,10 @@ export default function MemberDetailDrawer({
                       return (
                         <SlidePanelListItem
                           key={p.id}
-                          icon={Receipt}
                           title={currency(p.amount)}
                           subtitle={
                             <>
-                              {formatDisplayDate(p.date)}
+                              {friendlyDate(p.date)}
                               <span className="mx-1.5 text-app-border">·</span>
                               {sourceLabel}
                             </>

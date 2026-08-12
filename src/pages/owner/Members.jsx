@@ -216,17 +216,20 @@ export default function Members() {
   }, [apiFetch]);
 
   const openMemberRow = useCallback(async (member) => {
+    // Open immediately with list-row data so the drawer feels instant.
+    const openedId = member.id;
+    setSelectedMember(member);
     try {
-      const res = await getMember(apiFetch, member.id);
+      const res = await getMember(apiFetch, openedId);
       const data = await parseApiResponse(res);
       if (res.ok) {
-        setSelectedMember(mapMemberFromApi(data));
-        return;
+        setSelectedMember((current) =>
+          current?.id === openedId ? mapMemberFromApi(data) : current
+        );
       }
     } catch {
-      /* fall back to list row */
+      /* keep list row data */
     }
-    setSelectedMember(member);
   }, [apiFetch]);
 
   useEffect(() => {

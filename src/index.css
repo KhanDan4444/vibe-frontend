@@ -239,9 +239,7 @@
 
 @layer components {
   .auth-hero-bg {
-    background:
-      radial-gradient(ellipse 90% 70% at 50% -10%, rgb(45 212 191 / 0.16), transparent 55%),
-      linear-gradient(160deg, rgb(15 40 38) 0%, #0f172a 42%, #0b1220 100%);
+    background: linear-gradient(135deg, rgb(19 78 74 / 0.55) 0%, #0f172a 45%, #0f172a 100%);
   }
 
   .auth-login-input {

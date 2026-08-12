@@ -1200,6 +1200,7 @@
   "drawer": {
     "memberTitle": "Member profile",
     "subscription": "Subscription",
+    "term": "Term",
     "planPrice": "Plan price",
     "payments": "Payments",
     "paymentHistory": "Payment history",

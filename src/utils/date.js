@@ -24,6 +24,28 @@ export function formatDisplayDate(date) {
 }
 
 /**
+ * Friendlier profile/detail date: "7 Aug 2026" (locale-aware).
+ * @param {string|Date|null|undefined} date
+ * @param {string} [language='en'] i18n language code
+ * @returns {string}
+ */
+export function formatFriendlyDate(date, language = 'en') {
+  if (!date || date === '—') return '—';
+  const parsed = parseLocalDate(date);
+  if (!parsed) return formatDisplayDate(date);
+  const locale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-GB';
+  try {
+    return parsed.toLocaleDateString(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return formatDisplayDate(date);
+  }
+}
+
+/**
  * User-facing date-time: dd-mm-yy HH:mm
  * @param {string|Date|null|undefined} value
  * @returns {string}

@@ -444,6 +444,7 @@
     "retry": "እንደገና ሞክር",
     "recentPayments": "የቅርብ ክፍያዎች",
     "subscription": "ምዝገባ",
+    "term": "ጊዜ",
     "thisTerm": "ይህ ጊዜ፦ {{amount}}",
     "thisTermPaid": "በዚህ ጊዜ የተከፈለ",
     "unpaid": "አልተከፈለም",
