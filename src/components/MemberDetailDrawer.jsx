@@ -23,6 +23,7 @@ import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
 import { formatDisplayDate } from '../utils/date';
+import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { getMemberPayments } from '../services/memberService';
 import ConfirmDialog from './ConfirmDialog';
 import MemberModal from './MemberModal';
@@ -104,9 +105,12 @@ export default function MemberDetailDrawer({
     setShowAllPayments(false);
   }, [member?.id]);
 
-  const matchingPlan = useMemo(
-    () => (member ? plans.find((p) => p.id === member.planId) : null),
-    [plans, member],
+  const planLabel = useMemo(
+    () =>
+      member
+        ? resolveMemberPlanLabel(member, plans, t('pages.dashboard.customPlan'))
+        : '',
+    [member, plans, t],
   );
   const otherPlans = useMemo(
     () => (member ? plans.filter((p) => String(p.id) !== String(member.planId)) : []),
@@ -303,7 +307,7 @@ export default function MemberDetailDrawer({
               <SlidePanelRow
                 icon={Dumbbell}
                 label={t('table.plan')}
-                value={matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                value={planLabel}
                 valueClassName="text-sm font-bold text-teal-700 dark:text-teal-300"
               />
               <SlidePanelRow

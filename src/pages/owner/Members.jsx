@@ -40,6 +40,7 @@ import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
+import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const UNPAID = 'Unpaid';
@@ -483,74 +484,78 @@ export default function Members() {
         </div>
       ) : (
         <>
-      <FilterChipBar>
-        <FilterChip
-          variant="all"
-          label={t('filters.all')}
-          count={totalMembers}
-          active={statusFilter === 'All'}
-          onClick={() => {
-            setPage(1);
-            setStatusFilter('All');
-          }}
-        />
-        <FilterChip
-          variant="active"
-          label={t('filters.active')}
-          count={activeMembersCount}
-          active={statusFilter === DISPLAY_STATUS.ACTIVE}
-          onClick={() => {
-            setPage(1);
-            setStatusFilter(DISPLAY_STATUS.ACTIVE);
-          }}
-        />
-        <FilterChip
-          variant="unpaid"
-          label={t('filters.unpaid')}
-          count={unpaidCount}
-          active={statusFilter === UNPAID}
-          onClick={() => {
-            setPage(1);
-            setStatusFilter(UNPAID);
-          }}
-        />
-        <FilterChip
-          variant="due_soon"
-          label={t('filters.dueSoon')}
-          count={dueSoonCount}
-          active={statusFilter === DISPLAY_STATUS.DUE_SOON}
-          onClick={() => {
-            setPage(1);
-            setStatusFilter(DISPLAY_STATUS.DUE_SOON);
-          }}
-        />
-        <FilterChip
-          variant="expired"
-          label={t('filters.expired')}
-          count={expiredCount}
-          active={statusFilter === DISPLAY_STATUS.EXPIRED}
-          onClick={() => {
-            setPage(1);
-            setStatusFilter(DISPLAY_STATUS.EXPIRED);
-          }}
-        />
-      </FilterChipBar>
-
-      <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-        <SearchField
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder={t('pages.members.searchPlaceholder')}
-        />
-        <ToolbarPicker
-          value={listSort}
-          onChange={(id) => {
-            setPage(1);
-            setListSort(id);
-          }}
-          options={MEMBER_SORT_OPTIONS}
-          label={t('pages.members.sortMembers')}
-        />
+      <div className={`overflow-hidden ${cardSurface}`}>
+        <div className="flex flex-col gap-2.5 p-3 sm:p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
+            <SearchField
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder={t('pages.members.searchPlaceholder')}
+              className="sm:max-w-xs"
+            />
+            <ToolbarPicker
+              value={listSort}
+              onChange={(id) => {
+                setPage(1);
+                setListSort(id);
+              }}
+              options={MEMBER_SORT_OPTIONS}
+              label={t('pages.members.sortMembers')}
+            />
+          </div>
+          <FilterChipBar className="!mb-0">
+            <FilterChip
+              variant="all"
+              label={t('filters.all')}
+              count={totalMembers}
+              active={statusFilter === 'All'}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter('All');
+              }}
+            />
+            <FilterChip
+              variant="active"
+              label={t('filters.active')}
+              count={activeMembersCount}
+              active={statusFilter === DISPLAY_STATUS.ACTIVE}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(DISPLAY_STATUS.ACTIVE);
+              }}
+            />
+            <FilterChip
+              variant="unpaid"
+              label={t('filters.unpaid')}
+              count={unpaidCount}
+              active={statusFilter === UNPAID}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(UNPAID);
+              }}
+            />
+            <FilterChip
+              variant="due_soon"
+              label={t('filters.dueSoon')}
+              count={dueSoonCount}
+              active={statusFilter === DISPLAY_STATUS.DUE_SOON}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(DISPLAY_STATUS.DUE_SOON);
+              }}
+            />
+            <FilterChip
+              variant="expired"
+              label={t('filters.expired')}
+              count={expiredCount}
+              active={statusFilter === DISPLAY_STATUS.EXPIRED}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(DISPLAY_STATUS.EXPIRED);
+              }}
+            />
+          </FilterChipBar>
+        </div>
       </div>
 
       <div className="lg:hidden space-y-3">
@@ -560,7 +565,11 @@ export default function Members() {
           </Card>
         ) : displayedMembers.length > 0 ? (
           displayedMembers.map((member) => {
-            const matchingPlan = plans.find((p) => p.id === member.planId);
+            const planLabel = resolveMemberPlanLabel(
+              member,
+              plans,
+              t('pages.dashboard.customPlan'),
+            );
             return (
               <div
                 key={member.id}
@@ -593,7 +602,7 @@ export default function Members() {
                     <p className="mt-0.5 text-xs text-app-muted truncate">
                       {member.phone || '—'}
                       {' · '}
-                      {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                      {planLabel}
                       {showBranchColumn && member.branchName ? ` · ${member.branchName}` : ''}
                     </p>
                     <p className="mt-0.5 text-xs text-app-muted">
@@ -658,7 +667,11 @@ export default function Members() {
                 <AdminTableRowsSkeleton rows={6} cols={showBranchColumn ? 7 : 6} />
               ) : displayedMembers.length > 0 ? (
                 displayedMembers.map((member) => {
-                  const matchingPlan = plans.find((p) => p.id === member.planId);
+                  const planLabel = resolveMemberPlanLabel(
+                    member,
+                    plans,
+                    t('pages.dashboard.customPlan'),
+                  );
                   return (
                     <tr
                       key={member.id}
@@ -686,7 +699,7 @@ export default function Members() {
                       )}
                       <td className="truncate font-mono text-sm text-app-muted">{member.phone}</td>
                       <td className="truncate font-semibold text-teal-700">
-                        {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                        {planLabel}
                       </td>
                       <td className="owner-members-col-duration text-app-muted">
                         <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
