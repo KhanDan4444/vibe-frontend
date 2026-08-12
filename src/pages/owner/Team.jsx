@@ -8,13 +8,41 @@ import StaffModal from '../../components/StaffModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
+import RowMoreMenu from '../../components/RowMoreMenu';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { tableRowHover, cardSurface } from '../../utils/surfaceClasses';
+import { tableRowHover, cardSurface, panelTitle } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+
+function StaffRowActions({ member, readOnly, t, onEdit, onToggle }) {
+  if (readOnly) return null;
+  return (
+    <div className="admin-row-actions">
+      <RowMoreMenu
+        items={[
+          {
+            key: 'edit',
+            label: t('common.edit'),
+            icon: <Edit className="h-4 w-4 shrink-0" />,
+            onClick: onEdit,
+          },
+          {
+            key: 'toggle',
+            label: member.is_active ? t('actions.disable') : t('actions.enable'),
+            icon: member.is_active
+              ? <UserX className="h-4 w-4 shrink-0" />
+              : <UserCheck className="h-4 w-4 shrink-0" />,
+            danger: member.is_active,
+            onClick: onToggle,
+          },
+        ]}
+      />
+    </div>
+  );
+}
 
 export default function Team() {
   const { t } = useTranslation();
@@ -160,33 +188,52 @@ export default function Team() {
           />
         </Card>
       ) : (
+      <>
       <Card className="overflow-hidden">
         <div className="admin-panel-header">
-          <h2 className="text-sm font-semibold text-app-text-strong">{t('pages.team.sectionTitle')}</h2>
+          <h2 className={panelTitle}>{t('pages.team.sectionTitle')}</h2>
         </div>
+      </Card>
 
         {loading ? (
           <>
             <div className="lg:hidden">
-              <AdminListSkeleton rows={5} />
+              <Card className="overflow-hidden">
+                <AdminListSkeleton rows={5} />
+              </Card>
             </div>
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="admin-data-table">
-                <tbody>
-                  <AdminTableRowsSkeleton rows={5} cols={5} />
-                </tbody>
-              </table>
-            </div>
+            <Card className="hidden overflow-hidden lg:block">
+              <div className="overflow-x-auto">
+                <table className="admin-data-table">
+                  <tbody>
+                    <AdminTableRowsSkeleton rows={5} cols={5} />
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           </>
         ) : visibleStaff.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            title={t('pages.team.emptyBranchTitle')}
-            body={t('pages.team.emptyBranchBody')}
-          />
+          <>
+            <div className="lg:hidden">
+              <div className={cardSurface}>
+                <EmptyState
+                  icon={Users}
+                  title={t('pages.team.emptyBranchTitle')}
+                  body={t('pages.team.emptyBranchBody')}
+                />
+              </div>
+            </div>
+            <Card className="hidden overflow-hidden lg:block">
+              <EmptyState
+                icon={Users}
+                title={t('pages.team.emptyBranchTitle')}
+                body={t('pages.team.emptyBranchBody')}
+              />
+            </Card>
+          </>
         ) : (
           <>
-            <div className="lg:hidden space-y-3 p-3">
+            <div className="lg:hidden space-y-3">
               {visibleStaff.map((member) => (
                 <div key={member.id} className={`${cardSurface} p-4`}>
                   <div className="flex items-start justify-between gap-3">
@@ -208,38 +255,24 @@ export default function Team() {
                       </span>
                     </div>
                   </div>
-                  {!readOnly && (
-                    <div className="admin-row-actions mt-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setModalError('');
-                          setModalState({ isOpen: true, member });
-                        }}
-                        className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
-                        title={t('common.edit')}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setToggleTarget(member)}
-                        className={
-                          member.is_active
-                            ? 'text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer'
-                            : 'text-app-muted hover:bg-app-surface/80 hover:text-emerald-600 cursor-pointer'
-                        }
-                        title={member.is_active ? t('actions.disable') : t('actions.enable')}
-                      >
-                        {member.is_active ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  )}
+                  <div className="mt-3">
+                    <StaffRowActions
+                      member={member}
+                      readOnly={readOnly}
+                      t={t}
+                      onEdit={() => {
+                        setModalError('');
+                        setModalState({ isOpen: true, member });
+                      }}
+                      onToggle={() => setToggleTarget(member)}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="hidden lg:block overflow-x-auto">
+            <Card className="hidden overflow-hidden lg:block">
+            <div className="overflow-x-auto">
             <table className="admin-data-table owner-team-table min-w-[720px]">
               <thead>
                 <tr>
@@ -271,31 +304,16 @@ export default function Team() {
                     </td>
                     {!readOnly && (
                       <td>
-                        <div className="admin-row-actions">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setModalError('');
-                              setModalState({ isOpen: true, member });
-                            }}
-                            className="text-app-muted hover:bg-app-surface/80 hover:text-teal-700 cursor-pointer"
-                            title={t('common.edit')}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setToggleTarget(member)}
-                            className={
-                              member.is_active
-                                ? 'text-app-muted hover:bg-app-surface/80 hover:text-rose-600 cursor-pointer'
-                                : 'text-app-muted hover:bg-app-surface/80 hover:text-emerald-600 cursor-pointer'
-                            }
-                            title={member.is_active ? t('actions.disable') : t('actions.enable')}
-                          >
-                            {member.is_active ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                          </button>
-                        </div>
+                        <StaffRowActions
+                          member={member}
+                          readOnly={readOnly}
+                          t={t}
+                          onEdit={() => {
+                            setModalError('');
+                            setModalState({ isOpen: true, member });
+                          }}
+                          onToggle={() => setToggleTarget(member)}
+                        />
                       </td>
                     )}
                   </tr>
@@ -303,9 +321,10 @@ export default function Team() {
               </tbody>
             </table>
           </div>
+            </Card>
           </>
         )}
-      </Card>
+      </>
       )}
 
       <StaffModal

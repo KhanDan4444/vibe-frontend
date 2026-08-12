@@ -34,6 +34,8 @@ import PageHeader from './PageHeader';
 import EnrollStepProgress from './EnrollStepProgress';
 import { formatMoney } from '../utils/formatMoney';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 function validateRegisterStep1({ gymName, ownerName, username, email, password, phone }) {
   return firstFailure(
@@ -609,7 +611,7 @@ export default function RegisterGymModal({
               <div className="enroll-success-check mb-6 flex h-24 w-24 items-center justify-center rounded-full border border-emerald-600/25 bg-emerald-500/10 dark:border-emerald-400/25">
                 <Check className="h-12 w-12 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
               </div>
-              <h2 className="text-xl font-bold text-app-text-strong">{t('modals.registerGym.successTitle')}</h2>
+              <h2 className={`${modalTitle} text-xl sm:text-xl`}>{t('modals.registerGym.successTitle')}</h2>
               <p className="mt-2 text-base font-semibold text-app-text-strong">{registerDone.gymName}</p>
               <p className="mt-1 text-sm text-app-muted">
                 {registerDone.skipPayment
@@ -690,7 +692,7 @@ export default function RegisterGymModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl" zIndexClass="z-[60]">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
-          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.registerGym.title')}</h2>
+          <h2 className={modalTitle}>{t('modals.registerGym.title')}</h2>
           <p className="mt-1 text-xs text-app-muted">{t('modals.registerGym.subtitle')}</p>
         </div>
         <button

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Search, CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX, X } from 'lucide-react';
+import { CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX, X } from 'lucide-react';
 import PaymentModal from '../../components/PaymentModal';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
@@ -32,9 +32,12 @@ import { DateField } from '../../components/DateField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
-import { tableRowHover, selectSurface, iconActionIdle, iconActionDanger, headingText, cardSurface } from '../../utils/surfaceClasses';
+import { tableRowHover, headingText, cardSurface, sectionTitle } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import RowMoreMenu from '../../components/RowMoreMenu';
+import ToolbarPicker from '../../components/ToolbarPicker';
+import SearchField from '../../components/SearchField';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
@@ -42,6 +45,30 @@ const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 function methodShareColor(method) {
   return PAYMENT_METHOD_COLORS[method] || PAYMENT_METHOD_COLORS.Other;
+}
+
+function RevenuePaymentActions({ payment, t, onEdit, onDelete }) {
+  return (
+    <div className="admin-row-actions">
+      <RowMoreMenu
+        items={[
+          {
+            key: 'edit',
+            label: t('pages.revenue.editTransaction'),
+            icon: <Edit className="h-4 w-4 shrink-0" />,
+            onClick: () => onEdit(payment),
+          },
+          {
+            key: 'delete',
+            label: t('pages.revenue.deleteTransaction'),
+            icon: <Trash2 className="h-4 w-4 shrink-0" />,
+            danger: true,
+            onClick: () => onDelete(payment),
+          },
+        ]}
+      />
+    </div>
+  );
 }
 
 export default function Revenue() {
@@ -288,19 +315,12 @@ export default function Revenue() {
         subtitle={statusLine}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="revenue-period">
-              {t('period.reportPeriod')}
-            </label>
-            <select
-              id="revenue-period"
-              className={`ui-select ${selectSurface} min-w-[9.5rem]`}
+            <ToolbarPicker
               value={periodPreset}
-              onChange={(e) => setPeriodPreset(e.target.value)}
-            >
-              {PERIOD_PRESETS.map((p) => (
-                <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
-              ))}
-            </select>
+              onChange={setPeriodPreset}
+              options={PERIOD_PRESETS}
+              label={t('period.reportPeriod')}
+            />
             <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
               <Download className="h-4 w-4" /> {t('common.exportCsv')}
             </Button>
@@ -483,9 +503,9 @@ export default function Revenue() {
       )}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4 sm:pt-4">
+        <div className="flex flex-col gap-3 p-3 sm:px-4 sm:pt-4 sm:pb-4">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className={`text-base font-semibold tracking-tight ${headingText}`}>
+            <h3 className={sectionTitle}>
               {t('pages.revenue.paymentHistory')}
             </h3>
             {!listLoading && (
@@ -495,106 +515,91 @@ export default function Revenue() {
             )}
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-            <div className="relative w-full sm:max-w-md">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-                <Search className="h-5 w-5" />
-              </span>
-              <input
-                type="text"
-                className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-                placeholder={t('pages.revenue.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <select
-              className={`ui-select ${selectSurface} min-w-[10rem]`}
+            <SearchField
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder={t('pages.revenue.searchPlaceholder')}
+            />
+            <ToolbarPicker
               value={listSort}
-              onChange={(e) => {
+              onChange={(id) => {
                 setPage(1);
-                setListSort(e.target.value);
+                setListSort(id);
               }}
-              aria-label={t('pages.revenue.sortPayments')}
-            >
-              {REVENUE_SORT_OPTIONS.map((opt) => (
-                <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
-              ))}
-            </select>
+              options={REVENUE_SORT_OPTIONS}
+              label={t('pages.revenue.sortPayments')}
+            />
           </div>
           {canManageRevenue && (
             <p className="text-xs text-app-muted">{t('pages.revenue.editDeleteHint')}</p>
           )}
         </div>
+      </Card>
 
-        <div className="lg:hidden space-y-3 p-3">
-          {listLoading ? (
+      <div className="lg:hidden space-y-3">
+        {listLoading ? (
+          <Card className="overflow-hidden">
             <AdminListSkeleton rows={5} />
-          ) : displayedPayments.length > 0 ? (
-            displayedPayments.map((payment) => (
-              <div key={payment.id} className={`${cardSurface} p-3.5`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</p>
-                    {showBranchColumn && payment.branchName && (
-                      <p className="text-xs text-app-muted">{payment.branchName}</p>
-                    )}
-                    <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-app-muted">
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar className="h-3.5 w-3.5 shrink-0" />
-                        {formatDisplayDate(payment.date)}
-                      </span>
-                      <span aria-hidden>·</span>
-                      <span>{paymentSourceLabel(payment.source)}</span>
-                    </p>
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ backgroundColor: methodShareColor(payment.method) }}
-                        aria-hidden
-                      />
-                      <PaymentMethodBadge method={payment.method} quiet />
-                    </div>
-                  </div>
-                  <p className={`shrink-0 font-display text-lg font-bold tracking-tight ${headingText}`}>
-                    {formatMoney(payment.amount)}
+          </Card>
+        ) : displayedPayments.length > 0 ? (
+          displayedPayments.map((payment) => (
+            <div key={payment.id} className={`${cardSurface} p-3.5`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-app-text-strong">{payment.memberName || t('pages.revenue.unknownMember')}</p>
+                  {showBranchColumn && payment.branchName && (
+                    <p className="text-xs text-app-muted">{payment.branchName}</p>
+                  )}
+                  <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-app-muted">
+                    <span className="inline-flex items-center gap-1">
+                      <Calendar className="h-3.5 w-3.5 shrink-0" />
+                      {formatDisplayDate(payment.date)}
+                    </span>
+                    <span aria-hidden>·</span>
+                    <span>{paymentSourceLabel(payment.source)}</span>
                   </p>
-                </div>
-                {canManageRevenue && (
-                  <div className="admin-row-actions mt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setError('');
-                        setModalState({ isOpen: true, payment });
-                      }}
-                      className={iconActionIdle}
-                      title={t('pages.revenue.editTransaction')}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPaymentToDelete(payment)}
-                      className={iconActionDanger}
-                      title={t('pages.revenue.deleteTransaction')}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: methodShareColor(payment.method) }}
+                      aria-hidden
+                    />
+                    <PaymentMethodBadge method={payment.method} quiet />
                   </div>
-                )}
+                </div>
+                <p className={`shrink-0 font-display text-lg font-bold tracking-tight ${headingText}`}>
+                  {formatMoney(payment.amount)}
+                </p>
               </div>
-            ))
-          ) : (
+              {canManageRevenue && (
+                <div className="mt-2">
+                  <RevenuePaymentActions
+                    payment={payment}
+                    t={t}
+                    onEdit={(row) => {
+                      setError('');
+                      setModalState({ isOpen: true, payment: row });
+                    }}
+                    onDelete={setPaymentToDelete}
+                  />
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className={cardSurface}>
             <EmptyState
               icon={CreditCard}
               compact
               title={t('pages.revenue.emptyTitle')}
               body={t('pages.revenue.emptyBody')}
             />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
-        <div className="hidden lg:block overflow-x-auto">
+      <Card className="hidden overflow-hidden lg:block">
+        <div className="overflow-x-auto">
           <table className="admin-data-table admin-payments-table min-w-[720px]">
             <thead>
               <tr>
@@ -641,27 +646,15 @@ export default function Revenue() {
                     </td>
                     {canManageRevenue && (
                     <td>
-                      <div className="admin-row-actions justify-end">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setError('');
-                              setModalState({ isOpen: true, payment });
-                            }}
-                            className={iconActionIdle}
-                            title={t('pages.revenue.editTransaction')}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setPaymentToDelete(payment)}
-                            className={iconActionDanger}
-                            title={t('pages.revenue.deleteTransaction')}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                      </div>
+                      <RevenuePaymentActions
+                        payment={payment}
+                        t={t}
+                        onEdit={(row) => {
+                          setError('');
+                          setModalState({ isOpen: true, payment: row });
+                        }}
+                        onDelete={setPaymentToDelete}
+                      />
                     </td>
                     )}
                   </tr>

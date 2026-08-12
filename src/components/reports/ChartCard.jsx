@@ -1,14 +1,15 @@
 /** Card wrapper for report chart sections. */
 import { useTranslation } from 'react-i18next';
 import Card from '../ui/Card';
+import { panelTitle } from '../../utils/surfaceClasses';
 
 export default function ChartCard({ title, subtitle, children, empty, compact = false }) {
   const { t } = useTranslation();
   return (
     <Card quiet className="p-4 sm:p-5">
       <div className="min-w-0">
-        <h3 className="text-sm font-semibold tracking-tight text-app-text-strong">{title}</h3>
-        {subtitle ? <p className="mt-0.5 text-xs text-app-muted">{subtitle}</p> : null}
+        <h3 className={panelTitle}>{title}</h3>
+        {subtitle ? <p className="mt-0.5 text-xs leading-relaxed text-app-muted">{subtitle}</p> : null}
       </div>
       <div
         className={

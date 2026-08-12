@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
-  Search,
   Calendar,
   Building2,
   AlertCircle,
@@ -41,12 +40,39 @@ import { AdminTableRowsSkeleton, AdminListSkeleton } from '../../components/Load
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { selectSurface, tableRowHover, iconActionIdle, iconActionDanger, headingText, cardSurface } from '../../utils/surfaceClasses';
+import { tableRowHover, headingText, cardSurface, sectionTitle } from '../../utils/surfaceClasses';
+import RowMoreMenu from '../../components/RowMoreMenu';
+import ToolbarPicker from '../../components/ToolbarPicker';
+import SearchField from '../../components/SearchField';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 function methodShareColor(method) {
   return PAYMENT_METHOD_COLORS[method] || PAYMENT_METHOD_COLORS.Other;
+}
+
+function AdminPaymentRowActions({ payment, t, onEdit, onDelete }) {
+  return (
+    <div className="admin-row-actions">
+      <RowMoreMenu
+        items={[
+          {
+            key: 'edit',
+            label: t('common.edit'),
+            icon: <Edit className="h-4 w-4 shrink-0" />,
+            onClick: () => onEdit(payment),
+          },
+          {
+            key: 'delete',
+            label: t('common.delete'),
+            icon: <Trash2 className="h-4 w-4 shrink-0" />,
+            danger: true,
+            onClick: () => onDelete(payment),
+          },
+        ]}
+      />
+    </div>
+  );
 }
 
 function mapSaasPayment(p) {
@@ -330,19 +356,12 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         subtitle={statusLine}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="admin-payments-period">
-              {t('period.reportPeriod')}
-            </label>
-            <select
-              id="admin-payments-period"
-              className={`ui-select ${selectSurface} min-w-[9.5rem]`}
+            <ToolbarPicker
               value={periodPreset}
-              onChange={(e) => setPeriodPreset(e.target.value)}
-            >
-              {PERIOD_PRESETS.map((p) => (
-                <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
-              ))}
-            </select>
+              onChange={setPeriodPreset}
+              options={PERIOD_PRESETS}
+              label={t('period.reportPeriod')}
+            />
             <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
               <Download className="h-4 w-4" /> {t('common.exportCsv')}
             </Button>
@@ -529,9 +548,9 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
       )}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4 sm:pt-4">
+        <div className="flex flex-col gap-3 p-3 sm:px-4 sm:pt-4 sm:pb-4">
           <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-            <h3 className={`text-base font-semibold tracking-tight ${headingText}`}>
+            <h3 className={sectionTitle}>
               {t('admin.paymentHistory')}
             </h3>
             {!loading && (
@@ -541,108 +560,92 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
             )}
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-            <div className="relative w-full sm:max-w-md">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-                <Search className="h-5 w-5" />
-              </span>
-              <input
-                type="text"
-                className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-                placeholder={t('admin.searchByGym')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <select
-              className={`ui-select ${selectSurface} min-w-[10rem]`}
+            <SearchField
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder={t('admin.searchByGym')}
+            />
+            <ToolbarPicker
               value={gymSort}
-              onChange={(e) => {
+              onChange={(id) => {
                 setPage(1);
-                setGymSort(e.target.value);
+                setGymSort(id);
               }}
-              aria-label={t('aria.sortByGymName')}
-            >
-              {REVENUE_SORT_OPTIONS.map((opt) => (
-                <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
-              ))}
-            </select>
-            <select
-              className={`ui-select ${selectSurface} min-w-[10rem]`}
-              value={gymFilter}
-              onChange={(e) => setGymFilter(e.target.value)}
-            >
-              <option value="All">{t('filters.allGyms')}</option>
-              {gymOptions.map(([id, name]) => (
-                <option key={id} value={String(id)}>{name}</option>
-              ))}
-            </select>
+              options={REVENUE_SORT_OPTIONS}
+              label={t('aria.sortByGymName')}
+            />
+            <ToolbarPicker
+              value={String(gymFilter)}
+              onChange={setGymFilter}
+              options={[
+                { id: 'All', label: t('filters.allGyms') },
+                ...gymOptions.map(([id, name]) => ({ id: String(id), label: name })),
+              ]}
+              label={t('filters.allGyms')}
+            />
           </div>
           <p className="text-xs text-app-muted">{t('admin.paymentsEditHint')}</p>
         </div>
+      </Card>
 
-        <div className="lg:hidden space-y-3 p-3">
-          {initialLoading ? (
+      <div className="lg:hidden space-y-3">
+        {initialLoading ? (
+          <Card className="overflow-hidden">
             <AdminListSkeleton rows={6} />
-          ) : filteredPayments.length > 0 ? (
-            filteredPayments.map((payment) => (
-              <div key={payment.id} className={`${cardSurface} p-3.5`}>
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="font-semibold text-app-text-strong">{payment.gymName}</p>
-                    <p className="mt-0.5 flex items-center gap-1.5 text-xs text-app-muted">
-                      <Calendar className="h-3.5 w-3.5 shrink-0" />
-                      {formatDate(payment.date)}
-                      <span aria-hidden>·</span>
-                      <span>{paymentSourceLabel(payment.source)}</span>
-                    </p>
-                    <div className="mt-1.5 flex items-center gap-2">
-                      <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ backgroundColor: methodShareColor(payment.method) }}
-                        aria-hidden
-                      />
-                      <PaymentMethodBadge method={payment.method} quiet />
-                    </div>
-                    {payment.planName && (
-                      <p className="mt-1 text-sm font-semibold text-teal-700">{payment.planName}</p>
-                    )}
-                    {payment.notes && <p className="mt-0.5 text-xs text-app-muted">{payment.notes}</p>}
-                  </div>
-                  <p className={`shrink-0 font-display text-lg font-bold tracking-tight ${headingText}`}>
-                    {formatMoney(payment.amount)}
+          </Card>
+        ) : filteredPayments.length > 0 ? (
+          filteredPayments.map((payment) => (
+            <div key={payment.id} className={`${cardSurface} p-3.5`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-app-text-strong">{payment.gymName}</p>
+                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-app-muted">
+                    <Calendar className="h-3.5 w-3.5 shrink-0" />
+                    {formatDate(payment.date)}
+                    <span aria-hidden>·</span>
+                    <span>{paymentSourceLabel(payment.source)}</span>
                   </p>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: methodShareColor(payment.method) }}
+                      aria-hidden
+                    />
+                    <PaymentMethodBadge method={payment.method} quiet />
+                  </div>
+                  {payment.planName && (
+                    <p className="mt-1 text-sm font-semibold text-teal-700">{payment.planName}</p>
+                  )}
+                  {payment.notes && <p className="mt-0.5 text-xs text-app-muted">{payment.notes}</p>}
                 </div>
-                <div className="admin-row-actions mt-2">
-                  <button
-                    type="button"
-                    onClick={() => setEditState({ isOpen: true, payment, error: '' })}
-                    className={iconActionIdle}
-                    title={t('common.edit')}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPaymentToDelete(payment)}
-                    className={iconActionDanger}
-                    title={t('common.delete')}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+                <p className={`shrink-0 font-display text-lg font-bold tracking-tight ${headingText}`}>
+                  {formatMoney(payment.amount)}
+                </p>
               </div>
-            ))
-          ) : (
+              <div className="mt-2">
+                <AdminPaymentRowActions
+                  payment={payment}
+                  t={t}
+                  onEdit={(row) => setEditState({ isOpen: true, payment: row, error: '' })}
+                  onDelete={setPaymentToDelete}
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className={cardSurface}>
             <EmptyState
               icon={CreditCard}
               compact
               title={t('admin.emptyTitle')}
               body={t('admin.emptyBody')}
             />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
-        <div className="hidden lg:block overflow-x-auto">
+      <Card className="hidden overflow-hidden lg:block">
+        <div className="overflow-x-auto">
           <table className="admin-data-table admin-payments-table min-w-[800px]">
             <thead>
               <tr>
@@ -695,24 +698,12 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       {formatMoney(payment.amount)}
                     </td>
                     <td>
-                      <div className="admin-row-actions justify-end">
-                        <button
-                          type="button"
-                          onClick={() => setEditState({ isOpen: true, payment, error: '' })}
-                          className={iconActionIdle}
-                          title={t('admin.editPaymentTitle')}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setPaymentToDelete(payment)}
-                          className={iconActionDanger}
-                          title={t('admin.deletePaymentCorrection')}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
+                      <AdminPaymentRowActions
+                        payment={payment}
+                        t={t}
+                        onEdit={(row) => setEditState({ isOpen: true, payment: row, error: '' })}
+                        onDelete={setPaymentToDelete}
+                      />
                     </td>
                   </tr>
                 ))

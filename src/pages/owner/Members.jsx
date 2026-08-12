@@ -5,7 +5,7 @@ import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Search, AlertCircle, HelpCircle } from 'lucide-react';
+import { AlertCircle, HelpCircle } from 'lucide-react';
 import UnpaidBadge from '../../components/UnpaidBadge';
 import MemberPhoto from '../../components/MemberPhoto';
 import EmptyState from '../../components/EmptyState';
@@ -13,7 +13,7 @@ import PageHeader from '../../components/PageHeader';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { cardSurface, selectSurface, tableRowHover } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover } from '../../utils/surfaceClasses';
 import MemberModal from '../../components/MemberModal';
 import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import RenewModal from '../../components/RenewModal';
@@ -22,6 +22,8 @@ import PaymentModal from '../../components/PaymentModal';
 import StatusBadge from '../../components/StatusBadge';
 import MemberListRowActions, { memberAttentionRowClass } from '../../components/MemberListRowActions';
 import { FilterChip, FilterChipBar } from '../../components/FilterChip';
+import ToolbarPicker from '../../components/ToolbarPicker';
+import SearchField from '../../components/SearchField';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import TransferMemberModal from '../../components/TransferMemberModal';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -429,6 +431,8 @@ export default function Members() {
 
   const needsPlanSetup = !readOnly && !gymLoading && plans.length === 0;
   const isFilteredEmpty = statusFilter !== 'All' || Boolean(debouncedSearch);
+  const noMembersYet = !needsPlanSetup && !listLoading && !isFilteredEmpty && total === 0;
+  const focusEmpty = needsPlanSetup || noMembersYet;
   const emptyIcon = AlertCircle;
   const emptyTitle = isFilteredEmpty ? t('pages.members.emptyFiltered') : t('pages.members.emptyTitle');
   const emptyBody = isFilteredEmpty ? t('pages.members.emptyFilteredBody') : t('pages.members.emptyBody');
@@ -439,7 +443,7 @@ export default function Members() {
         title={t('pages.members.title')}
         subtitle={needsPlanSetup ? t('pages.members.noPlansSetupSubtitle') : statusLine}
         actions={
-          !readOnly && !needsPlanSetup ? (
+          !readOnly && !focusEmpty ? (
             <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
               {t('actions.enroll')}
             </Button>
@@ -458,6 +462,21 @@ export default function Members() {
             action={
               !readOnly ? (
                 <Button onClick={() => navigate('/dashboard/plans')}>{t('actions.goToPlans')}</Button>
+              ) : null
+            }
+          />
+        </div>
+      ) : noMembersYet ? (
+        <div className={cardSurface}>
+          <EmptyState
+            icon={AlertCircle}
+            title={t('pages.members.emptyTitle')}
+            body={t('pages.members.emptyBody')}
+            action={
+              !readOnly ? (
+                <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
+                  {t('actions.enroll')}
+                </Button>
               ) : null
             }
           />
@@ -518,34 +537,20 @@ export default function Members() {
       </FilterChipBar>
 
       <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-        <div className="relative w-full sm:max-w-md">
-          <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-            <Search className="h-5 w-5" />
-          </span>
-          <input
-            type="text"
-            className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-            placeholder={t('pages.members.searchPlaceholder')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-        <select
-          className={`ui-select ${selectSurface} min-w-[10rem]`}
+        <SearchField
+          value={searchQuery}
+          onChange={setSearchQuery}
+          placeholder={t('pages.members.searchPlaceholder')}
+        />
+        <ToolbarPicker
           value={listSort}
-          onChange={(e) => {
+          onChange={(id) => {
             setPage(1);
-            setListSort(e.target.value);
+            setListSort(id);
           }}
-          aria-label={t('pages.members.sortMembers')}
-        >
-          {MEMBER_SORT_OPTIONS.map((opt) => (
-            <option key={opt.id} value={opt.id}>{t(opt.labelKey)}</option>
-          ))}
-        </select>
-        </div>
+          options={MEMBER_SORT_OPTIONS}
+          label={t('pages.members.sortMembers')}
+        />
       </div>
 
       <div className="lg:hidden space-y-3">
@@ -582,7 +587,7 @@ export default function Members() {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-semibold text-app-text-strong">{member.name}</span>
+                      <span className="list-row-copy font-semibold text-app-text-strong">{member.name}</span>
                       <StatusBadge status={member.status} />
                     </div>
                     <p className="mt-0.5 text-xs text-app-muted truncate">
@@ -672,7 +677,7 @@ export default function Members() {
                             fallbackClassName={LIST_AVATAR_FALLBACK_CLASS}
                           />
                           <div className="flex min-w-0 flex-wrap items-center gap-2">
-                            <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
+                            <span className="list-row-copy truncate font-semibold text-app-text-strong">{member.name}</span>
                           </div>
                         </div>
                       </td>

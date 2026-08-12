@@ -14,6 +14,8 @@ import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Modal for recording a missed payment for the current membership term.
@@ -128,7 +130,7 @@ export default function PaymentModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0">
-          <h2 className="text-lg font-bold text-app-text-strong">
+          <h2 className={modalTitle}>
             {payment ? t('modals.payment.editTitle') : t('modals.payment.collectTitle')}
           </h2>
           {!payment && selectedMember && (

@@ -12,6 +12,8 @@ const VARIANTS = {
     'text-app-muted hover:bg-app-raised focus-visible:ring-app-border/40',
   danger:
     'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-500/30',
+  dangerGhost:
+    'bg-transparent text-[color:var(--color-status-expired)] hover:bg-[color:var(--color-status-expired)]/10 focus-visible:ring-rose-500/30',
 };
 
 const SIZES = {
@@ -21,7 +23,7 @@ const SIZES = {
 
 /**
  * @param {object} props
- * @param {'primary'|'secondary'|'outline'|'ghost'|'danger'} [props.variant]
+ * @param {'primary'|'secondary'|'outline'|'ghost'|'danger'|'dangerGhost'} [props.variant]
  * @param {'sm'|'md'} [props.size]
  * @param {boolean} [props.loading]
  */

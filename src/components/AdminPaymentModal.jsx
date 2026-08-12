@@ -14,6 +14,8 @@ import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 export default function AdminPaymentModal({
   isOpen,
@@ -126,7 +128,7 @@ export default function AdminPaymentModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
-          <h2 className="text-lg font-bold text-app-text-strong">
+          <h2 className={modalTitle}>
             {isEdit ? t('modals.adminPayment.editTitle') : t('modals.adminPayment.collectTitle')}
           </h2>
           <p className="text-xs text-app-muted">

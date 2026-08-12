@@ -36,6 +36,8 @@ import RequiredMark from './ui/RequiredMark';
 import EnrollStepProgress from './EnrollStepProgress';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalHeader, modalFooter, modalFieldLabel } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Enroll (create) or edit a gym member.
@@ -1002,10 +1004,10 @@ export default function MemberModal({
                   <Check className="h-9 w-9" strokeWidth={2.5} />
                 </div>
               </div>
-              <h2 className="text-xl font-bold tracking-tight text-app-text-strong sm:text-2xl">
+              <h2 className={`${modalTitle} text-xl sm:text-2xl`}>
                 {t('modals.member.successTitle')}
               </h2>
-              <p className="mt-2.5 text-2xl font-bold tracking-tight text-app-text-strong sm:text-[1.75rem]">
+              <p className="mt-2.5 font-display text-2xl font-semibold tracking-tight text-app-text-strong sm:text-[1.75rem]">
                 {enrollDone.name}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-app-muted sm:text-[15px]">
@@ -1106,7 +1108,7 @@ export default function MemberModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0">
-          <h2 className="text-lg font-bold text-app-text-strong">{title}</h2>
+          <h2 className={modalTitle}>{title}</h2>
           <p className="mt-1 text-sm text-app-muted">{subtitle}</p>
         </div>
         <button

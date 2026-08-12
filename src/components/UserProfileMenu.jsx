@@ -143,7 +143,7 @@ export default function UserProfileMenu({ compact = false }) {
         {menuOpen && (
           <div
             role="menu"
-            className={`absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden rounded-2xl py-2 shadow-xl animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
+            className={`absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
           >
             <div className="border-b border-app-border-subtle px-4 pb-3 pt-2.5">
               <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>

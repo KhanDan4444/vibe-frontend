@@ -14,12 +14,13 @@ export default function ErrorRetryBanner({ message, onRetry, className = '' }) {
 
   return (
     <div
-      className={`flex flex-col gap-3 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between ${className}`}
+      className={`flex flex-col gap-3 rounded-xl border border-app-border-subtle border-l-[3px] border-l-[color:var(--color-status-expired)] bg-app-raised px-4 py-3 text-sm text-app-text sm:flex-row sm:items-center sm:justify-between ${className}`}
+      role="alert"
     >
-      <p>{message}</p>
+      <p className="text-app-muted">{message}</p>
       <Button
         type="button"
-        variant="danger"
+        variant="outline"
         size="sm"
         loading={retrying}
         disabled={retrying}

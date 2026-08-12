@@ -6,7 +6,7 @@ export const modalBackdrop =
   'fixed inset-0 bg-slate-900/50 backdrop-blur-sm dark:bg-black/55 dark:backdrop-blur-[2px]';
 
 export const modalPanelBase =
-  'safe-bottom relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-app-border-subtle bg-app-raised shadow-xl animate-in slide-in-from-bottom duration-200 sm:max-h-[min(90vh,720px)] sm:rounded-2xl sm:animate-in sm:zoom-in-95 sm:duration-150';
+  'safe-bottom relative flex max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-2xl border border-app-border-subtle bg-app-raised shadow-[0_12px_40px_rgb(28_25_23/0.12)] animate-in slide-in-from-bottom duration-200 sm:max-h-[min(90vh,720px)] sm:rounded-2xl sm:animate-in sm:zoom-in-95 sm:duration-150 dark:shadow-xl';
 
 export const modalPanelSm = `${modalPanelBase} max-w-sm`;
 export const modalPanelMd = `${modalPanelBase} max-w-md`;
@@ -23,4 +23,4 @@ export const modalHeader =
 export const modalFieldLabel = 'form-label';
 
 export const modalFooter =
-  'safe-bottom shrink-0 flex flex-col-reverse gap-2 border-t border-app-border-subtle px-4 py-4 sm:flex-row sm:justify-end sm:gap-3 sm:px-6';
+  'safe-bottom sticky bottom-0 z-10 shrink-0 flex flex-col-reverse gap-2 border-t border-app-border-subtle bg-app-raised px-4 py-4 sm:flex-row sm:justify-end sm:gap-3 sm:px-6';

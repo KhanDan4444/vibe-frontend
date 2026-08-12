@@ -19,6 +19,8 @@ import {
 import ResponsiveModal from '../ResponsiveModal';
 import Button from '../ui/Button';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
+import { modalTitle } from '../../utils/surfaceClasses';
+
 
 function Alert({ children }) {
   return (
@@ -117,7 +119,7 @@ function AccountModal({ open, title, description, onClose, children }) {
     <ResponsiveModal open={open} onClose={onClose} size="lg" zIndexClass="z-[100]" labelledBy="account-modal-title">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
-          <h2 id="account-modal-title" className="text-lg font-bold text-app-text-strong">
+          <h2 id="account-modal-title" className={modalTitle}>
             {title}
           </h2>
           {description ? <p className="mt-0.5 text-sm text-app-muted">{description}</p> : null}

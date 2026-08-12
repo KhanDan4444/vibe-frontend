@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import { modalBody, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
 
 /**
  * Accessible confirmation dialog (replaces window.confirm).
@@ -21,6 +22,7 @@ export default function ConfirmDialog({
   const { t } = useTranslation();
   const resolvedConfirm = confirmText ?? t('common.confirm');
   const resolvedCancel = cancelText ?? t('common.cancel');
+  const isDanger = type === 'danger';
   useEffect(() => {
     if (!isOpen) return undefined;
     const onKey = (e) => {
@@ -33,15 +35,18 @@ export default function ConfirmDialog({
   return (
     <ResponsiveModal open={isOpen} onClose={onCancel} size="md" zIndexClass="z-[100]" labelledBy="confirm-dialog-title">
       <div className={modalBody}>
-        <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-400">
-            <AlertTriangle className="h-5 w-5" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 id="confirm-dialog-title" className="text-base font-bold text-app-text-strong">
+        <div className="flex items-start gap-3">
+          {isDanger ? (
+            <AlertTriangle
+              className="mt-0.5 h-5 w-5 shrink-0 text-[color:var(--color-status-expired)]"
+              aria-hidden
+            />
+          ) : null}
+          <div className="min-w-0 flex-1">
+            <h3 id="confirm-dialog-title" className={modalTitle}>
               {title}
             </h3>
-            <p className="mt-2 text-sm text-app-muted">{message}</p>
+            <p className="mt-2 text-sm leading-relaxed text-app-muted">{message}</p>
           </div>
         </div>
       </div>
@@ -51,7 +56,7 @@ export default function ConfirmDialog({
         </Button>
         <Button
           type="button"
-          variant={type === 'danger' ? 'danger' : 'primary'}
+          variant={isDanger ? 'dangerGhost' : 'primary'}
           onClick={onConfirm}
           className="w-full sm:w-auto"
         >

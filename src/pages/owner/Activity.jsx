@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { ScrollText, RefreshCw, Search } from 'lucide-react';
+import { ScrollText, RefreshCw } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getActivityLogs } from '../../services/activityService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -19,8 +19,11 @@ import {
 } from '../../utils/activityLabels';
 import { useTranslation } from 'react-i18next';
 import { formatDisplayDateTime } from '../../utils/date';
-import { cardSurface, tableRowHover, selectSurface, headingText } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
+import ToolbarPicker from '../../components/ToolbarPicker';
+import { ToolbarChip, ToolbarChipBar } from '../../components/ToolbarChip';
+import SearchField from '../../components/SearchField';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
@@ -170,15 +173,6 @@ export default function Activity() {
     return isStaff ? ROLE_CHIP_STAFF : ROLE_CHIP_OWNER;
   };
 
-  const actionOptionsByGroup = useMemo(() => {
-    const ungrouped = ACTION_FILTER_OPTIONS.filter((opt) => !opt.group);
-    const groups = ACTION_FILTER_GROUPS.map((group) => ({
-      ...group,
-      options: ACTION_FILTER_OPTIONS.filter((opt) => opt.group === group.id),
-    }));
-    return { ungrouped, groups };
-  }, []);
-
   return (
     <div className="space-y-4 sm:space-y-5">
       <PageHeader
@@ -195,123 +189,101 @@ export default function Activity() {
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void loadActivity()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
+        <div className="flex flex-col gap-3 p-3 sm:px-4">
           <div className="min-w-0">
-            <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
+            <h2 className={panelTitle}>
               {t('pages.activity.history')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.activity.subtitle')}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-            <div className="relative w-full sm:max-w-md">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
-                <Search className="h-5 w-5" />
-              </span>
-              <input
-                type="search"
-                className="admin-field block w-full pl-10 pr-4 placeholder:text-app-muted"
-                placeholder={t('pages.activity.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label={t('pages.activity.searchPlaceholder')}
-              />
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <label className="sr-only" htmlFor="activity-action-filter">
-                {t('pages.activity.actionFilterLabel')}
-              </label>
-              <select
-                id="activity-action-filter"
-                value={actionFilter}
-                onChange={(e) => setActionFilter(e.target.value)}
-                className={`ui-select ${selectSurface} min-w-[11rem]`}
-              >
-                {actionOptionsByGroup.ungrouped.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.labelKey)}
-                  </option>
-                ))}
-                {actionOptionsByGroup.groups.map((group) => (
-                  <optgroup key={group.id} label={t(group.labelKey)}>
-                    {group.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {t(opt.labelKey)}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-              <label className="sr-only" htmlFor="activity-actor-filter">
-                {t('table.who')}
-              </label>
-              <select
-                id="activity-actor-filter"
-                value={actorFilter}
-                onChange={(e) => setActorFilter(e.target.value)}
-                className={`ui-select ${selectSurface} min-w-[9rem]`}
-              >
-                {ACTOR_FILTER_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.labelKey)}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <SearchField
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder={t('pages.activity.searchPlaceholder')}
+            />
+            <ToolbarPicker
+              value={actionFilter}
+              onChange={setActionFilter}
+              options={ACTION_FILTER_OPTIONS.map((opt) => ({
+                id: opt.value,
+                labelKey: opt.labelKey,
+                group: opt.group,
+              }))}
+              groups={ACTION_FILTER_GROUPS}
+              label={t('pages.activity.actionFilterLabel')}
+            />
+            <ToolbarChipBar className="mb-0">
+              {ACTOR_FILTER_OPTIONS.map((opt) => (
+                <ToolbarChip
+                  key={opt.value}
+                  label={t(opt.labelKey)}
+                  active={actorFilter === opt.value}
+                  onClick={() => setActorFilter(opt.value)}
+                />
+              ))}
+            </ToolbarChipBar>
           </div>
         </div>
+      </div>
 
-        <div className="lg:hidden space-y-3 p-3">
-          {loading && items.length === 0 ? (
+      <div className="lg:hidden space-y-3">
+        {loading && items.length === 0 ? (
+          <div className={`overflow-hidden ${cardSurface}`}>
             <AdminListSkeleton rows={5} />
-          ) : items.length > 0 ? (
-            items.map((entry) => {
-              const detailText = formatAuditDetails(entry);
-              const isStaff = entry.actor_role !== 'Gym Owner';
-              const clickable = isRowClickable(entry);
-              const content = (
-                <>
-                  <p className="text-xs text-app-muted">{formatDisplayDateTime(entry.created_at)}</p>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <span className="font-medium text-app-text-strong">{entry.actor_name}</span>
-                    <span className={roleChipClass(isStaff)}>
-                      {formatActorRole(entry.actor_role)}
-                    </span>
-                  </div>
-                  {showBranchColumn && entry.branch_name ? (
-                    <p className="mt-1 text-xs text-app-muted">{entry.branch_name}</p>
-                  ) : null}
-                  <p className={`mt-2 text-sm font-medium ${actionFiltered ? 'text-app-muted' : 'text-app-text-strong'}`}>
-                    {formatAuditAction(entry.action)}
-                  </p>
-                  {entry.entity_label ? (
-                    <p className="mt-0.5 text-sm text-app-text">{entry.entity_label}</p>
-                  ) : null}
-                  {detailText ? (
-                    <p className="mt-1 text-xs text-app-muted">{detailText}</p>
-                  ) : null}
-                </>
-              );
-              return clickable ? (
-                <button
-                  key={entry.id}
-                  type="button"
-                  onClick={() => openActivityTarget(entry, navigate)}
-                  className={`${cardSurface} block w-full p-4 text-left active:bg-app-surface/60`}
-                >
-                  {content}
-                </button>
-              ) : (
-                <div key={entry.id} className={`${cardSurface} p-4`}>
-                  {content}
+          </div>
+        ) : items.length > 0 ? (
+          items.map((entry) => {
+            const detailText = formatAuditDetails(entry);
+            const isStaff = entry.actor_role !== 'Gym Owner';
+            const clickable = isRowClickable(entry);
+            const content = (
+              <>
+                <p className="text-xs text-app-muted">{formatDisplayDateTime(entry.created_at)}</p>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-app-text-strong">{entry.actor_name}</span>
+                  <span className={roleChipClass(isStaff)}>
+                    {formatActorRole(entry.actor_role)}
+                  </span>
                 </div>
-              );
-            })
-          ) : (
+                {showBranchColumn && entry.branch_name ? (
+                  <p className="mt-1 text-xs text-app-muted">{entry.branch_name}</p>
+                ) : null}
+                <p className={`mt-2 text-sm font-medium ${actionFiltered ? 'text-app-muted' : 'text-app-text-strong'}`}>
+                  {formatAuditAction(entry.action)}
+                </p>
+                {entry.entity_label ? (
+                  <p className="mt-0.5 text-sm text-app-text">{entry.entity_label}</p>
+                ) : null}
+                {detailText ? (
+                  <p className="mt-1 text-xs text-app-muted">{detailText}</p>
+                ) : null}
+              </>
+            );
+            return clickable ? (
+              <button
+                key={entry.id}
+                type="button"
+                onClick={() => openActivityTarget(entry, navigate)}
+                className={`${cardSurface} block w-full p-4 text-left active:bg-app-surface/60`}
+              >
+                {content}
+              </button>
+            ) : (
+              <div key={entry.id} className={`${cardSurface} p-4`}>
+                {content}
+              </div>
+            );
+          })
+        ) : (
+          <div className={cardSurface}>
             <EmptyState icon={ScrollText} compact title={emptyTitle} body={emptyBody} />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
-        <div className="hidden overflow-x-auto lg:block">
+      <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
+        <div className="overflow-x-auto">
           <table className="admin-data-table min-w-[720px]">
             <thead>
               <tr>

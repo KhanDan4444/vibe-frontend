@@ -11,8 +11,10 @@ import { PlanCardSkeleton } from '../../components/LoadingSkeletons';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import RowMoreMenu from '../../components/RowMoreMenu';
 import { formatMoney } from '../../utils/formatMoney';
-import { cardSurface, selectSurface } from '../../utils/surfaceClasses';
+import { cardSurface } from '../../utils/surfaceClasses';
+import ToolbarPicker from '../../components/ToolbarPicker';
 
 const SORT_OPTIONS = [
   { value: 'price_asc', labelKey: 'pages.plans.sort.priceAsc' },
@@ -198,21 +200,12 @@ export default function Plans() {
       ) : plans.length > 0 ? (
         <>
           <div className="flex justify-start">
-            <label className="sr-only" htmlFor="plans-sort">
-              {t('pages.plans.sortLabel')}
-            </label>
-            <select
-              id="plans-sort"
+            <ToolbarPicker
               value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[11rem]`}
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {t(opt.labelKey)}
-                </option>
-              ))}
-            </select>
+              onChange={setSort}
+              options={SORT_OPTIONS.map((opt) => ({ id: opt.value, labelKey: opt.labelKey }))}
+              label={t('pages.plans.sortLabel')}
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
@@ -252,25 +245,24 @@ export default function Plans() {
                       )}
                     </div>
                     {canManagePlans ? (
-                      <div className="flex shrink-0 gap-0.5">
-                        <button
-                          type="button"
-                          onClick={() => handleEditClick(plan)}
-                          className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-teal-700 dark:hover:text-teal-300"
-                          title={t('pages.plans.editPlanTitle')}
-                          aria-label={t('pages.plans.editPlanTitle')}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeletePlanClick(plan)}
-                          className="rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-rose-600 dark:hover:text-rose-400"
-                          title={t('pages.plans.deletePlanTitle')}
-                          aria-label={t('pages.plans.deletePlanTitle')}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                      <div className="admin-row-actions shrink-0">
+                        <RowMoreMenu
+                          items={[
+                            {
+                              key: 'edit',
+                              label: t('pages.plans.editPlanTitle'),
+                              icon: <Edit className="h-4 w-4 shrink-0" />,
+                              onClick: () => handleEditClick(plan),
+                            },
+                            {
+                              key: 'delete',
+                              label: t('pages.plans.deletePlanTitle'),
+                              icon: <Trash2 className="h-4 w-4 shrink-0" />,
+                              danger: true,
+                              onClick: () => handleDeletePlanClick(plan),
+                            },
+                          ]}
+                        />
                       </div>
                     ) : null}
                   </div>

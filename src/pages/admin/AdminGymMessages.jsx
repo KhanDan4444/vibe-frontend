@@ -10,8 +10,9 @@ import PageHeader from '../../components/PageHeader';
 import { formatDisplayDateTime } from '../../utils/date';
 import { formatAdminSmsMessageType, ADMIN_SMS_TYPE_FILTER_OPTIONS } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
-import { cardSurface, tableRowHover, selectSurface, headingText } from '../../utils/surfaceClasses';
+import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
+import ToolbarPicker from '../../components/ToolbarPicker';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
@@ -138,86 +139,79 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
       {error ? <ErrorRetryBanner message={error} onRetry={() => void loadMessages()} /> : null}
 
       <div className={`overflow-hidden ${cardSurface}`}>
-        <div className="flex flex-col gap-3 border-b border-app-border-subtle p-3 sm:px-4">
+        <div className="flex flex-col gap-3 p-3 sm:px-4">
           <div className="min-w-0">
-            <h2 className={`text-sm font-semibold tracking-tight sm:text-base ${headingText}`}>
+            <h2 className={panelTitle}>
               {t('pages.adminGymMessages.messageHistory')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.adminGymMessages.subtitle')}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
-            <label className="sr-only" htmlFor="admin-sms-gym-filter">
-              {t('table.gym')}
-            </label>
-            <select
-              id="admin-sms-gym-filter"
+            <ToolbarPicker
               value={gymFilter}
-              onChange={(e) => setGymFilter(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[11rem]`}
-            >
-              <option value="all">{t('filters.allGyms')}</option>
-              {gyms.map((gym) => (
-                <option key={gym.id} value={String(gym.id)}>
-                  {gym.name}
-                </option>
-              ))}
-            </select>
-            <label className="sr-only" htmlFor="admin-sms-type-filter">
-              {t('smsLog.filterLabel')}
-            </label>
-            <select
-              id="admin-sms-type-filter"
+              onChange={setGymFilter}
+              options={[
+                { id: 'all', label: t('filters.allGyms') },
+                ...gyms.map((gym) => ({ id: String(gym.id), label: gym.name })),
+              ]}
+              label={t('table.gym')}
+            />
+            <ToolbarPicker
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[11rem]`}
-            >
-              {ADMIN_SMS_TYPE_FILTER_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {t(opt.labelKey)}
-                </option>
-              ))}
-            </select>
+              onChange={setTypeFilter}
+              options={ADMIN_SMS_TYPE_FILTER_OPTIONS.map((opt) => ({
+                id: opt.value,
+                labelKey: opt.labelKey,
+              }))}
+              label={t('smsLog.filterLabel')}
+            />
           </div>
         </div>
+      </div>
 
-        <div className="lg:hidden space-y-3 p-3">
-          {loading && items.length === 0 ? (
+      <div className="lg:hidden space-y-3">
+        {loading && items.length === 0 ? (
+          <div className={`overflow-hidden ${cardSurface}`}>
             <AdminListSkeleton rows={5} />
-          ) : items.length > 0 ? (
-            items.map((row) => (
-              <div key={row.id} className={`flex gap-3 p-4 ${cardSurface}`}>
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
-                  <MessageSquare className="h-4 w-4" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-app-text-strong">
-                    {renderGymCell(row)}
-                  </div>
-                  <p className="mt-0.5 text-sm text-app-text">
-                    {row.owner_name || '—'}
-                  </p>
-                  <p className="mt-1">
-                    <span className={chipClass}>
-                      {formatAdminSmsMessageType(t, row.message_type)}
-                    </span>
-                  </p>
-                  {row.otp_code && (
-                    <p className="mt-1 font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
-                      {t('smsLog.code')}: {row.otp_code}
-                    </p>
-                  )}
-                  <p className="mt-1.5 text-xs text-app-muted">
-                    {row.recipient_phone || row.gym_phone || '—'} · {formatDisplayDateTime(row.sent_at)}
-                  </p>
+          </div>
+        ) : items.length > 0 ? (
+          items.map((row) => (
+            <div key={row.id} className={`flex gap-3 p-4 ${cardSurface}`}>
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
+                <MessageSquare className="h-4 w-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold text-app-text-strong">
+                  {renderGymCell(row)}
                 </div>
+                <p className="mt-0.5 text-sm text-app-text">
+                  {row.owner_name || '—'}
+                </p>
+                <p className="mt-1">
+                  <span className={chipClass}>
+                    {formatAdminSmsMessageType(t, row.message_type)}
+                  </span>
+                </p>
+                {row.otp_code && (
+                  <p className="mt-1 font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
+                    {t('smsLog.code')}: {row.otp_code}
+                  </p>
+                )}
+                <p className="mt-1.5 text-xs text-app-muted">
+                  {row.recipient_phone || row.gym_phone || '—'} · {formatDisplayDateTime(row.sent_at)}
+                </p>
               </div>
-            ))
-          ) : (
+            </div>
+          ))
+        ) : (
+          <div className={cardSurface}>
             <EmptyState icon={MessageSquare} compact title={emptyTitle} body={emptyBody} />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
 
-        <div className="hidden overflow-x-auto lg:block">
+      <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
+        <div className="overflow-x-auto">
           <table className="admin-data-table min-w-[720px]">
             <thead>
               <tr>

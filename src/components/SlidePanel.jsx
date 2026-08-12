@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import { overlayBackdrop } from '../utils/surfaceClasses';
+import { overlayBackdrop, modalTitle } from '../utils/surfaceClasses';
 import Button from './ui/Button';
 
 /**
@@ -40,12 +40,12 @@ export function SlidePanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="slide-panel-title"
-        className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-app-border-subtle bg-app-surface shadow-2xl animate-in slide-in-from-right duration-200`}
+        className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-app-border-subtle bg-app-raised shadow-[0_12px_40px_rgb(28_25_23/0.12)] animate-in slide-in-from-right duration-200 dark:shadow-xl`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex shrink-0 items-start justify-between gap-4 border-b px-4 py-4 border-app-border-subtle sm:px-6">
           <div className="min-w-0 flex-1">
-            <h2 id="slide-panel-title" className="text-lg font-bold text-app-text-strong">
+            <h2 id="slide-panel-title" className={modalTitle}>
               {title}
             </h2>
             {subtitle && <p className="mt-0.5 text-xs text-app-muted">{subtitle}</p>}
@@ -55,7 +55,7 @@ export function SlidePanel({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1.5 text-app-muted hover:bg-app-raised hover:text-app-text-strong"
+              className="rounded-lg p-1.5 text-app-muted hover:bg-app-surface hover:text-app-text-strong"
               aria-label={t('aria.closePanel')}
             >
               <X className="h-5 w-5" />
@@ -66,7 +66,7 @@ export function SlidePanel({
         <div className="safe-bottom flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">{children}</div>
 
         {footer && (
-          <div className="safe-bottom max-h-[min(50vh,28rem)] shrink-0 overflow-y-auto border-t border-app-border-subtle bg-app-surface px-4 py-3 sm:px-6 sm:py-3.5">
+          <div className="safe-bottom max-h-[min(50vh,28rem)] shrink-0 overflow-y-auto border-t border-app-border-subtle bg-app-raised px-4 py-3 sm:px-6 sm:py-3.5">
             {footer}
           </div>
         )}
@@ -87,7 +87,7 @@ export function SlidePanelProfileHeader({ name, lines = [], badge, avatar }) {
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <h3 className="truncate text-xl font-bold text-app-text-strong">{name}</h3>
+        <h3 className="truncate font-display text-xl font-semibold tracking-tight text-app-text-strong">{name}</h3>
         {lines.map((line) => (
           <div key={line.key || line.text} className="mt-1 flex items-center gap-2 text-sm text-app-muted">
             {line.icon && <line.icon className="h-3.5 w-3.5 shrink-0 text-app-muted" aria-hidden />}
@@ -282,7 +282,7 @@ export function SlidePanelActionButton({
 
   if (variant === 'danger') {
     return (
-      <Button variant="danger" onClick={onClick} className={className} {...props}>
+      <Button variant="dangerGhost" onClick={onClick} className={className} {...props}>
         {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
         {children}
       </Button>

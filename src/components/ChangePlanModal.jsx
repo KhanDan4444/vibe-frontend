@@ -34,6 +34,8 @@ import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 const termModeBtn =
   'rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40';
@@ -230,7 +232,7 @@ export default function ChangePlanModal({
         <div className="flex min-w-0 items-start gap-2">
           <ArrowLeftRight className="mt-0.5 h-5 w-5 shrink-0 text-teal-800/75 dark:text-teal-600/80" aria-hidden />
           <div className="min-w-0">
-            <h2 className="text-lg font-bold text-app-text-strong">{t('modals.changePlan.title')}</h2>
+            <h2 className={modalTitle}>{t('modals.changePlan.title')}</h2>
             <p className="mt-0.5 text-sm text-app-muted">
               {t('modals.changePlan.subtitle', { name: member.name })}
             </p>

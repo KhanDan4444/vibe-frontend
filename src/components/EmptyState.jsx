@@ -23,7 +23,7 @@ export default function EmptyState({
           <Icon className="h-6 w-6" aria-hidden />
         </div>
       ) : null}
-      <h3 className="text-base font-semibold text-app-text-strong">{title}</h3>
+      <h3 className="font-display text-base font-semibold tracking-tight text-app-text-strong">{title}</h3>
       {body ? (
         <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-app-muted">{body}</p>
       ) : null}

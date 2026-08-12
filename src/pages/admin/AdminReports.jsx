@@ -50,7 +50,8 @@ import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { selectSurface, headingText } from '../../utils/surfaceClasses';
+import { sectionTitle } from '../../utils/surfaceClasses';
+import ToolbarPicker from '../../components/ToolbarPicker';
 
 const GYM_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allGyms', query: {} },
@@ -217,21 +218,18 @@ export default function AdminReports({ onBootingChange }) {
       <section className="space-y-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <div>
-            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+            <h2 className={sectionTitle}>
               {t('admin.gymRegistryOverview')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('admin.gymRegistrySubtitle')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <select
+            <ToolbarPicker
               value={gymFilter}
-              onChange={(e) => setGymFilter(e.target.value)}
-              className={`ui-select ${selectSurface} min-w-[10rem]`}
-            >
-              {GYM_STATUS_FILTERS.map((f) => (
-                <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
-              ))}
-            </select>
+              onChange={setGymFilter}
+              options={GYM_STATUS_FILTERS.map((f) => ({ id: f.id, labelKey: f.labelKey }))}
+              label={t('admin.gymRegistryOverview')}
+            />
             <Button
               variant="secondary"
               disabled={!gymLoaded || gyms.length === 0 || exporting === 'gym-csv'}
@@ -286,7 +284,7 @@ export default function AdminReports({ onBootingChange }) {
       <section className="space-y-5">
         <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-3">
           <div className="min-w-0">
-            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+            <h2 className={sectionTitle}>
               {t('admin.revenueOverview')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('admin.revenueChartsSubtitle')}</p>
@@ -294,15 +292,12 @@ export default function AdminReports({ onBootingChange }) {
           <div className="flex flex-wrap items-end gap-2">
             <div>
               <label className="mb-1 block text-xs font-medium text-app-muted">{t('period.reportPeriod')}</label>
-              <select
+              <ToolbarPicker
                 value={periodPreset}
-                onChange={(e) => setPeriodPreset(e.target.value)}
-                className={`ui-select ${selectSurface} min-w-[10rem]`}
-              >
-                {PERIOD_PRESETS.map((p) => (
-                  <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
-                ))}
-              </select>
+                onChange={setPeriodPreset}
+                options={PERIOD_PRESETS}
+                label={t('period.reportPeriod')}
+              />
             </div>
             {periodPreset === 'custom' && (
               <>

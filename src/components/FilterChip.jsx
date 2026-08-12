@@ -16,9 +16,11 @@ export function FilterChip({ variant = 'all', label, count, active = false, onCl
     >
       <span className={`filter-chip-dot ${theme.dot}`} aria-hidden />
       <span className="filter-chip-label">{label}</span>
-      <span className={`filter-chip-count ${active ? theme.badgeActive : theme.badgeInactive}`}>
-        {count}
-      </span>
+      {count != null ? (
+        <span className={`filter-chip-count ${active ? theme.badgeActive : theme.badgeInactive}`}>
+          {count}
+        </span>
+      ) : null}
     </button>
   );
 }

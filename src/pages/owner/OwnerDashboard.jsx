@@ -18,7 +18,7 @@ import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn } from '../../utils/surfaceClasses';
+import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn, sectionTitle } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
@@ -202,7 +202,7 @@ export default function OwnerDashboard() {
             <Card className="app-attention-panel md:col-span-3 overflow-hidden">
               <div className="admin-panel-header">
                 <div className="min-w-0">
-                  <h2 className="font-display text-lg font-semibold tracking-tight text-app-text-strong sm:text-xl">
+                  <h2 className={sectionTitle}>
                     {t('pages.dashboard.expiringSection')}
                   </h2>
                   <p className={`mt-0.5 text-xs sm:text-sm ${mutedText}`}>{t('pages.dashboard.expiringSectionHint')}</p>
@@ -305,7 +305,7 @@ export default function OwnerDashboard() {
                               <StatusBadge status={member.status} />
                             </td>
                             <td>
-                              <div className="flex justify-end">
+                              <div className="admin-row-actions">
                                 {!readOnly && canRenewMember(member) && (
                                   <button
                                     type="button"
@@ -333,7 +333,7 @@ export default function OwnerDashboard() {
             </Card>
 
             <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
-              <h2 className={`font-display mb-3 text-base font-semibold tracking-tight ${headingText} sm:mb-4 sm:text-lg`}>
+              <h2 className={`mb-3 sm:mb-4 ${sectionTitle}`}>
                 {t('pages.dashboard.revenueThisMonth')}
               </h2>
               <div className="min-h-[200px] flex-1 sm:min-h-[240px]">

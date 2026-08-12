@@ -18,6 +18,8 @@ import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import SearchableSelect from './ui/SearchableSelect';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Create or edit a front desk staff login (owner sets credentials on-platform).
@@ -128,7 +130,7 @@ export default function StaffModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[100]">
       <div className={`${modalHeader} flex items-center justify-between gap-3`}>
         <div className="min-w-0">
-          <h2 className="text-lg font-bold text-app-text-strong">
+          <h2 className={modalTitle}>
             {isEdit ? t('modals.staff.editTitle') : t('modals.staff.createTitle')}
           </h2>
           <p className="mt-1 text-sm text-app-muted">{t('modals.staff.subtitle')}</p>

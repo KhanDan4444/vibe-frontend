@@ -9,6 +9,8 @@ import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Edit gym tenant contact details (admin). SaaS plan changes use Change plan or Renew.
@@ -79,7 +81,7 @@ export default function GymEditModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="md">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
-          <h2 className="text-lg font-bold text-app-text-strong">{t('modals.gymEdit.title')}</h2>
+          <h2 className={modalTitle}>{t('modals.gymEdit.title')}</h2>
           <p className="mt-1 text-sm text-app-muted">{t('modals.gymEdit.subtitle')}</p>
         </div>
         <button

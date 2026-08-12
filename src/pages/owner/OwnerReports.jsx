@@ -44,7 +44,9 @@ import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
-import { selectSurface, headingText } from '../../utils/surfaceClasses';
+import { sectionTitle } from '../../utils/surfaceClasses';
+import { FilterChip, FilterChipBar } from '../../components/FilterChip';
+import ToolbarPicker from '../../components/ToolbarPicker';
 
 const MEMBER_STATUS_FILTERS = [
   { id: 'all', labelKey: 'filters.allMembers', query: {} },
@@ -227,24 +229,22 @@ export default function OwnerReports() {
       <section className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
           <div>
-            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+            <h2 className={sectionTitle}>
               {t('nav.members')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.reports.memberOverviewSubtitle')}</p>
           </div>
-          <label className="sr-only" htmlFor="reports-member-filter">
-            {t('pages.reports.memberFilter')}
-          </label>
-          <select
-            id="reports-member-filter"
-            value={memberFilter}
-            onChange={(e) => setMemberFilter(e.target.value)}
-            className={`ui-select ${selectSurface} min-w-[10rem] shrink-0`}
-          >
+          <FilterChipBar className="!mb-0">
             {MEMBER_STATUS_FILTERS.map((f) => (
-              <option key={f.id} value={f.id}>{t(f.labelKey)}</option>
+              <FilterChip
+                key={f.id}
+                variant={f.id === 'due_soon' ? 'due_soon' : f.id}
+                label={t(f.labelKey)}
+                active={memberFilter === f.id}
+                onClick={() => setMemberFilter(f.id)}
+              />
             ))}
-          </select>
+          </FilterChipBar>
         </div>
 
         <div className="app-metric-grid grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 xl:grid-cols-6">
@@ -284,7 +284,7 @@ export default function OwnerReports() {
       <section className="space-y-4">
         <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-3">
           <div className="min-w-0">
-            <h2 className={`text-base font-semibold tracking-tight sm:text-lg ${headingText}`}>
+            <h2 className={sectionTitle}>
               {t('nav.revenue')}
             </h2>
             {revenueStatusLine ? (
@@ -295,19 +295,15 @@ export default function OwnerReports() {
           </div>
           <div className="flex flex-wrap items-end gap-2">
             <div>
-              <label className="mb-1 block text-xs font-medium text-app-muted" htmlFor="reports-period">
+              <label className="mb-1 block text-xs font-medium text-app-muted">
                 {t('period.reportPeriod')}
               </label>
-              <select
-                id="reports-period"
+              <ToolbarPicker
                 value={periodPreset}
-                onChange={(e) => setPeriodPreset(e.target.value)}
-                className={`ui-select ${selectSurface} min-w-[10rem]`}
-              >
-                {PERIOD_PRESETS.map((p) => (
-                  <option key={p.id} value={p.id}>{t(p.labelKey)}</option>
-                ))}
-              </select>
+                onChange={setPeriodPreset}
+                options={PERIOD_PRESETS}
+                label={t('period.reportPeriod')}
+              />
             </div>
             {periodPreset === 'custom' && (
               <>

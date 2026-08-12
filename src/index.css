@@ -4,19 +4,19 @@
 
 /* Shared app palette — light defaults (warm ink paper); html.dark overrides below */
 @theme {
-  /* Light: bg < surface < raised — cards lift off paper */
-  --color-app-bg: #f1f5f9;
-  --color-app-surface: #f8fafc;
+  /* Light: warm ink paper — bg < surface < raised */
+  --color-app-bg: #f1eee7;
+  --color-app-surface: #f6f3ed;
   --color-app-raised: #ffffff;
   --color-app-sidebar: #121c1a;
-  --color-app-border: #cbd5e1;
-  --color-app-border-subtle: #e2e8f0;
-  --color-app-text: #334155;
-  --color-app-text-strong: #0f172a;
-  --color-app-muted: #64748b;
-  /* White fields on slate surfaces — readable “box” without neon borders */
+  --color-app-border: #d0cbc3;
+  --color-app-border-subtle: #e4e0d8;
+  --color-app-text: #3f3a34;
+  --color-app-text-strong: #1a1714;
+  --color-app-muted: #6b645c;
+  /* White fields on warm paper — readable “box” without neon borders */
   --color-app-input: #ffffff;
-  --color-app-input-border: #b6c2d1;
+  --color-app-input-border: #c5c0b6;
   /* Athletic ink + teal brand */
   --color-brand: #0f766e;
   --color-brand-hover: #0d9488;
@@ -57,17 +57,17 @@
 
 @layer base {
   :root {
-    --color-app-bg: #f1f5f9;
-    --color-app-surface: #f8fafc;
+    --color-app-bg: #f1eee7;
+    --color-app-surface: #f6f3ed;
     --color-app-raised: #ffffff;
     --color-app-sidebar: #121c1a;
-    --color-app-border: #cbd5e1;
-    --color-app-border-subtle: #e2e8f0;
-    --color-app-text: #334155;
-    --color-app-text-strong: #0f172a;
-    --color-app-muted: #64748b;
+    --color-app-border: #d0cbc3;
+    --color-app-border-subtle: #e4e0d8;
+    --color-app-text: #3f3a34;
+    --color-app-text-strong: #1a1714;
+    --color-app-muted: #6b645c;
     --color-app-input: #ffffff;
-    --color-app-input-border: #b6c2d1;
+    --color-app-input-border: #c5c0b6;
     --color-brand: #0f766e;
     --color-brand-hover: #0d9488;
     --color-brand-soft: #d5f5f0;
@@ -94,6 +94,7 @@
     --font-sans: 'Noto Sans Ethiopic', 'Noto Sans', 'DM Sans', system-ui, sans-serif;
     --font-display: 'Noto Sans Ethiopic', 'Noto Sans', 'Space Grotesk', system-ui, sans-serif;
     font-family: var(--font-sans);
+    line-height: 1.55;
   }
 
   html[lang='am'] .uppercase {
@@ -103,6 +104,15 @@
 
   .font-display {
     font-family: var(--font-display);
+  }
+
+  /* Denser list copy: keep readable on mobile, especially Ethiopic. */
+  .list-row-copy {
+    line-height: 1.4;
+  }
+
+  html[lang='am'] .list-row-copy {
+    line-height: 1.55;
   }
 
   html.dark {
@@ -436,7 +446,7 @@
   }
 
   .admin-data-table thead tr {
-    @apply border-b border-app-border-subtle bg-app-surface;
+    @apply border-b border-app-border-subtle;
   }
 
   .admin-data-table th {
@@ -658,6 +668,11 @@
     @apply flex items-center justify-between border-b border-app-border-subtle bg-app-surface/80 px-4 py-4 sm:px-6;
   }
 
+  .admin-panel-header h2 {
+    font-family: var(--font-display);
+    @apply text-sm font-semibold tracking-tight text-app-text-strong sm:text-base;
+  }
+
   .admin-panel-empty {
     @apply py-6 text-center text-sm font-medium text-app-muted sm:py-8;
   }
@@ -669,6 +684,7 @@
   .filter-chip-bar {
     @apply -mx-1 overflow-x-auto pb-1;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
 
   .filter-chip-bar::-webkit-scrollbar {
@@ -677,11 +693,13 @@
 
   .filter-chip-row {
     @apply flex w-max min-w-full items-center gap-2 px-1;
+    scroll-snap-type: x mandatory;
   }
 
   .filter-chip {
     @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-snug transition-colors cursor-pointer;
-    min-height: 36px;
+    min-height: 40px;
+    scroll-snap-align: start;
   }
 
   .filter-chip-dot {
@@ -694,6 +712,69 @@
 
   .filter-chip-count {
     @apply inline-flex h-[22px] min-w-[22px] items-center justify-center rounded-full px-1.5 text-xs font-semibold;
+  }
+
+  .toolbar-chip {
+    @apply inline-flex shrink-0 items-center rounded-full border px-3 py-1.5 text-[13px] font-medium leading-snug transition-colors cursor-pointer;
+    min-height: 40px;
+    scroll-snap-align: start;
+    border-color: var(--color-app-border-subtle);
+    background-color: var(--color-app-raised);
+    color: var(--color-app-text);
+  }
+
+  .toolbar-chip:hover {
+    background-color: var(--color-app-surface);
+  }
+
+  .toolbar-chip--active {
+    border-color: var(--color-brand);
+    background-color: var(--color-brand-soft);
+    color: var(--color-brand-text);
+  }
+
+  .toolbar-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2.5rem;
+    max-width: 100%;
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-app-input-border);
+    background-color: var(--color-app-input);
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    cursor: pointer;
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  .toolbar-picker--field {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .toolbar-picker:hover:not(.toolbar-picker--open) {
+    border-color: #94a3b8;
+  }
+
+  .toolbar-picker--open,
+  .toolbar-picker:focus-visible {
+    outline: none;
+    border-color: #0f766e;
+    box-shadow: 0 0 0 2px rgb(15 118 110 / 0.35);
+  }
+
+  html.dark .toolbar-picker:hover:not(.toolbar-picker--open) {
+    border-color: #5b6474;
+  }
+
+  html.dark .toolbar-picker--open,
+  html.dark .toolbar-picker:focus-visible {
+    border-color: #0d9488;
+    box-shadow: 0 0 0 2px rgb(13 148 136 / 0.25);
   }
 
   .ui-select {
@@ -885,8 +966,8 @@
     @apply flex flex-nowrap items-center justify-end gap-1;
   }
 
-  .admin-row-actions button {
-    @apply rounded-md p-2 transition-colors active:bg-app-surface/80;
+  .admin-row-actions .row-icon-action {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-md p-2 transition-colors active:bg-app-surface/80;
   }
 
   .admin-row-unpaid {
@@ -1031,7 +1112,7 @@
   @keyframes app-page-in {
     from {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(6px);
     }
     to {
       opacity: 1;
@@ -1040,7 +1121,7 @@
   }
 
   .app-page {
-    animation: app-page-in 0.28s ease-out;
+    animation: app-page-in 0.34s ease-out;
   }
 
   @keyframes enroll-success-in {

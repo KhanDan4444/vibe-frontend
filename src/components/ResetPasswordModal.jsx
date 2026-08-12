@@ -8,6 +8,8 @@ import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Admin sets a new password on behalf of another user (platform admin → owner, owner → staff).
@@ -59,7 +61,7 @@ export default function ResetPasswordModal({
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
         <div className={`${modalHeader} flex items-center justify-between gap-3`}>
-          <h2 className="text-lg font-bold text-app-text-strong">{title}</h2>
+          <h2 className={modalTitle}>{title}</h2>
           <button
             type="button"
             onClick={onClose}

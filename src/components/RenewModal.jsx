@@ -22,6 +22,8 @@ import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Modal to renew an expired or due-soon member and record payment in one step.
@@ -125,7 +127,7 @@ export default function RenewModal({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <RefreshCw className="h-5 w-5 shrink-0 text-teal-700" />
-            <h2 className="text-lg font-bold text-app-text-strong">{t('modals.renew.title')}</h2>
+            <h2 className={modalTitle}>{t('modals.renew.title')}</h2>
           </div>
           <p className="mt-1 text-sm text-app-muted">
             {t('modals.renew.subtitle', { name: member.name })}

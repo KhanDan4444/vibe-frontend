@@ -6,6 +6,8 @@ import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 /**
  * Owner-only: move a member to another active branch.
@@ -43,7 +45,7 @@ export default function TransferMemberModal({
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-center justify-between gap-3`}>
-        <h2 className="text-lg font-bold text-app-text-strong">{t('modals.transfer.title')}</h2>
+        <h2 className={modalTitle}>{t('modals.transfer.title')}</h2>
         <button
           type="button"
           onClick={onClose}

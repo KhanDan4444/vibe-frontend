@@ -10,6 +10,8 @@ import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalTitle } from '../utils/surfaceClasses';
+
 
 const NUMBER_FIELD_CLASS =
   '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none';
@@ -66,7 +68,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
   if (!isOpen) return null;
 
   const isEdit = !!plan;
-  const modalTitle = title || (isEdit ? t('modals.plan.editTitle') : t('modals.plan.createTitle'));
+  const heading = title || (isEdit ? t('modals.plan.editTitle') : t('modals.plan.createTitle'));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -93,7 +95,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-50">
       <div className={`${modalHeader} flex items-center justify-between gap-3`}>
-        <h2 className="text-lg font-bold text-app-text-strong">{modalTitle}</h2>
+        <h2 className={modalTitle}>{heading}</h2>
         <button
           type="button"
           onClick={onClose}
