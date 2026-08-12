@@ -13,13 +13,15 @@ import BranchComparisonTable from '../../components/BranchComparisonTable';
 import { canRenewMember } from '../../utils/memberRenew';
 import { mapMemberFromApi } from '../../utils/apiMappers';
 import { formatDisplayDate } from '../../utils/date';
+import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { pageTitle, headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn, sectionTitle } from '../../utils/surfaceClasses';
+import { headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn, sectionTitle } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
+import PageHeader from '../../components/PageHeader';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
 const OwnerRevenueChart = lazyWithRetry(() => import('../../components/OwnerRevenueChart'));
@@ -98,17 +100,19 @@ export default function OwnerDashboard() {
 
   return (
     <div className="space-y-8">
-      <div>
-        {gymName ? (
-          <h1 className={pageTitle}>{gymName}</h1>
-        ) : (
+      {gymName ? (
+        <PageHeader title={gymName} subtitle={t('pages.dashboard.subtitle')} />
+      ) : (
+        <div className="mb-5 sm:mb-6">
           <div
             className="app-skeleton h-10 w-52 max-w-[70%] rounded-lg sm:h-11 sm:w-72"
             aria-hidden
           />
-        )}
-        <p className={`mt-2 max-w-xl text-sm leading-relaxed ${mutedText}`}>{t('pages.dashboard.subtitle')}</p>
-      </div>
+          <p className={`mt-1.5 max-w-2xl text-sm leading-relaxed ${mutedText}`}>
+            {t('pages.dashboard.subtitle')}
+          </p>
+        </div>
+      )}
 
       <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
         {gymBooting ? (
@@ -219,7 +223,11 @@ export default function OwnerDashboard() {
               <div className="lg:hidden divide-y divide-app-border-subtle">
                 {alertMembers.length > 0 ? (
                   alertMembers.map((member) => {
-                    const matchingPlan = plans.find((p) => p.id === member.planId);
+                    const planLabel = resolveMemberPlanLabel(
+                      member,
+                      plans,
+                      t('pages.dashboard.customPlan'),
+                    );
                     return (
                       <div key={member.id} className="flex items-center justify-between gap-3 px-4 py-3.5">
                         <div className="min-w-0 flex-1">
@@ -236,7 +244,7 @@ export default function OwnerDashboard() {
                             <div className="min-w-0">
                               <span className="block truncate font-semibold text-app-text-strong">{member.name}</span>
                               <p className="truncate text-xs text-app-muted">
-                                {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                                {planLabel}
                                 {' · '}
                                 {formatDisplayDate(member.endDate)}
                               </p>
@@ -280,7 +288,11 @@ export default function OwnerDashboard() {
                   <tbody>
                     {alertMembers.length > 0 ? (
                       alertMembers.map((member) => {
-                        const matchingPlan = plans.find((p) => p.id === member.planId);
+                        const planLabel = resolveMemberPlanLabel(
+                          member,
+                          plans,
+                          t('pages.dashboard.customPlan'),
+                        );
                         return (
                           <tr key={member.id} className={tableRowHover}>
                             <td>
@@ -298,7 +310,7 @@ export default function OwnerDashboard() {
                               </div>
                             </td>
                             <td className="truncate font-medium text-app-text">
-                              {matchingPlan ? matchingPlan.name : member.planName || t('pages.dashboard.customPlan')}
+                              {planLabel}
                             </td>
                             <td className="whitespace-nowrap text-app-text">{formatDisplayDate(member.endDate)}</td>
                             <td>

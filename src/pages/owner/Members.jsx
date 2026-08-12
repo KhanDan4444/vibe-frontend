@@ -484,7 +484,7 @@ export default function Members() {
         </div>
       ) : (
         <>
-      <div className={`overflow-hidden ${cardSurface}`}>
+      <div className={`app-toolbar-in overflow-hidden ${cardSurface}`}>
         <div className="flex flex-col gap-2.5 p-3 sm:p-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-2">
             <SearchField
@@ -503,6 +503,7 @@ export default function Members() {
               label={t('pages.members.sortMembers')}
             />
           </div>
+          {/* Attention filters lead; All / Active stay quiet in the theme. */}
           <FilterChipBar className="!mb-0">
             <FilterChip
               variant="all"
@@ -512,16 +513,6 @@ export default function Members() {
               onClick={() => {
                 setPage(1);
                 setStatusFilter('All');
-              }}
-            />
-            <FilterChip
-              variant="active"
-              label={t('filters.active')}
-              count={activeMembersCount}
-              active={statusFilter === DISPLAY_STATUS.ACTIVE}
-              onClick={() => {
-                setPage(1);
-                setStatusFilter(DISPLAY_STATUS.ACTIVE);
               }}
             />
             <FilterChip
@@ -552,6 +543,16 @@ export default function Members() {
               onClick={() => {
                 setPage(1);
                 setStatusFilter(DISPLAY_STATUS.EXPIRED);
+              }}
+            />
+            <FilterChip
+              variant="active"
+              label={t('filters.active')}
+              count={activeMembersCount}
+              active={statusFilter === DISPLAY_STATUS.ACTIVE}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(DISPLAY_STATUS.ACTIVE);
               }}
             />
           </FilterChipBar>

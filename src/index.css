@@ -2,21 +2,21 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Shared app palette — light defaults (warm ink paper); html.dark overrides below */
+/* Shared app palette — light defaults; html.dark overrides below */
 @theme {
-  /* Light: warm ink paper — bg < surface < raised */
-  --color-app-bg: #f1eee7;
-  --color-app-surface: #f6f3ed;
+  /* Light: bg < surface < raised — cards lift off paper */
+  --color-app-bg: #f1f5f9;
+  --color-app-surface: #f8fafc;
   --color-app-raised: #ffffff;
   --color-app-sidebar: #121c1a;
-  --color-app-border: #d0cbc3;
-  --color-app-border-subtle: #e4e0d8;
-  --color-app-text: #3f3a34;
-  --color-app-text-strong: #1a1714;
-  --color-app-muted: #6b645c;
-  /* White fields on warm paper — readable “box” without neon borders */
+  --color-app-border: #cbd5e1;
+  --color-app-border-subtle: #e2e8f0;
+  --color-app-text: #334155;
+  --color-app-text-strong: #0f172a;
+  --color-app-muted: #64748b;
+  /* White fields on slate surfaces — readable “box” without neon borders */
   --color-app-input: #ffffff;
-  --color-app-input-border: #c5c0b6;
+  --color-app-input-border: #b6c2d1;
   /* Athletic ink + teal brand */
   --color-brand: #0f766e;
   --color-brand-hover: #0d9488;
@@ -57,17 +57,17 @@
 
 @layer base {
   :root {
-    --color-app-bg: #f1eee7;
-    --color-app-surface: #f6f3ed;
+    --color-app-bg: #f1f5f9;
+    --color-app-surface: #f8fafc;
     --color-app-raised: #ffffff;
     --color-app-sidebar: #121c1a;
-    --color-app-border: #d0cbc3;
-    --color-app-border-subtle: #e4e0d8;
-    --color-app-text: #3f3a34;
-    --color-app-text-strong: #1a1714;
-    --color-app-muted: #6b645c;
+    --color-app-border: #cbd5e1;
+    --color-app-border-subtle: #e2e8f0;
+    --color-app-text: #334155;
+    --color-app-text-strong: #0f172a;
+    --color-app-muted: #64748b;
     --color-app-input: #ffffff;
-    --color-app-input-border: #c5c0b6;
+    --color-app-input-border: #b6c2d1;
     --color-brand: #0f766e;
     --color-brand-hover: #0d9488;
     --color-brand-soft: #d5f5f0;
@@ -696,6 +696,20 @@
     scroll-snap-type: x mandatory;
   }
 
+  /* Brand plane for owner/admin rails — teal wash so the mark isn't alone on flat ink. */
+  .app-sidebar {
+    background-color: var(--color-app-sidebar);
+    background-image:
+      radial-gradient(ellipse 130% 90% at 12% -8%, rgb(20 184 166 / 0.2), transparent 58%),
+      linear-gradient(180deg, rgb(15 28 26 / 0.55) 0%, transparent 32%);
+  }
+
+  html.dark .app-sidebar {
+    background-image:
+      radial-gradient(ellipse 130% 90% at 12% -8%, rgb(45 212 191 / 0.14), transparent 58%),
+      linear-gradient(180deg, rgb(20 24 32 / 0.65) 0%, transparent 32%);
+  }
+
   .filter-chip {
     @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-snug transition-colors cursor-pointer;
     min-height: 40px;
@@ -1124,6 +1138,11 @@
     animation: app-page-in 0.34s ease-out;
   }
 
+  .app-toolbar-in {
+    animation: app-page-in 0.3s ease-out both;
+    animation-delay: 0.04s;
+  }
+
   @keyframes enroll-success-in {
     from {
       opacity: 0;
@@ -1220,6 +1239,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .app-page,
+    .app-toolbar-in,
     .app-metric-grid > *,
     .enroll-success-in,
     .enroll-success-check,
