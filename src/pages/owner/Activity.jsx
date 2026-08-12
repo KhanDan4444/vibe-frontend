@@ -357,6 +357,21 @@ export default function Activity() {
           </div>
         ) : null}
       </div>
+
+      {totalPages > 1 ? (
+        <div className={`lg:hidden ${cardSurface}`}>
+          <div className="px-4 py-3">
+            <PaginationControls
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              limit={PAGE_SIZE}
+              onPageChange={setPage}
+              disabled={loading}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

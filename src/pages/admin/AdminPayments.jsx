@@ -734,6 +734,19 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
         </div>
       </Card>
 
+      <div className={`lg:hidden ${cardSurface}`}>
+        <div className="px-4 py-3">
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            limit={PAGE_SIZE}
+            onPageChange={setPage}
+            disabled={loading}
+          />
+        </div>
+      </div>
+
       <AdminPaymentModal
         isOpen={editState.isOpen}
         onClose={() => setEditState({ isOpen: false, payment: null, error: '' })}

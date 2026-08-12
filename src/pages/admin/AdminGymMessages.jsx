@@ -269,6 +269,21 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
           </div>
         ) : null}
       </div>
+
+      {totalPages > 1 ? (
+        <div className={`lg:hidden ${cardSurface}`}>
+          <div className="px-4 py-3">
+            <PaginationControls
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              total={total}
+              limit={PAGE_SIZE}
+              disabled={loading}
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
