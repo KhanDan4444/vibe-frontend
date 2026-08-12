@@ -1,24 +1,25 @@
 /**
  * Color palettes aligned with vibe-mobile + --color-status-*.
- * All / Active stay quiet; unpaid / due soon / expired lead the eye.
+ * Every status chip keeps a pill shell; attention filters use stronger tint.
  */
 export const FILTER_CHIP_THEMES = {
   all: {
     dot: 'bg-app-muted/60',
     active: 'bg-app-surface border-app-border text-app-text-strong',
     inactive:
-      'bg-transparent border-transparent text-app-muted hover:bg-app-surface/80 hover:text-app-text',
+      'bg-app-raised border-app-border text-app-muted hover:bg-app-surface/80 hover:text-app-text',
     badgeActive: 'bg-app-muted text-white',
     badgeInactive: 'bg-app-surface text-app-muted',
   },
   active: {
-    dot: 'bg-[color:var(--color-status-active)]/70',
+    dot: 'bg-[color:var(--color-status-active)]',
     active:
-      'bg-[color:var(--color-status-active)]/12 border-[color:var(--color-status-active)]/50 text-[color:var(--color-status-active)]',
+      'bg-[color:var(--color-status-active)]/15 border-[color:var(--color-status-active)] text-[color:var(--color-status-active)]',
     inactive:
-      'bg-transparent border-transparent text-app-muted hover:bg-[color:var(--color-status-active)]/10 hover:text-[color:var(--color-status-active)]',
+      'bg-app-raised border-[color:var(--color-status-active)]/35 text-[color:var(--color-status-active)] hover:bg-[color:var(--color-status-active)]/10',
     badgeActive: 'bg-[color:var(--color-status-active)] text-white',
-    badgeInactive: 'bg-app-surface text-app-muted',
+    badgeInactive:
+      'bg-[color:var(--color-status-active)]/15 text-[color:var(--color-status-active)]',
   },
   unpaid: {
     dot: 'bg-[color:var(--color-status-unpaid)]',

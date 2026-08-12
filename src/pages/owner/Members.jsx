@@ -506,7 +506,7 @@ export default function Members() {
               label={t('pages.members.sortMembers')}
             />
           </div>
-          {/* Attention filters lead; All / Active stay quiet in the theme. */}
+          {/* All → Active, then attention filters. */}
           <FilterChipBar className="!mb-0">
             <FilterChip
               variant="all"
@@ -516,6 +516,16 @@ export default function Members() {
               onClick={() => {
                 setPage(1);
                 setStatusFilter('All');
+              }}
+            />
+            <FilterChip
+              variant="active"
+              label={t('filters.active')}
+              count={activeMembersCount}
+              active={statusFilter === DISPLAY_STATUS.ACTIVE}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(DISPLAY_STATUS.ACTIVE);
               }}
             />
             <FilterChip
@@ -546,16 +556,6 @@ export default function Members() {
               onClick={() => {
                 setPage(1);
                 setStatusFilter(DISPLAY_STATUS.EXPIRED);
-              }}
-            />
-            <FilterChip
-              variant="active"
-              label={t('filters.active')}
-              count={activeMembersCount}
-              active={statusFilter === DISPLAY_STATUS.ACTIVE}
-              onClick={() => {
-                setPage(1);
-                setStatusFilter(DISPLAY_STATUS.ACTIVE);
               }}
             />
           </FilterChipBar>
