@@ -38,7 +38,7 @@ import { getGyms, getGymDetail, updateGym, deleteGym, renewGym, changeGymPlan, c
 import { getSaasPlans } from '../../services/saasPlanService';
 import { gymNeedsCatchUpPayment } from '../../utils/saasPaymentReport';
 import { canRenewGym, canChangeSaasPlan, mapGymDetailForBilling } from '../../utils/saasRenew';
-import { mapGymFromApi } from '../../utils/apiMappers';
+import { mapGymFromApi, gymDetailPreviewFromList } from '../../utils/apiMappers';
 import { DEFAULT_GYM_SORT, ADMIN_GYM_SORT_OPTIONS, sortGymsList } from '../../utils/listSort';
 import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
@@ -204,10 +204,18 @@ export default function AdminDashboard() {
         const res = await getGymDetail(apiFetch, gymId);
         const data = await parseApiResponse(res);
         if (!res.ok) throw new Error(data.error || 'Failed to load gym details');
-        setGymDetail(data);
+        setGymDetail((current) => {
+          // Ignore stale responses if the user already opened another gym.
+          if (current && current.id != null && Number(current.id) !== Number(gymId)) return current;
+          return data;
+        });
       } catch (err) {
         setDetailError(err.message);
-        setGymDetail(null);
+        setGymDetail((current) => {
+          // Keep list-row preview if the background refresh failed.
+          if (current && Number(current.id) === Number(gymId)) return current;
+          return null;
+        });
       } finally {
         setDetailLoading(false);
       }
@@ -261,8 +269,12 @@ export default function AdminDashboard() {
     [fetchGymForBilling]
   );
 
-  const openGymDetail = (gymId) => {
-    setSelectedGymId(gymId);
+  const openGymDetail = (gym) => {
+    // Open immediately with list-row data so the drawer feels instant (same as owner members).
+    const openedId = gym.id;
+    setSelectedGymId(openedId);
+    setGymDetail(gymDetailPreviewFromList(gym));
+    setDetailError('');
   };
 
   const closeGymDetail = () => {
@@ -614,7 +626,7 @@ export default function AdminDashboard() {
                         <button
                           key={gym.id}
                           type="button"
-                          onClick={() => openGymDetail(gym.id)}
+                          onClick={() => openGymDetail(gym)}
                           className={`${cardSurface} flex w-full items-start justify-between gap-3 p-4 text-left active:bg-app-surface/60`}
                         >
                           <div className="min-w-0">
@@ -655,7 +667,7 @@ export default function AdminDashboard() {
                             <tr
                               key={gym.id}
                               className={`cursor-pointer transition-colors ${tableRowHover}`}
-                              onClick={() => openGymDetail(gym.id)}
+                              onClick={() => openGymDetail(gym)}
                             >
                               <td>
                                 <div className="flex items-center gap-3 min-w-0">
@@ -842,7 +854,7 @@ export default function AdminDashboard() {
                           >
                             <button
                               type="button"
-                              onClick={() => openGymDetail(gym.id)}
+                              onClick={() => openGymDetail(gym)}
                               className="w-full text-left"
                             >
                               <div className="flex items-start gap-3">
@@ -915,7 +927,7 @@ export default function AdminDashboard() {
                             return (
                             <tr
                               key={gym.id}
-                              onClick={() => openGymDetail(gym.id)}
+                              onClick={() => openGymDetail(gym)}
                               className={`cursor-pointer transition-colors ${
                                 selectedGymId === gym.id ? 'bg-teal-50 dark:bg-teal-600/10' : ''
                               } hover:bg-teal-50/60 dark:hover:bg-teal-600/10`}

@@ -186,7 +186,7 @@ export default function GymDetailsModal({
         onClose={onClose}
         title={t('modals.gymDetails.title')}
         footer={
-          !detailLoading && gymDetail ? (
+          !gymDetail ? null : (
             <SlidePanelFooter alerts={footerAlerts}>
               <div className="space-y-2">
                 {canCollect && onCollectPayment ? (
@@ -260,7 +260,7 @@ export default function GymDetailsModal({
                 </div>
               </div>
             </SlidePanelFooter>
-          ) : null
+          )
         }
       >
         {displayError && (
@@ -269,7 +269,7 @@ export default function GymDetailsModal({
           </div>
         )}
 
-        {detailLoading ? (
+        {detailLoading && !gymDetail ? (
           <p className="py-12 text-center text-sm text-app-muted">{t('common.loading')}</p>
         ) : !gymDetail && detailError ? (
           <div className="space-y-4 py-8 text-center">

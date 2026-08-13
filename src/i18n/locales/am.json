@@ -21,6 +21,7 @@
     "passwordMismatch": "አዲሶቹ የይለፍ ቃሎች አይዛመዱም።",
     "passwordUpdated": "የይለፍ ቃል ተዘምኗል።",
     "passwordsMatch": "የይለፍ ቃሎቹ ይዛመዳሉ",
+    "currentPasswordEntered": "የአሁኑ የይለፍ ቃል ገብቷል",
     "platformEmailDesc": "የመግቢያ ኢሜይልዎ በመድረኩ ይተዳደራል።",
     "profileSaved": "መገለጫው ተቀምጧል።",
     "profileLoadFailed": "የጂም መገለጫ ማፍለቅ አልተቻለም።",

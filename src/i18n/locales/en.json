@@ -1269,6 +1269,7 @@
     "confirmNewPassword": "Confirm new password",
     "passwordMin8": "At least 8 characters",
     "passwordsMatch": "Passwords match",
+    "currentPasswordEntered": "Current password entered",
     "passwordDifferent": "New password must be different from your current password.",
     "passwordMismatch": "New passwords do not match.",
     "passwordUpdated": "Password updated successfully.",

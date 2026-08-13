@@ -1269,6 +1269,7 @@
     "confirmNewPassword": "Jechama siriitii haarawa mirkaneessi",
     "passwordMin8": "Yoo xiqqaate arfiilee 8",
     "passwordsMatch": "Jechamoonni siriitii wal-fakkaatu",
+    "currentPasswordEntered": "Jecha siriitii ammaa galmaa'eera",
     "passwordDifferent": "Jechamni siriitii haarawi jechama ammaa irraa adda ta'uu qaba.",
     "passwordMismatch": "Jechamoonni siriitii haarawi wal hin simne.",
     "passwordUpdated": "Jechamni siriitii milkaa'inaan haaromfameera.",
