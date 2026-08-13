@@ -1105,7 +1105,7 @@ export default function MemberModal({
   }
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="3xl">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="3xl" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0">
           <h2 className={modalTitle}>{title}</h2>

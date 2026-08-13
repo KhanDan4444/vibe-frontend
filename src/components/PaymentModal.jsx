@@ -127,7 +127,7 @@ export default function PaymentModal({
   const displayError = validationError || error;
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0">
           <h2 className={modalTitle}>

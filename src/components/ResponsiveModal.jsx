@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   modalOverlay,
   modalBackdrop,
@@ -31,7 +32,7 @@ export default function ResponsiveModal({
   onClose,
   children,
   size = 'md',
-  zIndexClass = 'z-[70]',
+  zIndexClass = 'z-[80]',
   className = '',
   labelledBy,
 }) {
@@ -95,7 +96,7 @@ export default function ResponsiveModal({
 
   const panel = PANEL_BY_SIZE[size] || modalPanelMd;
 
-  return (
+  return createPortal(
     <div className={`${modalOverlay} ${zIndexClass}`}>
       <div className={modalBackdrop} aria-hidden onClick={onClose} />
       <div
@@ -109,6 +110,7 @@ export default function ResponsiveModal({
       >
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

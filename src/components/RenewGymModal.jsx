@@ -120,7 +120,7 @@ export default function RenewGymModal({
   const showEarlyRenewNote = !gym.isUnpaid && endDisplay && endDisplay !== '—';
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
           <div className="flex items-center gap-2">

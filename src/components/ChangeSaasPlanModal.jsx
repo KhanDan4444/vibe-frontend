@@ -236,7 +236,7 @@ export default function ChangeSaasPlanModal({
     : t('modals.changePlan.midTermHintPaid');
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="lg">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="lg" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="flex min-w-0 items-start gap-2">
           <ArrowLeftRight className="mt-0.5 h-5 w-5 shrink-0 text-teal-800/75 dark:text-teal-600/80" aria-hidden />

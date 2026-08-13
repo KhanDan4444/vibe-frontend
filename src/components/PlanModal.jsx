@@ -93,7 +93,7 @@ export default function PlanModal({ isOpen, onClose, onSubmit, plan, showDescrip
     (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-50">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[100]">
       <div className={`${modalHeader} flex items-center justify-between gap-3`}>
         <h2 className={modalTitle}>{heading}</h2>
         <button

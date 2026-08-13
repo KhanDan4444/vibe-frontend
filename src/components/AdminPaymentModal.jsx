@@ -125,7 +125,7 @@ export default function AdminPaymentModal({
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0 pr-2">
           <h2 className={modalTitle}>
