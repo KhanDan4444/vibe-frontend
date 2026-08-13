@@ -116,7 +116,7 @@ export default function TransferMemberModal({
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={saving || activeBranches.length === 0} className="w-full sm:w-auto">
+          <Button type="submit" loading={saving} disabled={activeBranches.length === 0} className="w-full sm:w-auto">
             {saving ? t('common.processing') : t('modals.transfer.save')}
           </Button>
         </div>

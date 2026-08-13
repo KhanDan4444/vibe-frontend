@@ -53,7 +53,8 @@ export default function Button({
       ].join(' ')}
       {...rest}
     >
-      {busy ? <RefreshCw className="h-4 w-4 animate-spin" aria-hidden /> : children}
+      {busy ? <RefreshCw className="h-4 w-4 shrink-0 animate-spin" aria-hidden /> : null}
+      {children}
     </button>
   );
 }

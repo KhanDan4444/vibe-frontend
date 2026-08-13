@@ -7,6 +7,7 @@ import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
 import { authHeaderFromStorage } from '../utils/authStorage';
 import { listJobs, updateJob, removeJob, onQueueChanged, MAX_ATTEMPTS } from './writeQueue';
 import { SYNCED_EVENT } from './events';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
 const OfflineContext = createContext(null);
 
@@ -54,7 +55,7 @@ export const OfflineProvider = ({ children }) => {
         for (const job of pending) {
           let res;
           try {
-            res = await fetch(`${API_BASE_URL}/api${job.endpoint}`, {
+            res = await fetchWithTimeout(`${API_BASE_URL}/api${job.endpoint}`, {
               method: job.method,
               credentials: API_FETCH_CREDENTIALS,
               headers: {

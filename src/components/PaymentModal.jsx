@@ -253,7 +253,7 @@ export default function PaymentModal({
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+          <Button type="submit" loading={isBusy} className="w-full sm:w-auto">
             {isBusy
               ? t('common.processing')
               : payment

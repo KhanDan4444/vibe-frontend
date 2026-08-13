@@ -23,6 +23,7 @@ import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 import AuthSelect from '../../components/auth/AuthSelect';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
+import AuthCtaButton from '../../components/auth/AuthCtaButton';
 import { formatMoney } from '../../utils/formatMoney';
 
 const STEPS = ['phone', 'gym', 'account'];
@@ -261,9 +262,9 @@ export default function RegisterGym() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} className="text-sm text-rose-300" />
               <p className="auth-hint">{t('auth.signupPhoneHint')}</p>
             </div>
-            <button type="submit" disabled={loading} className="auth-cta-btn">
-              {loading ? t('auth.sending') : t('auth.sendOtp')}
-            </button>
+            <AuthCtaButton loading={loading} busyLabel={t('auth.sending')}>
+              {t('auth.sendOtp')}
+            </AuthCtaButton>
           </form>
         )}
 
@@ -450,9 +451,9 @@ export default function RegisterGym() {
               />
             </div>
             <p className="auth-hint">{t('auth.signupPaymentNote')}</p>
-            <button type="submit" disabled={loading} className="auth-cta-btn">
-              {loading ? t('auth.processing') : t('auth.createGymAccount')}
-            </button>
+            <AuthCtaButton loading={loading} busyLabel={t('auth.processing')}>
+              {t('auth.createGymAccount')}
+            </AuthCtaButton>
             <p className="text-center">
               <button
                 type="button"

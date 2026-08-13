@@ -7,6 +7,11 @@ import { clearAccessToken, getAccessToken, setAccessToken, setRememberMePreferen
 import { cacheRead, getCachedRead, clearReadCacheForUser } from '../offline/readCache';
 import { queueableJob, bodyHasPhoto, enqueueJob } from '../offline/writeQueue';
 import { clearMemberPhotoCache } from '../utils/memberPhotoCache';
+import {
+  fetchWithTimeout,
+  isTimeoutError,
+  REQUEST_TIMEOUT_MESSAGE,
+} from '../utils/fetchWithTimeout';
 
 function apiUnreachableMessage() {
   if (import.meta.env.DEV) {
@@ -15,8 +20,15 @@ function apiUnreachableMessage() {
   return 'Cannot reach the server. Please try again later.';
 }
 
+function unreachableOrTimeoutMessage(error) {
+  if (isTimeoutError(error)) return REQUEST_TIMEOUT_MESSAGE;
+  return apiUnreachableMessage();
+}
+
 const isNetworkError = (error) =>
-  error?.message === 'Failed to fetch' || error?.name === 'TypeError';
+  isTimeoutError(error) ||
+  error?.message === 'Failed to fetch' ||
+  error?.name === 'TypeError';
 
 const jsonResponse = (body, { status = 200, cached = false, queued = false } = {}) =>
   new Response(JSON.stringify(body), {
@@ -54,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     clearAccessToken();
 
     try {
-      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      await fetchWithTimeout(`${API_BASE_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: API_FETCH_CREDENTIALS,
       });
@@ -69,11 +81,10 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
-    const timeoutId = window.setTimeout(() => controller.abort(), 15_000);
 
     (async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/session`, {
+        const response = await fetchWithTimeout(`${API_BASE_URL}/api/auth/session`, {
           credentials: API_FETCH_CREDENTIALS,
           headers: withAuthHeaders(),
           signal: controller.signal,
@@ -90,14 +101,12 @@ export const AuthProvider = ({ children }) => {
       } catch {
         /* not signed in or session timed out */
       } finally {
-        window.clearTimeout(timeoutId);
         if (!cancelled) setLoading(false);
       }
     })();
 
     return () => {
       cancelled = true;
-      window.clearTimeout(timeoutId);
       controller.abort();
     };
   }, []);
@@ -109,7 +118,7 @@ export const AuthProvider = ({ children }) => {
     let cancelled = false;
     (async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/gym/profile`, {
+        const response = await fetchWithTimeout(`${API_BASE_URL}/api/gym/profile`, {
           credentials: API_FETCH_CREDENTIALS,
           headers: withAuthHeaders(),
         });
@@ -137,7 +146,7 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(async (email, password, rememberMe = true) => {
     try {
       setRememberMePreference(rememberMe);
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         credentials: API_FETCH_CREDENTIALS,
         headers: { 'Content-Type': 'application/json' },
@@ -157,8 +166,8 @@ export const AuthProvider = ({ children }) => {
       setGymSubscription(data.subscription || null);
       return profile;
     } catch (error) {
-      if (error.message === 'Failed to fetch') {
-        throw new Error(apiUnreachableMessage());
+      if (isNetworkError(error)) {
+        throw new Error(unreachableOrTimeoutMessage(error));
       }
       console.error('Login error:', error.message);
       throw error;
@@ -209,7 +218,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api${endpoint}`, {
+      const response = await fetchWithTimeout(`${API_BASE_URL}/api${endpoint}`, {
         ...options,
         headers,
         credentials: API_FETCH_CREDENTIALS,
@@ -240,7 +249,7 @@ export const AuthProvider = ({ children }) => {
           const fallback = await offlineFallback();
           if (fallback) return fallback;
         }
-        throw new Error(apiUnreachableMessage());
+        throw new Error(unreachableOrTimeoutMessage(error));
       }
       console.error(`API Request Failed [${endpoint}]:`, error.message);
       throw error;

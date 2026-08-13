@@ -464,7 +464,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
             <Button type="button" variant="secondary" onClick={onClose} disabled={saving} className="w-full sm:w-auto">
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={saving || !profileDirty} className="w-full sm:w-auto">
+            <Button type="submit" loading={saving} disabled={!profileDirty} className="w-full sm:w-auto">
               {saving ? t('auth.saving') : t('common.save')}
             </Button>
           </div>
@@ -668,7 +668,7 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
           <Button type="button" variant="secondary" onClick={onClose} disabled={loading} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+          <Button type="submit" loading={loading} className="w-full sm:w-auto">
             {loading ? t('account.updating') : t('auth.updatePassword')}
           </Button>
         </div>

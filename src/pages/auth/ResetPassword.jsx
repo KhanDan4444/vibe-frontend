@@ -15,6 +15,7 @@ import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell from '../../components/auth/AuthFormShell';
+import AuthCtaButton from '../../components/auth/AuthCtaButton';
 
 export default function ResetPassword() {
   const { t } = useTranslation();
@@ -108,9 +109,9 @@ export default function ResetPassword() {
               className="text-sm text-rose-300"
             />
           </div>
-          <button type="submit" disabled={loading} className="auth-cta-btn">
-            {loading ? t('auth.saving') : t('auth.updatePassword')}
-          </button>
+          <AuthCtaButton loading={loading} busyLabel={t('auth.saving')}>
+            {t('auth.updatePassword')}
+          </AuthCtaButton>
         </form>
 
         <p className="text-center text-sm text-white/55">

@@ -20,6 +20,7 @@ import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
+import AuthCtaButton from '../../components/auth/AuthCtaButton';
 
 function formatAccount(identifier) {
   const trimmed = identifier.trim();
@@ -165,9 +166,9 @@ export default function ForgotPassword() {
               />
               <p className="auth-hint">{t('auth.forgotIdentifierHint')}</p>
             </div>
-            <button type="submit" disabled={loading} className="auth-cta-btn">
-              {loading ? t('auth.sending') : t('auth.sendOtp')}
-            </button>
+            <AuthCtaButton loading={loading} busyLabel={t('auth.sending')}>
+              {t('auth.sendOtp')}
+            </AuthCtaButton>
           </form>
         ) : (
           <form className="space-y-5" onSubmit={handleReset} noValidate>
@@ -229,9 +230,13 @@ export default function ForgotPassword() {
                 className="text-sm text-rose-300"
               />
             </div>
-            <button type="submit" disabled={loading || !sessionId} className="auth-cta-btn">
-              {loading ? t('auth.saving') : t('auth.updatePassword')}
-            </button>
+            <AuthCtaButton
+              loading={loading}
+              disabled={!sessionId}
+              busyLabel={t('auth.saving')}
+            >
+              {t('auth.updatePassword')}
+            </AuthCtaButton>
             <p className="text-center">
               <button
                 type="button"

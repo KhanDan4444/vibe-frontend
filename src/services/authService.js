@@ -6,9 +6,10 @@
 import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
 import { normalizeEthiopianPhone } from '../utils/validation/phone';
+import { fetchWithTimeout } from '../utils/fetchWithTimeout';
 
 async function postJson(path, body) {
-  const res = await fetch(`${API_BASE_URL}/api${path}`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api${path}`, {
     method: 'POST',
     credentials: API_FETCH_CREDENTIALS,
     headers: { 'Content-Type': 'application/json' },
@@ -42,7 +43,7 @@ export async function resetPassword(token, password) {
 }
 
 export async function getPublicSaasPlans() {
-  const res = await fetch(`${API_BASE_URL}/api/auth/saas-plans`, {
+  const res = await fetchWithTimeout(`${API_BASE_URL}/api/auth/saas-plans`, {
     credentials: API_FETCH_CREDENTIALS,
   });
   const data = await parseApiResponse(res);

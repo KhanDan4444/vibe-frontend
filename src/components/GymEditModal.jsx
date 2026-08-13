@@ -208,7 +208,7 @@ export default function GymEditModal({
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+          <Button type="submit" loading={saving} className="w-full sm:w-auto">
             {saving ? t('common.processing') : t('common.save')}
           </Button>
         </div>

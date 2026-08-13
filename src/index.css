@@ -321,8 +321,12 @@
   }
 
   .auth-cta-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+    cursor: wait;
+    opacity: 0.92;
+  }
+
+  .auth-cta-btn[aria-busy='true'] {
+    cursor: wait;
   }
 
   .auth-link {

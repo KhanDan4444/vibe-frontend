@@ -555,7 +555,7 @@ export default function RegisterGymModal({
               ) : (
                 <Button
                   type="button"
-                  disabled={isBusy || saasPlans.length === 0}
+                  loading={isBusy} disabled={saasPlans.length === 0}
                   onClick={(e) => void handleSubmit(e)}
                   className="w-full sm:w-auto"
                 >
@@ -580,7 +580,7 @@ export default function RegisterGymModal({
         <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
           {t('common.cancel')}
         </Button>
-        <Button type="submit" disabled={isBusy || saasPlans.length === 0} className="w-full sm:w-auto">
+        <Button type="submit" loading={isBusy} disabled={saasPlans.length === 0} className="w-full sm:w-auto">
           {isBusy ? t('common.processing') : t('modals.registerGym.save')}
         </Button>
       </div>

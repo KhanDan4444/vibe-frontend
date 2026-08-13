@@ -929,7 +929,7 @@ export default function MemberModal({
               ) : (
                 <Button
                   type="button"
-                  disabled={isBusy}
+                  loading={isBusy}
                   onClick={(e) => void handleSubmit(e)}
                   className="w-full sm:w-auto"
                 >
@@ -963,7 +963,7 @@ export default function MemberModal({
         <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
           {t('common.cancel')}
         </Button>
-        <Button type="submit" disabled={isBusy} className="w-full sm:w-auto">
+        <Button type="submit" loading={isBusy} className="w-full sm:w-auto">
           {isBusy
             ? photoProcessing
               ? t('modals.member.processingPhoto')
