@@ -14,6 +14,7 @@ import {
   EyeOff,
   CheckCircle2,
   Circle,
+  X as XIcon,
 } from 'lucide-react';
 import ResponsiveModal from '../ResponsiveModal';
 import Button from '../ui/Button';
