@@ -12,11 +12,28 @@ import {
   fieldErrorMessage,
   clearFieldError,
   clearAllFieldErrors,
+  isValidEthiopianPhone,
+  normalizeEthiopianPhone,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
+import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
+
+function formatAccount(identifier) {
+  const trimmed = identifier.trim();
+  if (isValidEthiopianPhone(trimmed)) {
+    return {
+      labelKey: 'auth.accountPhone',
+      value: normalizeEthiopianPhone(trimmed) || trimmed,
+    };
+  }
+  return {
+    labelKey: 'auth.accountUsername',
+    value: `@${trimmed.toLowerCase()}`,
+  };
+}
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -32,6 +49,7 @@ export default function ForgotPassword() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showSupportOption, setShowSupportOption] = useState(false);
+  const [resetDone, setResetDone] = useState(null);
 
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
@@ -66,14 +84,31 @@ export default function ForgotPassword() {
     if (!showValidationError(validatePasswordMatch(password, confirm), setError, t, { setFieldErrors })) return;
     setLoading(true);
     try {
-      const data = await resetPasswordWithOtp({ sessionId, code, password });
-      navigate('/login', { replace: true, state: { message: data.message || t('auth.passwordUpdated') } });
+      await resetPasswordWithOtp({ sessionId, code, password });
+      setResetDone(formatAccount(identifier));
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  if (resetDone) {
+    return (
+      <AuthScreen>
+        <AuthFormShell>
+          <AuthSuccessPanel
+            title={t('auth.successAllSet')}
+            hero={t('auth.forgotSuccessHero')}
+            body={t('auth.forgotSuccessBody')}
+            rows={[{ label: t(resetDone.labelKey), value: resetDone.value }]}
+            ctaLabel={t('auth.signIn')}
+            onCta={() => navigate('/login', { replace: true })}
+          />
+        </AuthFormShell>
+      </AuthScreen>
+    );
+  }
 
   return (
     <AuthScreen>

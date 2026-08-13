@@ -61,6 +61,14 @@
     "signupPhoneHint": "Lakkoofsa bilbila Mobaalaa Itoophiyaa (fakkeenyaaf: 0912345678). Koodii mirkaneessaa ni ergina.",
     "signupPaymentNote": "Hayyamni keessan galmee booda eegala. Kaffaltii SaaS xumuruuf bulchaa platformii qunnamaa.",
     "signupSuccess": "Jimiin galmaa'era. Maqaa fayyadamaa fi jecha iccitii keessaniin seeni.",
+    "successAllSet": "Hunda qopheessiteetta",
+    "signupSuccessBody": "Jimiin kee qophaa'eera. Maqaa fayyadamaa armaan gadiitiin seeni.",
+    "signupSuccessHint": "Kaffaltii SaaS xumuruuf yeroo qophaa'itan bulchaa waltajjii qunnamaa.",
+    "forgotSuccessHero": "Jechi iccitii haaromfameera",
+    "forgotSuccessBody": "Itti fufuuf jecha iccitii haaraa waliin seeni.",
+    "accountUsername": "Maqaa fayyadamaa",
+    "accountPhone": "Bilbila",
+    "accountPlan": "Karoora",
     "signupUnavailable": "Galmeen jimii yeroo kanaaf hin jiru. Bulchaa platformii qunnamaa.",
     "createGymAccount": "Akkaawuntii jimii uumi",
     "ownerPhone": "Bilbila abbaa jimii",
@@ -314,6 +322,7 @@
     }
   },
   "alerts": {
+    "readOnlyEyebrow": "Hayyama",
     "readOnlyTitle": "Haala Dubbisa Qofa",
     "readOnlyBody": "Akkaawuntiin jimii keessanii dhaabbateera. Miseensota, kaffaltii, fi galii ilaaluu dandeessu, garuu jijjiiramni hanga bulchaan platformii bakka meettaatti deebisutti hin danda'amu.",
     "branchReadOnlyTitle": "Damee si'aawaa miti — dubbisa qofa",
@@ -1263,6 +1272,9 @@
     "passwordDifferent": "Jechamni siriitii haarawi jechama ammaa irraa adda ta'uu qaba.",
     "passwordMismatch": "Jechamoonni siriitii haarawi wal hin simne.",
     "passwordUpdated": "Jechamni siriitii milkaa'inaan haaromfameera.",
+    "passwordSuccessHero": "Jechi iccitii haaromfameera",
+    "passwordSuccessBody": "Jechi iccitii haaraan qophaa'eera. Yeroo itti aanu yeroo seenan itti fayyadami.",
+    "profileSuccessBody": "Profaayilii jimii kee olkaa'ameera.",
     "updating": "Haaromsamaa jira…"
   },
   "paymentSource": {

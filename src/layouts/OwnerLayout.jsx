@@ -336,20 +336,43 @@ export default function OwnerLayout() {
             </div>
           ) : null}
           {readOnly && !branchReadOnly && (
-            <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
-              <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
-              <div>
-                <p className="font-semibold">{t('alerts.readOnlyTitle')}</p>
-                <p className="mt-0.5 text-amber-800 dark:text-amber-200">{t('alerts.readOnlyBody')}</p>
+            <div className="sticky top-0 z-20 mb-6 overflow-hidden rounded-2xl border border-amber-300/70 bg-gradient-to-br from-amber-50 via-amber-50/80 to-orange-50/40 px-4 py-3.5 shadow-sm backdrop-blur-sm dark:border-amber-700/50 dark:from-amber-950/80 dark:via-amber-950/70 dark:to-orange-950/50 dark:shadow-none">
+              <div className="absolute bottom-2.5 left-0 top-2.5 w-1 rounded-full bg-amber-500 dark:bg-amber-400" aria-hidden />
+              <div className="flex items-start gap-3 pl-2">
+                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300/80 bg-amber-100/80 dark:border-amber-700/60 dark:bg-amber-900/50">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-200/70 dark:bg-amber-800/60">
+                    <ShieldAlert className="h-4 w-4 text-amber-700 dark:text-amber-300" />
+                  </div>
+                </div>
+                <div className="min-w-0 pt-0.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-amber-700 dark:text-amber-400">
+                    {t('alerts.readOnlyEyebrow')}
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold tracking-tight text-amber-950 dark:text-amber-50">
+                    {t('alerts.readOnlyTitle')}
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-amber-900/80 dark:text-amber-100/80">
+                    {t('alerts.readOnlyBody')}
+                  </p>
+                </div>
               </div>
             </div>
           )}
           {branchReadOnly && selectedBranch && (
-            <div className="mb-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm text-app-text border-app-border-subtle bg-app-surface/70">
-              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-app-muted" />
-              <div>
-                <p className="font-semibold">{t('alerts.branchReadOnlyTitle')}</p>
-                <p className="mt-0.5">{t('alerts.branchReadOnlyBody', { name: selectedBranch.name })}</p>
+            <div className="relative mb-6 overflow-hidden rounded-2xl border border-app-border-subtle bg-app-surface/80 px-4 py-3.5">
+              <div className="absolute bottom-2.5 left-0 top-2.5 w-1 rounded-full bg-app-muted/50" aria-hidden />
+              <div className="flex items-start gap-3 pl-2">
+                <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-app-border-subtle bg-app-bg">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-app-surface">
+                    <MapPin className="h-4 w-4 text-app-muted" />
+                  </div>
+                </div>
+                <div className="min-w-0 pt-0.5">
+                  <p className="text-sm font-semibold tracking-tight text-app-text">{t('alerts.branchReadOnlyTitle')}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-app-muted">
+                    {t('alerts.branchReadOnlyBody', { name: selectedBranch.name })}
+                  </p>
+                </div>
               </div>
             </div>
           )}

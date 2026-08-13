@@ -28,7 +28,10 @@
     "updating": "በማዘመን ላይ…",
     "username": "የተጠቃሚ ስም",
     "usernamePattern": "ከ3–30 ቁምፊዎች፦ ፊደላት፣ ቁጥሮች፣ ነጥቦች እና ከሰረዞች",
-    "yourName": "ስምዎ"
+    "yourName": "ስምዎ",
+    "passwordSuccessHero": "የይለፍ ቃል ተዘምኗል",
+    "passwordSuccessBody": "አዲሱ የይለፍ ቃል ዝግጁ ነው። በሚቀጥለው ጊዜ ሲገቡ ይጠቀሙበት።",
+    "profileSuccessBody": "የጂም መገለጫዎ ተቀምጧል።"
   },
   "actions": {
     "activate": "አንቃ",
@@ -232,6 +235,7 @@
   "alerts": {
     "branchReadOnlyBody": "{{name}} ንቁ አይደለም። የአባል ታሪክ ይታያል ነገር ግን መመዝገብ እና ማስተካከል ተሰናክሏል። ለውጦችን ለማድረግ በ\"ቅርንጫፎች\" በኩል እንደገና ያንቁ።",
     "branchReadOnlyTitle": "ያልነቃ ቅርንጫፍ — ለማየት ብቻ",
+    "readOnlyEyebrow": "ፈቃድ",
     "readOnlyBody": "የጂም መለያዎ ታግዷል። አባላትን፣ ዕቅዶችን እና ገቢን ማየት ይችላሉ፣ ነገር ግን የመድረክ አስተዳዳሪው ሙሉ መዳረሻ እስኪመልስልዎት ድረስ ለውጦችን ማድረግ ተሰናክሏል።",
     "readOnlyTitle": "የማንበብ-ብቻ ሁኔታ"
   },
@@ -297,6 +301,14 @@
     "signupPhoneHint": "የኢትዮጵያ የሞባይል ቁጥር (ለምሳሌ 0912345678)። የማረጋገጫ ኮድ እንልካለን።",
     "signupPaymentNote": "ፈቃድዎ ከምዝገባ በኋላ ይጀምራል። የSaaS ክፍያውን ለማጠናቀቅ የመድረክ አስተዳዳሪውን ያግኙ።",
     "signupSuccess": "ጂምዎ ተመዝግቧል። በተጠቃሚ ስምዎ እና በይለፍ ቃልዎ ይግቡ።",
+    "successAllSet": "ተሳክቷል",
+    "signupSuccessBody": "ጂምዎ ዝግጁ ነው። ከታች ባለው የተጠቃሚ ስም ይግቡ።",
+    "signupSuccessHint": "የSaaS ክፍያውን ለማጠናቀቅ ዝግጁ ሲሆኑ የመድረክ አስተዳዳሪውን ያግኙ።",
+    "forgotSuccessHero": "የይለፍ ቃል ተዘምኗል",
+    "forgotSuccessBody": "ለመቀጠል በአዲሱ የይለፍ ቃል ይግቡ።",
+    "accountUsername": "የተጠቃሚ ስም",
+    "accountPhone": "ስልክ",
+    "accountPlan": "ዕቅድ",
     "signupUnavailable": "የጂም ምዝገባ በአሁኑ ጊዜ አይገኝም። እባክዎ የመድረክ አስተዳዳሪውን ያግኙ።",
     "createGymAccount": "የጂም መለያ ፍጠር",
     "ownerPhone": "የባለቤት ስልክ",

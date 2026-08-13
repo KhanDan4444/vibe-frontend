@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { flashFromKey } from '../../i18n/flashToast';
 import { useAuth } from '../../context/AuthContext';
 import { changePassword } from '../../services/authService';
 import { getGymProfile, updateGymProfile } from '../../services/gymProfileService';
@@ -18,6 +17,7 @@ import {
 } from 'lucide-react';
 import ResponsiveModal from '../ResponsiveModal';
 import Button from '../ui/Button';
+import AccountSuccessPanel from './AccountSuccessPanel';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { modalTitle } from '../../utils/surfaceClasses';
 
@@ -44,9 +44,22 @@ function FieldLabel({ htmlFor, children, hint, required = false }) {
 
 const inputClass = `mt-1.5 w-full app-field disabled:bg-app-surface disabled:text-app-muted`;
 
-function PasswordField({ id, label, value, onChange, show, onToggleShow, autoComplete, fieldErrors, field, onClearError }) {
+function PasswordField({
+  id,
+  label,
+  value,
+  onChange,
+  show,
+  onToggleShow,
+  autoComplete,
+  fieldErrors,
+  field,
+  error: forceError,
+  hint,
+}) {
   const { t } = useTranslation();
-  const cls = field && fieldErrors ? fieldInputClass(inputClass, fieldErrors, field) : inputClass;
+  const hasError = Boolean(forceError || (field && fieldErrors && fieldErrorMessage(fieldErrors, field)));
+  const cls = fieldInputClass(inputClass, hasError ? { [field || 'password']: 'x' } : {}, field || 'password');
   return (
     <div>
       <FieldLabel htmlFor={id} required>
@@ -59,12 +72,10 @@ function PasswordField({ id, label, value, onChange, show, onToggleShow, autoCom
           required
           minLength={id !== 'modal-current-password' ? 8 : undefined}
           value={value}
-          onChange={(e) => {
-            onChange(e);
-            if (field && onClearError) onClearError(field);
-          }}
+          onChange={onChange}
           autoComplete={autoComplete}
           className={`${cls} pr-10`}
+          aria-invalid={hasError || undefined}
         />
         <button
           type="button"
@@ -75,31 +86,27 @@ function PasswordField({ id, label, value, onChange, show, onToggleShow, autoCom
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
-      {field && fieldErrors && <FieldError message={fieldErrorMessage(fieldErrors, field)} />}
+      {hint}
+      {field && fieldErrors ? <FieldError message={fieldErrorMessage(fieldErrors, field)} /> : null}
     </div>
   );
 }
 
-function PasswordChecklist({ password, confirm }) {
-  const { t } = useTranslation();
-  const rules = [
-    { ok: password.length >= 8, label: t('account.passwordMin8') },
-    { ok: password.length > 0 && password === confirm, label: t('account.passwordsMatch') },
-  ];
-  if (!password && !confirm) return null;
+function PasswordRule({ show, ok, label }) {
+  if (!show) return null;
   return (
-    <ul className="space-y-1.5 rounded-lg bg-app-surface px-3 py-2.5 text-xs">
-      {rules.map((rule) => (
-        <li key={rule.label} className="flex items-center gap-2">
-          {rule.ok ? (
-            <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" aria-hidden />
-          ) : (
-            <XIcon className="h-3.5 w-3.5 shrink-0 text-app-muted/40" aria-hidden />
-          )}
-          <span className={rule.ok ? 'text-emerald-700' : 'text-app-muted'}>{rule.label}</span>
-        </li>
-      ))}
-    </ul>
+    <p
+      className={`mt-1.5 flex items-center gap-1.5 text-xs font-medium ${
+        ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+      }`}
+    >
+      {ok ? (
+        <Check className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      ) : (
+        <XIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+      )}
+      <span>{label}</span>
+    </p>
   );
 }
 
@@ -154,6 +161,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
   const [accountEmail, setAccountEmail] = useState(user?.email || '');
   const [username, setUsername] = useState(user?.username || '');
   const [savedProfile, setSavedProfile] = useState(null);
+  const [profileDone, setProfileDone] = useState(null);
 
   const profileDirty = useMemo(() => {
     if (!savedProfile) return false;
@@ -219,10 +227,15 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
     }
   }, [apiFetch, showGymProfile, applyProfile, user?.email, t]);
 
+  const initializeProfile = useCallback(() => {
+    setProfileDone(null);
+    return loadProfile();
+  }, [loadProfile]);
+
   const { markTouched } = useModalFormDraft({
     isOpen: open,
     scopeKey: 'profile',
-    initialize: loadProfile,
+    initialize: initializeProfile,
     saving,
   });
 
@@ -249,8 +262,12 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || 'Failed to save profile');
       applyProfile(data);
-      onSuccess?.(flashFromKey(t, 'profileSaved'));
-      onClose();
+      setProfileDone({
+        gymName: gymName.trim(),
+        ownerName: ownerName.trim(),
+        phone: trimmedPhone || '',
+        username: username.trim().toLowerCase(),
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -267,6 +284,31 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
     setUsername(savedProfile.username);
     setError('');
   };
+
+  if (profileDone) {
+    const rows = [
+      { label: t('account.yourName'), value: profileDone.ownerName },
+      profileDone.username
+        ? { label: t('account.username'), value: `@${profileDone.username}` }
+        : null,
+      profileDone.phone ? { label: t('account.gymPhone'), value: profileDone.phone } : null,
+    ].filter(Boolean);
+
+    return (
+      <AccountModal open={open} onClose={onClose} title={t('auth.successAllSet')} description={null}>
+        <AccountSuccessPanel
+          hero={profileDone.gymName}
+          body={t('account.profileSuccessBody')}
+          rows={rows}
+          ctaLabel={t('common.done')}
+          onCta={() => {
+            setProfileDone(null);
+            onClose();
+          }}
+        />
+      </AccountModal>
+    );
+  }
 
   return (
     <AccountModal
@@ -450,6 +492,7 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [passwordDone, setPasswordDone] = useState(false);
 
   const passwordReady =
     currentPassword.length > 0 &&
@@ -466,6 +509,7 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
     setShowCurrent(false);
     setShowNew(false);
     setShowConfirm(false);
+    setPasswordDone(false);
   }, []);
 
   const { markTouched } = useModalFormDraft({
@@ -485,16 +529,33 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
 
     setLoading(true);
     try {
-      const data = await changePassword(apiFetch, currentPassword, newPassword);
-      clearForm();
-      onSuccess?.(flashFromKey(t, 'passwordUpdated'));
-      onClose();
+      await changePassword(apiFetch, currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirm('');
+      setPasswordDone(true);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  if (passwordDone) {
+    return (
+      <AccountModal open={open} onClose={onClose} title={t('auth.successAllSet')} description={null}>
+        <AccountSuccessPanel
+          hero={t('account.passwordSuccessHero')}
+          body={t('account.passwordSuccessBody')}
+          ctaLabel={t('common.done')}
+          onCta={() => {
+            setPasswordDone(false);
+            onClose();
+          }}
+        />
+      </AccountModal>
+    );
+  }
 
   return (
     <AccountModal
@@ -511,42 +572,97 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
             id="modal-current-password"
             label={t('account.currentPassword')}
             value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setCurrentPassword(v);
+              clearFieldError(setFieldErrors, 'currentPassword');
+              setFieldErrors((prev) => {
+                const next = { ...prev };
+                if (newPassword && newPassword.length > 0 && newPassword.length < 8) {
+                  next.newPassword = 'auth.passwordMinLength';
+                } else if (newPassword && v && newPassword === v) {
+                  next.newPassword = 'account.passwordDifferent';
+                } else {
+                  delete next.newPassword;
+                }
+                return next;
+              });
+            }}
             show={showCurrent}
             onToggleShow={() => setShowCurrent((v) => !v)}
             autoComplete="current-password"
             fieldErrors={fieldErrors}
             field="currentPassword"
-            onClearError={(f) => clearFieldError(setFieldErrors, f)}
           />
 
           <PasswordField
             id="modal-new-password"
             label={t('auth.newPassword')}
             value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setNewPassword(v);
+              setFieldErrors((prev) => {
+                const next = { ...prev };
+                if (v.length > 0 && v.length < 8) next.newPassword = 'auth.passwordMinLength';
+                else if (v && currentPassword && v === currentPassword) next.newPassword = 'account.passwordDifferent';
+                else delete next.newPassword;
+                if (confirm.length > 0 && confirm !== v) next.confirmPassword = 'account.passwordMismatch';
+                else if (confirm.length > 0 && confirm === v) delete next.confirmPassword;
+                return next;
+              });
+            }}
             show={showNew}
             onToggleShow={() => setShowNew((v) => !v)}
             autoComplete="new-password"
-            fieldErrors={fieldErrors}
+            fieldErrors={
+              fieldErrors.newPassword && fieldErrors.newPassword !== 'auth.passwordMinLength'
+                ? fieldErrors
+                : {}
+            }
             field="newPassword"
-            onClearError={(f) => clearFieldError(setFieldErrors, f)}
+            error={newPassword.length > 0 && newPassword.length < 8}
+            hint={
+              <PasswordRule
+                show={newPassword.length > 0}
+                ok={newPassword.length >= 8}
+                label={t('account.passwordMin8')}
+              />
+            }
           />
 
           <PasswordField
             id="modal-confirm-password"
             label={t('account.confirmNewPassword')}
             value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              setConfirm(v);
+              setFieldErrors((prev) => {
+                const next = { ...prev };
+                if (v.length > 0 && v !== newPassword) next.confirmPassword = 'account.passwordMismatch';
+                else delete next.confirmPassword;
+                return next;
+              });
+            }}
             show={showConfirm}
             onToggleShow={() => setShowConfirm((v) => !v)}
             autoComplete="new-password"
-            fieldErrors={fieldErrors}
+            fieldErrors={{}}
             field="confirmPassword"
-            onClearError={(f) => clearFieldError(setFieldErrors, f)}
+            error={confirm.length > 0 && confirm !== newPassword}
+            hint={
+              <PasswordRule
+                show={confirm.length > 0}
+                ok={confirm.length > 0 && confirm === newPassword}
+                label={
+                  confirm.length > 0 && confirm === newPassword
+                    ? t('account.passwordsMatch')
+                    : t('account.passwordMismatch')
+                }
+              />
+            }
           />
-
-          <PasswordChecklist password={newPassword} confirm={confirm} />
         </div>
 
         <div className={modalFooter}>

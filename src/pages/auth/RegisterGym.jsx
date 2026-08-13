@@ -15,12 +15,14 @@ import {
   fieldErrorMessage,
   clearFieldError,
   clearAllFieldErrors,
+  normalizeEthiopianPhone,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 import AuthSelect from '../../components/auth/AuthSelect';
+import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
 import { formatMoney } from '../../utils/formatMoney';
 
 const STEPS = ['phone', 'gym', 'account'];
@@ -45,6 +47,7 @@ export default function RegisterGym() {
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [registerDone, setRegisterDone] = useState(null);
 
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
@@ -148,10 +151,13 @@ export default function RegisterGym() {
       const trimmedEmail = email.trim().toLowerCase();
       if (trimmedEmail) payload.email = trimmedEmail;
 
-      const data = await completeGymSignup(payload);
-      navigate('/login', {
-        replace: true,
-        state: { message: data.message || t('auth.signupSuccess') },
+      await completeGymSignup(payload);
+      const planName = plans.find((p) => String(p.id) === saasPlanId)?.name;
+      setRegisterDone({
+        gymName: gymName.trim(),
+        username: username.trim().toLowerCase(),
+        phone: normalizeEthiopianPhone(phone.trim()) || phone.trim(),
+        planName,
       });
     } catch (err) {
       setError(err.message);
@@ -159,6 +165,30 @@ export default function RegisterGym() {
       setLoading(false);
     }
   };
+
+  if (registerDone) {
+    const rows = [
+      { label: t('auth.accountUsername'), value: `@${registerDone.username}` },
+      registerDone.phone ? { label: t('auth.accountPhone'), value: registerDone.phone } : null,
+      registerDone.planName ? { label: t('auth.accountPlan'), value: registerDone.planName } : null,
+    ].filter(Boolean);
+
+    return (
+      <AuthScreen>
+        <AuthFormShell>
+          <AuthSuccessPanel
+            title={t('auth.successAllSet')}
+            hero={registerDone.gymName}
+            body={t('auth.signupSuccessBody')}
+            rows={rows}
+            hint={t('auth.signupSuccessHint')}
+            ctaLabel={t('auth.signIn')}
+            onCta={() => navigate('/login', { replace: true })}
+          />
+        </AuthFormShell>
+      </AuthScreen>
+    );
+  }
 
   if (plansLoading) {
     return (

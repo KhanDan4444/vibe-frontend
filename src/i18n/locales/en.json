@@ -61,6 +61,14 @@
     "signupPhoneHint": "Ethiopian mobile number (e.g. 0912345678). We will send a verification code.",
     "signupPaymentNote": "Your license starts after registration. Contact the platform administrator to complete SaaS payment.",
     "signupSuccess": "Gym registered. Sign in with your username and password.",
+    "successAllSet": "You're all set",
+    "signupSuccessBody": "Your gym is ready. Sign in with the username below.",
+    "signupSuccessHint": "Contact the platform administrator to complete SaaS payment when you're ready.",
+    "forgotSuccessHero": "Password updated",
+    "forgotSuccessBody": "Sign in with your new password to continue.",
+    "accountUsername": "Username",
+    "accountPhone": "Phone",
+    "accountPlan": "Plan",
     "signupUnavailable": "Gym registration is not available right now. Contact the platform administrator.",
     "createGymAccount": "Create gym account",
     "ownerPhone": "Owner phone",
@@ -314,6 +322,7 @@
     }
   },
   "alerts": {
+    "readOnlyEyebrow": "License",
     "readOnlyTitle": "Read-only mode",
     "readOnlyBody": "Your gym account is suspended. You can view members, plans, and revenue, but changes are disabled until a platform admin restores full access.",
     "branchReadOnlyTitle": "Inactive branch — view only",
@@ -1263,6 +1272,9 @@
     "passwordDifferent": "New password must be different from your current password.",
     "passwordMismatch": "New passwords do not match.",
     "passwordUpdated": "Password updated successfully.",
+    "passwordSuccessHero": "Password updated",
+    "passwordSuccessBody": "Your new password is ready. Use it next time you sign in.",
+    "profileSuccessBody": "Your gym profile has been saved.",
     "updating": "Updating…"
   },
   "paymentSource": {
