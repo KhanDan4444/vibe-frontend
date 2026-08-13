@@ -38,11 +38,15 @@
 }
 
 @supports (padding: env(safe-area-inset-bottom)) {
+  /*
+   * Additive safe-area padding. Utility classes set --safe-bottom-base (e.g. 1rem);
+   * without it this only applies the device inset (does not clobber intentional padding).
+   */
   .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(var(--safe-bottom-base, 0px) + env(safe-area-inset-bottom, 0px));
   }
   .safe-top {
-    padding-top: env(safe-area-inset-top);
+    padding-top: calc(var(--safe-top-base, 0px) + env(safe-area-inset-top, 0px));
   }
 }
 

@@ -17,7 +17,7 @@ export default function PaginationControls({
   const to = Math.min(page * limit, total);
 
   return (
-    <div className="safe-bottom flex flex-col gap-3 border-t border-app-border-subtle bg-app-surface/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <div className="safe-bottom flex flex-col gap-3 border-t border-app-border-subtle bg-app-surface/80 px-4 pt-4 [--safe-bottom-base:1rem] sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <p className="text-xs text-app-muted">
         {t('pagination.showing', { from, to, total })}
       </p>

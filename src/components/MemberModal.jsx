@@ -35,7 +35,7 @@ import SearchableSelect from './ui/SearchableSelect';
 import RequiredMark from './ui/RequiredMark';
 import EnrollStepProgress from './EnrollStepProgress';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
-import { modalBody, modalHeader, modalFooter, modalFieldLabel } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter, modalStepFooter, modalFieldLabel } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
 
 
@@ -898,7 +898,7 @@ export default function MemberModal({
         className="space-y-6"
       >
         {formFields}
-        <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+        <div className={modalStepFooter}>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-center text-xs text-app-muted sm:text-left">
               {t('modals.member.stepOf', { current: enrollStep, total: 3 })}

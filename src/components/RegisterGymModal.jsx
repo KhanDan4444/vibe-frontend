@@ -33,7 +33,7 @@ import Card from './ui/Card';
 import PageHeader from './PageHeader';
 import EnrollStepProgress from './EnrollStepProgress';
 import { formatMoney } from '../utils/formatMoney';
-import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
+import { modalBody, modalHeader, modalFooter, modalStepFooter } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
 
 
@@ -524,7 +524,7 @@ export default function RegisterGymModal({
       ) : null}
       <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="space-y-6">
         {formFields}
-        <div className="safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+        <div className={modalStepFooter}>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-center text-xs text-app-muted sm:text-left">
               {t('modals.registerGym.stepOf', { current: registerStep, total: 3 })}

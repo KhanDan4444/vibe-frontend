@@ -22,5 +22,13 @@ export const modalHeader =
 
 export const modalFieldLabel = 'form-label';
 
+/** Canonical action footer — keeps breathing room under buttons (+ device safe area). */
 export const modalFooter =
-  'safe-bottom sticky bottom-0 z-10 shrink-0 flex flex-col-reverse gap-2 border-t border-app-border-subtle bg-app-raised px-4 py-4 sm:flex-row sm:justify-end sm:gap-3 sm:px-6';
+  'safe-bottom sticky bottom-0 z-10 shrink-0 flex flex-col-reverse gap-2 border-t border-app-border-subtle bg-app-raised px-4 pt-4 [--safe-bottom-base:1.25rem] sm:flex-row sm:justify-end sm:gap-3 sm:px-6';
+
+/**
+ * In-body sticky bar for multi-step wizards (member enroll / register gym).
+ * Matches modalFooter bottom spacing so actions never sit flush.
+ */
+export const modalStepFooter =
+  'safe-bottom sticky bottom-0 z-10 -mx-4 mt-2 border-t border-app-border-subtle bg-app-raised/95 px-4 pt-4 backdrop-blur [--safe-bottom-base:1.25rem] sm:-mx-6 sm:px-6';

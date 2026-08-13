@@ -1,5 +1,6 @@
 import { Check } from 'lucide-react';
 import Button from '../ui/Button';
+import { modalFooter } from '../../utils/modalLayout';
 
 /**
  * Premium in-app success panel for account modals (profile / password).
@@ -39,7 +40,7 @@ export default function AccountSuccessPanel({ title, hero, body, rows = [], ctaL
         ) : null}
       </div>
 
-      <div className="flex shrink-0 justify-end border-t border-app-border-subtle px-5 py-4 sm:px-6">
+      <div className={modalFooter}>
         <Button type="button" onClick={onCta} className="w-full sm:w-auto">
           {ctaLabel}
         </Button>

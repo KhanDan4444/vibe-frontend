@@ -11,7 +11,7 @@ export default function SubscriptionLockout({ gymName }) {
   const { logout } = useAuth();
 
   return (
-    <div className="auth-hero-bg safe-top safe-bottom flex min-h-[100dvh] flex-col items-center justify-center px-4 py-10">
+    <div className="auth-hero-bg safe-top safe-bottom flex min-h-[100dvh] flex-col items-center justify-center px-4 pt-10 [--safe-bottom-base:2.5rem] [--safe-top-base:2.5rem]">
       <div className="w-full max-w-md rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-center shadow-xl backdrop-blur-sm sm:p-8">
         <img
           src="/brand-lockup-mark.png?v=restore"
