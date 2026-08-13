@@ -12,8 +12,8 @@ import { isGymOwner, isGymStaff } from '../../utils/roles';
 import {
   Eye,
   EyeOff,
-  Check,
-  X as XIcon,
+  CheckCircle2,
+  Circle,
 } from 'lucide-react';
 import ResponsiveModal from '../ResponsiveModal';
 import Button from '../ui/Button';
@@ -49,6 +49,7 @@ function PasswordField({
   label,
   value,
   onChange,
+  onFocus,
   show,
   onToggleShow,
   autoComplete,
@@ -73,6 +74,7 @@ function PasswordField({
           minLength={id !== 'modal-current-password' ? 8 : undefined}
           value={value}
           onChange={onChange}
+          onFocus={onFocus}
           autoComplete={autoComplete}
           className={`${cls} pr-10`}
           aria-invalid={hasError || undefined}
@@ -92,18 +94,20 @@ function PasswordField({
   );
 }
 
+/** Live password checklist row — empty circle → green check (not alarm X). */
 function PasswordRule({ show, ok, label }) {
   if (!show) return null;
   return (
     <p
-      className={`mt-1.5 flex items-center gap-1.5 text-xs font-medium ${
-        ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+      className={`mt-1.5 flex items-center gap-1.5 text-xs font-medium transition-colors ${
+        ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-app-muted'
       }`}
+      aria-live="polite"
     >
       {ok ? (
-        <Check className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
       ) : (
-        <XIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+        <Circle className="h-3.5 w-3.5 shrink-0 text-app-muted/70" strokeWidth={1.75} aria-hidden />
       )}
       <span>{label}</span>
     </p>
@@ -489,15 +493,19 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showLengthRule, setShowLengthRule] = useState(false);
+  const [showMatchRule, setShowMatchRule] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [passwordDone, setPasswordDone] = useState(false);
 
+  const lengthOk = newPassword.length >= 8;
+  const matchOk = confirm.length > 0 && confirm === newPassword;
   const passwordReady =
     currentPassword.length > 0 &&
-    newPassword.length >= 8 &&
-    newPassword === confirm &&
+    lengthOk &&
+    matchOk &&
     newPassword !== currentPassword;
 
   const clearForm = useCallback(() => {
@@ -509,6 +517,8 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
     setShowCurrent(false);
     setShowNew(false);
     setShowConfirm(false);
+    setShowLengthRule(false);
+    setShowMatchRule(false);
     setPasswordDone(false);
   }, []);
 
@@ -578,13 +588,8 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
               clearFieldError(setFieldErrors, 'currentPassword');
               setFieldErrors((prev) => {
                 const next = { ...prev };
-                if (newPassword && newPassword.length > 0 && newPassword.length < 8) {
-                  next.newPassword = 'auth.passwordMinLength';
-                } else if (newPassword && v && newPassword === v) {
-                  next.newPassword = 'account.passwordDifferent';
-                } else {
-                  delete next.newPassword;
-                }
+                if (newPassword && v && newPassword === v) next.newPassword = 'account.passwordDifferent';
+                else if (next.newPassword === 'account.passwordDifferent') delete next.newPassword;
                 return next;
               });
             }}
@@ -599,33 +604,27 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
             id="modal-new-password"
             label={t('auth.newPassword')}
             value={newPassword}
+            onFocus={() => setShowLengthRule(true)}
             onChange={(e) => {
               const v = e.target.value;
               setNewPassword(v);
+              setShowLengthRule(true);
               setFieldErrors((prev) => {
                 const next = { ...prev };
-                if (v.length > 0 && v.length < 8) next.newPassword = 'auth.passwordMinLength';
-                else if (v && currentPassword && v === currentPassword) next.newPassword = 'account.passwordDifferent';
+                if (v && currentPassword && v === currentPassword) next.newPassword = 'account.passwordDifferent';
                 else delete next.newPassword;
-                if (confirm.length > 0 && confirm !== v) next.confirmPassword = 'account.passwordMismatch';
-                else if (confirm.length > 0 && confirm === v) delete next.confirmPassword;
                 return next;
               });
             }}
             show={showNew}
             onToggleShow={() => setShowNew((v) => !v)}
             autoComplete="new-password"
-            fieldErrors={
-              fieldErrors.newPassword && fieldErrors.newPassword !== 'auth.passwordMinLength'
-                ? fieldErrors
-                : {}
-            }
+            fieldErrors={fieldErrors}
             field="newPassword"
-            error={newPassword.length > 0 && newPassword.length < 8}
             hint={
               <PasswordRule
-                show={newPassword.length > 0}
-                ok={newPassword.length >= 8}
+                show={showLengthRule || newPassword.length > 0}
+                ok={lengthOk}
                 label={t('account.passwordMin8')}
               />
             }
@@ -635,31 +634,23 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
             id="modal-confirm-password"
             label={t('account.confirmNewPassword')}
             value={confirm}
+            onFocus={() => setShowMatchRule(true)}
             onChange={(e) => {
               const v = e.target.value;
               setConfirm(v);
-              setFieldErrors((prev) => {
-                const next = { ...prev };
-                if (v.length > 0 && v !== newPassword) next.confirmPassword = 'account.passwordMismatch';
-                else delete next.confirmPassword;
-                return next;
-              });
+              setShowMatchRule(true);
+              clearFieldError(setFieldErrors, 'confirmPassword');
             }}
             show={showConfirm}
             onToggleShow={() => setShowConfirm((v) => !v)}
             autoComplete="new-password"
-            fieldErrors={{}}
+            fieldErrors={fieldErrors}
             field="confirmPassword"
-            error={confirm.length > 0 && confirm !== newPassword}
             hint={
               <PasswordRule
-                show={confirm.length > 0}
-                ok={confirm.length > 0 && confirm === newPassword}
-                label={
-                  confirm.length > 0 && confirm === newPassword
-                    ? t('account.passwordsMatch')
-                    : t('account.passwordMismatch')
-                }
+                show={showMatchRule || confirm.length > 0}
+                ok={matchOk}
+                label={t('account.passwordsMatch')}
               />
             }
           />
