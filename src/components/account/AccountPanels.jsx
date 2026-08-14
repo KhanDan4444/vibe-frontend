@@ -496,13 +496,11 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [showLengthRule, setShowLengthRule] = useState(false);
   const [showMatchRule, setShowMatchRule] = useState(false);
-  const [showCurrentRule, setShowCurrentRule] = useState(false);
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [passwordDone, setPasswordDone] = useState(false);
 
-  const currentOk = currentPassword.length > 0;
   const lengthOk = newPassword.length >= 8;
   const matchOk = confirm.length > 0 && confirm === newPassword;
 
@@ -517,7 +515,6 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
     setShowConfirm(false);
     setShowLengthRule(false);
     setShowMatchRule(false);
-    setShowCurrentRule(false);
     setPasswordDone(false);
   }, []);
 
@@ -581,11 +578,9 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
             id="modal-current-password"
             label={t('account.currentPassword')}
             value={currentPassword}
-            onFocus={() => setShowCurrentRule(true)}
             onChange={(e) => {
               const v = e.target.value;
               setCurrentPassword(v);
-              setShowCurrentRule(true);
               setFieldErrors((prev) => {
                 const next = { ...prev };
                 delete next.currentPassword;
@@ -599,13 +594,6 @@ export function PasswordPanel({ open, onClose, onSuccess }) {
             autoComplete="current-password"
             fieldErrors={fieldErrors}
             field="currentPassword"
-            hint={
-              <PasswordRule
-                show={showCurrentRule || currentPassword.length > 0}
-                ok={currentOk}
-                label={t('account.currentPasswordEntered')}
-              />
-            }
           />
 
           <PasswordField
