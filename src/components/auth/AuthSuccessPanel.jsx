@@ -17,14 +17,9 @@ export default function AuthSuccessPanel({ title, hero, body, rows = [], hint, c
       {body ? <p className="auth-subtitle mt-2 max-w-sm">{body}</p> : null}
 
       {rows.length > 0 ? (
-        <dl className="mt-6 w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-4 text-left text-sm">
-          {rows.map((row, index) => (
-            <div
-              key={row.label}
-              className={`flex items-center justify-between gap-3 py-3 ${
-                index < rows.length - 1 ? 'border-b border-white/10' : ''
-              }`}
-            >
+        <dl className="mt-6 w-full space-y-3 text-left text-sm">
+          {rows.map((row) => (
+            <div key={row.label} className="flex items-center justify-between gap-3">
               <dt className="shrink-0 text-white/45">{row.label}</dt>
               <dd className="truncate font-semibold text-white/90">{row.value}</dd>
             </div>

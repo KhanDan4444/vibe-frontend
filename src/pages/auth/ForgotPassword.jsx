@@ -12,8 +12,6 @@ import {
   fieldErrorMessage,
   clearFieldError,
   clearAllFieldErrors,
-  isValidEthiopianPhone,
-  normalizeEthiopianPhone,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
@@ -21,20 +19,7 @@ import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
 import AuthCtaButton from '../../components/auth/AuthCtaButton';
-
-function formatAccount(identifier) {
-  const trimmed = identifier.trim();
-  if (isValidEthiopianPhone(trimmed)) {
-    return {
-      labelKey: 'auth.accountPhone',
-      value: normalizeEthiopianPhone(trimmed) || trimmed,
-    };
-  }
-  return {
-    labelKey: 'auth.accountUsername',
-    value: `@${trimmed.toLowerCase()}`,
-  };
-}
+import PasswordRule from '../../components/auth/PasswordRule';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
@@ -48,14 +33,18 @@ export default function ForgotPassword() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showLengthRule, setShowLengthRule] = useState(false);
+  const [showMatchRule, setShowMatchRule] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSupportOption, setShowSupportOption] = useState(false);
-  const [resetDone, setResetDone] = useState(null);
+  const [resetDone, setResetDone] = useState(false);
 
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
   const onReset = step === 'reset';
+  const lengthOk = password.length >= 8;
+  const matchOk = confirm.length > 0 && confirm === password;
 
   const handleRequestOtp = async (e) => {
     e.preventDefault();
@@ -86,7 +75,7 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       await resetPasswordWithOtp({ sessionId, code, password });
-      setResetDone(formatAccount(identifier));
+      setResetDone(true);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -102,7 +91,6 @@ export default function ForgotPassword() {
             title={t('auth.successAllSet')}
             hero={t('auth.forgotSuccessHero')}
             body={t('auth.forgotSuccessBody')}
-            rows={[{ label: t(resetDone.labelKey), value: resetDone.value }]}
             ctaLabel={t('auth.signIn')}
             onCta={() => navigate('/login', { replace: true })}
           />
@@ -201,11 +189,19 @@ export default function ForgotPassword() {
                 type="password"
                 autoComplete="new-password"
                 value={password}
+                onFocus={() => setShowLengthRule(true)}
                 onChange={(e) => {
                   setPassword(e.target.value);
+                  setShowLengthRule(true);
                   clearFieldError(setFieldErrors, 'password');
                 }}
                 className={fc('password')}
+              />
+              <PasswordRule
+                variant="auth"
+                show={showLengthRule || password.length > 0}
+                ok={lengthOk}
+                label={t('account.passwordMin8')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} className="text-sm text-rose-300" />
             </div>
@@ -219,11 +215,19 @@ export default function ForgotPassword() {
                 type="password"
                 autoComplete="new-password"
                 value={confirm}
+                onFocus={() => setShowMatchRule(true)}
                 onChange={(e) => {
                   setConfirm(e.target.value);
+                  setShowMatchRule(true);
                   clearFieldError(setFieldErrors, 'confirmPassword');
                 }}
                 className={fc('confirmPassword')}
+              />
+              <PasswordRule
+                variant="auth"
+                show={showMatchRule || confirm.length > 0}
+                ok={matchOk}
+                label={t('account.passwordsMatch')}
               />
               <FieldError
                 message={fieldErrorMessage(fieldErrors, 'confirmPassword')}
@@ -247,6 +251,8 @@ export default function ForgotPassword() {
                   setConfirm('');
                   setMessage('');
                   setError('');
+                  setShowLengthRule(false);
+                  setShowMatchRule(false);
                   clearAllFieldErrors(setFieldErrors);
                 }}
                 className="auth-text-btn"

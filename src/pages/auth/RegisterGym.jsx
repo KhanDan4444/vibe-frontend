@@ -24,6 +24,7 @@ import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell
 import AuthSelect from '../../components/auth/AuthSelect';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
 import AuthCtaButton from '../../components/auth/AuthCtaButton';
+import PasswordRule from '../../components/auth/PasswordRule';
 import { formatMoney } from '../../utils/formatMoney';
 
 const STEPS = ['phone', 'gym', 'account'];
@@ -46,6 +47,8 @@ export default function RegisterGym() {
   const [saasPlanId, setSaasPlanId] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showLengthRule, setShowLengthRule] = useState(false);
+  const [showMatchRule, setShowMatchRule] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [registerDone, setRegisterDone] = useState(null);
@@ -53,6 +56,8 @@ export default function RegisterGym() {
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
   const bannerError = error && !Object.keys(fieldErrors).length ? error : '';
+  const lengthOk = password.length >= 8;
+  const matchOk = confirm.length > 0 && confirm === password;
   const stepIndex = Math.max(0, STEPS.indexOf(step));
 
   const stepSubtitle =
@@ -419,12 +424,20 @@ export default function RegisterGym() {
                 type="password"
                 autoComplete="new-password"
                 value={password}
+                onFocus={() => setShowLengthRule(true)}
                 onChange={(e) => {
                   setPassword(e.target.value);
+                  setShowLengthRule(true);
                   clearFieldError(setFieldErrors, 'password');
                 }}
                 className={fc('password')}
                 placeholder={t('modals.registerGym.passwordPlaceholder')}
+              />
+              <PasswordRule
+                variant="auth"
+                show={showLengthRule || password.length > 0}
+                ok={lengthOk}
+                label={t('account.passwordMin8')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} className="text-sm text-rose-300" />
             </div>
@@ -438,12 +451,20 @@ export default function RegisterGym() {
                 type="password"
                 autoComplete="new-password"
                 value={confirm}
+                onFocus={() => setShowMatchRule(true)}
                 onChange={(e) => {
                   setConfirm(e.target.value);
+                  setShowMatchRule(true);
                   clearFieldError(setFieldErrors, 'confirmPassword');
                 }}
                 className={fc('confirmPassword')}
                 placeholder={t('modals.registerGym.confirmPasswordPlaceholder')}
+              />
+              <PasswordRule
+                variant="auth"
+                show={showMatchRule || confirm.length > 0}
+                ok={matchOk}
+                label={t('account.passwordsMatch')}
               />
               <FieldError
                 message={fieldErrorMessage(fieldErrors, 'confirmPassword')}

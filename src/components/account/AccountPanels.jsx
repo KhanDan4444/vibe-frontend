@@ -9,19 +9,13 @@ import FieldError from '../FieldError';
 import RequiredMark from '../ui/RequiredMark';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { isGymOwner, isGymStaff } from '../../utils/roles';
-import {
-  Eye,
-  EyeOff,
-  CheckCircle2,
-  Circle,
-  X as XIcon,
-} from 'lucide-react';
+import { Eye, EyeOff, X as XIcon } from 'lucide-react';
 import ResponsiveModal from '../ResponsiveModal';
 import Button from '../ui/Button';
 import AccountSuccessPanel from './AccountSuccessPanel';
+import PasswordRule from '../auth/PasswordRule';
 import { modalBody, modalHeader, modalFooter } from '../../utils/modalLayout';
 import { modalTitle } from '../../utils/surfaceClasses';
-
 
 function Alert({ children }) {
   return (
@@ -92,26 +86,6 @@ function PasswordField({
       {hint}
       {field && fieldErrors ? <FieldError message={fieldErrorMessage(fieldErrors, field)} /> : null}
     </div>
-  );
-}
-
-/** Live password checklist row — empty circle → green check (not alarm X). */
-function PasswordRule({ show, ok, label }) {
-  if (!show) return null;
-  return (
-    <p
-      className={`mt-1.5 flex items-center gap-1.5 text-xs font-medium transition-colors ${
-        ok ? 'text-emerald-700 dark:text-emerald-400' : 'text-app-muted'
-      }`}
-      aria-live="polite"
-    >
-      {ok ? (
-        <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
-      ) : (
-        <Circle className="h-3.5 w-3.5 shrink-0 text-app-muted/70" strokeWidth={1.75} aria-hidden />
-      )}
-      <span>{label}</span>
-    </p>
   );
 }
 
