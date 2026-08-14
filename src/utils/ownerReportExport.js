@@ -35,7 +35,7 @@ function memberExportColumns(meta) {
 }
 
 function revenueExportColumns(meta) {
-  const cols = ['date', 'member', 'method', 'amount'];
+  const cols = ['member', 'paymentReceivedDate', 'method', 'amount'];
   if (showBranchInExport(meta)) cols.splice(2, 0, 'branch');
   return cols.map(exportColumn);
 }
@@ -66,7 +66,7 @@ function memberExportRow(m, meta = {}) {
 
 function revenueExportRow(p, meta = {}) {
   const showBranch = showBranchInExport(meta);
-  const row = [formatDate(p.date), p.member_name || '—'];
+  const row = [p.member_name || '—', formatDate(p.date)];
   if (showBranch) row.push(p.branch_name || '—');
   row.push(exportPaymentMethod(p.method) || p.method || '—', formatMoney(p.amount));
   return row;
@@ -91,6 +91,8 @@ const MEMBER_PDF_COLUMN_STYLES = {
 
 const REVENUE_PDF_COLUMN_STYLES = {
   0: { cellWidth: 12, halign: 'center' },
+  1: { cellWidth: 48 },
+  2: { cellWidth: 42 },
   4: { halign: 'right', cellWidth: 28 },
   5: { halign: 'right', cellWidth: 28 },
 };

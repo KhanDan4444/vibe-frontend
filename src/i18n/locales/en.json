@@ -1389,6 +1389,7 @@
       "start": "Start",
       "end": "End",
       "date": "Date",
+      "paymentReceivedDate": "Payment received date",
       "method": "Method",
       "amount": "Amount",
       "source": "Source",

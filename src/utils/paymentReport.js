@@ -201,12 +201,12 @@ export function revenueByDate(payments) {
 
 /** @param {Array<{ date: string, amount: number, method: string, memberId: number }>} payments */
 export function paymentsToCsv(payments, members) {
-  const header = ['date', 'member', 'amount', 'method'].map(exportColumn).join(',');
+  const header = ['member', 'paymentReceivedDate', 'amount', 'method'].map(exportColumn).join(',');
   const rows = payments.map((p) => {
     const member = members.find((m) => m.id === p.memberId);
     const name = member ? `"${member.name.replace(/"/g, '""')}"` : i18n.t('common.unknown');
     const method = translatePaymentMethod(p.method) || p.method || '';
-    return `${formatDisplayDate(p.date)},${name},${p.amount.toFixed(2)},${method}`;
+    return `${name},${formatDisplayDate(p.date)},${p.amount.toFixed(2)},${method}`;
   });
   return [header, ...rows].join('\n');
 }
