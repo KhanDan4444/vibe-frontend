@@ -18,6 +18,7 @@ export function mapMemberFromApi(m) {
     branchName: m.branch_name,
     photoUrl: m.photo_url || null,
     hasPhoto: Boolean(m.photo_url),
+    deletedAt: m.deleted_at || null,
   };
 }
 

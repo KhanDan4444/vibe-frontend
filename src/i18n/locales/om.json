@@ -421,6 +421,7 @@
     "dueSoon": "Dhiyeenyatti Kan Dhumu",
     "unknown": "Hin beekamu",
     "unpaid": "Hin Kaffalamne",
+    "former": "Kan duraan ture",
     "unpaidTooltip": "Galmaa'era — kaffaltiin hin sassaabamne"
   },
   "filters": {
@@ -576,6 +577,10 @@
       "subtitle": "Miseensota galmeessaa, kaffaltii jijjiiraa, yeroo haaromsaa, fi kaffaltii dabarsan sassaabaa.",
       "statusLineAttention": "{{expired}} dhumatan · {{dueSoon}} dhiyootti · {{unpaid}} hin kaffalle",
       "statusLineClear": "{{active}} si'aawaa · {{total}} waliigala",
+      "statusLineFormer": "Kan duraan turan {{count}} · seenaan kaffaltii eegameera",
+      "formerTitle": "Miseensota duraan turan",
+      "searchFormerPlaceholder": "Miseensota duraan turan barbaadi…",
+      "removedOnDate": "Guyyaa {{date}} haqame",
       "add": "Miseensa Galmeessi",
       "searchPlaceholder": "Miseensota barbaadi…",
       "noPlansWarning": "Karoorri miseensummaa ammaaf hin jiru. Miseensota galmeessuu keessan dura yoo xinnaate karoora tokko dabalaa.",
@@ -586,9 +591,9 @@
       "backToList": "Gara miseensotaatti deebi'i",
       "loading": "Miseensonni fe'amaa jiru…",
       "empty": "Miseensonni argaman hin jiran.",
-      "deleteTitle": "Miseensa dhabamsiisuu?",
-      "deleteMessage": "Kun {{name}} fi seenaa kaffaltii isaanii dhaabbataan dhabamsiisa.",
-      "removed": "{{name}} dhabamsiifameera.",
+      "deleteTitle": "Tarree irraa haquu?",
+      "deleteMessage": "{{name}} tarree miseensaa irraa dhokata. Seenaan kaffaltii fi gabaasni hin jijjiiramu.",
+      "removed": "{{name}} tarree irraa haqameera.",
       "enrolledSkip": "{{name}} galmaa'era (kaffaltiin irra darboollee).",
       "enrolledPaid": "{{name}} galmaa'era, kaffaltinis galmeeffameera.",
       "updated": "Miseensi fooyya'eera.",
@@ -607,7 +612,12 @@
       "emptyTitle": "Miseensonni ammaaf hin jiran",
       "emptyBody": "Turtiilee fi kaffaltiiwwan hordofuu eegaluuf miseensa keessan isa duraa galmeessaa.",
       "emptyFiltered": "Miseensi calallii kanaan walsimatu hin jiru.",
-      "emptyFilteredBody": "Haala biraa yaalaa ykn barbaacha qulqulleessaa."
+      "emptyFilteredBody": "Haala biraa yaalaa ykn barbaacha qulqulleessaa.",
+      "former": "Kan duraan turan",
+      "restore": "Deebisi",
+      "removedOn": "Guyyaa haqame",
+      "emptyFormer": "Miseensota duraan turan hin jiran",
+      "emptyFormerBody": "Miseensonni tarree irraa haqaman asitti mul'atu. Gara tarree deebisuuf Deebisi fayyadami."
     },
     "plans": {
       "title": "Karoorawwan Miseensummaa",
@@ -848,7 +858,8 @@
         "plan_changed": "Karoora miseensummaa jijjiire",
         "updated": "Miseensa haaromse",
         "transferred": "Miseensa ceesise",
-        "deleted": "Miseensa haqee"
+        "deleted": "Miseensa haqee",
+        "restored": "Miseensa deebise"
       },
       "payment": {
         "recorded": "Kaffaltii galmeesse",
@@ -1208,6 +1219,8 @@
   },
   "drawer": {
     "memberTitle": "Profaayilii Miseensaa",
+    "formerTitle": "Miseensa duraan ture",
+    "formerHint": "Seenaan kaffaltii eegameera. Gara tarree jiraatti deebisuuf Deebisi fayyadami.",
     "subscription": "Miseensummaa",
     "term": "Yeroo",
     "planPrice": "Gatiyaa karooraa",
@@ -1232,10 +1245,11 @@
     "noPayments": "Miseensa kanaaf kaffaltiin galmeeffame hin jiru.",
     "editContact": "Qunnamtii gulaali",
     "transferBranch": "Damee ceesisi",
-    "deleteMember": "Haqi",
-    "deleteTitle": "Profaayilii Miseensaa Haqi",
-    "deleteMessage": "{{name}} haqamuu akka feetu mirkaneeffadhu? Kun profaayilii galmee isaaniinii fi galmee kaffaltii walqabatan hunda ni haqa.",
-    "deleteConfirm": "Miseensa Haqi",
+    "deleteMember": "Balleessi",
+    "restoreMember": "Gara tarree deebisi",
+    "deleteTitle": "Tarree irraa haquu?",
+    "deleteMessage": "{{name}} tarree miseensaa irraa dhokata. Seenaan kaffaltii gabaasa keessa tura.",
+    "deleteConfirm": "Miseensa balleessi",
     "alertUnpaidChangeOrCollect": "Yeroo kanaaf kaffaltiin hin jiru — karoora jijjiiri ykn kaffaltii armaan gadii sassaabi.",
     "alertUnpaidCollect": "Yeroo kanaaf kaffaltiin hin jiru — haaromsuu kee dura gatii armaan gadii sassaabi.",
     "alertPaidRenew": "{{date}} hanga kaffalameera. Yeroo karoorri dhumu Haaromsi fayyadami.",
@@ -1457,11 +1471,19 @@
     },
     "memberDeleted": {
       "title": "Miseensi haqameera",
-      "subtitle": "{{name}} fi seenaan kaffaltii isaa haqameera."
+      "subtitle": "{{name}} tarree irraa haqameera. Seenaan kaffaltii eegameera."
+    },
+    "memberRestored": {
+      "title": "Miseensi deebi'eera",
+      "subtitle": "{{name}} tarree irratti deebi'eera."
+    },
+    "memberRestoreUndone": {
+      "title": "Deebisuun haqameera",
+      "subtitle": "{{name}} ammayyuu tarree irraa haqameera."
     },
     "memberDeletePending": {
       "title": "Miseensi haquu jira…",
-      "subtitle": "Yoo hin deebi'in {{name}} ni haqama."
+      "subtitle": "Yoo hin deebi'in {{name}} tarree irraa ni haqama."
     },
     "memberDeleteCancelled": {
       "title": "Haquun dhaabbateera",

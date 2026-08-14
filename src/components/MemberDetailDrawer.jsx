@@ -9,6 +9,7 @@ import {
   RefreshCw,
   ArrowRightLeft,
   ArrowLeftRight,
+  Undo2,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
@@ -58,6 +59,8 @@ export default function MemberDetailDrawer({
   onTransfer,
   showTransfer = false,
   canDelete = false,
+  canRestore = false,
+  onRestore,
   readOnly = false,
 }) {
   const { t, i18n } = useTranslation();
@@ -129,11 +132,13 @@ export default function MemberDetailDrawer({
   const hiddenPaymentCount = Math.max(memberPayments.length - PAYMENTS_PREVIEW, 0);
   const currency = (amount) => formatMoney(amount);
 
-  const canShowChangePlan = !readOnly && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
-  const canShowTransfer = showTransfer && onTransfer;
+  const isFormer = Boolean(member.deletedAt);
+  const canShowChangePlan = !readOnly && !isFormer && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
+  const canShowTransfer = showTransfer && onTransfer && !isFormer;
   const hasSecondaryActions = canShowChangePlan || (!readOnly && canShowTransfer);
   const hasPrimaryLifecycle =
     !readOnly &&
+    !isFormer &&
     ((canCollectMissedPayment && onRecordPayment) || (canRenewMember(member) && onRenew));
 
   const handleEditSubmit = async (data) => {
@@ -161,7 +166,13 @@ export default function MemberDetailDrawer({
   };
 
   const footerAlerts = [];
-  if (canCollectMissedPayment) {
+  if (isFormer) {
+    footerAlerts.push({
+      key: 'former',
+      variant: 'muted',
+      text: t('drawer.formerHint'),
+    });
+  } else if (canCollectMissedPayment) {
     footerAlerts.push({
       key: 'unpaid',
       variant: 'warning',
@@ -177,9 +188,23 @@ export default function MemberDetailDrawer({
       <SlidePanel
         open
         onClose={onClose}
-        title={t('drawer.memberTitle')}
+        title={isFormer ? t('drawer.formerTitle') : t('drawer.memberTitle')}
         footer={
-          !readOnly || showTransfer ? (
+          isFormer ? (
+            canRestore && onRestore ? (
+              <SlidePanelFooter alerts={footerAlerts}>
+                <SlidePanelActionButton
+                  variant="successHero"
+                  icon={Undo2}
+                  onClick={() => onRestore(member)}
+                >
+                  {t('drawer.restoreMember')}
+                </SlidePanelActionButton>
+              </SlidePanelFooter>
+            ) : footerAlerts.length > 0 ? (
+              <SlidePanelFooter alerts={footerAlerts} />
+            ) : null
+          ) : !readOnly || showTransfer ? (
           <SlidePanelFooter alerts={footerAlerts}>
             {!readOnly && (
               <div className="space-y-2.5">
@@ -296,7 +321,7 @@ export default function MemberDetailDrawer({
                 ? [{ text: member.phone, mono: true, key: 'phone' }]
                 : []
             }
-            badge={<StatusBadge status={member.status} />}
+            badge={<StatusBadge status={isFormer ? 'Former' : member.status} />}
           />
 
           <SlidePanelSection title={t('drawer.subscription')}>
@@ -324,6 +349,13 @@ export default function MemberDetailDrawer({
                 }
                 valueClassName="text-sm font-medium text-app-text-strong"
               />
+              {isFormer && member.deletedAt ? (
+                <SlidePanelRow
+                  label={t('pages.members.removedOn')}
+                  value={friendlyDate(member.deletedAt)}
+                  valueClassName="text-sm font-medium text-app-text-strong"
+                />
+              ) : null}
             </SlidePanelCard>
           </SlidePanelSection>
 

@@ -421,6 +421,7 @@
     "dueSoon": "Due Soon",
     "unknown": "Unknown",
     "unpaid": "Unpaid",
+    "former": "Former",
     "unpaidTooltip": "Registered — payment not collected"
   },
   "filters": {
@@ -576,6 +577,10 @@
       "subtitle": "Enroll members, change plans, renew terms, and collect missed payments.",
       "statusLineAttention": "{{expired}} expired · {{dueSoon}} due soon · {{unpaid}} unpaid",
       "statusLineClear": "{{active}} active · {{total}} total",
+      "statusLineFormer": "{{count}} former · payment history kept",
+      "formerTitle": "Former members",
+      "searchFormerPlaceholder": "Search former members…",
+      "removedOnDate": "Removed {{date}}",
       "add": "Enroll member",
       "searchPlaceholder": "Search members…",
       "noPlansWarning": "No membership plans yet. Add at least one plan before you can enroll members.",
@@ -586,9 +591,9 @@
       "backToList": "Back to members",
       "loading": "Loading members…",
       "empty": "No members found.",
-      "deleteTitle": "Remove member?",
-      "deleteMessage": "This will permanently remove {{name}} and their payment history.",
-      "removed": "{{name}} removed.",
+      "deleteTitle": "Remove from roster?",
+      "deleteMessage": "{{name}} will be hidden from Members. Payment history and reports stay unchanged.",
+      "removed": "{{name}} removed from the roster.",
       "enrolledSkip": "{{name}} enrolled (payment skipped).",
       "enrolledPaid": "{{name}} enrolled and payment recorded.",
       "updated": "Member updated.",
@@ -607,7 +612,12 @@
       "emptyTitle": "No members yet",
       "emptyBody": "Enroll your first member to start tracking terms and payments.",
       "emptyFiltered": "No members match this filter.",
-      "emptyFilteredBody": "Try another status or clear search."
+      "emptyFilteredBody": "Try another status or clear search.",
+      "former": "Former",
+      "restore": "Restore",
+      "removedOn": "Removed on",
+      "emptyFormer": "No former members",
+      "emptyFormerBody": "Removed members appear here. Restore one to put them back on the roster."
     },
     "plans": {
       "title": "Membership plans",
@@ -848,7 +858,8 @@
         "plan_changed": "Changed membership plan",
         "updated": "Updated member",
         "transferred": "Transferred member",
-        "deleted": "Removed member"
+        "deleted": "Removed member",
+        "restored": "Restored member"
       },
       "payment": {
         "recorded": "Recorded payment",
@@ -1208,6 +1219,8 @@
   },
   "drawer": {
     "memberTitle": "Member profile",
+    "formerTitle": "Former member",
+    "formerHint": "Payment history is kept. Restore to put them back on the live roster.",
     "subscription": "Subscription",
     "term": "Term",
     "planPrice": "Plan price",
@@ -1232,10 +1245,11 @@
     "noPayments": "No payments recorded for this member.",
     "editContact": "Edit contact",
     "transferBranch": "Transfer branch",
-    "deleteMember": "Delete",
-    "deleteTitle": "Delete Member Profile",
-    "deleteMessage": "Are you sure you want to remove {{name}}? This will delete their registration profile and all associated payment records.",
-    "deleteConfirm": "Delete member",
+    "deleteMember": "Remove",
+    "restoreMember": "Restore to roster",
+    "deleteTitle": "Remove from roster?",
+    "deleteMessage": "{{name}} will be hidden from Members. Their payment history stays in reports.",
+    "deleteConfirm": "Remove member",
     "alertUnpaidChangeOrCollect": "No payment for this term — change plan or collect payment below.",
     "alertUnpaidCollect": "No payment for this term — collect the fee below before renewing.",
     "alertPaidRenew": "Paid through {{date}}. Use Renew when the plan ends.",
@@ -1457,11 +1471,19 @@
     },
     "memberDeleted": {
       "title": "Member removed",
-      "subtitle": "{{name}} and their payment history were deleted."
+      "subtitle": "{{name}} was removed from the roster. Payment history is kept."
+    },
+    "memberRestored": {
+      "title": "Member restored",
+      "subtitle": "{{name}} is back on the roster."
+    },
+    "memberRestoreUndone": {
+      "title": "Restore undone",
+      "subtitle": "{{name}} is still off the roster."
     },
     "memberDeletePending": {
       "title": "Removing member…",
-      "subtitle": "{{name}} will be deleted unless you undo."
+      "subtitle": "{{name}} will be removed from the roster unless you undo."
     },
     "memberDeleteCancelled": {
       "title": "Delete cancelled",

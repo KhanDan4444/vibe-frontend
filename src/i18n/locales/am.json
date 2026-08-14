@@ -59,6 +59,7 @@
       "member": {
         "created": "አባል ታክሏል",
         "deleted": "አባል ተወግዷል",
+        "restored": "አባል ተመልሷል",
         "enrolled": "አባል ተመዝግቧል",
         "plan_changed": "የአባልነት ዕቅድ ተቀይሯል",
         "renewed": "አባልነት ታድሷል",
@@ -435,12 +436,14 @@
     "alertUnpaidCollect": "ለዚህ ጊዜ ምንም ክፍያ የለም — ፈቃድ ከማደስዎ በፊት ክፍያውን ከታች ይቀበሉ።",
     "allTime": "የሁልጊዜ ጠቅላላ፦ {{amount}}",
     "currentTerm": "የአሁኑ ጊዜ",
-    "deleteConfirm": "አባል ሰርዝ",
-    "deleteMessage": "{{name}}ን ማስወገድ እንደሚፈልጉ እርግጠኛ ነዎት? ይህ የምዝገባ መገለጫቸውን እና ሁሉንም የክፍያ መዝገቦች ያስወግዳል።",
-    "deleteTitle": "የአባል መገለጫ ሰርዝ",
+    "deleteConfirm": "አባሉን አስወግድ",
+    "deleteMessage": "{{name}} ከአባላት ዝርዝር ይደበቃል። የክፍያ ታሪካቸው በሪፖርቶች ይቀራል።",
+    "deleteTitle": "ከዝርዝር ይወገድ?",
     "editContact": "እውቂያ አርትዕ",
     "loadingPayments": "ክፍያዎችን በመጫን ላይ…",
     "memberTitle": "የአባል መገለጫ",
+    "formerTitle": "ቀድሞ ያለ አባል",
+    "formerHint": "የክፍያ ታሪክ ተጠብቋል። ወደ ንቁ ዝርዝር ለመመለስ መልስ ይጠቀሙ።",
     "monthsShort": "{{count}} ወር",
     "noPayments": "ለዚህ አባል የተመዘገበ ክፍያ የለም።",
     "olderPayments": "+{{count}} የቆዩ · በጠቅላላ {{amount}}",
@@ -462,7 +465,8 @@
     "thisTermPaid": "በዚህ ጊዜ የተከፈለ",
     "unpaid": "አልተከፈለም",
     "transferBranch": "ቅርንጫፍ አስተላልፍ",
-    "deleteMember": "ሰርዝ"
+    "deleteMember": "አስወግድ",
+    "restoreMember": "ወደ ዝርዝር መልስ"
   },
   "export": {
     "branchLine": "ቅርንጫፍ፦ {{name}}",
@@ -1166,8 +1170,8 @@
       "contactUpdated": "የእውቂያ ዝርዝሮች ተዘምነዋል።",
       "createPlanFirst": "በመጀመሪያ የአባልነት ዕቅድ ይፍጠሩ",
       "backToList": "ወደ አባላት ተመለስ",
-      "deleteMessage": "ይህ {{name}}ን እና የክፍያ ታሪካቸውን ለዘለዓለም ያስወግዳል።",
-      "deleteTitle": "አባል ይወገድ?",
+      "deleteMessage": "{{name}} ከአባላት ዝርዝር ይደበቃል። የክፍያ ታሪክ እና ሪፖርቶች አይቀየሩም።",
+      "deleteTitle": "ከዝርዝር ይወገድ?",
       "durationRange": "ቆይታ (መጀመሪያ - ማለቂያ)",
       "empty": "ምንም አባል አልተገኘም።",
       "enrolledPaid": "{{name}} ተመዝግቧል እና ክፍያው ተመዝግቧል።",
@@ -1187,6 +1191,10 @@
       "subtitle": "አባላትን ይመዝግቡ፣ ዕቅዶችን ይቀይሩ፣ ፈቃዶችን ያድሱ እና ያልተሰበሰቡ ክፍያዎችን ይቀበሉ።",
       "statusLineAttention": "{{expired}} ጊዜያቸው ያለፈ · {{dueSoon}} በቅርብ · {{unpaid}} ያልተከፈለ",
       "statusLineClear": "{{active}} ንቁ · {{total}} በጠቅላላ",
+      "statusLineFormer": "{{count}} ቀድሞ ያሉ · የክፍያ ታሪክ ተጠብቋል",
+      "formerTitle": "ቀድሞ ያሉ አባላት",
+      "searchFormerPlaceholder": "ቀድሞ ያሉ አባላትን ይፈልጉ…",
+      "removedOnDate": "{{date}} ተወግዷል",
       "title": "አባላት",
       "transferred": "{{name}} ወደ {{branch}} ተላልፏል።",
       "unpaidRegistered": "ያልተከፈለ (የተመዘገበ፣ ግን ክፍያ የሌለው)",
@@ -1194,7 +1202,12 @@
       "emptyTitle": "እስካሁን አባል የለም",
       "emptyBody": "ውሎችንና ክፍያዎችን ለመከታተል የመጀመሪያ አባልዎን ያስመዝግቡ።",
       "emptyFiltered": "ከዚህ ማጣሪያ ጋር የሚዛመድ አባል የለም።",
-      "emptyFilteredBody": "ሌላ ሁኔታ ይሞክሩ ወይም ፍለጋውን ያጽዱ።"
+      "emptyFilteredBody": "ሌላ ሁኔታ ይሞክሩ ወይም ፍለጋውን ያጽዱ።",
+      "former": "ቀድሞ ያሉ",
+      "restore": "መልስ",
+      "removedOn": "የተወገደበት",
+      "emptyFormer": "ቀድሞ የነበሩ አባላት የሉም",
+      "emptyFormerBody": "ከዝርዝር የወጡ አባላት እዚህ ይታያሉ። ወደ ዝርዝር ለመመለስ መልስ ይጠቀሙ።"
     },
     "noChartData": "ለዚህ እይታ የሚሆን ውሂብ የለም",
     "plans": {
@@ -1364,6 +1377,7 @@
     "trialing": "በሙከራ ላይ",
     "unknown": "ያልታወቀ",
     "unpaid": "ያልተከፈለ",
+    "former": "ቀድሞ ያለ",
     "unpaidTooltip": "የተመዘገበ — ግን ክፍያ አልተሰበሰበም"
   },
   "table": {
@@ -1445,11 +1459,19 @@
     },
     "memberDeleted": {
       "title": "አባል ተወግዷል",
-      "subtitle": "{{name}} እና የክፍያ ታሪካቸው ተሰርዟል።"
+      "subtitle": "{{name}} ከዝርዝር ተወግዷል። የክፍያ ታሪክ ተጠብቋል።"
+    },
+    "memberRestored": {
+      "title": "አባል ተመልሷል",
+      "subtitle": "{{name}} ወደ ዝርዝር ተመልሷል።"
+    },
+    "memberRestoreUndone": {
+      "title": "መመለስ ተቀልብሷል",
+      "subtitle": "{{name}} አሁንም ከዝርዝር ውጭ ነው።"
     },
     "memberDeletePending": {
-      "title": "አባል በመሰረዝ ላይ…",
-      "subtitle": "{{name}} ካልመለሱ ይሰረዛል።"
+      "title": "አባል በማስወገድ ላይ…",
+      "subtitle": "{{name}} ካልመለሱ ከዝርዝር ይወገዳል።"
     },
     "memberDeleteCancelled": {
       "title": "መሰረዝ ተሰርዟል",

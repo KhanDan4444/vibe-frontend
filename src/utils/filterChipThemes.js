@@ -51,6 +51,15 @@ export const FILTER_CHIP_THEMES = {
     badgeInactive:
       'bg-[color:var(--color-status-expired)]/15 text-[color:var(--color-status-expired)]',
   },
+  former: {
+    dot: 'bg-slate-400 dark:bg-slate-500',
+    active:
+      'bg-slate-500/12 border-slate-400 text-slate-800 dark:border-slate-500 dark:text-slate-100',
+    inactive:
+      'bg-app-raised border-slate-400/35 text-slate-600 hover:bg-slate-500/10 dark:text-slate-300',
+    badgeActive: 'bg-slate-600 text-white dark:bg-slate-400 dark:text-slate-900',
+    badgeInactive: 'bg-slate-500/12 text-slate-600 dark:text-slate-300',
+  },
 };
 
 /** Hex colors matching status tokens (for charts — light defaults). */

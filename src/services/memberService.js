@@ -30,8 +30,11 @@ export const updateMember = (apiFetch, id, payload) =>
     body: JSON.stringify(payload),
   });
 
-export const deleteMember = (apiFetch, id) =>
-  apiFetch(`/members/${id}`, { method: 'DELETE' });
+export const getArchivedMembers = (apiFetch, params = {}) =>
+  apiFetch(`/members/archived${toQueryString(params)}`);
+
+export const restoreMember = (apiFetch, id) =>
+  apiFetch(`/members/${id}/restore`, { method: 'POST' });
 
 export const renewMember = (apiFetch, id, payload) =>
   apiFetch(`/members/${id}/renew`, {

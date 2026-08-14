@@ -190,6 +190,7 @@ export function SlidePanelListItem({ icon: Icon, title, subtitle, trailing }) {
 
 export function SlidePanelFooterAlert({ variant = 'info', children }) {
   const styles = {
+    muted: 'border-app-border-subtle bg-app-raised text-app-muted dark:border-app-border dark:bg-app-surface/40 dark:text-app-muted',
     info: 'border-emerald-200/80 bg-emerald-50 text-emerald-800 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300',
     warning: 'border-amber-200/80 bg-amber-50 text-amber-900 dark:border-amber-500/25 dark:bg-amber-500/10 dark:text-amber-200',
   };

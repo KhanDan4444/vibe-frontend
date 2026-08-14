@@ -744,6 +744,10 @@
     scroll-snap-type: x mandatory;
   }
 
+  .filter-chip-archive-rule {
+    @apply mx-1 h-6 w-px shrink-0 self-center bg-app-border;
+  }
+
   .filter-chip {
     @apply inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[13px] font-medium leading-snug transition-colors cursor-pointer;
     min-height: 40px;

@@ -12,6 +12,7 @@ import Badge from './ui/Badge';
  */
 
 const LABEL_KEYS = {
+  former: 'status.former',
   active: 'status.active',
   suspended: 'status.suspended',
   expired: 'status.expired',

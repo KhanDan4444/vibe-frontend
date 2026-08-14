@@ -33,17 +33,18 @@ import { canRenewMember } from '../../utils/memberRenew';
 import { parseApiResponse, formatApiError } from '../../utils/api';
 import { mutationErrorState } from '../../utils/validation';
 import { mapMemberFromApi } from '../../utils/apiMappers';
-import { getMembers, getMember } from '../../services/memberService';
+import { getMembers, getArchivedMembers, getMember } from '../../services/memberService';
 import { DEFAULT_MEMBER_SORT, MEMBER_SORT_OPTIONS, sortMembersList } from '../../utils/listSort';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
-import { scheduleDeleteWithUndo } from '../../utils/scheduleWithUndo';
+import { scheduleDeleteWithUndo, UNDO_DELAY_MS } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const UNPAID = 'Unpaid';
+const FORMER = 'Former';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 const LIST_AVATAR_CLASS = 'h-10 w-10 rounded-full object-cover';
 const LIST_AVATAR_FALLBACK_CLASS =
@@ -61,7 +62,7 @@ export default function Members() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
   const {
-    plans, summary, refreshSummary, updateMember, deleteMember, renewMember, changeMemberPlan, addPayment, transferMember, showFlash,
+    plans, summary, refreshSummary, updateMember, deleteMember, restoreMember, renewMember, changeMemberPlan, addPayment, transferMember, showFlash,
     readOnly, branchReadOnly, getBranchQueryParams, branches, selectedBranchId, loading: gymLoading, error: gymError,
   } = useGym();
   const location = useLocation();
@@ -72,6 +73,7 @@ export default function Members() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [archivedTotal, setArchivedTotal] = useState(0);
   const [listLoading, setListLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -98,7 +100,9 @@ export default function Members() {
   const showBranchColumn =
     isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
   const showTransfer = isGymOwner(user?.role) && (!readOnly || branchReadOnly);
+  const showingFormer = statusFilter === FORMER;
   const canDeleteMembers = isGymOwner(user?.role);
+  const canRestoreMembers = canDeleteMembers && !readOnly;
   const showBranchPicker = isGymOwner(user?.role) && activeBranchCount > 1;
   const needsAttention = expiredCount > 0 || dueSoonCount > 0 || unpaidCount > 0;
   const statusLine = needsAttention
@@ -146,20 +150,32 @@ export default function Members() {
     const requestId = membersRequestGuard.start();
     setListLoading(true);
     try {
-      const res = await getMembers(apiFetch, {
-        page,
-        limit: PAGE_SIZE,
-        search: debouncedSearch,
-        sort: listSort,
-        ...statusFilterToQuery(statusFilter),
-        ...getBranchQueryParams(),
-      });
+      const res = showingFormer
+        ? await getArchivedMembers(apiFetch, {
+            page,
+            limit: PAGE_SIZE,
+            search: debouncedSearch,
+            ...getBranchQueryParams(),
+          })
+        : await getMembers(apiFetch, {
+            page,
+            limit: PAGE_SIZE,
+            search: debouncedSearch,
+            sort: listSort,
+            ...statusFilterToQuery(statusFilter),
+            ...getBranchQueryParams(),
+          });
       const data = await parseApiResponse(res);
       if (!membersRequestGuard.isLatest(requestId)) return;
       if (!res.ok) throw new Error(data.error || t('errors.loadMembers'));
       setMembers((data.items || []).map(mapMemberFromApi).filter(Boolean));
       setTotal(data.total ?? 0);
       setTotalPages(data.totalPages ?? 1);
+      if (!showingFormer && data.archivedTotal != null) {
+        setArchivedTotal(data.archivedTotal);
+      } else if (showingFormer && !debouncedSearch) {
+        setArchivedTotal(data.total ?? 0);
+      }
     } catch (err) {
       if (!membersRequestGuard.isLatest(requestId)) return;
       setError(err.message);
@@ -384,6 +400,44 @@ export default function Members() {
     });
   };
 
+  const handleRestore = async (id) => {
+    const member = members.find((m) => m.id === id) || selectedMember;
+    const name = member?.name || 'member';
+    setSaving(true);
+    setError('');
+    try {
+      await restoreMember(id);
+      setSelectedMember(null);
+      setStatusFilter('All');
+      await afterMutation();
+      showFlash({
+        ...flashFromKey(t, 'memberRestored', { subtitleParams: { name } }),
+        durationMs: UNDO_DELAY_MS,
+        urgent: true,
+        actionHint: t('flash.undoHint'),
+        action: {
+          label: t('common.undo'),
+          onClick: () => {
+            runInBackground((async () => {
+              try {
+                await deleteMember(id);
+                setStatusFilter(FORMER);
+                await afterMutation();
+                showFlash(flashFromKey(t, 'memberRestoreUndone', { subtitleParams: { name } }));
+              } catch (err) {
+                setError(formatApiError(err));
+              }
+            })());
+          },
+        },
+      });
+    } catch (err) {
+      setError(formatApiError(err));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleTransferSubmit = async (targetBranchId) => {
     if (!transferState.member) return;
     setSaving(true);
@@ -435,19 +489,33 @@ export default function Members() {
 
   const needsPlanSetup = !readOnly && !gymLoading && plans.length === 0;
   const isFilteredEmpty = statusFilter !== 'All' || Boolean(debouncedSearch);
-  const noMembersYet = !needsPlanSetup && !listLoading && !isFilteredEmpty && total === 0;
+  const noMembersYet = !needsPlanSetup && !listLoading && !isFilteredEmpty && total === 0 && archivedTotal === 0;
   const focusEmpty = needsPlanSetup || noMembersYet;
   const emptyIcon = AlertCircle;
-  const emptyTitle = isFilteredEmpty ? t('pages.members.emptyFiltered') : t('pages.members.emptyTitle');
-  const emptyBody = isFilteredEmpty ? t('pages.members.emptyFilteredBody') : t('pages.members.emptyBody');
+  const emptyTitle = showingFormer
+    ? t('pages.members.emptyFormer')
+    : isFilteredEmpty
+      ? t('pages.members.emptyFiltered')
+      : t('pages.members.emptyTitle');
+  const emptyBody = showingFormer
+    ? t('pages.members.emptyFormerBody')
+    : isFilteredEmpty
+      ? t('pages.members.emptyFilteredBody')
+      : t('pages.members.emptyBody');
 
   return (
     <div className="space-y-4 sm:space-y-5">
       <PageHeader
-        title={t('pages.members.title')}
-        subtitle={needsPlanSetup ? t('pages.members.noPlansSetupSubtitle') : statusLine}
+        title={showingFormer ? t('pages.members.formerTitle') : t('pages.members.title')}
+        subtitle={
+          needsPlanSetup
+            ? t('pages.members.noPlansSetupSubtitle')
+            : showingFormer
+              ? t('pages.members.statusLineFormer', { count: archivedTotal })
+              : statusLine
+        }
         actions={
-          !readOnly && !focusEmpty ? (
+          !readOnly && !focusEmpty && !showingFormer ? (
             <Button onClick={() => navigate('/dashboard/members/enroll')} disabled={gymLoading}>
               {t('actions.enroll')}
             </Button>
@@ -493,9 +561,14 @@ export default function Members() {
             <SearchField
               value={searchQuery}
               onChange={setSearchQuery}
-              placeholder={t('pages.members.searchPlaceholder')}
+              placeholder={
+                showingFormer
+                  ? t('pages.members.searchFormerPlaceholder')
+                  : t('pages.members.searchPlaceholder')
+              }
               className="sm:max-w-xs"
             />
+            {!showingFormer ? (
             <ToolbarPicker
               value={listSort}
               onChange={(id) => {
@@ -505,6 +578,7 @@ export default function Members() {
               options={MEMBER_SORT_OPTIONS}
               label={t('pages.members.sortMembers')}
             />
+            ) : null}
           </div>
           {/* All → Active, then attention filters. */}
           <FilterChipBar className="!mb-0">
@@ -558,6 +632,21 @@ export default function Members() {
                 setStatusFilter(DISPLAY_STATUS.EXPIRED);
               }}
             />
+            {(archivedTotal > 0 || showingFormer) && (
+              <>
+                <span className="filter-chip-archive-rule" aria-hidden />
+                <FilterChip
+                  variant="former"
+                  label={t('pages.members.former')}
+                  count={archivedTotal}
+                  active={statusFilter === FORMER}
+                  onClick={() => {
+                    setPage(1);
+                    setStatusFilter(FORMER);
+                  }}
+                />
+              </>
+            )}
           </FilterChipBar>
         </div>
       </div>
@@ -601,7 +690,7 @@ export default function Members() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="list-row-copy font-semibold text-app-text-strong">{member.name}</span>
-                      <StatusBadge status={member.status} />
+                      <StatusBadge status={showingFormer ? 'Former' : member.status} />
                     </div>
                     <p className="mt-0.5 text-xs text-app-muted truncate">
                       {member.phone || '—'}
@@ -610,8 +699,16 @@ export default function Members() {
                       {showBranchColumn && member.branchName ? ` · ${member.branchName}` : ''}
                     </p>
                     <p className="mt-0.5 text-xs text-app-muted">
-                      {formatDisplayDate(member.startDate)} →{' '}
-                      <span className="font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
+                      {showingFormer
+                        ? t('pages.members.removedOnDate', {
+                            date: formatDisplayDate(member.deletedAt),
+                          })
+                        : (
+                          <>
+                            {formatDisplayDate(member.startDate)} →{' '}
+                            <span className="font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
+                          </>
+                        )}
                     </p>
                   </div>
                 </div>
@@ -620,7 +717,8 @@ export default function Members() {
                     member={member}
                     plans={plans}
                     readOnly={readOnly}
-                    canDeleteMembers={canDeleteMembers}
+                    canDeleteMembers={canDeleteMembers && !showingFormer}
+                    onRestore={canRestoreMembers && showingFormer ? (m) => handleRestore(m.id) : undefined}
                     onRenew={(m) => {
                       setError('');
                       openRenewModal(m);
@@ -661,7 +759,9 @@ export default function Members() {
                 {showBranchColumn && <th>{t('table.branch')}</th>}
                 <th>{t('pages.members.contactInfo')}</th>
                 <th>{t('table.plan')}</th>
-                <th className="owner-members-col-duration">{t('pages.members.durationRange')}</th>
+                <th className="owner-members-col-duration">
+                  {showingFormer ? t('pages.members.removedOn') : t('pages.members.durationRange')}
+                </th>
                 <th className="owner-members-col-status">{t('table.status')}</th>
                 <th className="owner-members-col-actions text-right">{t('table.actions')}</th>
               </tr>
@@ -706,14 +806,22 @@ export default function Members() {
                         {planLabel}
                       </td>
                       <td className="owner-members-col-duration text-app-muted">
-                        <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
-                        <span className="mx-1 text-xs text-app-muted">{t('common.to')}</span>
-                        <span className="whitespace-nowrap font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
+                        {showingFormer ? (
+                          <span className="whitespace-nowrap font-semibold text-app-text">
+                            {formatDisplayDate(member.deletedAt)}
+                          </span>
+                        ) : (
+                          <>
+                            <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
+                            <span className="mx-1 text-xs text-app-muted">{t('common.to')}</span>
+                            <span className="whitespace-nowrap font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
+                          </>
+                        )}
                       </td>
                       <td className="owner-members-col-status">
                         <div>
-                          <StatusBadge status={member.status} />
-                          {member.isUnpaid && <UnpaidBadge />}
+                          <StatusBadge status={showingFormer ? 'Former' : member.status} />
+                          {!showingFormer && member.isUnpaid && <UnpaidBadge />}
                         </div>
                       </td>
                       <td className="owner-members-col-actions">
@@ -721,7 +829,8 @@ export default function Members() {
                           member={member}
                           plans={plans}
                           readOnly={readOnly}
-                          canDeleteMembers={canDeleteMembers}
+                          canDeleteMembers={canDeleteMembers && !showingFormer}
+                          onRestore={canRestoreMembers && showingFormer ? (m) => handleRestore(m.id) : undefined}
                           onRenew={(m) => {
                             setError('');
                             openRenewModal(m);
@@ -842,7 +951,9 @@ export default function Members() {
           setTransferState({ isOpen: true, member });
         }}
         showTransfer={showTransfer}
-        canDelete={canDeleteMembers}
+        canDelete={canDeleteMembers && !selectedMember?.deletedAt}
+        canRestore={canRestoreMembers && Boolean(selectedMember?.deletedAt)}
+        onRestore={() => handleRestore(selectedMember.id)}
         readOnly={readOnly}
       />
       )}

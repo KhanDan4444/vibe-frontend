@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useLayoutEffect,
 import { useAuth } from './AuthContext';
 import { parseApiResponse, apiErrorFromResponse } from '../utils/api';
 import { getPlans, createPlan, updatePlan as updatePlanReq, deletePlan as deletePlanReq } from '../services/planService';
-import { enrollMember as enrollMemberReq, updateMember as updateMemberReq, deleteMember as deleteMemberReq, renewMember as renewMemberReq, changeMemberPlan as changeMemberPlanReq, transferMember as transferMemberReq } from '../services/memberService';
+import { enrollMember as enrollMemberReq, updateMember as updateMemberReq, deleteMember as deleteMemberReq, restoreMember as restoreMemberReq, renewMember as renewMemberReq, changeMemberPlan as changeMemberPlanReq, transferMember as transferMemberReq } from '../services/memberService';
 import { createPayment, updatePayment as updatePaymentReq, deletePayment as deletePaymentReq } from '../services/paymentService';
 import { getDashboardMetrics } from '../services/dashboardService';
 import { getGymSubscription } from '../services/gymSubscriptionService';
@@ -438,6 +438,12 @@ export const GymProvider = ({ children }) => {
     [apiFetch]
   );
 
+  const restoreMember = useCallback(
+    async (id) => runMutation(() => restoreMemberReq(apiFetch, id), { refreshPlans: true }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch]
+  );
+
   const transferMember = useCallback(
     async (id, branchId) =>
       runMutation(() => transferMemberReq(apiFetch, id, { branch_id: branchId }), {
@@ -524,6 +530,7 @@ export const GymProvider = ({ children }) => {
       enrollMember,
       updateMember,
       deleteMember,
+      restoreMember,
       transferMember,
       renewMember,
       changeMemberPlan,
@@ -558,6 +565,7 @@ export const GymProvider = ({ children }) => {
       enrollMember,
       updateMember,
       deleteMember,
+      restoreMember,
       transferMember,
       renewMember,
       changeMemberPlan,

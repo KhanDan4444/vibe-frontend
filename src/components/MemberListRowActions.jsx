@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign } from 'lucide-react';
+import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign, Undo2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DISPLAY_STATUS } from '../utils/memberStatus';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
@@ -18,8 +18,26 @@ export default function MemberListRowActions({
   onChangePlan,
   onEdit,
   onDelete,
+  onRestore,
 }) {
   const { t } = useTranslation();
+
+  if (member.deletedAt) {
+    if (!onRestore) return null;
+    return (
+      <div className="admin-row-actions" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={() => onRestore(member)}
+          className={renewActionBtn}
+          title={t('pages.members.restore')}
+        >
+          <Undo2 className="h-3 w-3" /> {t('pages.members.restore')}
+        </button>
+      </div>
+    );
+  }
+
   if (readOnly) return null;
 
   const showRenew = canRenewMember(member);
@@ -80,6 +98,7 @@ export default function MemberListRowActions({
 
 /** Row tint + left edge for expired / due soon. */
 export function memberAttentionRowClass(member, idleHoverClass = '') {
+  if (member.deletedAt) return idleHoverClass;
   if (member.status === DISPLAY_STATUS.EXPIRED) return 'admin-row-expired';
   if (member.status === DISPLAY_STATUS.DUE_SOON) return 'admin-row-due-soon';
   return idleHoverClass;
