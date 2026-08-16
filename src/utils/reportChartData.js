@@ -134,13 +134,14 @@ function memberStatusLabel(status) {
 }
 
 export function memberReportStats(members) {
+  const live = members.filter((m) => !m.deleted_at);
   return {
     total: members.length,
-    // Active = valid term and paid (unpaid members are reported separately).
-    active: members.filter((m) => (m.status || '').toLowerCase() === 'active' && !m.is_unpaid).length,
-    unpaid: members.filter((m) => m.is_unpaid).length,
-    dueSoon: members.filter((m) => (m.status || '').toLowerCase() === 'due soon').length,
-    expired: members.filter((m) => (m.status || '').toLowerCase() === 'expired').length,
+    active: live.filter((m) => (m.status || '').toLowerCase() === 'active' && !m.is_unpaid).length,
+    unpaid: live.filter((m) => m.is_unpaid).length,
+    dueSoon: live.filter((m) => (m.status || '').toLowerCase() === 'due soon').length,
+    expired: live.filter((m) => (m.status || '').toLowerCase() === 'expired').length,
+    former: members.filter((m) => m.deleted_at).length,
   };
 }
 
@@ -163,9 +164,14 @@ export function aggregateMembersOverview(members) {
     Unpaid: 0,
     'Due Soon': 0,
     Expired: 0,
+    Former: 0,
   };
 
   members.forEach((m) => {
+    if (m.deleted_at) {
+      counts.Former += 1;
+      return;
+    }
     const status = (m.status || '').toLowerCase();
     if (status === 'expired') counts.Expired += 1;
     else if (status === 'due soon') counts['Due Soon'] += 1;
@@ -173,7 +179,7 @@ export function aggregateMembersOverview(members) {
     else counts.Active += 1;
   });
 
-  return ['Active', 'Unpaid', 'Due Soon', 'Expired']
+  return ['Active', 'Unpaid', 'Due Soon', 'Expired', 'Former']
     .map((name) => ({ name, value: counts[name] }))
     .filter((d) => d.value > 0);
 }

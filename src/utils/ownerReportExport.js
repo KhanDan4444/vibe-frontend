@@ -19,6 +19,7 @@ import {
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
 
 function formatMemberStatus(m) {
+  if (m.deleted_at) return exportText('status.former');
   const raw = (m.status || 'unknown').toString().toLowerCase();
   let label = raw;
   if (raw === 'active') label = exportText('status.active');

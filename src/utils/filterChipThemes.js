@@ -68,5 +68,6 @@ export const MEMBER_FILTER_CHART_COLORS = {
   Unpaid: '#f97316',
   'Due Soon': '#38bdf8',
   Expired: '#fb7185',
+  Former: '#94a3b8',
   Suspended: '#fb7185',
 };

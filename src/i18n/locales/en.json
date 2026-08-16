@@ -717,7 +717,7 @@
       "subtitle": "Member trends, revenue breakdowns, and exports.",
       "memberFilter": "Member filter",
       "exportNote": "Exports use the selected period and filters above.",
-      "memberOverviewSubtitle": "Active, unpaid, due soon, and expired — each member once.",
+      "memberOverviewSubtitle": "Members in the selected period, including Former if they overlapped that range or paid in it.",
       "revenueStatusLine": "{{revenue}} · {{count}} payments · avg {{average}} · {{period}}",
       "revenueChartsNote": "Breakdowns and trends for the selected period.",
       "topMembers": "Top members",

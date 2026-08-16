@@ -5,6 +5,7 @@ import { useGym } from '../../context/GymContext';
 import {
   Users,
   UserPlus,
+  UserMinus,
   FileText,
   RefreshCw,
   AlertCircle,
@@ -45,16 +46,7 @@ import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
 import Button from '../../components/ui/Button';
 import { sectionTitle } from '../../utils/surfaceClasses';
-import { FilterChip, FilterChipBar } from '../../components/FilterChip';
 import ToolbarPicker from '../../components/ToolbarPicker';
-
-const MEMBER_STATUS_FILTERS = [
-  { id: 'all', labelKey: 'filters.allMembers', query: {} },
-  { id: 'active', labelKey: 'filters.activeOnly', query: { status: 'active' } },
-  { id: 'unpaid', labelKey: 'filters.unpaid', query: { filter: 'unpaid' } },
-  { id: 'due_soon', labelKey: 'filters.dueSoon', query: { filter: 'due_soon' } },
-  { id: 'expired', labelKey: 'filters.expired', query: { filter: 'expired' } },
-];
 
 export default function OwnerReports() {
   const { t } = useTranslation();
@@ -62,7 +54,6 @@ export default function OwnerReports() {
   const { summary, getBranchQueryParams, selectedBranchId, branches } = useGym();
   const memberReportGuard = useLatestRequestGuard();
 
-  const [memberFilter, setMemberFilter] = useState('all');
   const [members, setMembers] = useState([]);
   const [memberLoading, setMemberLoading] = useState(false);
   const [memberError, setMemberError] = useState('');
@@ -79,7 +70,6 @@ export default function OwnerReports() {
 
   const [exporting, setExporting] = useState(null);
 
-  const memberFilterMeta = MEMBER_STATUS_FILTERS.find((f) => f.id === memberFilter) || MEMBER_STATUS_FILTERS[0];
   const periodPresetMeta = PERIOD_PRESETS.find((p) => p.id === periodPreset) || PERIOD_PRESETS[0];
   const periodLabel = t(periodPresetMeta.labelKey);
   const loading = memberLoading || revenueLoading;
@@ -92,7 +82,7 @@ export default function OwnerReports() {
     setMemberLoading(true);
     setMemberError('');
     try {
-      const res = await getMemberReport(apiFetch, { ...memberFilterMeta.query, ...getBranchQueryParams() });
+      const res = await getMemberReport(apiFetch, { ...buildRevenueParams(), ...getBranchQueryParams() });
       const data = await parseApiResponse(res);
       if (!memberReportGuard.isLatest(requestId)) return;
       if (!res.ok) throw new Error(data.error || t('errors.loadMemberReport'));
@@ -105,7 +95,7 @@ export default function OwnerReports() {
     } finally {
       if (memberReportGuard.isLatest(requestId)) setMemberLoading(false);
     }
-  }, [apiFetch, memberFilterMeta, memberReportGuard, getBranchQueryParams, t]);
+  }, [apiFetch, memberReportGuard, getBranchQueryParams, t, buildRevenueParams]);
 
   const loadRevenueReport = useCallback(async () => {
     setRevenueLoading(true);
@@ -154,7 +144,7 @@ export default function OwnerReports() {
   }, [selectedBranchId, branches, t]);
 
   const exportMeta = {
-    memberFilterLabel: t(memberFilterMeta.labelKey),
+    memberFilterLabel: t('filters.allMembers'),
     periodLabel,
     summary: revenueSummary,
     branchLabel,
@@ -226,28 +216,52 @@ export default function OwnerReports() {
         </div>
       )}
 
+      <div className="flex flex-wrap items-end gap-2">
+        <div>
+          <label className="mb-1 block text-xs font-medium text-app-muted">
+            {t('period.reportPeriod')}
+          </label>
+          <ToolbarPicker
+            value={periodPreset}
+            onChange={setPeriodPreset}
+            options={PERIOD_PRESETS}
+            label={t('period.reportPeriod')}
+          />
+        </div>
+        {periodPreset === 'custom' && (
+          <>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-app-muted">{t('table.startDate')}</label>
+              <DateField
+                value={customStart}
+                onChange={setCustomStart}
+                max={boundsForCustomRangeFrom(customEnd).max}
+                className="w-full app-field"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-app-muted">{t('common.to')}</label>
+              <DateField
+                value={customEnd}
+                onChange={setCustomEnd}
+                min={boundsForCustomRangeTo(customStart).min}
+                max={boundsForCustomRangeTo(customStart).max}
+                className="w-full app-field"
+              />
+            </div>
+          </>
+        )}
+      </div>
+
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-          <div>
+        <div>
             <h2 className={sectionTitle}>
               {t('nav.members')}
             </h2>
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.reports.memberOverviewSubtitle')}</p>
           </div>
-          <FilterChipBar className="!mb-0">
-            {MEMBER_STATUS_FILTERS.map((f) => (
-              <FilterChip
-                key={f.id}
-                variant={f.id === 'due_soon' ? 'due_soon' : f.id}
-                label={t(f.labelKey)}
-                active={memberFilter === f.id}
-                onClick={() => setMemberFilter(f.id)}
-              />
-            ))}
-          </FilterChipBar>
-        </div>
 
-        <div className="app-metric-grid grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <div className="app-metric-grid grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-3 xl:grid-cols-7">
           <MetricCard
             variant="dense"
             label={t('metrics.newMembers')}
@@ -269,6 +283,7 @@ export default function OwnerReports() {
           />
           <MetricCard variant="dense" label={t('metrics.dueSoon')} value={memberStats.dueSoon} icon={AlertTriangle} color="sky" />
           <MetricCard variant="dense" label={t('metrics.expired')} value={memberStats.expired} icon={XCircle} color="rose" />
+          <MetricCard variant="dense" label={t('status.former')} value={memberStats.former} icon={UserMinus} color="slate" />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
@@ -282,53 +297,15 @@ export default function OwnerReports() {
       </section>
 
       <section className="space-y-4">
-        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-3">
-          <div className="min-w-0">
-            <h2 className={sectionTitle}>
-              {t('nav.revenue')}
-            </h2>
-            {revenueStatusLine ? (
-              <p className="mt-1 text-sm text-app-muted">{revenueStatusLine}</p>
-            ) : (
-              <p className="mt-1 text-xs text-app-muted">{t('pages.reports.revenueChartsNote')}</p>
-            )}
-          </div>
-          <div className="flex flex-wrap items-end gap-2">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-app-muted">
-                {t('period.reportPeriod')}
-              </label>
-              <ToolbarPicker
-                value={periodPreset}
-                onChange={setPeriodPreset}
-                options={PERIOD_PRESETS}
-                label={t('period.reportPeriod')}
-              />
-            </div>
-            {periodPreset === 'custom' && (
-              <>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-app-muted">{t('table.startDate')}</label>
-                  <DateField
-                    value={customStart}
-                    onChange={setCustomStart}
-                    max={boundsForCustomRangeFrom(customEnd).max}
-                    className="w-full app-field"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-medium text-app-muted">{t('common.to')}</label>
-                  <DateField
-                    value={customEnd}
-                    onChange={setCustomEnd}
-                    min={boundsForCustomRangeTo(customStart).min}
-                    max={boundsForCustomRangeTo(customStart).max}
-                    className="w-full app-field"
-                  />
-                </div>
-              </>
-            )}
-          </div>
+        <div className="min-w-0">
+          <h2 className={sectionTitle}>
+            {t('nav.revenue')}
+          </h2>
+          {revenueStatusLine ? (
+            <p className="mt-1 text-sm text-app-muted">{revenueStatusLine}</p>
+          ) : (
+            <p className="mt-1 text-xs text-app-muted">{t('pages.reports.revenueChartsNote')}</p>
+          )}
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">

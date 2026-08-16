@@ -1260,7 +1260,7 @@
     "reports": {
       "exportNote": "ሪፖርቶች ከላይ የተመረጡትን ቀናት እና ማጣሪያዎች ይጠቀማሉ።",
       "memberFilter": "የአባል ማጣሪያ",
-      "memberOverviewSubtitle": "ንቁ፣ ያልተከፈለ፣ በቅርብ የሚያልቅ እና ጊዜው ያለፈ — እያንዳንዱ አባል አንድ ጊዜ።",
+      "memberOverviewSubtitle": "በተመረጠው ጊዜ ውስጥ ያሉ አባላት — ቀድሞ ያሉም በዚያ ክልል ከነበሩ ወይም ከከፈሉ ይታያሉ።",
       "revenueStatusLine": "{{revenue}} · {{count}} ክፍያዎች · አማካይ {{average}} · {{period}}",
       "revenueChartsNote": "ለተመረጠው ጊዜ ክፍፍሎች እና አዝማሚያዎች።",
       "topMembers": "ከፍተኛ አባላት",
