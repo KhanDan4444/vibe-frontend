@@ -44,6 +44,7 @@ export function mapGymFromApi(g) {
     saasStartDate: toDateString(g.saas_start_date),
     saasEndDate: toDateString(g.saas_end_date),
     activeMemberCount: g.active_member_count ?? g.activeMemberCount ?? 0,
+    deletedAt: g.deleted_at || g.deletedAt || null,
   };
 }
 
@@ -66,6 +67,7 @@ export function gymDetailPreviewFromList(gym) {
     subscription_status: gym.subscription_status,
     is_unpaid: Boolean(gym.isUnpaid ?? gym.is_unpaid),
     created_at: gym.created_at || null,
+    deleted_at: gym.deletedAt || gym.deleted_at || null,
     plan_count: gym.plan_count ?? null,
     branch_count: gym.branch_count ?? null,
     stats: {

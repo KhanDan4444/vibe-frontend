@@ -159,9 +159,16 @@
     "gymPlanChanged": "{{name}} gara kaffaltii haaraatti jijjiirameera.",
     "gymPlanChangedWithPayment": "{{name}} gara kaffaltii haaraatti jijjiiramee kaffaltinis galmeeffameera.",
     "paymentRecorded": "Kaffaltiin {{name}} galmeeffameera.",
-    "deleteGymTitle": "Profaayilii jimii Haqii",
-    "deleteGymMessage": "\"{{name}}\" miseensota, karooraa fi kaffaltii isaa hundumaa wajjin dhaabbataan haqamuun isaa sirriidhaa? Tarkaanfiin kun deebi'uu hin danda'u.",
-    "deleteGymConfirm": "Jimii Haqii",
+    "deleteGymTitle": "Tarree irraa haquu?",
+    "deleteGymMessage": "{{name}} gara jimiilee duraan turanitti ce'a. Seenaan kaffaltii SaaS fi gabaasni tura.",
+    "deleteGymConfirm": "Haqi",
+    "former": "Kan duraan turan",
+    "formerGymsTitle": "Jimiilee duraan turan",
+    "formerGymsSubtitle": "Jimiileen haqaman. Seenaan kaffaltii eegameera. Gara tarree deebisuuf Deebisi fayyadami.",
+    "searchFormerGymsPlaceholder": "Jimiilee duraan turan barbaadi…",
+    "emptyFormer": "Jimiilee duraan turan hin jiran",
+    "emptyFormerBody": "Jimiileen tarree irraa haqaman asitti mul'atu. Gara tarree deebisuuf Deebisi fayyadami.",
+    "restoreGym": "Deebisi",
     "sortGymsAria": "Jimiilee tartiibessi",
     "allStatuses": "Haalota Hundumaa",
     "unpaidStatusHint": "Kan kaffaltii hin raawwatamne (galmaa'eera, kaffaltiin hin jiru)",
@@ -1137,15 +1144,20 @@
       "changePlan": "Karoora jijjiiri",
       "editGym": "Jimii gulaali",
       "resetOwnerPassword": "Jechama siriitii abbaa deebisi",
-      "deleteGym": "Jimii haqi",
+      "deleteGym": "Haqi",
       "stats": "Waliigala",
       "paymentHistory": "Seenaa kaffaltii",
       "currentLicense": "Eeyyama ammaa",
       "thisLicensePaid": "Eeyyama kana kaffalame",
       "paidThrough": "Hanga kaffalameera",
       "noPayments": "Kaffaltiin galmeeffame hin jiru.",
-      "deleteTitle": "Jimii haqamuu?",
-      "deleteMessage": "Kun dhaabbataan {{name}} haqa.",
+      "deleteTitle": "Tarree irraa haquu?",
+      "deleteMessage": "{{name}} gara jimiilee duraan turanitti ce'a. Seenaan kaffaltii SaaS fi gabaasni tura.",
+      "deleteConfirm": "Haqi",
+      "formerTitle": "Jimii duraan ture",
+      "formerHint": "Seenaan kaffaltii SaaS eegameera. Gara tarree jiraatti deebisuuf Deebisi fayyadami.",
+      "restoreGym": "Gara tarree deebisi",
+      "removedOn": "Guyyaa haqame",
       "saasLicense": "Eeyyama SaaS",
       "licenseStarts": "Eeyyamni jalqaba",
       "nextLicenseStarts": "Eeyyamni itti aanu jalqaba",
@@ -1581,7 +1593,23 @@
     },
     "gymRemoved": {
       "title": "Jimii haqameera",
-      "subtitle": "{{name}} fi odeeffannoon walqabatu hundi haqameera."
+      "subtitle": "{{name}} tarree irraa haqameera. Seenaan kaffaltii eegameera."
+    },
+    "gymRestored": {
+      "title": "Jimii deebi'eera",
+      "subtitle": "{{name}} tarree irratti deebi'eera."
+    },
+    "gymRestoreUndone": {
+      "title": "Deebisuun haqameera",
+      "subtitle": "{{name}} ammayyuu tarree irraa haqameera."
+    },
+    "gymDeletePending": {
+      "title": "Jimii haquu jira…",
+      "subtitle": "Yoo hin deebi'in {{name}} tarree irraa ni haqama."
+    },
+    "gymDeleteCancelled": {
+      "title": "Haquun dhaabbateera",
+      "subtitle": "{{name}} eegameera."
     },
     "undoHint": "Eeguuf Deebi'i tuqi — kana cufuun haquu hin dhaabu.",
     "undoActionLabel": "{{action}} — jijjiirama kana haqi",

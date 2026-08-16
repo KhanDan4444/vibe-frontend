@@ -5,6 +5,8 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 
 /** Visible long enough to read, without feeling sticky. */
 export const FLASH_DISMISS_MS = 4500;
+/** Brief confirmation after a destructive action has already committed. */
+export const FLASH_COMMITTED_MS = 1000;
 const EXIT_MS = 200;
 
 /**
@@ -132,7 +134,9 @@ function FlashToastItem({ toast, onDismiss }) {
     [clearTimers, finishDismiss, reducedMotion]
   );
 
-  const durationMs = toast.durationMs ?? FLASH_DISMISS_MS;
+  const durationMs =
+    toast.durationMs ??
+    (toast.variant === 'danger' && !toast.action ? FLASH_COMMITTED_MS : FLASH_DISMISS_MS);
 
   useEffect(() => {
     dismissingRef.current = false;

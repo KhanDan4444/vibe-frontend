@@ -159,9 +159,16 @@
     "gymPlanChanged": "{{name}} switched to the new plan.",
     "gymPlanChangedWithPayment": "{{name}} switched to the new plan and payment recorded.",
     "paymentRecorded": "Payment recorded for {{name}}.",
-    "deleteGymTitle": "Delete gym profile",
-    "deleteGymMessage": "Are you sure you want to permanently delete \"{{name}}\" along with all its members, plans, and payments? This action cannot be undone.",
-    "deleteGymConfirm": "Delete gym",
+    "deleteGymTitle": "Remove from directory?",
+    "deleteGymMessage": "{{name}} will move to Former gyms. SaaS payment history and reports stay.",
+    "deleteGymConfirm": "Remove",
+    "former": "Former",
+    "formerGymsTitle": "Former gyms",
+    "formerGymsSubtitle": "Removed gyms. Payment history is kept. Restore to put them back on the directory.",
+    "searchFormerGymsPlaceholder": "Search former gyms…",
+    "emptyFormer": "No former gyms",
+    "emptyFormerBody": "Removed gyms appear here. Restore one to put them back on the directory.",
+    "restoreGym": "Restore",
     "sortGymsAria": "Sort gyms",
     "allStatuses": "All statuses",
     "unpaidStatusHint": "Unpaid (registered, no payment)",
@@ -1137,15 +1144,20 @@
       "changePlan": "Change plan",
       "editGym": "Edit gym",
       "resetOwnerPassword": "Reset owner password",
-      "deleteGym": "Delete gym",
+      "deleteGym": "Remove",
+      "deleteTitle": "Remove from directory?",
+      "deleteMessage": "{{name}} will move to Former gyms. SaaS payment history and reports stay.",
+      "deleteConfirm": "Remove",
+      "formerTitle": "Former gym",
+      "formerHint": "SaaS payment history is kept. Restore to put them back on the live directory.",
+      "restoreGym": "Restore to directory",
+      "removedOn": "Removed on",
       "stats": "Overview",
       "paymentHistory": "Payment history",
       "currentLicense": "Current license",
       "thisLicensePaid": "Paid this license",
       "paidThrough": "Paid through",
       "noPayments": "No payments recorded.",
-      "deleteTitle": "Delete gym?",
-      "deleteMessage": "This will permanently remove {{name}}.",
       "saasLicense": "SaaS License",
       "licenseStarts": "License starts",
       "nextLicenseStarts": "Next license starts",
@@ -1581,7 +1593,23 @@
     },
     "gymRemoved": {
       "title": "Gym removed",
-      "subtitle": "{{name}} and all related data were deleted."
+      "subtitle": "{{name}} was removed from the directory. Payment history is kept."
+    },
+    "gymRestored": {
+      "title": "Gym restored",
+      "subtitle": "{{name}} is back on the directory."
+    },
+    "gymRestoreUndone": {
+      "title": "Restore undone",
+      "subtitle": "{{name}} is still off the directory."
+    },
+    "gymDeletePending": {
+      "title": "Removing gym…",
+      "subtitle": "{{name}} will be removed from the directory unless you undo."
+    },
+    "gymDeleteCancelled": {
+      "title": "Removal cancelled",
+      "subtitle": "{{name}} was kept."
     },
     "undoHint": "Tap Undo to keep — closing this won't cancel.",
     "undoActionLabel": "{{action}} — cancel this change",

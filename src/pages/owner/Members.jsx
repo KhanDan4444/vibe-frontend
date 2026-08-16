@@ -37,6 +37,7 @@ import { getMembers, getArchivedMembers, getMember } from '../../services/member
 import { DEFAULT_MEMBER_SORT, MEMBER_SORT_OPTIONS, sortMembersList } from '../../utils/listSort';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { FLASH_COMMITTED_MS } from '../../components/FlashBanner';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo, UNDO_DELAY_MS } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
@@ -45,6 +46,7 @@ import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/Load
 
 const UNPAID = 'Unpaid';
 const FORMER = 'Former';
+const MEMBER_FILTER_STORAGE_KEY = 'vibe.members.statusFilter';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 const LIST_AVATAR_CLASS = 'h-10 w-10 rounded-full object-cover';
 const LIST_AVATAR_FALLBACK_CLASS =
@@ -54,8 +56,26 @@ function statusFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
   if (statusFilter === DISPLAY_STATUS.DUE_SOON) return { filter: 'due_soon' };
   if (statusFilter === DISPLAY_STATUS.EXPIRED) return { filter: 'expired' };
-  if (statusFilter === 'All') return {};
+  if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
+}
+
+function readSavedMemberFilter() {
+  try {
+    const saved = sessionStorage.getItem(MEMBER_FILTER_STORAGE_KEY);
+    const allowed = new Set([
+      'All',
+      FORMER,
+      UNPAID,
+      DISPLAY_STATUS.ACTIVE,
+      DISPLAY_STATUS.DUE_SOON,
+      DISPLAY_STATUS.EXPIRED,
+    ]);
+    if (allowed.has(saved)) return saved;
+  } catch {
+    /* ignore */
+  }
+  return 'All';
 }
 
 export default function Members() {
@@ -77,7 +97,7 @@ export default function Members() {
   const [listLoading, setListLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState(readSavedMemberFilter);
   const [listSort, setListSort] = useState(DEFAULT_MEMBER_SORT);
   const [modalState, setModalState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
   const [renewState, setRenewState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
@@ -129,6 +149,14 @@ export default function Members() {
     setPage(1);
   }, [debouncedSearch, statusFilter, selectedBranchId]);
 
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(MEMBER_FILTER_STORAGE_KEY, statusFilter);
+    } catch {
+      /* ignore */
+    }
+  }, [statusFilter]);
+
   const displayedMembers = useMemo(
     () => sortMembersList(members.filter((m) => !pendingDeleteIds.has(m.id)), listSort),
     [members, listSort, pendingDeleteIds],
@@ -171,9 +199,24 @@ export default function Members() {
       setMembers((data.items || []).map(mapMemberFromApi).filter(Boolean));
       setTotal(data.total ?? 0);
       setTotalPages(data.totalPages ?? 1);
-      if (!showingFormer && data.archivedTotal != null) {
-        setArchivedTotal(data.archivedTotal);
-      } else if (showingFormer && !debouncedSearch) {
+      if (!showingFormer) {
+        if (data.archivedTotal != null) {
+          setArchivedTotal(data.archivedTotal);
+        } else {
+          try {
+            const archivedRes = await getArchivedMembers(apiFetch, {
+              page: 1,
+              limit: 1,
+              ...getBranchQueryParams(),
+            });
+            const archivedData = await parseApiResponse(archivedRes);
+            if (!membersRequestGuard.isLatest(requestId)) return;
+            if (archivedRes.ok) setArchivedTotal(archivedData.total ?? 0);
+          } catch {
+            /* live list still usable if archived count is unavailable */
+          }
+        }
+      } else if (!debouncedSearch) {
         setArchivedTotal(data.total ?? 0);
       }
     } catch (err) {
@@ -423,7 +466,10 @@ export default function Members() {
                 await deleteMember(id);
                 setStatusFilter(FORMER);
                 await afterMutation();
-                showFlash(flashFromKey(t, 'memberRestoreUndone', { subtitleParams: { name } }));
+                showFlash({
+                  ...flashFromKey(t, 'memberRestoreUndone', { subtitleParams: { name } }),
+                  durationMs: FLASH_COMMITTED_MS,
+                });
               } catch (err) {
                 setError(formatApiError(err));
               }
@@ -632,8 +678,7 @@ export default function Members() {
                 setStatusFilter(DISPLAY_STATUS.EXPIRED);
               }}
             />
-            {(archivedTotal > 0 || showingFormer) && (
-              <>
+            <>
                 <span className="filter-chip-archive-rule" aria-hidden />
                 <FilterChip
                   variant="former"
@@ -646,7 +691,6 @@ export default function Members() {
                   }}
                 />
               </>
-            )}
           </FilterChipBar>
         </div>
       </div>

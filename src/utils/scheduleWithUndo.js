@@ -1,3 +1,4 @@
+import { FLASH_COMMITTED_MS } from '../components/FlashBanner';
 import { flashFromKey } from '../i18n/flashToast';
 
 /** Window to undo a destructive action before it commits. */
@@ -30,7 +31,10 @@ export function scheduleDeleteWithUndo({
     settled = true;
     try {
       await onCommit();
-      showFlash(flashFromKey(t, committedKey, { subtitleParams, variant: 'danger' }));
+      showFlash({
+        ...flashFromKey(t, committedKey, { subtitleParams, variant: 'danger' }),
+        durationMs: FLASH_COMMITTED_MS,
+      });
     } catch (err) {
       onUndo();
       showFlash({

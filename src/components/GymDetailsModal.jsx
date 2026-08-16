@@ -17,6 +17,7 @@ import {
   CircleDollarSign,
   ArrowLeftRight,
   KeyRound,
+  Undo2,
 } from 'lucide-react';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
@@ -60,6 +61,7 @@ export default function GymDetailsModal({
   onChangePlan,
   onCollectPayment,
   onResetOwnerPassword,
+  onRestore,
   onRetryDetail,
 }) {
   const { t } = useTranslation();
@@ -93,7 +95,8 @@ export default function GymDetailsModal({
     ? termPayments.length > 0
     : false;
   const isUnpaid = gymDetail?.is_unpaid ?? (termStart ? !paidForCurrentTerm : false);
-  const canCollect = isUnpaid && gymDetail?.subscription_status?.toLowerCase() === 'active';
+  const isFormer = Boolean(gymDetail?.deleted_at);
+  const canCollect = !isFormer && isUnpaid && gymDetail?.subscription_status?.toLowerCase() === 'active';
   const endDate = gymDetail?.saas_subscription?.end_date;
   const endDisplay = toDateString(endDate);
   const licenseStart = gymDetail?.saas_subscription?.start_date
@@ -120,12 +123,13 @@ export default function GymDetailsModal({
     : saasPayments.slice(0, PAYMENTS_PREVIEW);
   const hiddenPaymentCount = Math.max(saasPayments.length - PAYMENTS_PREVIEW, 0);
   const canShowChangePlan =
-    Boolean(gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0);
-  const canShowResetPassword = Boolean(onResetOwnerPassword && gymDetail?.owner_user_id);
+    !isFormer && Boolean(gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0);
+  const canShowResetPassword = !isFormer && Boolean(onResetOwnerPassword && gymDetail?.owner_user_id);
   const hasSecondaryActions = canShowChangePlan || canShowResetPassword;
   const hasPrimaryLifecycle =
-    (canCollect && onCollectPayment) ||
-    Boolean(gymForActions && canRenewGym(gymForActions) && onRenew);
+    !isFormer &&
+    ((canCollect && onCollectPayment) ||
+      Boolean(gymForActions && canRenewGym(gymForActions) && onRenew));
   const displayError = mutationError || (gymDetail ? detailError : '');
   const currency = (amount) => formatMoney(amount);
 
@@ -168,7 +172,13 @@ export default function GymDetailsModal({
   };
 
   const footerAlerts = [];
-  if (canCollect) {
+  if (isFormer) {
+    footerAlerts.push({
+      key: 'former',
+      variant: 'muted',
+      text: t('modals.gymDetails.formerHint'),
+    });
+  } else if (canCollect) {
     footerAlerts.push({
       key: 'unpaid',
       variant: 'warning',
@@ -184,10 +194,21 @@ export default function GymDetailsModal({
       <SlidePanel
         open
         onClose={onClose}
-        title={t('modals.gymDetails.title')}
+        title={isFormer ? t('modals.gymDetails.formerTitle') : t('modals.gymDetails.title')}
         footer={
           !gymDetail ? null : (
             <SlidePanelFooter alerts={footerAlerts}>
+              {isFormer ? (
+                onRestore ? (
+                  <SlidePanelActionButton
+                    variant="successHero"
+                    icon={Undo2}
+                    onClick={() => onRestore(gymDetail)}
+                  >
+                    {t('modals.gymDetails.restoreGym')}
+                  </SlidePanelActionButton>
+                ) : null
+              ) : (
               <div className="space-y-2">
                 {canCollect && onCollectPayment ? (
                   <SlidePanelActionButton
@@ -259,6 +280,7 @@ export default function GymDetailsModal({
                   </SlidePanelActionButton>
                 </div>
               </div>
+              )}
             </SlidePanelFooter>
           )
         }
@@ -297,7 +319,7 @@ export default function GymDetailsModal({
                   ? [{ icon: Mail, text: gymDetail.owner_email, key: 'email' }]
                   : []),
               ]}
-              badge={<StatusBadge status={gymDetail.subscription_status} />}
+              badge={<StatusBadge status={isFormer ? 'Former' : gymDetail.subscription_status} />}
             />
 
             <SlidePanelSection title={t('modals.gymDetails.saasLicense')}>
@@ -325,6 +347,14 @@ export default function GymDetailsModal({
                   value={formatDisplayDate(gymDetail.saas_subscription?.end_date)}
                   valueClassName="text-sm font-semibold text-app-text-strong"
                 />
+                {isFormer && gymDetail.deleted_at ? (
+                  <SlidePanelRow
+                    icon={Calendar}
+                    label={t('modals.gymDetails.removedOn')}
+                    value={formatDisplayDate(gymDetail.deleted_at)}
+                    valueClassName="text-sm font-medium text-app-text"
+                  />
+                ) : null}
                 <SlidePanelRow
                   icon={Building2}
                   label={t('modals.gymDetails.gymRegistered')}
@@ -457,7 +487,7 @@ export default function GymDetailsModal({
         isOpen={isDeleteOpen}
         title={t('modals.gymDetails.deleteTitle')}
         message={t('modals.gymDetails.deleteMessage', { name: gymDetail?.name })}
-        confirmText={t('common.delete')}
+        confirmText={t('modals.gymDetails.deleteConfirm')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setIsDeleteOpen(false)}
       />

@@ -113,9 +113,9 @@
     "dailyTotals": "ዕለታዊ ጠቅላላ ድምር",
     "dashboardSubtitle": "የቀጥታ የመድረክ መለኪያዎች",
     "deleteGymActionTitle": "ጂም ሰርዝ",
-    "deleteGymConfirm": "ጂም ሰርዝ",
-    "deleteGymMessage": "\"{{name}}\"ን ከሁሉም አባላት፣ ዕቅዶች እና ክፍያዎች ጋር ለዘለዓለም መሰረዝ ይፈልጋሉ? ይህ ድርጊት ሊቀለበስ አይችልም።",
-    "deleteGymTitle": "የጂም መገለጫ ሰርዝ",
+    "deleteGymConfirm": "አስወግድ",
+    "deleteGymMessage": "{{name}} ወደ ቀድሞ ያሉ ጂሞች ይዛወራል። የSaaS ክፍያ ታሪክ እና ሪፖርቶች ይቀራሉ።",
+    "deleteGymTitle": "ከማውጫ ይወገድ?",
     "deletePaymentCorrection": "ሰርዝ (ለማረም ብቻ)",
     "deleteSaasPlanConfirm": "ዕቅድ ሰርዝ",
     "deleteSaasPlanMessage": "የSaaS ዕቅድ \"{{name}}\"ን መሰረዝ ይፈልጋሉ? ይህ ድርጊት ሊቀለበስ አይችልም።",
@@ -128,6 +128,15 @@
     "estMrr": "የወርሃዊ ገቢ ግምት",
     "expiredOnly": "ጊዜው ያለፈበት ብቻ",
     "expiredStatusHint": "ጊዜው ያለፈበት / የታገደ",
+    "expiresOn": "የሚያልቀው {{date}}",
+    "expiryDateCol": "ማለቂያ ቀን",
+    "former": "ቀድሞ ያሉ",
+    "formerGymsTitle": "ቀድሞ ያሉ ጂሞች",
+    "formerGymsSubtitle": "የተወገዱ ጂሞች። የክፍያ ታሪክ ተጠብቋል። ወደ ማውጫ ለመመለስ መልስ ይጠቀሙ።",
+    "searchFormerGymsPlaceholder": "ቀድሞ ያሉ ጂሞችን ይፈልጉ…",
+    "emptyFormer": "ቀድሞ የነበሩ ጂሞች የሉም",
+    "emptyFormerBody": "ከማውጫ የወጡ ጂሞች እዚህ ይታያሉ። ወደ ማውጫ ለመመለስ መልስ ይጠቀሙ።",
+    "restoreGym": "መልስ",
     "expiresOn": "የሚያልቀው {{date}}",
     "expiryDateCol": "ማለቂያ ቀን",
     "fromActivePlans": "ከንቁ የSaaS ዕቅዶች",
@@ -721,9 +730,14 @@
     "gymDetails": {
       "changePlan": "ዕቅድ ቀይር",
       "collectPayment": "ክፍያ ይቀበሉ",
-      "deleteGym": "ጂም ሰርዝ",
-      "deleteMessage": "ይህ ድርጊት {{name}}ን ለዘለዓለም ያስወግዳል።",
-      "deleteTitle": "ጂም ይሰረዝ?",
+      "deleteGym": "አስወግድ",
+      "deleteMessage": "{{name}} ወደ ቀድሞ ያሉ ጂሞች ይዛወራል። የSaaS ክፍያ ታሪክ እና ሪፖርቶች ይቀራሉ።",
+      "deleteTitle": "ከማውጫ ይወገድ?",
+      "deleteConfirm": "አስወግድ",
+      "formerTitle": "ቀድሞ ያለ ጂም",
+      "formerHint": "የSaaS ክፍያ ታሪክ ተጠብቋል። ወደ ንቁ ማውጫ ለመመለስ መልስ ይጠቀሙ።",
+      "restoreGym": "ወደ ማውጫ መልስ",
+      "removedOn": "የተወገደበት",
       "editGym": "ጂም አርትዕ",
       "resetOwnerPassword": "የባለቤትን የይለፍ ቃል ቀይር",
       "licenseEnds": "ፈቃዱ ያበቃል",
@@ -1569,7 +1583,23 @@
     },
     "gymRemoved": {
       "title": "ጂም ተወግዷል",
-      "subtitle": "{{name}} እና ተያያዥ መረጃው ሁሉ ተሰርዟል።"
+      "subtitle": "{{name}} ከማውጫ ተወግዷል። የክፍያ ታሪክ ተጠብቋል።"
+    },
+    "gymRestored": {
+      "title": "ጂም ተመልሷል",
+      "subtitle": "{{name}} ወደ ማውጫ ተመልሷል።"
+    },
+    "gymRestoreUndone": {
+      "title": "መመለስ ተቀልብሷል",
+      "subtitle": "{{name}} አሁንም ከማውጫ ውጭ ነው።"
+    },
+    "gymDeletePending": {
+      "title": "ጂም በማስወገድ ላይ…",
+      "subtitle": "{{name}} ካልመለሱ ከማውጫ ይወገዳል።"
+    },
+    "gymDeleteCancelled": {
+      "title": "ማስወገድ ተሰርዟል",
+      "subtitle": "{{name}} ተጠብቋል።"
     },
     "undoHint": "ለመጠበቅ «መልስ»ን ይጫኑ — ይህን ማጥፋት አያስተላልፍም።",
     "undoActionLabel": "{{action}} — ለውጡን ሰርዝ",

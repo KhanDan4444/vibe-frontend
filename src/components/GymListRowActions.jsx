@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign } from 'lucide-react';
+import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign, Undo2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { canRenewGym, canChangeSaasPlan } from '../utils/saasRenew';
 import { renewActionBtn, collectActionBtn } from '../utils/surfaceClasses';
@@ -13,8 +13,27 @@ export default function GymListRowActions({
   onRenew,
   onEdit,
   onDelete,
+  onRestore,
 }) {
   const { t } = useTranslation();
+  const isFormer = Boolean(gym.deletedAt || gym.deleted_at);
+
+  if (isFormer) {
+    if (!onRestore) return null;
+    return (
+      <div className="admin-row-actions" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={() => onRestore(gym)}
+          className={renewActionBtn}
+          title={t('admin.restoreGym')}
+        >
+          <Undo2 className="h-3 w-3" /> {t('admin.restoreGym')}
+        </button>
+      </div>
+    );
+  }
+
   const showCollect =
     Boolean(gym.isUnpaid) &&
     gym.subscription_status?.toLowerCase() === 'active' &&
@@ -40,7 +59,7 @@ export default function GymListRowActions({
   });
   secondaryItems.push({
     key: 'delete',
-    label: t('common.delete'),
+    label: t('admin.deleteGymConfirm'),
     icon: <Trash2 className="h-4 w-4 shrink-0" />,
     danger: true,
     onClick: () => onDelete(gym),

@@ -41,6 +41,12 @@ export const updateGym = (apiFetch, gymId, payload) =>
 export const deleteGym = (apiFetch, gymId) =>
   apiFetch(`/admin/gyms/${gymId}`, { method: 'DELETE' });
 
+export const getArchivedGyms = (apiFetch, params = {}) =>
+  apiFetch(`/admin/gyms/archived${toQueryString(params)}`);
+
+export const restoreGym = (apiFetch, gymId) =>
+  apiFetch(`/admin/gyms/${gymId}/restore`, { method: 'POST' });
+
 /**
  * Register a new gym tenant on the platform (legacy — prefer enrollGym).
  */

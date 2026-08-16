@@ -34,7 +34,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { formatDisplayDate } from '../../utils/date';
-import { getGyms, getGymDetail, updateGym, deleteGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
+import { getGyms, getArchivedGyms, getGymDetail, updateGym, deleteGym, restoreGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
 import { getSaasPlans } from '../../services/saasPlanService';
 import { gymNeedsCatchUpPayment } from '../../utils/saasPaymentReport';
 import { canRenewGym, canChangeSaasPlan, mapGymDetailForBilling } from '../../utils/saasRenew';
@@ -43,7 +43,9 @@ import { DEFAULT_GYM_SORT, ADMIN_GYM_SORT_OPTIONS, sortGymsList } from '../../ut
 import { ADMIN_SECTION_PATH, adminPathToSection } from '../../utils/adminRoutes';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
+import { FLASH_COMMITTED_MS } from '../../components/FlashBanner';
 import { flashFromKey } from '../../i18n/flashToast';
+import { scheduleDeleteWithUndo, UNDO_DELAY_MS } from '../../utils/scheduleWithUndo';
 import { tableRowHover,
   pageTitle,
   mutedText,
@@ -59,14 +61,27 @@ import PageHeader from '../../components/PageHeader';
 const UNPAID = 'Unpaid';
 const DUE_SOON = 'Due Soon';
 const EXPIRED = 'Expired';
+const FORMER = 'Former';
+const GYM_FILTER_STORAGE_KEY = 'vibe.admin.gyms.statusFilter';
 const GYM_PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
 function gymFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
   if (statusFilter === DUE_SOON) return { filter: 'due_soon' };
   if (statusFilter === EXPIRED) return { filter: 'expired' };
-  if (statusFilter === 'All') return {};
+  if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
+}
+
+function readSavedGymFilter() {
+  try {
+    const saved = sessionStorage.getItem(GYM_FILTER_STORAGE_KEY);
+    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, EXPIRED]);
+    if (allowed.has(saved)) return saved;
+  } catch {
+    /* ignore */
+  }
+  return 'All';
 }
 
 export default function AdminDashboard() {
@@ -85,7 +100,7 @@ export default function AdminDashboard() {
   
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState(readSavedGymFilter);
   const [gymSort, setGymSort] = useState(DEFAULT_GYM_SORT);
   const [gymPage, setGymPage] = useState(1);
   const [gymTotal, setGymTotal] = useState(0);
@@ -105,6 +120,7 @@ export default function AdminDashboard() {
   const [selectedGymId, setSelectedGymId] = useState(null);
   const [gymEditState, setGymEditState] = useState({ isOpen: false, gym: null, error: '' });
   const [gymToDelete, setGymToDelete] = useState(null);
+  const [archivedTotal, setArchivedTotal] = useState(0);
   const [gymDetail, setGymDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
@@ -159,6 +175,15 @@ export default function AdminDashboard() {
     setGymPage(1);
   }, [debouncedSearch, statusFilter]);
 
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(GYM_FILTER_STORAGE_KEY, statusFilter);
+    } catch {
+      /* ignore */
+    }
+  }, [statusFilter]);
+
+  const showingFormer = adminSection === 'gyms' && statusFilter === FORMER;
   const displayedGyms = useMemo(() => sortGymsList(gyms, gymSort), [gyms, gymSort]);
 
   const fetchGyms = useCallback(async () => {
@@ -173,7 +198,9 @@ export default function AdminDashboard() {
         sort: gymSort,
         ...gymFilterToQuery(statusFilter),
       };
-      const res = await getGyms(apiFetch, params);
+      const res = showingFormer
+        ? await getArchivedGyms(apiFetch, params)
+        : await getGyms(apiFetch, params);
       const data = await parseApiResponse(res);
       if (!gymsRequestGuard.isLatest(requestId)) return;
       if (!res.ok) {
@@ -188,13 +215,29 @@ export default function AdminDashboard() {
       setGymTotal(data.total ?? 0);
       setGymTotalPages(data.totalPages ?? 1);
       if (data.counts) setGymCounts(data.counts);
+      if (!showingFormer) {
+        if (data.archivedTotal != null) {
+          setArchivedTotal(data.archivedTotal);
+        } else {
+          try {
+            const archivedRes = await getArchivedGyms(apiFetch, { page: 1, limit: 1 });
+            const archivedData = await parseApiResponse(archivedRes);
+            if (!gymsRequestGuard.isLatest(requestId)) return;
+            if (archivedRes.ok) setArchivedTotal(archivedData.total ?? 0);
+          } catch {
+            /* live list still usable */
+          }
+        }
+      } else if (!debouncedSearch) {
+        setArchivedTotal(data.total ?? 0);
+      }
     } catch (err) {
       if (!gymsRequestGuard.isLatest(requestId)) return;
       setError(err.message);
     } finally {
       if (gymsRequestGuard.isLatest(requestId)) setLoading(false);
     }
-  }, [apiFetch, gymPage, debouncedSearch, statusFilter, gymSort, gymsRequestGuard]);
+  }, [apiFetch, gymPage, debouncedSearch, statusFilter, gymSort, gymsRequestGuard, showingFormer]);
 
   const fetchGymDetail = useCallback(
     async (gymId) => {
@@ -330,20 +373,75 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteGym = async (gymId) => {
-    const deletedGym = gyms.find((g) => g.id === gymId);
-    const res = await deleteGym(apiFetch, gymId);
-    if (!res.ok) {
-      const data = await parseApiResponse(res);
-      throw new Error(data.error || 'Failed to delete gym');
-    }
+    const deletedGym = gyms.find((g) => g.id === gymId) || gymDetail;
+    const name = deletedGym?.name || 'Gym';
     closeGymDetail();
-    showFlash(
-      flashFromKey(t, 'gymRemoved', {
-        subtitleParams: { name: deletedGym?.name || 'Gym' },
-        variant: 'danger',
-      })
-    );
-    runInBackground(Promise.all([fetchGyms(), fetchPlatformMetrics()]));
+    setGyms((prev) => prev.filter((g) => g.id !== gymId));
+    scheduleDeleteWithUndo({
+      showFlash,
+      t,
+      pendingKey: 'gymDeletePending',
+      cancelledKey: 'gymDeleteCancelled',
+      committedKey: 'gymRemoved',
+      subtitleParams: { name },
+      onUndo: () => {
+        runInBackground(fetchGyms());
+      },
+      onCommit: async () => {
+        const res = await deleteGym(apiFetch, gymId);
+        if (!res.ok) {
+          const data = await parseApiResponse(res);
+          throw new Error(data.error || 'Failed to remove gym');
+        }
+        runInBackground(Promise.all([fetchGyms(), fetchPlatformMetrics()]));
+      },
+    });
+  };
+
+  const handleRestoreGym = async (gym) => {
+    const id = gym.id;
+    const name = gym.name || 'Gym';
+    closeGymDetail();
+    setSaving(true);
+    try {
+      const res = await restoreGym(apiFetch, id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || 'Failed to restore gym');
+      setStatusFilter('All');
+      await Promise.all([fetchGyms(), fetchPlatformMetrics()]);
+      showFlash({
+        ...flashFromKey(t, 'gymRestored', { subtitleParams: { name } }),
+        durationMs: UNDO_DELAY_MS,
+        urgent: true,
+        actionHint: t('flash.undoHint'),
+        action: {
+          label: t('common.undo'),
+          onClick: () => {
+            runInBackground((async () => {
+              try {
+                const undoRes = await deleteGym(apiFetch, id);
+                if (!undoRes.ok) {
+                  const undoData = await parseApiResponse(undoRes);
+                  throw new Error(undoData.error || 'Failed to undo restore');
+                }
+                setStatusFilter(FORMER);
+                await Promise.all([fetchGyms(), fetchPlatformMetrics()]);
+                showFlash({
+                  ...flashFromKey(t, 'gymRestoreUndone', { subtitleParams: { name } }),
+                  durationMs: FLASH_COMMITTED_MS,
+                });
+              } catch (err) {
+                setError(err.message);
+              }
+            })());
+          },
+        },
+      });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleConfirmDeleteGym = async () => {
@@ -489,7 +587,7 @@ export default function AdminDashboard() {
         .slice(0, 5);
 
   const gymsFiltered = statusFilter !== 'All' || Boolean(debouncedSearch);
-  const noGymsYet = !loading && !gymsFiltered && gyms.length === 0;
+  const noGymsYet = !loading && !gymsFiltered && gyms.length === 0 && archivedTotal === 0;
   const canRegisterGym = !(saasPlansLoaded && saasPlans.length === 0);
   const openRegisterGym = () => navigate(`${ADMIN_SECTION_PATH.gyms}/register`);
 
@@ -725,10 +823,10 @@ export default function AdminDashboard() {
 
             <>
               <PageHeader
-                title={t('admin.gymsTitle')}
-                subtitle={t('admin.gymsSubtitle')}
+                title={showingFormer ? t('admin.formerGymsTitle') : t('admin.gymsTitle')}
+                subtitle={showingFormer ? t('admin.formerGymsSubtitle') : t('admin.gymsSubtitle')}
                 actions={
-                  !noGymsYet ? (
+                  !noGymsYet && !showingFormer ? (
                     <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
                       {t('admin.registerGym')}
                     </Button>
@@ -806,14 +904,26 @@ export default function AdminDashboard() {
                       setStatusFilter(EXPIRED);
                     }}
                   />
+                  <span className="filter-chip-archive-rule" aria-hidden />
+                  <FilterChip
+                    variant="former"
+                    label={t('admin.former')}
+                    count={archivedTotal}
+                    active={statusFilter === FORMER}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(FORMER);
+                    }}
+                  />
                 </FilterChipBar>
 
                 <div className="flex flex-col gap-3 border-b border-app-border-subtle pb-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
                   <SearchField
                     value={searchQuery}
                     onChange={setSearchQuery}
-                    placeholder={t('admin.searchGymsPlaceholder')}
+                    placeholder={showingFormer ? t('admin.searchFormerGymsPlaceholder') : t('admin.searchGymsPlaceholder')}
                   />
+                  {!showingFormer ? (
                   <ToolbarPicker
                     value={gymSort}
                     onChange={(id) => {
@@ -823,6 +933,7 @@ export default function AdminDashboard() {
                     options={ADMIN_GYM_SORT_OPTIONS}
                     label={t('admin.sortGymsAria')}
                   />
+                  ) : null}
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
@@ -862,7 +973,7 @@ export default function AdminDashboard() {
                                 <div className="min-w-0 flex-1">
                                   <div className="flex flex-wrap items-center gap-2">
                                     <span className="font-bold text-app-text-strong">{gym.name}</span>
-                                    <StatusBadge status={gym.subscription_status} />
+                                    <StatusBadge status={showingFormer ? 'Former' : gym.subscription_status} />
                                   </div>
                                   <p className="mt-1 text-sm text-app-text">{gym.owner_name}</p>
                                   <p className="mt-0.5 text-sm text-teal-700">{gym.saas_plan_name || '—'}</p>
@@ -881,6 +992,7 @@ export default function AdminDashboard() {
                                 onRenew={openRenewGymModal}
                                 onEdit={(g) => setGymEditState({ isOpen: true, gym: g, error: '' })}
                                 onDelete={setGymToDelete}
+                                onRestore={handleRestoreGym}
                               />
                             </div>
                           </div>
@@ -891,8 +1003,20 @@ export default function AdminDashboard() {
                         <EmptyState
                           icon={AlertCircle}
                           compact
-                          title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
-                          body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                          title={
+                            showingFormer
+                              ? t('admin.emptyFormer')
+                              : gymsFiltered
+                                ? t('admin.noGymsMatch')
+                                : t('admin.noGymsEmptyTitle')
+                          }
+                          body={
+                            showingFormer
+                              ? t('admin.emptyFormerBody')
+                              : gymsFiltered
+                                ? t('admin.noGymsMatchBody')
+                                : t('admin.noGymsEmptyBody')
+                          }
                           action={
                             noGymsYet ? (
                               <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
@@ -952,8 +1076,8 @@ export default function AdminDashboard() {
                               </td>
                               <td>
                                 <div className="flex flex-wrap items-center gap-1.5">
-                                  <StatusBadge status={gym.subscription_status} />
-                                  {isUnpaid && <UnpaidBadge />}
+                                  <StatusBadge status={showingFormer ? 'Former' : gym.subscription_status} />
+                                  {isUnpaid && !showingFormer && <UnpaidBadge />}
                                 </div>
                               </td>
                               <td>
@@ -965,6 +1089,7 @@ export default function AdminDashboard() {
                                   onRenew={openRenewGymModal}
                                   onEdit={(g) => setGymEditState({ isOpen: true, gym: g, error: '' })}
                                   onDelete={setGymToDelete}
+                                  onRestore={handleRestoreGym}
                                 />
                               </td>
                             </tr>
@@ -976,8 +1101,20 @@ export default function AdminDashboard() {
                               <EmptyState
                                 icon={AlertCircle}
                                 compact
-                                title={gymsFiltered ? t('admin.noGymsMatch') : t('admin.noGymsEmptyTitle')}
-                                body={gymsFiltered ? t('admin.noGymsMatchBody') : t('admin.noGymsEmptyBody')}
+                                title={
+                                  showingFormer
+                                    ? t('admin.emptyFormer')
+                                    : gymsFiltered
+                                      ? t('admin.noGymsMatch')
+                                      : t('admin.noGymsEmptyTitle')
+                                }
+                                body={
+                                  showingFormer
+                                    ? t('admin.emptyFormerBody')
+                                    : gymsFiltered
+                                      ? t('admin.noGymsMatchBody')
+                                      : t('admin.noGymsEmptyBody')
+                                }
                                 action={
                                   noGymsYet ? (
                                     <Button onClick={openRegisterGym} disabled={!canRegisterGym}>
@@ -1036,6 +1173,7 @@ export default function AdminDashboard() {
         detailError={detailError}
         onUpdate={handleUpdateGym}
         onDelete={handleDeleteGym}
+        onRestore={handleRestoreGym}
         onRenew={openRenewGymModal}
         onChangePlan={openChangePlanModal}
         onCollectPayment={(gym) => setCollectState({ isOpen: true, gym, error: '' })}
