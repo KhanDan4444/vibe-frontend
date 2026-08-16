@@ -36,6 +36,9 @@ export const getArchivedMembers = (apiFetch, params = {}) =>
 export const restoreMember = (apiFetch, id) =>
   apiFetch(`/members/${id}/restore`, { method: 'POST' });
 
+export const deleteMember = (apiFetch, id) =>
+  apiFetch(`/members/${id}`, { method: 'DELETE' });
+
 export const renewMember = (apiFetch, id, payload) =>
   apiFetch(`/members/${id}/renew`, {
     method: 'POST',
