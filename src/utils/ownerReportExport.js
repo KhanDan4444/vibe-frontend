@@ -36,7 +36,7 @@ function memberExportColumns(meta) {
 }
 
 function revenueExportColumns(meta) {
-  const cols = ['member', 'paymentReceivedDate', 'method', 'amount'];
+  const cols = ['member', 'paymentReceivedDate', 'status', 'method', 'amount'];
   if (showBranchInExport(meta)) cols.splice(2, 0, 'branch');
   return cols.map(exportColumn);
 }
@@ -65,11 +65,24 @@ function memberExportRow(m, meta = {}) {
   return row;
 }
 
+function formatPaymentMemberStatus(p) {
+  if (p.deleted_at) return exportText('status.former');
+  const raw = (p.status || 'unknown').toString().toLowerCase();
+  if (raw === 'active') return exportText('status.active');
+  if (raw === 'expired') return exportText('status.expired');
+  if (raw === 'due soon') return exportText('status.dueSoon');
+  return raw.charAt(0).toUpperCase() + raw.slice(1);
+}
+
 function revenueExportRow(p, meta = {}) {
   const showBranch = showBranchInExport(meta);
   const row = [p.member_name || '—', formatDate(p.date)];
   if (showBranch) row.push(p.branch_name || '—');
-  row.push(exportPaymentMethod(p.method) || p.method || '—', formatMoney(p.amount));
+  row.push(
+    formatPaymentMemberStatus(p),
+    exportPaymentMethod(p.method) || p.method || '—',
+    formatMoney(p.amount),
+  );
   return row;
 }
 
@@ -90,13 +103,15 @@ const MEMBER_PDF_COLUMN_STYLES = {
   7: { halign: 'right', cellWidth: 24 },
 };
 
-const REVENUE_PDF_COLUMN_STYLES = {
-  0: { cellWidth: 12, halign: 'center' },
-  1: { cellWidth: 48 },
-  2: { cellWidth: 42 },
-  4: { halign: 'right', cellWidth: 28 },
-  5: { halign: 'right', cellWidth: 28 },
-};
+function revenuePdfColumnStyles(meta = {}) {
+  const amountIdx = showBranchInExport(meta) ? 6 : 5;
+  return {
+    0: { cellWidth: 12, halign: 'center' },
+    1: { cellWidth: 40 },
+    2: { cellWidth: 32 },
+    [amountIdx]: { halign: 'right', cellWidth: 28 },
+  };
+}
 
 export function membersToCsv(members, meta = {}) {
   const sorted = sortMembersList(members, DEFAULT_EXPORT_SORT);
@@ -175,7 +190,7 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
     styles: { fontSize: 9, cellPadding: 2.5 },
     headStyles: { fillColor: [16, 185, 129] },
     alternateRowStyles: { fillColor: [248, 250, 252] },
-    columnStyles: REVENUE_PDF_COLUMN_STYLES,
+    columnStyles: revenuePdfColumnStyles(meta),
   });
 
   doc.save(`gym-revenue-${reportTimestamp()}.pdf`);
@@ -274,7 +289,7 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
     styles: { fontSize: 9, cellPadding: 2.5 },
     headStyles: { fillColor: [16, 185, 129] },
     alternateRowStyles: { fillColor: [248, 250, 252] },
-    columnStyles: REVENUE_PDF_COLUMN_STYLES,
+    columnStyles: revenuePdfColumnStyles(meta),
   });
 
   doc.save(`gym-report-${reportTimestamp()}.pdf`);

@@ -2,8 +2,17 @@ import React, { useState, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { validatePassword, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../utils/validation';
+import {
+  validatePassword,
+  showValidationError,
+  inputClass,
+  fieldErrorMessage,
+  clearFieldError,
+  clearAllFieldErrors,
+  MIN_PASSWORD_LENGTH,
+} from '../utils/validation';
 import FieldError from './FieldError';
+import PasswordRule from './auth/PasswordRule';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
@@ -56,6 +65,7 @@ export default function ResetPasswordModal({
   };
 
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
+  const lengthOk = password.length >= MIN_PASSWORD_LENGTH;
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
@@ -110,7 +120,11 @@ export default function ResetPasswordModal({
               </button>
             </div>
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-            <p className="mt-1 text-xs text-app-muted">{t('modals.resetPassword.passwordHint')}</p>
+            <PasswordRule
+              show
+              ok={lengthOk}
+              label={t('modals.resetPassword.passwordHint')}
+            />
           </div>
         </div>
 
@@ -119,7 +133,7 @@ export default function ResetPasswordModal({
             {t('common.cancel')}
           </Button>
           <Button type="submit" loading={saving} className="w-full sm:w-auto">
-            {saving ? t('common.saving') : t('modals.resetPassword.submit')}
+            {t('modals.resetPassword.submit')}
           </Button>
         </div>
       </form>
