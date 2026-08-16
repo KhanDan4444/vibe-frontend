@@ -62,7 +62,7 @@ export default function MemberListRowActions({
   if (canDeleteMembers) {
     secondaryItems.push({
       key: 'delete',
-      label: t('common.delete'),
+      label: t('pages.members.deleteConfirm'),
       icon: <Trash2 className="h-4 w-4 shrink-0" />,
       danger: true,
       onClick: () => onDelete(member),

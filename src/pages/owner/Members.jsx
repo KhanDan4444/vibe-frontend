@@ -921,7 +921,7 @@ export default function Members() {
         isOpen={!!memberToDelete}
         title={t('pages.members.deleteTitle')}
         message={t('pages.members.deleteMessage', { name: memberToDelete?.name })}
-        confirmText={t('common.delete')}
+        confirmText={t('pages.members.deleteConfirm')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setMemberToDelete(null)}
       />
