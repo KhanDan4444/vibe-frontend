@@ -1485,6 +1485,10 @@
       "title": "መመለስ ተቀልብሷል",
       "subtitle": "{{name}} አሁንም ከዝርዝር ውጭ ነው።"
     },
+    "memberRestorePending": {
+      "title": "አባል በመመለስ ላይ…",
+      "subtitle": "{{name}} ካልመለሱ ወደ ዝርዝር ይመለሳል።"
+    },
     "memberDeletePending": {
       "title": "አባል በማስወገድ ላይ…",
       "subtitle": "{{name}} ካልመለሱ ከዝርዝር ይወገዳል።"

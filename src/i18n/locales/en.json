@@ -1495,6 +1495,10 @@
       "title": "Restore undone",
       "subtitle": "{{name}} is still off the roster."
     },
+    "memberRestorePending": {
+      "title": "Restoring member…",
+      "subtitle": "{{name}} will be restored to the roster unless you undo."
+    },
     "memberDeletePending": {
       "title": "Removing member…",
       "subtitle": "{{name}} will be removed from the roster unless you undo."

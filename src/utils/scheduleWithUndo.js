@@ -66,3 +66,82 @@ export function scheduleDeleteWithUndo({
     clearTimeout(timer);
   };
 }
+
+/**
+ * Show the restored toast immediately; run the API in the background.
+ * Undo re-archives after restore has finished (or queues re-archive if still in flight).
+ */
+export function restoreWithUndoFlash({
+  showFlash,
+  t,
+  name,
+  restore,
+  rearchive,
+  onRestored,
+  onRearchived,
+  onFailed,
+}) {
+  let cancelled = false;
+  let restoreFinished = false;
+  let restoreFailed = false;
+  const subtitleParams = { name };
+
+  const confirmTimer = setTimeout(() => {
+    if (cancelled || restoreFailed) return;
+    showFlash({
+      ...flashFromKey(t, 'memberRestored', { subtitleParams }),
+      durationMs: FLASH_COMMITTED_MS,
+    });
+  }, UNDO_DELAY_MS);
+
+  showFlash({
+    ...flashFromKey(t, 'memberRestorePending', { subtitleParams }),
+    durationMs: UNDO_DELAY_MS,
+    urgent: true,
+    actionHint: t('flash.undoHint'),
+    action: {
+      label: t('common.undo'),
+      onClick: () => {
+        cancelled = true;
+        clearTimeout(confirmTimer);
+        void (async () => {
+          try {
+            if (restoreFinished) await rearchive();
+            onRearchived?.();
+            showFlash({
+              ...flashFromKey(t, 'memberRestoreUndone', { subtitleParams }),
+              durationMs: FLASH_COMMITTED_MS,
+            });
+          } catch (err) {
+            showFlash({
+              title: err instanceof Error ? err.message : t('common.error'),
+              variant: 'danger',
+            });
+          }
+        })();
+      },
+    },
+  });
+
+  requestAnimationFrame(() => {
+    onRestored?.();
+  });
+
+  void (async () => {
+    try {
+      await restore();
+      restoreFinished = true;
+      if (cancelled) await rearchive();
+    } catch (err) {
+      if (cancelled) return;
+      restoreFailed = true;
+      clearTimeout(confirmTimer);
+      onFailed?.(err);
+    }
+  })();
+
+  return () => {
+    cancelled = true;
+    clearTimeout(confirmTimer);
+  };
+}

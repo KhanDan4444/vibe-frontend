@@ -262,7 +262,7 @@ export default function OwnerDashboard() {
                               className={renewActionBtn}
                               title={t('actions.renew')}
                             >
-                              <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
+                              <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
                             </button>
                           </div>
                         )}
@@ -324,7 +324,7 @@ export default function OwnerDashboard() {
                                     onClick={() => setRenewState({ isOpen: true, member })}
                                     className={renewActionBtn}
                                   >
-                                    <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
+                                    <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
                                   </button>
                                 )}
                               </div>

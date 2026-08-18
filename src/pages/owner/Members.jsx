@@ -1,5 +1,5 @@
 // src/pages/owner/Members.jsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
@@ -37,9 +37,8 @@ import { getMembers, getArchivedMembers, getMember } from '../../services/member
 import { DEFAULT_MEMBER_SORT, MEMBER_SORT_OPTIONS, sortMembersList } from '../../utils/listSort';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
-import { FLASH_COMMITTED_MS } from '../../components/FlashBanner';
 import { flashFromKey } from '../../i18n/flashToast';
-import { scheduleDeleteWithUndo, UNDO_DELAY_MS } from '../../utils/scheduleWithUndo';
+import { scheduleDeleteWithUndo, restoreWithUndoFlash } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
@@ -105,6 +104,8 @@ export default function Members() {
   const [paymentState, setPaymentState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
   const [memberToDelete, setMemberToDelete] = useState(null);
   const [pendingDeleteIds, setPendingDeleteIds] = useState(() => new Set());
+  const [pendingRestoreIds, setPendingRestoreIds] = useState(() => new Set());
+  const silentListRefreshRef = useRef(false);
   const [transferState, setTransferState] = useState({ isOpen: false, member: null });
   const [selectedMember, setSelectedMember] = useState(null);
   const [paymentsRefreshKey, setPaymentsRefreshKey] = useState(0);
@@ -158,8 +159,16 @@ export default function Members() {
   }, [statusFilter]);
 
   const displayedMembers = useMemo(
-    () => sortMembersList(members.filter((m) => !pendingDeleteIds.has(m.id)), listSort),
-    [members, listSort, pendingDeleteIds],
+    () =>
+      sortMembersList(
+        members.filter((m) => {
+          if (pendingDeleteIds.has(m.id)) return false;
+          if (showingFormer && pendingRestoreIds.has(m.id)) return false;
+          return true;
+        }),
+        listSort,
+      ),
+    [members, listSort, pendingDeleteIds, pendingRestoreIds, showingFormer],
   );
 
   const hideMemberPending = useCallback((id) => {
@@ -176,7 +185,9 @@ export default function Members() {
 
   const fetchMembers = useCallback(async () => {
     const requestId = membersRequestGuard.start();
-    setListLoading(true);
+    const silent = silentListRefreshRef.current;
+    silentListRefreshRef.current = false;
+    if (!silent) setListLoading(true);
     try {
       const res = showingFormer
         ? await getArchivedMembers(apiFetch, {
@@ -223,9 +234,9 @@ export default function Members() {
       if (!membersRequestGuard.isLatest(requestId)) return;
       setError(err.message);
     } finally {
-      if (membersRequestGuard.isLatest(requestId)) setListLoading(false);
+      if (membersRequestGuard.isLatest(requestId) && !silent) setListLoading(false);
     }
-  }, [apiFetch, page, debouncedSearch, statusFilter, listSort, membersRequestGuard, getBranchQueryParams]);
+  }, [apiFetch, page, debouncedSearch, statusFilter, listSort, membersRequestGuard, getBranchQueryParams, t]);
 
   useEffect(() => {
     fetchMembers();
@@ -443,45 +454,48 @@ export default function Members() {
     });
   };
 
-  const handleRestore = async (id) => {
+  const handleRestore = (id) => {
     const member = members.find((m) => m.id === id) || selectedMember;
     const name = member?.name || 'member';
-    setSaving(true);
-    setError('');
-    try {
-      await restoreMember(id);
-      setSelectedMember(null);
-      setStatusFilter('All');
-      await afterMutation();
-      showFlash({
-        ...flashFromKey(t, 'memberRestored', { subtitleParams: { name } }),
-        durationMs: UNDO_DELAY_MS,
-        urgent: true,
-        actionHint: t('flash.undoHint'),
-        action: {
-          label: t('common.undo'),
-          onClick: () => {
-            runInBackground((async () => {
-              try {
-                await deleteMember(id);
-                setStatusFilter(FORMER);
-                await afterMutation();
-                showFlash({
-                  ...flashFromKey(t, 'memberRestoreUndone', { subtitleParams: { name } }),
-                  durationMs: FLASH_COMMITTED_MS,
-                });
-              } catch (err) {
-                setError(formatApiError(err));
-              }
-            })());
-          },
-        },
-      });
-    } catch (err) {
-      setError(formatApiError(err));
-    } finally {
-      setSaving(false);
-    }
+    if (selectedMember?.id === id) setSelectedMember(null);
+    setPendingRestoreIds((prev) => new Set(prev).add(id));
+
+    restoreWithUndoFlash({
+      showFlash,
+      t,
+      name,
+      restore: () => restoreMember(id),
+      rearchive: () => deleteMember(id),
+      onRestored: () => {
+        silentListRefreshRef.current = true;
+        setPendingRestoreIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+        setStatusFilter('All');
+        runInBackground(afterMutation());
+      },
+      onRearchived: () => {
+        silentListRefreshRef.current = true;
+        setPendingRestoreIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+        setStatusFilter(FORMER);
+        runInBackground(afterMutation());
+      },
+      onFailed: (err) => {
+        setPendingRestoreIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+        setStatusFilter(FORMER);
+        setError(formatApiError(err));
+      },
+    });
   };
 
   const handleTransferSubmit = async (targetBranchId) => {

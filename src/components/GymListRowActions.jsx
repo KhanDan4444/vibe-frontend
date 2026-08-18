@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign, Undo2 } from 'lucide-react';
+import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { canRenewGym, canChangeSaasPlan } from '../utils/saasRenew';
 import { renewActionBtn, collectActionBtn } from '../utils/surfaceClasses';
@@ -28,7 +28,7 @@ export default function GymListRowActions({
           className={renewActionBtn}
           title={t('admin.restoreGym')}
         >
-          <Undo2 className="h-3 w-3" /> {t('admin.restoreGym')}
+          <RefreshCw className="h-3.5 w-3.5" /> {t('admin.restoreGym')}
         </button>
       </div>
     );
@@ -74,7 +74,7 @@ export default function GymListRowActions({
           className={renewActionBtn}
           title={t('admin.renewLicenseTitle')}
         >
-          <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
+          <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
         </button>
       ) : null}
       {showCollect ? (

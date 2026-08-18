@@ -1495,6 +1495,10 @@
       "title": "Deebisuun haqameera",
       "subtitle": "{{name}} ammayyuu tarree irraa haqameera."
     },
+    "memberRestorePending": {
+      "title": "Miseensi deebi'aa jira…",
+      "subtitle": "Yoo hin deebi'in {{name}} gara tarree ni deebi'a."
+    },
     "memberDeletePending": {
       "title": "Miseensi haquu jira…",
       "subtitle": "Yoo hin deebi'in {{name}} tarree irraa ni haqama."
