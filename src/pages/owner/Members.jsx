@@ -468,13 +468,15 @@ export default function Members() {
       rearchive: () => deleteMember(id),
       onRestored: () => {
         silentListRefreshRef.current = true;
-        setPendingRestoreIds((prev) => {
-          const next = new Set(prev);
-          next.delete(id);
-          return next;
-        });
-        setStatusFilter('All');
-        runInBackground(afterMutation());
+        runInBackground(
+          afterMutation().then(() => {
+            setPendingRestoreIds((prev) => {
+              const next = new Set(prev);
+              next.delete(id);
+              return next;
+            });
+          }),
+        );
       },
       onRearchived: () => {
         silentListRefreshRef.current = true;

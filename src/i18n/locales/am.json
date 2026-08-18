@@ -1517,6 +1517,10 @@
       "title": "መሰረዝ ተሰርዟል",
       "subtitle": "ክፍያው ተጠብቋል።"
     },
+    "planDeleted": {
+      "title": "ዕቅድ ተሰርዟል",
+      "subtitle": "ዕቅዱ ለመመዝገብ አይገኝም።"
+    },
     "branchCreated": {
       "title": "ቅርንጫፍ ተፈጥሯል",
       "subtitle": "አባላትን እና ሰራተኞችን ሊመድቡት ይችላሉ።"

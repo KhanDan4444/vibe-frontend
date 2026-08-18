@@ -64,6 +64,12 @@ export function reportTimestamp() {
   return todayString();
 }
 
+/** Start a new landscape page for the next report section. */
+export function pdfStartNewPage(doc) {
+  doc.addPage();
+  return 16;
+}
+
 /** @param {import('jspdf').jsPDF} doc */
 export function pdfHeader(doc, { title, lines, startY = 14 }) {
   doc.setFontSize(16);

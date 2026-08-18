@@ -15,6 +15,8 @@ import RowMoreMenu from '../../components/RowMoreMenu';
 import { formatMoney } from '../../utils/formatMoney';
 import { cardSurface } from '../../utils/surfaceClasses';
 import ToolbarPicker from '../../components/ToolbarPicker';
+import { flashFromKey } from '../../i18n/flashToast';
+import { FLASH_PLAN_DELETED_MS } from '../../components/FlashBanner';
 
 const SORT_OPTIONS = [
   { value: 'price_asc', labelKey: 'pages.plans.sort.priceAsc' },
@@ -55,7 +57,7 @@ function monthlyRate(plan) {
 export default function Plans() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { plans, addPlan, deletePlan, updatePlan, readOnly, loading: gymLoading } = useGym();
+  const { plans, addPlan, deletePlan, updatePlan, readOnly, loading: gymLoading, showFlash } = useGym();
   const canManagePlans = isGymOwner(user?.role) && !readOnly;
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -166,6 +168,10 @@ export default function Plans() {
     setError('');
     try {
       await deletePlan(planId);
+      showFlash({
+        ...flashFromKey(t, 'planDeleted', { variant: 'danger' }),
+        durationMs: FLASH_PLAN_DELETED_MS,
+      });
     } catch (err) {
       setError(err.message);
     }

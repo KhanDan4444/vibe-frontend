@@ -1527,6 +1527,10 @@
       "title": "Delete cancelled",
       "subtitle": "The payment was kept."
     },
+    "planDeleted": {
+      "title": "Plan deleted",
+      "subtitle": "The plan is no longer available for enroll."
+    },
     "branchCreated": {
       "title": "Branch created",
       "subtitle": "You can now assign members and staff to it."

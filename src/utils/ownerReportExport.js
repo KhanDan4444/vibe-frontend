@@ -15,6 +15,7 @@ import {
   pdfHeader,
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
+  pdfStartNewPage,
 } from './reportExportCore';
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
 
@@ -264,16 +265,16 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
     columnStyles: MEMBER_PDF_COLUMN_STYLES,
   });
 
-  doc.addPage('a4', 'landscape');
+  const revenueTop = pdfStartNewPage(doc);
   doc.setFontSize(11);
   doc.setTextColor(60);
-  doc.text(exportText('charts.revenue'), 14, 16);
+  doc.text(exportText('charts.revenue'), 14, revenueTop);
   doc.setFontSize(8);
   doc.setTextColor(100);
-  doc.text(exportText('export.periodPayments', { period: periodLabel, count: sortedPayments.length }), 14, 21);
+  doc.text(exportText('export.periodPayments', { period: periodLabel, count: sortedPayments.length }), 14, revenueTop + 5);
   doc.setTextColor(0);
 
-  let y = pdfRevenueByMethodBlock(doc, 26, summary);
+  let y = pdfRevenueByMethodBlock(doc, revenueTop + 10, summary);
 
   doc.setFontSize(10);
   doc.setTextColor(60);

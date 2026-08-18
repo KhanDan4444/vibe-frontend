@@ -7,6 +7,8 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
 export const FLASH_DISMISS_MS = 4500;
 /** Brief confirmation after a destructive action has already committed. */
 export const FLASH_COMMITTED_MS = 1000;
+/** Plan delete confirmation — long enough to read the subtitle. */
+export const FLASH_PLAN_DELETED_MS = 4000;
 const EXIT_MS = 200;
 
 /**

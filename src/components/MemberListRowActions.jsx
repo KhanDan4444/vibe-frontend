@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign } from 'lucide-react';
+import { ArrowLeftRight, Edit, Trash2, RefreshCw, Undo2, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DISPLAY_STATUS } from '../utils/memberStatus';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
@@ -32,7 +32,7 @@ export default function MemberListRowActions({
           className={renewActionBtn}
           title={t('pages.members.restore')}
         >
-          <RefreshCw className="h-3.5 w-3.5" /> {t('pages.members.restore')}
+          <Undo2 className="h-3.5 w-3.5" /> {t('pages.members.restore')}
         </button>
       </div>
     );
