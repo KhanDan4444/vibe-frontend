@@ -750,18 +750,13 @@ export default function Members() {
             return (
               <div
                 key={member.id}
-                role="button"
-                tabIndex={0}
-                onClick={() => openMemberRow(member)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openMemberRow(member);
-                  }
-                }}
-                className={`${cardSurface} p-4 active:bg-app-surface/60 ${memberAttentionRowClass(member)}`}
+                className={`${cardSurface} p-4 ${memberAttentionRowClass(member)}`}
               >
-                <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => openMemberRow(member)}
+                  className="flex w-full items-center gap-3 text-left active:bg-app-surface/60"
+                >
                   <MemberPhoto
                     memberId={member.id}
                     apiFetch={apiFetch}
@@ -795,7 +790,7 @@ export default function Members() {
                         )}
                     </p>
                   </div>
-                </div>
+                </button>
                 <div className="mt-2">
                   <MemberListRowActions
                     member={member}

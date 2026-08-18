@@ -65,18 +65,20 @@ export default function MemberPhoto({
   const canExpand = expandable && src && !failed;
 
   if (src && !failed) {
+    const img = <img src={src} alt={alt} className={className} />;
+    if (!canExpand) {
+      return <div className="shrink-0 overflow-hidden">{img}</div>;
+    }
+
     return (
       <>
         <button
           type="button"
-          onClick={canExpand ? () => setExpanded(true) : undefined}
-          className={`shrink-0 overflow-hidden p-0 border-0 bg-transparent ${
-            canExpand ? 'cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 rounded-2xl' : ''
-          }`}
-          aria-label={canExpand ? `View ${name || 'member'} photo` : undefined}
-          disabled={!canExpand}
+          onClick={() => setExpanded(true)}
+          className="shrink-0 overflow-hidden rounded-2xl border-0 bg-transparent p-0 cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600"
+          aria-label={`View ${name || 'member'} photo`}
         >
-          <img src={src} alt={alt} className={className} />
+          {img}
         </button>
 
         {expanded &&
