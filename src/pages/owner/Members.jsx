@@ -42,6 +42,7 @@ import { scheduleDeleteWithUndo, restoreWithUndoFlash } from '../../utils/schedu
 import { formatDisplayDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { adjustMemberFilterCounts } from '../../utils/memberFilterCounts';
 
 const UNPAID = 'Unpaid';
 const FORMER = 'Former';
@@ -112,16 +113,47 @@ export default function Members() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  const dueSoonCount = summary.dueSoonMembers ?? 0;
-  const expiredCount = summary.expiredMembers ?? 0;
-  const unpaidCount = summary.unpaidCount ?? 0;
-  const activeMembersCount = summary.activeMembers ?? 0;
-  const totalMembers = summary.totalMembers ?? total;
+  const showingFormer = statusFilter === FORMER;
+  const chipCounts = useMemo(
+    () =>
+      adjustMemberFilterCounts(
+        {
+          all: summary.totalMembers ?? total,
+          active: summary.activeMembers ?? 0,
+          unpaid: summary.unpaidCount ?? 0,
+          dueSoon: summary.dueSoonMembers ?? 0,
+          expired: summary.expiredMembers ?? 0,
+          former: archivedTotal,
+        },
+        {
+          pendingDeletes: showingFormer ? [] : members.filter((m) => pendingDeleteIds.has(m.id)),
+          pendingRestores: showingFormer ? members.filter((m) => pendingRestoreIds.has(m.id)) : [],
+        },
+      ),
+    [
+      summary.totalMembers,
+      summary.activeMembers,
+      summary.unpaidCount,
+      summary.dueSoonMembers,
+      summary.expiredMembers,
+      total,
+      archivedTotal,
+      members,
+      pendingDeleteIds,
+      pendingRestoreIds,
+      showingFormer,
+    ],
+  );
+  const dueSoonCount = chipCounts.dueSoon;
+  const expiredCount = chipCounts.expired;
+  const unpaidCount = chipCounts.unpaid;
+  const activeMembersCount = chipCounts.active;
+  const totalMembers = chipCounts.all;
+  const formerCount = chipCounts.former;
   const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
   const showBranchColumn =
     isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
   const showTransfer = isGymOwner(user?.role) && (!readOnly || branchReadOnly);
-  const showingFormer = statusFilter === FORMER;
   const canDeleteMembers = isGymOwner(user?.role);
   const canRestoreMembers = canDeleteMembers && !readOnly;
   const showBranchPicker = isGymOwner(user?.role) && activeBranchCount > 1;
@@ -468,15 +500,7 @@ export default function Members() {
       rearchive: () => deleteMember(id),
       onRestored: () => {
         silentListRefreshRef.current = true;
-        runInBackground(
-          afterMutation().then(() => {
-            setPendingRestoreIds((prev) => {
-              const next = new Set(prev);
-              next.delete(id);
-              return next;
-            });
-          }),
-        );
+        runInBackground(afterMutation());
       },
       onRearchived: () => {
         silentListRefreshRef.current = true;
@@ -573,7 +597,7 @@ export default function Members() {
           needsPlanSetup
             ? t('pages.members.noPlansSetupSubtitle')
             : showingFormer
-              ? t('pages.members.statusLineFormer', { count: archivedTotal })
+              ? t('pages.members.statusLineFormer', { count: formerCount })
               : statusLine
         }
         actions={
@@ -699,7 +723,7 @@ export default function Members() {
                 <FilterChip
                   variant="former"
                   label={t('pages.members.former')}
-                  count={archivedTotal}
+                  count={formerCount}
                   active={statusFilter === FORMER}
                   onClick={() => {
                     setPage(1);

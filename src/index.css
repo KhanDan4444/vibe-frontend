@@ -32,6 +32,7 @@
   --color-status-expired: #e11d48;
   --color-status-unpaid: #ea580c;
   --color-status-trialing: #d97706;
+  --color-status-former: #78716c;
   /* UI body vs display titles / metric figures */
   --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
@@ -84,6 +85,7 @@
     --color-status-expired: #e11d48;
     --color-status-unpaid: #ea580c;
     --color-status-trialing: #d97706;
+    --color-status-former: #78716c;
   }
 
   html {
@@ -143,6 +145,7 @@
     --color-status-expired: #f87171;
     --color-status-unpaid: #fb923c;
     --color-status-trialing: #fbbf24;
+    --color-status-former: #a8a29e;
     color-scheme: dark;
     background-color: var(--color-app-bg);
   }

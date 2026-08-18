@@ -1,6 +1,8 @@
-import { formatDate, formatMoney } from './reportExportCore';
+import { formatFriendlyDate, formatRelativeDay } from './date';
+import { formatMoney } from './formatMoney';
+import { formatPlanDisplayName } from './formatPlanDisplayName';
 
-function notificationKind(notification) {
+export function notificationKind(notification) {
   if (notification.kind) return notification.kind;
   const prefix = String(notification.id || '').split('-')[0];
   if (prefix === 'unpaid') return 'unpaid';
@@ -10,11 +12,67 @@ function notificationKind(notification) {
   return null;
 }
 
+export function notificationSection(notification) {
+  const kind = notificationKind(notification);
+  if (kind === 'payment_recorded' || notification.type === 'info') return 'activity';
+  if (kind === 'unpaid' || kind === 'due_soon' || kind === 'expired') return 'attention';
+  if (notification.type === 'warning' || notification.type === 'danger') return 'attention';
+  return 'activity';
+}
+
+export function groupNotifications(notifications) {
+  const attention = [];
+  const activity = [];
+  for (const item of notifications) {
+    if (notificationSection(item) === 'attention') attention.push(item);
+    else activity.push(item);
+  }
+  return { attention, activity };
+}
+
+/** Collapse unpaid / due soon / expired into expandable stacks when 2+. */
+export function stackNotificationGroups(items) {
+  const order = [];
+  const buckets = new Map();
+  for (const item of items) {
+    const kind = notificationKind(item);
+    const stackable = kind === 'unpaid' || kind === 'due_soon' || kind === 'expired';
+    const key = stackable ? kind : `one:${item.id}`;
+    if (!buckets.has(key)) {
+      buckets.set(key, []);
+      order.push(key);
+    }
+    buckets.get(key).push(item);
+  }
+  return order.map((key) => {
+    const groupItems = buckets.get(key);
+    return { key, kind: notificationKind(groupItems[0]), items: groupItems };
+  });
+}
+
+export function stackTitle(kind, count, t) {
+  if (kind === 'unpaid') return t('notifications.stack.unpaid', { count });
+  if (kind === 'due_soon') return t('notifications.stack.dueSoon', { count });
+  if (kind === 'expired') return t('notifications.stack.expired', { count });
+  return '';
+}
+
+export function stackPreview(items, t) {
+  const names = items
+    .map((item) => parseMemberName(item, notificationKind(item)))
+    .filter(Boolean);
+  if (names.length <= 2) return names.join(', ');
+  return t('notifications.stack.namesMore', {
+    names: names.slice(0, 2).join(', '),
+    count: names.length - 2,
+  });
+}
+
 function parseMemberName(notification, kind) {
   if (notification.memberName) return notification.memberName;
   const msg = notification.message || '';
   if (kind === 'payment_recorded') {
-    const match = msg.match(/from (.+?)\.\s*$/);
+    const match = msg.match(/from (.+?)\.\s*$/) || msg.match(/for (.+?)\.\s*$/);
     return match?.[1] || null;
   }
   const match = msg.match(/^(?:\[[^\]]+\]\s*)?(.+?)(?:'s| was)/);
@@ -45,82 +103,97 @@ function parseAmount(notification) {
 }
 
 /** Drop leading `[Branch] ` from API/raw messages (legacy). */
-function stripBranchBracketPrefix(message) {
+export function stripBranchBracketPrefix(message) {
   return String(message || '').replace(/^\[[^\]]+\]\s*/, '');
 }
 
-function localizedDate(t, notification) {
-  const raw = notification.date;
-  if (raw === 'Action needed') return t('notifications.dates.actionNeeded');
-  if (raw === 'System Alert') return t('notifications.dates.systemAlert');
-  return formatDate(raw);
+function langFromT(t) {
+  return t?.i18n?.language || 'en';
+}
+
+function inboxDate(t, raw) {
+  if (!raw || raw === 'Action needed' || raw === 'System Alert') return '';
+  return formatRelativeDay(raw, t, langFromT(t)) || formatFriendlyDate(raw, langFromT(t));
+}
+
+function planLabel(t, notification) {
+  return formatPlanDisplayName(parsePlanName(notification)) || t('notifications.defaultPlan');
 }
 
 /**
- * Localize dashboard notification title/message from structured API fields.
- * Branch is shown as a badge in the UI — not repeated in the message body.
+ * Localize dashboard notification copy.
+ * Title leads with the member; kind is an eyebrow; message does not repeat the name.
  */
 export function localizeNotification(notification, t) {
   const kind = notificationKind(notification);
   const memberName = parseMemberName(notification, kind);
+  const section = notificationSection(notification);
+  const date = inboxDate(t, notification.date);
 
   if (kind === 'unpaid' && memberName) {
     return {
-      title: t('notifications.items.unpaid.title'),
-      message: t('notifications.items.unpaid.message', {
-        prefix: '',
-        name: memberName,
-      }),
-      date: localizedDate(t, notification),
+      kind,
+      section,
+      memberName,
+      eyebrow: t('notifications.kind.unpaid'),
+      title: memberName,
+      message: t('notifications.items.unpaid.message'),
+      date,
     };
   }
 
   if (kind === 'due_soon' && memberName) {
-    const planName = parsePlanName(notification) || t('notifications.defaultPlan');
-    const endDate = parseEndDate(notification);
+    const endDate = inboxDate(t, parseEndDate(notification));
     return {
-      title: t('notifications.items.dueSoon.title'),
+      kind,
+      section,
+      memberName,
+      eyebrow: t('notifications.kind.dueSoon'),
+      title: memberName,
       message: t('notifications.items.dueSoon.message', {
-        prefix: '',
-        name: memberName,
-        plan: planName,
-        date: formatDate(endDate),
+        plan: planLabel(t, notification),
       }),
-      date: localizedDate(t, notification),
+      date: endDate,
     };
   }
 
   if (kind === 'expired' && memberName) {
-    const planName = parsePlanName(notification) || t('notifications.defaultPlan');
-    const endDate = parseEndDate(notification);
+    const endDate = inboxDate(t, parseEndDate(notification));
     return {
-      title: t('notifications.items.expired.title'),
+      kind,
+      section,
+      memberName,
+      eyebrow: t('notifications.kind.expired'),
+      title: memberName,
       message: t('notifications.items.expired.message', {
-        prefix: '',
-        name: memberName,
-        plan: planName,
-        date: formatDate(endDate),
+        plan: planLabel(t, notification),
       }),
-      date: localizedDate(t, notification),
+      date: endDate,
     };
   }
 
   if (kind === 'payment_recorded' && memberName) {
     const amount = parseAmount(notification);
     return {
-      title: t('notifications.items.paymentRecorded.title'),
+      kind,
+      section,
+      memberName,
+      eyebrow: t('notifications.kind.paymentRecorded'),
+      title: memberName,
       message: t('notifications.items.paymentRecorded.message', {
-        prefix: '',
-        amount: formatMoney(amount),
-        name: memberName,
+        amount: formatMoney(amount, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),
       }),
-      date: localizedDate(t, notification),
+      date,
     };
   }
 
   return {
+    kind,
+    section,
+    memberName,
+    eyebrow: '',
     title: notification.title,
     message: stripBranchBracketPrefix(notification.message),
-    date: localizedDate(t, notification),
+    date,
   };
 }

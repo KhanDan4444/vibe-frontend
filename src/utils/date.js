@@ -46,6 +46,29 @@ export function formatFriendlyDate(date, language = 'en') {
 }
 
 /**
+ * Inbox timestamps: "in 2 days", "yesterday", else a friendly date.
+ * @param {string|Date|null|undefined} date
+ * @param {function} [t] i18n t
+ * @param {string} [language='en']
+ */
+export function formatRelativeDay(date, t, language = 'en') {
+  if (!date || date === '—' || date === 'Action needed' || date === 'System Alert') return '';
+  const parsed = parseLocalDate(date);
+  if (!parsed) return formatFriendlyDate(date, language);
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const target = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+  const diff = Math.round((target - start) / 86400000);
+  if (typeof t !== 'function') return formatFriendlyDate(date, language);
+  if (diff === 0) return t('notifications.relative.today');
+  if (diff === 1) return t('notifications.relative.tomorrow');
+  if (diff === -1) return t('notifications.relative.yesterday');
+  if (diff > 1 && diff < 14) return t('notifications.relative.inDays', { count: diff });
+  if (diff < -1 && diff > -14) return t('notifications.relative.daysAgo', { count: Math.abs(diff) });
+  return formatFriendlyDate(date, language);
+}
+
+/**
  * User-facing date-time: dd-mm-yy HH:mm
  * @param {string|Date|null|undefined} value
  * @returns {string}

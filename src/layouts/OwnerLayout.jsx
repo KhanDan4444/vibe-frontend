@@ -13,9 +13,6 @@ import {
   Menu,
   X,
   Bell,
-  AlertTriangle,
-  AlertCircle,
-  Info,
   DollarSign,
   FileBarChart,
   ShieldAlert,
@@ -23,7 +20,6 @@ import {
   ScrollText,
   MapPin,
   MessageSquare,
-  RefreshCw,
 } from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
@@ -32,7 +28,7 @@ import BranchSwitcher from '../components/BranchSwitcher';
 import BrandLogo from '../components/BrandLogo';
 import ErrorRetryBanner from '../components/ErrorRetryBanner';
 import { SlidePanel, SlidePanelEmpty } from '../components/SlidePanel';
-import { localizeNotification } from '../utils/notificationText';
+import NotificationInbox from '../components/NotificationInbox';
 import SidebarBrandHeader from '../components/SidebarBrandHeader';
 import SidebarTooltip from '../components/SidebarTooltip';
 import {
@@ -148,7 +144,7 @@ export default function OwnerLayout() {
   };
 
   const deleteNotification = (id) => {
-    setDismissedIds([...dismissedIds, id]);
+    setDismissedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
   };
 
   const openMemberFromNotification = (notification, action) => {
@@ -386,15 +382,20 @@ export default function OwnerLayout() {
         open={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
         title={t('notifications.title')}
-        subtitle={t('notifications.unread', { count: unreadCount })}
+        subtitle={
+          unreadCount > 0
+            ? t('notifications.unread', { count: unreadCount })
+            : t('notifications.caughtUp')
+        }
         maxWidth="max-w-md"
         zIndexClass="z-50"
+        bodyClassName={notifications.length > 0 ? '!px-0 !pt-2' : undefined}
         headerAction={
           unreadCount > 0 ? (
             <button
               type="button"
               onClick={markAllAsRead}
-              className="text-xs font-semibold text-teal-700 hover:text-teal-800"
+              className="text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300"
             >
               {t('notifications.markAllRead')}
             </button>
@@ -402,97 +403,15 @@ export default function OwnerLayout() {
         }
       >
         {notifications.length > 0 ? (
-          <div className="space-y-3">
-            {notifications.map((n) => {
-              const isRead = readIds.includes(n.id);
-              const localized = localizeNotification(n, t);
-              return (
-                <div
-                  key={n.id}
-                  onClick={() => markAsRead(n.id)}
-                  className={`relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-all ${
-                    !isRead ? 'border-teal-100 bg-teal-50/30 dark:border-teal-900 dark:bg-teal-950/30' : 'border-app-border-subtle bg-app-raised'
-                  }`}
-                >
-                  <span
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border bg-app-surface ${
-                      n.type === 'warning'
-                        ? 'border-amber-100 text-amber-500'
-                        : n.type === 'danger'
-                        ? 'border-rose-100 text-rose-500'
-                        : 'border-teal-100 text-teal-600'
-                    }`}
-                  >
-                    {n.type === 'warning' && <AlertTriangle className="h-4 w-4" />}
-                    {n.type === 'danger' && <AlertCircle className="h-4 w-4" />}
-                    {n.type === 'info' && <Info className="h-4 w-4" />}
-                  </span>
-
-                  <div className="min-w-0 flex-1 space-y-1 pr-6">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-bold text-app-text-strong">{localized.title}</span>
-                      <span className="shrink-0 text-[10px] text-app-muted">{localized.date}</span>
-                    </div>
-                    {selectedBranchId === 'all' && n.branchName && (
-                      <span className="inline-flex rounded-full border border-teal-600/25 bg-teal-600/10 px-2 py-0.5 text-[10px] font-semibold text-teal-800 dark:border-teal-600/30 dark:bg-teal-600/15 dark:text-teal-300">
-                        {n.branchName}
-                      </span>
-                    )}
-                    <p className="text-xs leading-relaxed text-app-text">{localized.message}</p>
-
-                    {n.memberId && !readOnly && n.suggestedAction === 'payment' && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openMemberFromNotification(n, 'payment');
-                        }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-amber-600 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
-                      >
-                        <DollarSign className="h-3.5 w-3.5" /> {t('notifications.collectPayment')}
-                      </button>
-                    )}
-                    {n.memberId && !readOnly && n.suggestedAction === 'renew' && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openMemberFromNotification(n, 'renew');
-                        }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
-                      >
-                        <RefreshCw className="h-3.5 w-3.5" /> {t('notifications.renewNow')}
-                      </button>
-                    )}
-                    {n.memberId && n.type === 'info' && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openMemberFromNotification(n, 'view');
-                        }}
-                        className="mt-2 inline-flex items-center gap-1.5 text-[13px] font-bold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
-                      >
-                        {t('notifications.viewMember')}
-                      </button>
-                    )}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteNotification(n.id);
-                    }}
-                    className="absolute right-3 top-3 rounded-md p-1 text-app-muted/40 hover:bg-app-surface/80 hover:text-app-text"
-                    aria-label={t('notifications.dismiss')}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+          <NotificationInbox
+            notifications={notifications}
+            isRead={(id) => readIds.includes(id)}
+            readOnly={readOnly}
+            showBranchBadge={selectedBranchId === 'all'}
+            onOpen={(n) => openMemberFromNotification(n, 'view')}
+            onAction={(n, action) => openMemberFromNotification(n, action)}
+            onDismiss={deleteNotification}
+          />
         ) : (
           <SlidePanelEmpty>{t('notifications.empty')}</SlidePanelEmpty>
         )}

@@ -21,7 +21,7 @@ export const BADGE_VARIANTS = {
     'bg-[color:var(--color-status-due-soon)]/10 text-[color:var(--color-status-due-soon)] border-[color:var(--color-status-due-soon)]/20',
   unpaid:
     'bg-[color:var(--color-status-unpaid)]/10 text-[color:var(--color-status-unpaid)] border-[color:var(--color-status-unpaid)]/20',
-  former: 'bg-slate-500/10 text-slate-600 border-slate-400/25 dark:text-slate-300 dark:border-slate-500/30',
+  former: 'bg-[color:var(--color-status-former)]/10 text-[color:var(--color-status-former)] border-[color:var(--color-status-former)]/25',
   neutral: 'bg-app-surface text-app-text border-app-border-subtle',
 };
 
@@ -36,7 +36,7 @@ export const BADGE_DOT_VARIANTS = {
   'due soon': 'bg-[color:var(--color-status-due-soon)]',
   info: 'bg-[color:var(--color-status-due-soon)]',
   unpaid: 'bg-[color:var(--color-status-unpaid)]',
-  former: 'bg-slate-400',
+  former: 'bg-[color:var(--color-status-former)]',
   neutral: 'bg-app-muted',
 };
 

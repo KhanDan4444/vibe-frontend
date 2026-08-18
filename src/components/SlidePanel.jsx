@@ -18,6 +18,7 @@ export function SlidePanel({
   footer,
   maxWidth = 'max-w-lg',
   zIndexClass = 'z-[65]',
+  bodyClassName,
 }) {
   const { t } = useTranslation();
   if (!open) return null;
@@ -63,7 +64,7 @@ export function SlidePanel({
           </div>
         </div>
 
-        <div className="safe-bottom flex-1 overflow-y-auto px-4 pt-5 [--safe-bottom-base:1.25rem] sm:px-6 sm:pt-6 sm:[--safe-bottom-base:1.5rem]">{children}</div>
+        <div className={`safe-bottom flex-1 overflow-y-auto px-4 pt-5 [--safe-bottom-base:1.25rem] sm:px-6 sm:pt-6 sm:[--safe-bottom-base:1.5rem] ${bodyClassName || ''}`}>{children}</div>
 
         {footer && (
           <div className="safe-bottom max-h-[min(50vh,28rem)] shrink-0 overflow-y-auto border-t border-app-border-subtle bg-app-raised px-4 pt-4 [--safe-bottom-base:1.25rem] sm:px-6 sm:pt-4">

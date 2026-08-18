@@ -295,36 +295,64 @@
   },
   "notifications": {
     "title": "Notifications",
-    "unread_one": "{{count}} unread system alert",
-    "unread_other": "{{count}} unread system alerts",
+    "unread": "{{count}} unread",
+    "unread_one": "{{count}} unread",
+    "unread_other": "{{count}} unread",
+    "caughtUp": "All caught up",
     "markAllRead": "Mark all read",
-    "empty": "All caught up! No active notifications.",
+    "empty": "No notifications right now.",
     "collectPayment": "Collect payment",
-    "renewNow": "Renew now",
+    "renewNow": "Renew",
     "viewMember": "View member",
     "dismiss": "Dismiss notification",
     "defaultPlan": "Membership",
     "branchPrefix": "[{{branch}}] ",
+    "section": {
+      "attention": "Needs attention",
+      "activity": "Activity"
+    },
+    "kind": {
+      "unpaid": "Payment",
+      "dueSoon": "Expiring",
+      "expired": "Expired",
+      "paymentRecorded": "Recorded"
+    },
+    "stack": {
+      "unpaid_one": "{{count}} member with no payment",
+      "unpaid_other": "{{count}} members with no payment",
+      "dueSoon_one": "{{count}} membership expiring",
+      "dueSoon_other": "{{count}} memberships expiring",
+      "expired_one": "{{count}} membership expired",
+      "expired_other": "{{count}} memberships expired",
+      "namesMore": "{{names}} +{{count}}"
+    },
+    "relative": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "inDays": "in {{count}} days",
+      "daysAgo": "{{count}} days ago"
+    },
     "dates": {
       "actionNeeded": "Action needed",
       "systemAlert": "System alert"
     },
     "items": {
       "unpaid": {
-        "title": "Payment Not Collected",
-        "message": "{{prefix}}{{name}} was enrolled but has no payment on file for this term."
+        "title": "Payment not collected",
+        "message": "No payment on file for this term."
       },
       "dueSoon": {
-        "title": "Expiring Soon",
-        "message": "{{prefix}}{{name}}'s {{plan}} expires in less than 3 days (on {{date}})."
+        "title": "Expiring soon",
+        "message": "{{plan}}"
       },
       "expired": {
-        "title": "Membership Expired",
-        "message": "{{prefix}}{{name}}'s {{plan}} expired on {{date}}."
+        "title": "Membership expired",
+        "message": "{{plan}}"
       },
       "paymentRecorded": {
-        "title": "Payment Recorded",
-        "message": "{{prefix}}Successfully recorded manual payment of {{amount}} from {{name}}."
+        "title": "Payment recorded",
+        "message": "{{amount}} recorded."
       }
     }
   },

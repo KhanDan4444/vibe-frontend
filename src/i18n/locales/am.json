@@ -1007,15 +1007,43 @@
   "notifications": {
     "collectPayment": "ክፍያ ይቀበሉ",
     "dismiss": "ማሳወቂያውን አስወግድ",
-    "empty": "ሁሉም ተጠናቋል! ምንም ንቁ ማሳወቂያ የለም።",
+    "empty": "አሁን ማሳወቂያ የለም።",
     "markAllRead": "ሁሉንም እንደተነበበ ምልክት አድርግ",
-    "renewNow": "አሁን ያድሱ",
+    "renewNow": "ያድሱ",
     "title": "ማሳወቂያዎች",
-    "unread_one": "{{count}} ያልተነበበ ማሳወቂያ",
-    "unread_other": "{{count}} ያልተነበቡ ማሳወቂያዎች",
+    "unread": "{{count}} ያልተነበበ",
+    "unread_one": "{{count}} ያልተነበበ",
+    "unread_other": "{{count}} ያልተነበቡ",
+    "caughtUp": "ሁሉ ተነብቷል",
     "viewMember": "አባል ይመልከቱ",
     "defaultPlan": "አባልነት",
     "branchPrefix": "[{{branch}}] ",
+    "section": {
+      "attention": "ትኩረት ያስፈልጋል",
+      "activity": "እንቅስቃሴ"
+    },
+    "kind": {
+      "unpaid": "ክፍያ",
+      "dueSoon": "ሊያልቅ",
+      "expired": "ጊዜው አልፏል",
+      "paymentRecorded": "ተመዝግቧል"
+    },
+    "stack": {
+      "unpaid_one": "{{count}} አባል ክፍያ የለውም",
+      "unpaid_other": "{{count}} አባላት ክፍያ የላቸውም",
+      "dueSoon_one": "{{count}} አባልነት ሊያልቅ ነው",
+      "dueSoon_other": "{{count}} አባልነቶች ሊያልቁ ነው",
+      "expired_one": "{{count}} አባልነት ጊዜው አልፏል",
+      "expired_other": "{{count}} አባልነቶች ጊዜያቸው አልፏል",
+      "namesMore": "{{names}} +{{count}}"
+    },
+    "relative": {
+      "today": "ዛሬ",
+      "tomorrow": "ነገ",
+      "yesterday": "ትናንት",
+      "inDays": "በ{{count}} ቀናት ውስጥ",
+      "daysAgo": "ከ{{count}} ቀናት በፊት"
+    },
     "dates": {
       "actionNeeded": "ድርጊት ያስፈልጋል",
       "systemAlert": "የስርዓት ማስጠንቀቂያ"
@@ -1023,19 +1051,19 @@
     "items": {
       "unpaid": {
         "title": "ክፍያ አልተሰበሰበም",
-        "message": "{{prefix}}{{name}} ተመዝግቧል ነገር ግን ለዚህ የክፍያ ዘመን ምንም ክፍያ አልተመዘገበም።"
+        "message": "ለዚህ የክፍያ ዘመን ክፍያ አልተመዘገበም።"
       },
       "dueSoon": {
         "title": "በቅርብ ጊዜ ያበቃል",
-        "message": "{{prefix}}የ{{name}} {{plan}} በ3 ቀናት ውስጥ (በ{{date}}) ያበቃል ።"
+        "message": "{{plan}}"
       },
       "expired": {
         "title": "የአባልነት ጊዜ አልፏል",
-        "message": "{{prefix}}የ{{name}} {{plan}} ጊዜው በ{{date}} አልፏል።"
+        "message": "{{plan}}"
       },
       "paymentRecorded": {
         "title": "ክፍያ ተመዝግቧል",
-        "message": "{{prefix}}ከ{{name}} የተደረገው የ{{amount}} ክፍያ በተሳካ ሁኔታ ተመዝግቧል።"
+        "message": "{{amount}} ተመዝግቧል።"
       }
     }
   },

@@ -52,13 +52,14 @@ export const FILTER_CHIP_THEMES = {
       'bg-[color:var(--color-status-expired)]/15 text-[color:var(--color-status-expired)]',
   },
   former: {
-    dot: 'bg-slate-400 dark:bg-slate-500',
+    dot: 'bg-[color:var(--color-status-former)]',
     active:
-      'bg-slate-500/12 border-slate-400 text-slate-800 dark:border-slate-500 dark:text-slate-100',
+      'bg-[color:var(--color-status-former)]/15 border-[color:var(--color-status-former)] text-[color:var(--color-status-former)]',
     inactive:
-      'bg-app-raised border-slate-400/35 text-slate-600 hover:bg-slate-500/10 dark:text-slate-300',
-    badgeActive: 'bg-slate-600 text-white dark:bg-slate-400 dark:text-slate-900',
-    badgeInactive: 'bg-slate-500/12 text-slate-600 dark:text-slate-300',
+      'bg-app-raised border-[color:var(--color-status-former)]/40 text-[color:var(--color-status-former)] hover:bg-[color:var(--color-status-former)]/10',
+    badgeActive: 'bg-[color:var(--color-status-former)] text-white',
+    badgeInactive:
+      'bg-[color:var(--color-status-former)]/15 text-[color:var(--color-status-former)]',
   },
 };
 
@@ -68,6 +69,6 @@ export const MEMBER_FILTER_CHART_COLORS = {
   Unpaid: '#f97316',
   'Due Soon': '#38bdf8',
   Expired: '#fb7185',
-  Former: '#94a3b8',
+  Former: '#78716c',
   Suspended: '#fb7185',
 };
