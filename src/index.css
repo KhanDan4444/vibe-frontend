@@ -691,6 +691,10 @@
     min-width: 100%;
   }
 
+  .owner-members-table .owner-members-col-trainer {
+    max-width: 10rem;
+  }
+
   .owner-members-table .owner-members-col-duration {
     white-space: nowrap;
     min-width: 12rem;

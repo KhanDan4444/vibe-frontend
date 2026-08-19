@@ -338,6 +338,13 @@ export default function MemberDetailDrawer({
                 value={planLabel}
                 valueClassName="text-sm font-semibold text-teal-700 dark:text-teal-300"
               />
+              {member.trainerName ? (
+                <SlidePanelRow
+                  label={t('table.trainer')}
+                  value={member.trainerName}
+                  valueClassName="text-sm font-medium text-app-text-strong"
+                />
+              ) : null}
               <SlidePanelRow
                 label={t('drawer.term')}
                 value={

@@ -6,6 +6,7 @@ const SOURCE_KEYS = {
   collect: 'paymentSource.collect',
   renew: 'paymentSource.renew',
   change_plan: 'paymentSource.change_plan',
+  trainer: 'paymentSource.trainer',
 };
 
 export function paymentSourceLabel(source) {

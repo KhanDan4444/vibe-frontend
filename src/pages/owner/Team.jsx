@@ -1,14 +1,24 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
-import { Edit, UserX, UserCheck, Users } from 'lucide-react';
+import { Edit, UserX, UserCheck, Users, Dumbbell, RotateCcw } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { listTeam, createStaff, updateStaff } from '../../services/teamService';
+import {
+  listTrainers,
+  createTrainer,
+  updateTrainer,
+  archiveTrainer,
+  restoreTrainer,
+} from '../../services/trainerService';
 import StaffModal from '../../components/StaffModal';
+import TrainerModal from '../../components/TrainerModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import RowMoreMenu from '../../components/RowMoreMenu';
+import { FilterChip, FilterChipBar } from '../../components/FilterChip';
+import SearchField from '../../components/SearchField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { tableRowHover, cardSurface, panelTitle } from '../../utils/surfaceClasses';
@@ -44,11 +54,48 @@ function StaffRowActions({ member, readOnly, t, onEdit, onToggle }) {
   );
 }
 
+function TrainerRowActions({ trainer, readOnly, showingFormer, t, onEdit, onArchive, onRestore }) {
+  if (readOnly) return null;
+  return (
+    <div className="admin-row-actions">
+      <RowMoreMenu
+        items={
+          showingFormer
+            ? [
+                {
+                  key: 'restore',
+                  label: t('pages.team.restoreTrainer'),
+                  icon: <RotateCcw className="h-4 w-4 shrink-0" />,
+                  onClick: onRestore,
+                },
+              ]
+            : [
+                {
+                  key: 'edit',
+                  label: t('common.edit'),
+                  icon: <Edit className="h-4 w-4 shrink-0" />,
+                  onClick: onEdit,
+                },
+                {
+                  key: 'archive',
+                  label: t('pages.team.archiveTrainer'),
+                  icon: <UserX className="h-4 w-4 shrink-0" />,
+                  danger: true,
+                  onClick: onArchive,
+                },
+              ]
+        }
+      />
+    </div>
+  );
+}
+
 export default function Team() {
   const { t } = useTranslation();
   const { apiFetch } = useAuth();
   const { showFlash, branches, readOnly, selectedBranchId, error: gymError } = useGym();
 
+  const [tab, setTab] = useState('staff');
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -57,10 +104,45 @@ export default function Team() {
   const [modalError, setModalError] = useState('');
   const [toggleTarget, setToggleTarget] = useState(null);
 
+  const [trainers, setTrainers] = useState([]);
+  const [trainersLoading, setTrainersLoading] = useState(true);
+  const [trainersError, setTrainersError] = useState('');
+  const [showingFormerTrainers, setShowingFormerTrainers] = useState(false);
+  const [archivedTrainerTotal, setArchivedTrainerTotal] = useState(0);
+  const [liveTrainerTotal, setLiveTrainerTotal] = useState(0);
+  const [trainerModal, setTrainerModal] = useState({ isOpen: false, trainer: null });
+  const [trainerSaving, setTrainerSaving] = useState(false);
+  const [trainerModalError, setTrainerModalError] = useState('');
+  const [trainerToArchive, setTrainerToArchive] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
   const visibleStaff = useMemo(() => {
     if (selectedBranchId === 'all') return staff;
     return staff.filter((member) => String(member.branch_id) === String(selectedBranchId));
   }, [staff, selectedBranchId]);
+
+  const visibleTrainers = useMemo(() => {
+    if (selectedBranchId === 'all') return trainers;
+    return trainers.filter((row) => String(row.branch_id) === String(selectedBranchId));
+  }, [trainers, selectedBranchId]);
+
+  const searchNeedle = searchQuery.trim().toLowerCase();
+
+  const displayedStaff = useMemo(() => {
+    if (!searchNeedle) return visibleStaff;
+    return visibleStaff.filter((member) =>
+      [member.name, member.email, member.username, member.branch_name]
+        .some((value) => String(value || '').toLowerCase().includes(searchNeedle))
+    );
+  }, [visibleStaff, searchNeedle]);
+
+  const displayedTrainers = useMemo(() => {
+    if (!searchNeedle) return visibleTrainers;
+    return visibleTrainers.filter((row) =>
+      [row.name, row.phone, row.specialty, row.branch_name]
+        .some((value) => String(value || '').toLowerCase().includes(searchNeedle))
+    );
+  }, [visibleTrainers, searchNeedle]);
 
   const loadTeam = useCallback(async () => {
     setLoading(true);
@@ -76,11 +158,33 @@ export default function Team() {
     } finally {
       setLoading(false);
     }
-  }, [apiFetch]);
+  }, [apiFetch, t]);
+
+  const loadTrainers = useCallback(async () => {
+    setTrainersLoading(true);
+    setTrainersError('');
+    try {
+      const res = await listTrainers(apiFetch, showingFormerTrainers ? { archived: 1 } : {});
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || t('errors.loadTrainers'));
+      setTrainers(data.trainers || []);
+      setArchivedTrainerTotal(data.archivedTotal ?? 0);
+      if (!showingFormerTrainers) setLiveTrainerTotal((data.trainers || []).length);
+    } catch (err) {
+      setTrainersError(err.message);
+      setTrainers([]);
+    } finally {
+      setTrainersLoading(false);
+    }
+  }, [apiFetch, showingFormerTrainers, t]);
 
   useEffect(() => {
     loadTeam();
   }, [loadTeam]);
+
+  useEffect(() => {
+    loadTrainers();
+  }, [loadTrainers]);
 
   const handleCreate = async (payload) => {
     if (readOnly) {
@@ -152,26 +256,173 @@ export default function Team() {
     }
   };
 
+  const handleTrainerCreate = async (payload) => {
+    if (readOnly) {
+      setTrainerModalError(t('alerts.readOnlyBody'));
+      return;
+    }
+    setTrainerSaving(true);
+    setTrainerModalError('');
+    try {
+      const res = await createTrainer(apiFetch, payload);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || t('errors.createTrainer'));
+      setTrainerModal({ isOpen: false, trainer: null });
+      showFlash(flashFromKey(t, 'trainerCreated', { subtitleParams: { name: data.trainer.name } }));
+      loadTrainers();
+    } catch (err) {
+      setTrainerModalError(err.message);
+    } finally {
+      setTrainerSaving(false);
+    }
+  };
+
+  const handleTrainerUpdate = async (payload) => {
+    if (!trainerModal.trainer) return;
+    if (readOnly) {
+      setTrainerModalError(t('alerts.readOnlyBody'));
+      return;
+    }
+    setTrainerSaving(true);
+    setTrainerModalError('');
+    try {
+      const res = await updateTrainer(apiFetch, trainerModal.trainer.id, payload);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || t('errors.updateTrainer'));
+      setTrainerModal({ isOpen: false, trainer: null });
+      showFlash(flashFromKey(t, 'trainerUpdated'));
+      loadTrainers();
+    } catch (err) {
+      setTrainerModalError(err.message);
+    } finally {
+      setTrainerSaving(false);
+    }
+  };
+
+  const handleArchiveTrainer = async () => {
+    if (!trainerToArchive) return;
+    if (readOnly) {
+      showFlash({ title: t('alerts.readOnlyBody'), variant: 'warning' });
+      setTrainerToArchive(null);
+      return;
+    }
+    try {
+      const res = await archiveTrainer(apiFetch, trainerToArchive.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || t('errors.updateTrainer'));
+      showFlash(flashFromKey(t, 'trainerArchived', { subtitleParams: { name: trainerToArchive.name } }));
+      setTrainerToArchive(null);
+      loadTrainers();
+    } catch (err) {
+      showFlash({ title: err.message, variant: 'danger' });
+      setTrainerToArchive(null);
+    }
+  };
+
+  const handleRestoreTrainer = async (trainer) => {
+    if (readOnly) {
+      showFlash({ title: t('alerts.readOnlyBody'), variant: 'warning' });
+      return;
+    }
+    try {
+      const res = await restoreTrainer(apiFetch, trainer.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(data.error || t('errors.updateTrainer'));
+      showFlash(flashFromKey(t, 'trainerRestored', { subtitleParams: { name: trainer.name } }));
+      loadTrainers();
+    } catch (err) {
+      showFlash({ title: err.message, variant: 'danger' });
+    }
+  };
+
   const noStaffYet = !loading && staff.length === 0;
+  const noTrainersYet = !trainersLoading && trainers.length === 0 && archivedTrainerTotal === 0 && !showingFormerTrainers;
   const openCreateStaff = () => {
     setModalError('');
     setModalState({ isOpen: true, member: null });
   };
+  const openCreateTrainer = () => {
+    setTrainerModalError('');
+    setTrainerModal({ isOpen: true, trainer: null });
+  };
+
+  const pageTitle = t('nav.team');
+  const pageSubtitle = tab === 'trainers' ? t('pages.team.trainersSubtitle') : t('pages.team.subtitle');
 
   return (
     <div className="space-y-5 sm:space-y-6">
       <PageHeader
-        title={t('pages.team.title')}
-        subtitle={t('pages.team.subtitle')}
+        title={pageTitle}
+        subtitle={pageSubtitle}
         actions={
-          !readOnly && !noStaffYet ? (
-            <Button onClick={openCreateStaff}>
-              {t('pages.team.add')}
-            </Button>
+          !readOnly && tab === 'staff' && !noStaffYet ? (
+            <Button onClick={openCreateStaff}>{t('pages.team.add')}</Button>
+          ) : !readOnly && tab === 'trainers' && !noTrainersYet && !showingFormerTrainers ? (
+            <Button onClick={openCreateTrainer}>{t('pages.team.addTrainer')}</Button>
           ) : null
         }
       />
 
+      <div className={`app-toolbar-in overflow-hidden ${cardSurface}`}>
+        <div className="flex flex-col gap-2.5 p-3 sm:p-4">
+          <SearchField
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder={
+              tab === 'trainers'
+                ? showingFormerTrainers
+                  ? t('pages.team.searchFormerTrainersPlaceholder')
+                  : t('pages.team.searchTrainersPlaceholder')
+                : t('pages.team.searchStaffPlaceholder')
+            }
+            className="sm:max-w-xs"
+          />
+          <FilterChipBar className="!mb-0">
+            <FilterChip
+              variant="all"
+              label={t('pages.team.tabStaff')}
+              count={staff.length}
+              active={tab === 'staff'}
+              onClick={() => {
+                setTab('staff');
+                setSearchQuery('');
+              }}
+            />
+            <FilterChip
+              variant="all"
+              label={t('pages.team.tabTrainers')}
+              count={liveTrainerTotal}
+              active={tab === 'trainers'}
+              onClick={() => {
+                setTab('trainers');
+                setSearchQuery('');
+              }}
+            />
+            {tab === 'trainers' ? (
+              <>
+                <span className="filter-chip-archive-rule" aria-hidden />
+                <FilterChip
+                  variant="all"
+                  label={t('filters.all')}
+                  count={liveTrainerTotal}
+                  active={!showingFormerTrainers}
+                  onClick={() => setShowingFormerTrainers(false)}
+                />
+                <FilterChip
+                  variant="former"
+                  label={t('status.former')}
+                  count={archivedTrainerTotal}
+                  active={showingFormerTrainers}
+                  onClick={() => setShowingFormerTrainers(true)}
+                />
+              </>
+            ) : null}
+          </FilterChipBar>
+        </div>
+      </div>
+
+      {tab === 'staff' ? (
+        <>
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => void loadTeam()} /> : null}
 
       {noStaffYet ? (
@@ -212,29 +463,29 @@ export default function Team() {
               </div>
             </Card>
           </>
-        ) : visibleStaff.length === 0 ? (
+        ) : displayedStaff.length === 0 ? (
           <>
             <div className="lg:hidden">
               <div className={cardSurface}>
                 <EmptyState
                   icon={Users}
-                  title={t('pages.team.emptyBranchTitle')}
-                  body={t('pages.team.emptyBranchBody')}
+                  title={searchNeedle ? t('pages.team.emptySearchTitle') : t('pages.team.emptyBranchTitle')}
+                  body={searchNeedle ? t('pages.team.emptySearchBody') : t('pages.team.emptyBranchBody')}
                 />
               </div>
             </div>
             <Card className="hidden overflow-hidden lg:block">
               <EmptyState
                 icon={Users}
-                title={t('pages.team.emptyBranchTitle')}
-                body={t('pages.team.emptyBranchBody')}
+                title={searchNeedle ? t('pages.team.emptySearchTitle') : t('pages.team.emptyBranchTitle')}
+                body={searchNeedle ? t('pages.team.emptySearchBody') : t('pages.team.emptyBranchBody')}
               />
             </Card>
           </>
         ) : (
           <>
             <div className="lg:hidden space-y-3">
-              {visibleStaff.map((member) => (
+              {displayedStaff.map((member) => (
                 <div key={member.id} className={`${cardSurface} p-4`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -285,7 +536,7 @@ export default function Team() {
                 </tr>
               </thead>
               <tbody>
-                {visibleStaff.map((member) => (
+                {displayedStaff.map((member) => (
                   <tr key={member.id} className={tableRowHover}>
                     <td className="truncate font-medium text-app-text-strong">{member.name}</td>
                     <td className="truncate text-app-text">{member.branch_name || '—'}</td>
@@ -326,6 +577,123 @@ export default function Team() {
         )}
       </>
       )}
+        </>
+      ) : (
+        <>
+          {trainersError ? (
+            <ErrorRetryBanner message={trainersError} onRetry={() => void loadTrainers()} />
+          ) : null}
+
+          {noTrainersYet ? (
+            <Card className="overflow-hidden">
+              <EmptyState
+                icon={Dumbbell}
+                title={t('pages.team.emptyTrainersTitle')}
+                body={t('pages.team.emptyTrainersBody')}
+                action={
+                  !readOnly ? (
+                    <Button onClick={openCreateTrainer}>{t('pages.team.createFirstTrainer')}</Button>
+                  ) : null
+                }
+              />
+            </Card>
+          ) : trainersLoading ? (
+            <Card className="overflow-hidden">
+              <AdminListSkeleton rows={5} />
+            </Card>
+          ) : displayedTrainers.length === 0 ? (
+            <Card className="overflow-hidden">
+              <EmptyState
+                icon={Dumbbell}
+                title={
+                  searchNeedle
+                    ? t('pages.team.emptySearchTitle')
+                    : showingFormerTrainers
+                      ? t('pages.team.emptyFormerTrainers')
+                      : t('pages.team.emptyBranchTrainers')
+                }
+                body={
+                  searchNeedle
+                    ? t('pages.team.emptySearchBody')
+                    : showingFormerTrainers
+                      ? t('pages.team.emptyFormerTrainersBody')
+                      : t('pages.team.emptyBranchTrainersBody')
+                }
+              />
+            </Card>
+          ) : (
+            <>
+              <div className="lg:hidden space-y-3">
+                {displayedTrainers.map((trainer) => (
+                  <div key={trainer.id} className={`${cardSurface} p-4`}>
+                    <p className="font-medium text-app-text-strong">{trainer.name}</p>
+                    <p className="mt-0.5 text-sm text-app-muted">{trainer.phone || '—'}</p>
+                    {trainer.specialty ? (
+                      <p className="mt-0.5 text-xs text-app-muted">{trainer.specialty}</p>
+                    ) : null}
+                    <p className="mt-0.5 text-xs text-app-muted">{trainer.branch_name || t('pages.team.noBranch')}</p>
+                    <div className="mt-3">
+                      <TrainerRowActions
+                        trainer={trainer}
+                        readOnly={readOnly}
+                        showingFormer={showingFormerTrainers}
+                        t={t}
+                        onEdit={() => {
+                          setTrainerModalError('');
+                          setTrainerModal({ isOpen: true, trainer });
+                        }}
+                        onArchive={() => setTrainerToArchive(trainer)}
+                        onRestore={() => void handleRestoreTrainer(trainer)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Card className="hidden overflow-hidden lg:block">
+                <div className="overflow-x-auto">
+                  <table className="admin-data-table min-w-[640px]">
+                    <thead>
+                      <tr>
+                        <th>{t('table.name')}</th>
+                        <th>{t('table.branch')}</th>
+                        <th>{t('table.phone')}</th>
+                        <th>{t('table.specialty')}</th>
+                        {!readOnly && <th className="text-right">{t('table.actions')}</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedTrainers.map((trainer) => (
+                        <tr key={trainer.id} className={tableRowHover}>
+                          <td className="truncate font-medium text-app-text-strong">{trainer.name}</td>
+                          <td className="truncate text-app-text">{trainer.branch_name || '—'}</td>
+                          <td className="truncate font-mono text-sm text-app-muted">{trainer.phone || '—'}</td>
+                          <td className="truncate text-app-text">{trainer.specialty || '—'}</td>
+                          {!readOnly && (
+                            <td>
+                              <TrainerRowActions
+                                trainer={trainer}
+                                readOnly={readOnly}
+                                showingFormer={showingFormerTrainers}
+                                t={t}
+                                onEdit={() => {
+                                  setTrainerModalError('');
+                                  setTrainerModal({ isOpen: true, trainer });
+                                }}
+                                onArchive={() => setTrainerToArchive(trainer)}
+                                onRestore={() => void handleRestoreTrainer(trainer)}
+                              />
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </>
+          )}
+        </>
+      )}
 
       <StaffModal
         isOpen={modalState.isOpen}
@@ -335,6 +703,16 @@ export default function Team() {
         onSubmit={modalState.member ? handleUpdate : handleCreate}
         saving={saving}
         error={modalError}
+      />
+
+      <TrainerModal
+        isOpen={trainerModal.isOpen}
+        onClose={() => setTrainerModal({ isOpen: false, trainer: null })}
+        trainer={trainerModal.trainer}
+        branches={branches}
+        onSubmit={trainerModal.trainer ? handleTrainerUpdate : handleTrainerCreate}
+        saving={trainerSaving}
+        error={trainerModalError}
       />
 
       <ConfirmDialog
@@ -349,6 +727,16 @@ export default function Team() {
         type={toggleTarget?.is_active ? 'danger' : 'primary'}
         onConfirm={handleToggleActive}
         onCancel={() => setToggleTarget(null)}
+      />
+
+      <ConfirmDialog
+        isOpen={!!trainerToArchive}
+        title={t('pages.team.archiveTrainerTitle')}
+        message={t('pages.team.archiveTrainerMessage', { name: trainerToArchive?.name })}
+        confirmText={t('pages.team.archiveTrainer')}
+        type="danger"
+        onConfirm={handleArchiveTrainer}
+        onCancel={() => setTrainerToArchive(null)}
       />
     </div>
   );

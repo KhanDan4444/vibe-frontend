@@ -78,7 +78,14 @@ function NotificationRow({
 
   return (
     <div
-      className={`group relative flex gap-3 py-3.5 ${nested ? 'px-4 pl-14 sm:px-6 sm:pl-16' : 'px-4 sm:px-6'} ${
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Delete' || e.key === 'Backspace') {
+          e.preventDefault();
+          onDismiss(item.id);
+        }
+      }}
+      className={`group relative flex gap-3 py-3.5 outline-none focus-visible:ring-1 focus-visible:ring-teal-500/40 ${nested ? 'px-4 pl-14 sm:px-6 sm:pl-16' : 'px-4 sm:px-6'} ${
         !isRead ? 'bg-teal-600/5' : ''
       }`}
     >

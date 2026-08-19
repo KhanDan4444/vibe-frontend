@@ -19,6 +19,8 @@ export function mapMemberFromApi(m) {
     photoUrl: m.photo_url || null,
     hasPhoto: Boolean(m.photo_url),
     deletedAt: m.deleted_at || null,
+    trainerId: m.trainer_id || null,
+    trainerName: m.trainer_name || null,
   };
 }
 

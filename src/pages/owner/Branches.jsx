@@ -525,7 +525,7 @@ export default function Branches() {
                               onClick={() => openStaff(branch)}
                               className="font-medium text-teal-700 hover:underline dark:text-teal-300"
                             >
-                              {branch.staff_count ?? 0} {t('nav.team')}
+                              {branch.staff_count ?? 0} {t('pages.team.tabStaff')}
                             </button>
                           </p>
                           <span className={`mt-2 ${branch.is_active ? STATUS_ACTIVE : STATUS_INACTIVE}`}>
@@ -558,7 +558,7 @@ export default function Branches() {
                       <tr>
                         <th>{t('table.name')}</th>
                         <th>{t('table.members')}</th>
-                        <th>{t('nav.team')}</th>
+                        <th>{t('pages.team.tabStaff')}</th>
                         <th>{t('table.status')}</th>
                         {!readOnly && <th className="text-right">{t('table.actions')}</th>}
                       </tr>

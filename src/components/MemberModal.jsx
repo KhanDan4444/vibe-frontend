@@ -27,6 +27,7 @@ import { calculateEndDate } from '../utils/memberDates';
 import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../i18n/helpers.js';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
+import MoneyAmountInput from './ui/MoneyAmountInput';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import Card from './ui/Card';
@@ -37,6 +38,8 @@ import EnrollStepProgress from './EnrollStepProgress';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalHeader, modalFooter, modalStepFooter, modalFieldLabel } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
+import { listTrainers } from '../services/trainerService';
+import { parseApiResponse } from '../utils/api';
 
 
 /**
@@ -69,6 +72,10 @@ export default function MemberModal({
   const [method, setMethod] = useState('Cash');
   const [paymentDate, setPaymentDate] = useState('');
   const [skipPayment, setSkipPayment] = useState(false);
+  const [trainerId, setTrainerId] = useState('');
+  const [trainerFee, setTrainerFee] = useState('');
+  const [trainerFeeMethod, setTrainerFeeMethod] = useState('Cash');
+  const [trainers, setTrainers] = useState([]);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const [validationError, setValidationError] = useState('');
@@ -99,6 +106,9 @@ export default function MemberModal({
     setPaymentDate(todayString());
     setMethod('Cash');
     setSkipPayment(false);
+    setTrainerId('');
+    setTrainerFee('');
+    setTrainerFeeMethod('Cash');
     setPhotoFile(null);
     setPhotoPreview((prev) => {
       if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
@@ -122,6 +132,9 @@ export default function MemberModal({
       setPhotoFile(null);
       setPhotoRemoved(false);
       setHadExistingPhoto(Boolean(member.hasPhoto));
+      setTrainerId(member.trainerId ? String(member.trainerId) : '');
+      setTrainerFee('');
+      setTrainerFeeMethod('Cash');
       setPhotoPreview((prev) => {
         if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
         return '';
@@ -140,6 +153,23 @@ export default function MemberModal({
     initialize: initializeForm,
     saving: saving || submitting || photoProcessing,
   });
+
+  useEffect(() => {
+    if (!isOpen || !apiFetch) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await listTrainers(apiFetch);
+        const data = await parseApiResponse(res);
+        if (!cancelled && res.ok) setTrainers(data.trainers || []);
+      } catch {
+        if (!cancelled) setTrainers([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, apiFetch]);
 
   const markEnrollTouched = () => {
     if (!isEdit) markTouched();
@@ -254,12 +284,24 @@ export default function MemberModal({
     }
     const trimmedPhone = phone.trim();
 
+    const parsedTrainerId = trainerId ? parseInt(trainerId, 10) : null;
+    const parsedTrainerFee = parseMoneyAmount(trainerFee);
+    const trainerFields = {
+      trainerId: Number.isNaN(parsedTrainerId) ? null : parsedTrainerId,
+    };
+    if (parsedTrainerFee > 0) {
+      trainerFields.trainerFee = parsedTrainerFee;
+      trainerFields.trainerFeeDate = paymentDate || todayString();
+      trainerFields.trainerFeeMethod = isEdit || skipPayment ? trainerFeeMethod : method;
+    }
+
     if (isEdit) {
       setSubmitting(true);
       try {
         const editPayload = {
           name: name.trim(),
           phone: trimmedPhone,
+          ...trainerFields,
         };
         if (showBranchPicker && branchId) {
           const parsedBranch = parseInt(branchId, 10);
@@ -316,6 +358,7 @@ export default function MemberModal({
       activeBranches.find((b) => String(b.id) === resolvedBranchId) ||
       activeBranches.find((b) => b.is_default) ||
       activeBranches[0];
+    const selectedTrainer = trainers.find((tr) => String(tr.id) === String(trainerId));
     const doneSummary = {
       name: base.name,
       phone: trimmedPhone,
@@ -325,6 +368,11 @@ export default function MemberModal({
       planName: selectedPlan?.name || '',
       startDate,
       endDate: endDateIso && endDateIso !== '—' ? endDateIso : '',
+      trainerName: selectedTrainer?.name || '',
+      trainerFee: parsedTrainerFee > 0 ? parsedTrainerFee : null,
+      trainerFeeMethod: parsedTrainerFee > 0
+        ? (isEdit || skipPayment ? trainerFeeMethod : method)
+        : '',
     };
     let photoDataUrl;
     if (photoFile) {
@@ -360,6 +408,7 @@ export default function MemberModal({
           skipPayment: false,
           branchId: showBranchPicker && branchId ? parseInt(branchId, 10) : undefined,
           photo: photoDataUrl,
+          ...trainerFields,
         });
         if (variant === 'page') {
           setEnrollDone({
@@ -386,6 +435,7 @@ export default function MemberModal({
           skipPayment: true,
           branchId: showBranchPicker && branchId ? parseInt(branchId, 10) : undefined,
           photo: photoDataUrl,
+          ...trainerFields,
         });
         if (variant === 'page') {
           setEnrollDone({
@@ -414,6 +464,7 @@ export default function MemberModal({
   const computedEndDate =
     selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : '';
   const endDateValue = computedEndDate && computedEndDate !== '—' ? computedEndDate : '';
+  const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
 
   const enrollSteps = [
     { id: 'member', label: t('modals.member.stepMember') },
@@ -429,11 +480,82 @@ export default function MemberModal({
     value: String(p.id),
     label: `${p.name} (${formatMoney(p.price)})`,
   }));
+  const trainerOptions = [
+    { value: '', label: t('modals.member.noTrainer') },
+    ...trainers.map((tr) => ({
+      value: String(tr.id),
+      label: tr.specialty ? `${tr.name} · ${tr.specialty}` : tr.name,
+    })),
+  ];
+
+  const trainerAssignFields = (
+    <section className={`space-y-4 ${isEdit ? 'border-t border-app-border-subtle pt-4' : ''}`}>
+      <h3 className={sectionTitleClass}>{t('modals.member.sectionTrainer')}</h3>
+      {trainers.length === 0 ? (
+        <p className="text-xs text-app-muted">{t('modals.member.noTrainersYet')}</p>
+      ) : (
+        <SearchableSelect
+          id="member-trainer"
+          label={t('modals.member.trainer')}
+          value={trainerId}
+          options={trainerOptions}
+          placeholder={t('modals.member.noTrainer')}
+          onChange={(next) => {
+            setTrainerId(String(next ?? ''));
+            markEnrollTouched();
+          }}
+        />
+      )}
+      {trainerId ? (
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="member-trainer-fee" className={modalFieldLabel}>
+              {t('modals.member.trainerFee')}
+            </label>
+            <MoneyAmountInput
+              id="member-trainer-fee"
+              field="trainerFee"
+              min="0"
+              fieldErrors={fieldErrors}
+              value={trainerFee}
+              onChange={(e) => {
+                setTrainerFee(e.target.value);
+                clearFieldError(setLocalFieldErrors, 'trainerFee');
+                markEnrollTouched();
+              }}
+            />
+            <p className="mt-1 text-xs text-app-muted">{t('modals.member.trainerFeeHint')}</p>
+            <FieldError message={fieldErrorMessage(fieldErrors, 'trainerFee')} />
+          </div>
+          {parseMoneyAmount(trainerFee) > 0 && (isEdit || skipPayment) ? (
+            <div>
+              <label htmlFor="member-trainer-fee-method" className={modalFieldLabel}>
+                {t('modals.member.method')}
+              </label>
+              <select
+                id="member-trainer-fee-method"
+                className={`ui-select ${fc('trainerFeeMethod')} cursor-pointer`}
+                value={trainerFeeMethod}
+                onChange={(e) => {
+                  setTrainerFeeMethod(e.target.value);
+                  markEnrollTouched();
+                }}
+              >
+                {PAYMENT_METHOD_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {t(opt.labelKey)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
 
   const title = isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle');
   const subtitle = isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle');
-
-  const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
 
   const validateEnrollStep = (step) => {
     if (step === 1) {
@@ -797,6 +919,8 @@ export default function MemberModal({
             </div>
           )}
 
+          {isEdit && trainerAssignFields}
+
           {!isEdit && (!useSteps || enrollStep === 3) && (
             <section className={`space-y-4 ${isPage && !useSteps ? 'border-t border-app-border-subtle pt-5' : useSteps ? '' : 'border-t border-app-border-subtle pt-4'}`}>
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -880,6 +1004,7 @@ export default function MemberModal({
                   {t('modals.member.unpaidWarning')}
                 </div>
               )}
+              {trainerAssignFields}
             </section>
           )}
     </>
@@ -1020,7 +1145,8 @@ export default function MemberModal({
                 enrollDone.branchName ||
                 enrollDone.planName ||
                 termLabel ||
-                paymentLabel) && (
+                paymentLabel ||
+                enrollDone.trainerName) && (
                 <dl className="mt-6 w-full divide-y divide-app-border-subtle rounded-xl border border-app-border-subtle bg-app-surface text-left text-sm">
                   {enrollDone.phone ? (
                     <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
@@ -1057,6 +1183,27 @@ export default function MemberModal({
                         }`}
                       >
                         {paymentLabel}
+                      </dd>
+                    </div>
+                  ) : null}
+                  {enrollDone.trainerName ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('table.trainer')}</dt>
+                      <dd className="truncate font-medium text-app-text-strong">{enrollDone.trainerName}</dd>
+                    </div>
+                  ) : null}
+                  {enrollDone.trainerFee != null ? (
+                    <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
+                      <dt className="shrink-0 text-app-muted">{t('modals.member.trainerFee')}</dt>
+                      <dd className="font-medium text-app-text-strong">
+                        {[
+                          formatMoney(enrollDone.trainerFee),
+                          enrollDone.trainerFeeMethod
+                            ? translatePaymentMethod(enrollDone.trainerFeeMethod)
+                            : null,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
                       </dd>
                     </div>
                   ) : null}

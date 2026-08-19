@@ -407,6 +407,15 @@ export const GymProvider = ({ children }) => {
         payload.photo = memberData.photo;
       }
 
+      if (memberData.trainerId) {
+        payload.trainer_id = memberData.trainerId;
+        if (memberData.trainerFee > 0) {
+          payload.trainer_fee = memberData.trainerFee;
+          payload.trainer_fee_date = memberData.trainerFeeDate;
+          payload.trainer_fee_method = memberData.trainerFeeMethod;
+        }
+      }
+
       return runMutation(() => enrollMemberReq(apiFetch, payload), { refreshPlans: true });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -424,6 +433,14 @@ export const GymProvider = ({ children }) => {
       }
       if (memberData.photo !== undefined) {
         payload.photo = memberData.photo;
+      }
+      if (memberData.trainerId !== undefined) {
+        payload.trainer_id = memberData.trainerId || null;
+      }
+      if (memberData.trainerFee > 0) {
+        payload.trainer_fee = memberData.trainerFee;
+        payload.trainer_fee_date = memberData.trainerFeeDate;
+        payload.trainer_fee_method = memberData.trainerFeeMethod;
       }
 
       return runMutation(() => updateMemberReq(apiFetch, id, payload));

@@ -9,7 +9,7 @@
     "revenue": "Revenue",
     "reports": "Reports",
     "branches": "Branches",
-    "team": "Staff",
+    "team": "Team",
     "activity": "Activity",
     "messages": "SMS Messages",
     "ownerSms": "Owner SMS",
@@ -438,6 +438,9 @@
     "loadTeam": "Failed to load team",
     "createStaff": "Failed to create staff account",
     "updateStaff": "Failed to update staff account",
+    "loadTrainers": "Failed to load trainers",
+    "createTrainer": "Failed to create trainer",
+    "updateTrainer": "Failed to update trainer",
     "loadMembers": "Failed to load members",
     "loadMemberReport": "Failed to load member report",
     "loadRevenueReport": "Failed to load revenue report"
@@ -514,6 +517,8 @@
     "name": "Name",
     "phone": "Phone",
     "plan": "Plan",
+    "trainer": "Trainer",
+    "specialty": "Specialty",
     "status": "Status",
     "startDate": "Start",
     "endDate": "End",
@@ -790,7 +795,7 @@
     },
     "team": {
       "title": "Staff",
-      "subtitle": "Staff accounts for your front desk.",
+      "subtitle": "Front desk logins and personal trainers.",
       "add": "Add staff",
       "sectionTitle": "Staff accounts",
       "empty": "No staff accounts yet.",
@@ -809,7 +814,28 @@
       "emptyBody": "Invite front desk staff so they can manage members at the desk.",
       "emptyBranchTitle": "No staff at this branch",
       "emptyBranchBody": "Switch to All branches, or assign staff to this location.",
-      "createFirst": "Add staff"
+      "createFirst": "Add staff",
+      "tabStaff": "Staff",
+      "tabTrainers": "Trainers",
+      "trainersTitle": "Trainers",
+      "trainersSubtitle": "Personal trainers at your gym. No login — staff assign them to members.",
+      "addTrainer": "Add trainer",
+      "createFirstTrainer": "Add trainer",
+      "emptyTrainersTitle": "No trainers yet",
+      "emptyTrainersBody": "Register trainers so you can assign them at enroll and collect a trainer fee.",
+      "emptyFormerTrainers": "No former trainers",
+      "emptyFormerTrainersBody": "Archived trainers will appear here. Restore to assign them again.",
+      "emptyBranchTrainers": "No trainers at this branch",
+      "emptyBranchTrainersBody": "Switch to All branches, or add a trainer for this location.",
+      "archiveTrainer": "Move to Former",
+      "restoreTrainer": "Restore",
+      "archiveTrainerTitle": "Move trainer to Former?",
+      "archiveTrainerMessage": "{{name}} will no longer be assignable. Members keep their trainer history.",
+      "searchStaffPlaceholder": "Search staff…",
+      "searchTrainersPlaceholder": "Search trainers…",
+      "searchFormerTrainersPlaceholder": "Search former trainers…",
+      "emptySearchTitle": "No matches",
+      "emptySearchBody": "Try a different name, or clear the search."
     },
     "activity": {
       "title": "Activity",
@@ -832,10 +858,12 @@
         "allPaymentEvents": "All payment events",
         "allPlanEvents": "All plan events",
         "allStaffEvents": "All staff events",
+        "allTrainerEvents": "All trainer events",
         "groupMembers": "Members",
         "groupPayments": "Payments",
         "groupPlans": "Plans",
-        "groupStaff": "Staff"
+        "groupStaff": "Staff",
+        "groupTrainers": "Trainers"
       }
     },
     "memberMessages": {
@@ -910,6 +938,12 @@
       "staff": {
         "created": "Created staff account",
         "updated": "Updated staff account"
+      },
+      "trainer": {
+        "created": "Added trainer",
+        "updated": "Updated trainer",
+        "deleted": "Moved trainer to Former",
+        "restored": "Restored trainer"
       }
     },
     "details": {
@@ -997,7 +1031,13 @@
       "photoHint": "Optional. JPEG, PNG, or WebP. Large photos are compressed automatically.",
       "photoHintShort": "JPEG, PNG, or WebP",
       "paymentDateHint": "Must be on or after start date ({{date}}).",
-      "term": "Term"
+      "term": "Term",
+      "sectionTrainer": "Trainer",
+      "trainer": "Trainer",
+      "noTrainer": "No trainer",
+      "noTrainersYet": "No trainers yet. Add them under Team → Trainers.",
+      "trainerFee": "Trainer fee (optional)",
+      "trainerFeeHint": "Does not count as membership payment. Leave blank if unpaid or included."
     },
     "payment": {
       "collectTitle": "Collect payment",
@@ -1102,6 +1142,19 @@
       "showPassword": "Show password",
       "hidePassword": "Hide password",
       "saveCreate": "Create account",
+      "saveUpdate": "Save changes"
+    },
+    "trainer": {
+      "createTitle": "Add trainer",
+      "editTitle": "Edit trainer",
+      "subtitle": "Trainers are employees with no login. Staff still check members in.",
+      "name": "Name",
+      "phone": "Phone",
+      "phonePlaceholder": "09xxxxxxxx",
+      "specialty": "Specialty",
+      "specialtyPlaceholder": "e.g. Strength, Cardio",
+      "branch": "Branch",
+      "saveCreate": "Add trainer",
       "saveUpdate": "Save changes"
     },
     "resetPassword": {
@@ -1338,6 +1391,7 @@
     "collect": "Collected",
     "renew": "Renewal",
     "change_plan": "Plan change",
+    "trainer": "Trainer",
     "recorded": "Recorded"
   },
   "validation": {
@@ -1594,6 +1648,22 @@
     "staffDisabled": {
       "title": "Staff disabled",
       "subtitle": "{{name}} can no longer sign in."
+    },
+    "trainerCreated": {
+      "title": "Trainer added",
+      "subtitle": "{{name}} can be assigned to members."
+    },
+    "trainerUpdated": {
+      "title": "Trainer updated",
+      "subtitle": "Name, phone, and branch were saved."
+    },
+    "trainerArchived": {
+      "title": "Trainer moved to Former",
+      "subtitle": "{{name}} can no longer be assigned."
+    },
+    "trainerRestored": {
+      "title": "Trainer restored",
+      "subtitle": "{{name}} can be assigned again."
     },
     "gymUpdated": {
       "title": "Gym updated",

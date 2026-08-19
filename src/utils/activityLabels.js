@@ -20,6 +20,10 @@ const ACTION_KEYS = {
   'plan.deleted': 'activity.actions.plan.deleted',
   'staff.created': 'activity.actions.staff.created',
   'staff.updated': 'activity.actions.staff.updated',
+  'trainer.created': 'activity.actions.trainer.created',
+  'trainer.updated': 'activity.actions.trainer.updated',
+  'trainer.deleted': 'activity.actions.trainer.deleted',
+  'trainer.restored': 'activity.actions.trainer.restored',
 };
 
 /** Filter dropdown: categories + specific actions (optgroups in UI). */
@@ -45,6 +49,11 @@ export const ACTION_FILTER_OPTIONS = [
   { value: 'staff', labelKey: 'pages.activity.filters.allStaffEvents', group: 'staff' },
   { value: 'staff.created', labelKey: 'activity.actions.staff.created', group: 'staff' },
   { value: 'staff.updated', labelKey: 'activity.actions.staff.updated', group: 'staff' },
+  { value: 'trainer', labelKey: 'pages.activity.filters.allTrainerEvents', group: 'trainer' },
+  { value: 'trainer.created', labelKey: 'activity.actions.trainer.created', group: 'trainer' },
+  { value: 'trainer.updated', labelKey: 'activity.actions.trainer.updated', group: 'trainer' },
+  { value: 'trainer.deleted', labelKey: 'activity.actions.trainer.deleted', group: 'trainer' },
+  { value: 'trainer.restored', labelKey: 'activity.actions.trainer.restored', group: 'trainer' },
 ];
 
 export const ACTION_FILTER_GROUPS = [
@@ -52,6 +61,7 @@ export const ACTION_FILTER_GROUPS = [
   { id: 'payment', labelKey: 'pages.activity.filters.groupPayments' },
   { id: 'plan', labelKey: 'pages.activity.filters.groupPlans' },
   { id: 'staff', labelKey: 'pages.activity.filters.groupStaff' },
+  { id: 'trainer', labelKey: 'pages.activity.filters.groupTrainers' },
 ];
 
 export function formatAuditAction(action) {

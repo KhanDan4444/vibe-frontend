@@ -970,7 +970,7 @@
     "reports": "ሪፖርት",
     "revenue": "ገቢ",
     "saasPlans": "የSaaS ዕቅዶች",
-    "team": "ሰራተኞች"
+    "team": "ቡድን"
   },
   "smsLog": {
     "filterLabel": "የመልእክት ዓይነት",
@@ -1181,7 +1181,28 @@
       "emptyBody": "በዴስክ አባላትን እንዲያስተዳድሩ የፊት ዴስክ ሰራተኞችን ይጋብዙ።",
       "emptyBranchTitle": "በዚህ ቅርንጫፍ ሰራተኛ የለም",
       "emptyBranchBody": "ወደ ሁሉም ቅርንጫፎች ይቀይሩ፣ ወይም ሰራተኛ ለዚህ ቦታ ይመድቡ።",
-      "createFirst": "ሰራተኛ ጨምር"
+      "createFirst": "ሰራተኛ ጨምር",
+      "tabStaff": "ሰራተኞች",
+      "tabTrainers": "አሰልጣኞች",
+      "trainersTitle": "አሰልጣኞች",
+      "trainersSubtitle": "በጂምዎ የግል አሰልጣኞች። መግቢያ የላቸውም — ሰራተኞች ለአባላት ይመድቧቸዋል።",
+      "addTrainer": "አሰልጣኝ ጨምር",
+      "createFirstTrainer": "አሰልጣኝ ጨምር",
+      "emptyTrainersTitle": "እስካሁን አሰልጣኝ የለም",
+      "emptyTrainersBody": "አሰልጣኞችን ይመዝግቡ በምዝገባ ላይ ለመመደብ እና ክፍያ ለመሰብሰብ።",
+      "emptyFormerTrainers": "የቀድሞ አሰልጣኞች የሉም",
+      "emptyFormerTrainersBody": "የተወገዱ አሰልጣኞች እዚህ ይታያሉ።",
+      "emptyBranchTrainers": "በዚህ ቅርንጫፍ አሰልጣኝ የለም",
+      "emptyBranchTrainersBody": "ወደ ሁሉም ቅርንጫፎች ይቀይሩ፣ ወይም ለዚህ ቦታ አሰልጣኝ ይጨምሩ።",
+      "archiveTrainer": "ወደ የቀድሞ ውሰድ",
+      "restoreTrainer": "መልስ",
+      "archiveTrainerTitle": "አሰልጣኙን ወደ የቀድሞ ይውሰዱ?",
+      "archiveTrainerMessage": "{{name}} ከአሁን በኋላ ሊመደብ አይችልም።",
+      "searchStaffPlaceholder": "ሰራተኛ ፈልግ…",
+      "searchTrainersPlaceholder": "አሰልጣኝ ፈልግ…",
+      "searchFormerTrainersPlaceholder": "የቀድሞ አሰልጣኝ ፈልግ…",
+      "emptySearchTitle": "ምንም አልተገኘም",
+      "emptySearchBody": "ሌላ ስም ይሞክሩ፣ ወይም ፍለጋውን ያጽዱ።"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",

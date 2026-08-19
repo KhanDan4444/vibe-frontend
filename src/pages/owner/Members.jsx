@@ -775,6 +775,7 @@ export default function Members() {
                       {member.phone || '—'}
                       {' · '}
                       {planLabel}
+                      {member.trainerName ? ` · ${member.trainerName}` : ''}
                       {showBranchColumn && member.branchName ? ` · ${member.branchName}` : ''}
                     </p>
                     <p className="mt-0.5 text-xs text-app-muted">
@@ -838,6 +839,7 @@ export default function Members() {
                 {showBranchColumn && <th>{t('table.branch')}</th>}
                 <th>{t('pages.members.contactInfo')}</th>
                 <th>{t('table.plan')}</th>
+                <th className="owner-members-col-trainer">{t('table.trainer')}</th>
                 <th className="owner-members-col-duration">
                   {showingFormer ? t('pages.members.removedOn') : t('pages.members.durationRange')}
                 </th>
@@ -847,7 +849,7 @@ export default function Members() {
             </thead>
             <tbody>
               {listLoading ? (
-                <AdminTableRowsSkeleton rows={6} cols={showBranchColumn ? 7 : 6} />
+                <AdminTableRowsSkeleton rows={6} cols={showBranchColumn ? 8 : 7} />
               ) : displayedMembers.length > 0 ? (
                 displayedMembers.map((member) => {
                   const planLabel = resolveMemberPlanLabel(
@@ -883,6 +885,9 @@ export default function Members() {
                       <td className="truncate font-mono text-sm text-app-muted">{member.phone}</td>
                       <td className="truncate font-semibold text-teal-700">
                         {planLabel}
+                      </td>
+                      <td className="owner-members-col-trainer truncate text-app-muted">
+                        {member.trainerName || '—'}
                       </td>
                       <td className="owner-members-col-duration text-app-muted">
                         {showingFormer ? (
@@ -931,7 +936,7 @@ export default function Members() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={showBranchColumn ? 7 : 6} className="p-0">
+                  <td colSpan={showBranchColumn ? 8 : 7} className="p-0">
                     <EmptyState
                       icon={emptyIcon}
                       compact

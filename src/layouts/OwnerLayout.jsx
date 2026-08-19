@@ -20,6 +20,7 @@ import {
   ScrollText,
   MapPin,
   MessageSquare,
+  CheckCircle2,
 } from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
@@ -27,7 +28,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import BranchSwitcher from '../components/BranchSwitcher';
 import BrandLogo from '../components/BrandLogo';
 import ErrorRetryBanner from '../components/ErrorRetryBanner';
-import { SlidePanel, SlidePanelEmpty } from '../components/SlidePanel';
+import { SlidePanel } from '../components/SlidePanel';
 import NotificationInbox from '../components/NotificationInbox';
 import SidebarBrandHeader from '../components/SidebarBrandHeader';
 import SidebarTooltip from '../components/SidebarTooltip';
@@ -413,7 +414,11 @@ export default function OwnerLayout() {
             onDismiss={deleteNotification}
           />
         ) : (
-          <SlidePanelEmpty>{t('notifications.empty')}</SlidePanelEmpty>
+          <div className="flex flex-col items-center gap-3 py-12 text-app-muted">
+            <CheckCircle2 className="h-10 w-10 text-teal-500/40" strokeWidth={1.5} />
+            <p className="text-sm font-medium">{t('notifications.caughtUp')}</p>
+            <p className="text-xs">{t('notifications.empty')}</p>
+          </div>
         )}
       </SlidePanel>
 
