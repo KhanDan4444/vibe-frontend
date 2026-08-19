@@ -351,7 +351,12 @@ export default function Team() {
   };
 
   const pageTitle = t('nav.team');
-  const pageSubtitle = tab === 'trainers' ? t('pages.team.trainersSubtitle') : t('pages.team.subtitle');
+  const pageSubtitle =
+    tab === 'trainers'
+      ? showingFormerTrainers
+        ? t('pages.team.formerTrainersSubtitle')
+        : t('pages.team.trainersSubtitle')
+      : t('pages.team.subtitle');
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -381,47 +386,44 @@ export default function Team() {
             }
             className="sm:max-w-xs"
           />
-          <FilterChipBar className="!mb-0">
-            <FilterChip
-              variant="all"
-              label={t('pages.team.tabStaff')}
-              count={staff.length}
-              active={tab === 'staff'}
-              onClick={() => {
-                setTab('staff');
-                setSearchQuery('');
-              }}
-            />
-            <FilterChip
-              variant="all"
-              label={t('pages.team.tabTrainers')}
-              count={liveTrainerTotal}
-              active={tab === 'trainers'}
-              onClick={() => {
-                setTab('trainers');
-                setSearchQuery('');
-              }}
-            />
-            {tab === 'trainers' ? (
-              <>
-                <span className="filter-chip-archive-rule" aria-hidden />
-                <FilterChip
-                  variant="all"
-                  label={t('filters.all')}
-                  count={liveTrainerTotal}
-                  active={!showingFormerTrainers}
-                  onClick={() => setShowingFormerTrainers(false)}
-                />
-                <FilterChip
-                  variant="former"
-                  label={t('status.former')}
-                  count={archivedTrainerTotal}
-                  active={showingFormerTrainers}
-                  onClick={() => setShowingFormerTrainers(true)}
-                />
-              </>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <FilterChipBar className="!mb-0 min-w-0">
+              <FilterChip
+                variant="all"
+                label={t('pages.team.tabStaff')}
+                count={staff.length}
+                active={tab === 'staff'}
+                onClick={() => {
+                  setTab('staff');
+                  setShowingFormerTrainers(false);
+                  setSearchQuery('');
+                }}
+              />
+              <FilterChip
+                variant="all"
+                label={t('pages.team.tabTrainers')}
+                count={liveTrainerTotal}
+                active={tab === 'trainers' && !showingFormerTrainers}
+                onClick={() => {
+                  setTab('trainers');
+                  setShowingFormerTrainers(false);
+                  setSearchQuery('');
+                }}
+              />
+            </FilterChipBar>
+            {tab === 'trainers' && (archivedTrainerTotal > 0 || showingFormerTrainers) ? (
+              <FilterChip
+                variant="former"
+                label={t('status.former')}
+                count={archivedTrainerTotal}
+                active={showingFormerTrainers}
+                onClick={() => {
+                  setShowingFormerTrainers((current) => !current);
+                  setSearchQuery('');
+                }}
+              />
             ) : null}
-          </FilterChipBar>
+          </div>
         </div>
       </div>
 
@@ -610,14 +612,18 @@ export default function Team() {
                     ? t('pages.team.emptySearchTitle')
                     : showingFormerTrainers
                       ? t('pages.team.emptyFormerTrainers')
-                      : t('pages.team.emptyBranchTrainers')
+                      : selectedBranchId !== 'all'
+                        ? t('pages.team.emptyBranchTrainers')
+                        : t('pages.team.emptyTrainersTitle')
                 }
                 body={
                   searchNeedle
                     ? t('pages.team.emptySearchBody')
                     : showingFormerTrainers
                       ? t('pages.team.emptyFormerTrainersBody')
-                      : t('pages.team.emptyBranchTrainersBody')
+                      : selectedBranchId !== 'all'
+                        ? t('pages.team.emptyBranchTrainersBody')
+                        : t('pages.team.emptyTrainersBody')
                 }
               />
             </Card>

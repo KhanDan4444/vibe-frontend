@@ -795,7 +795,7 @@
     },
     "team": {
       "title": "Staff",
-      "subtitle": "Front desk logins and personal trainers.",
+      "subtitle": "People who sign in at the desk.",
       "add": "Add staff",
       "sectionTitle": "Staff accounts",
       "empty": "No staff accounts yet.",
@@ -819,6 +819,7 @@
       "tabTrainers": "Trainers",
       "trainersTitle": "Trainers",
       "trainersSubtitle": "Personal trainers at your gym. No login — staff assign them to members.",
+      "formerTrainersSubtitle": "Moved off the roster. Restore to assign them again.",
       "addTrainer": "Add trainer",
       "createFirstTrainer": "Add trainer",
       "emptyTrainersTitle": "No trainers yet",
