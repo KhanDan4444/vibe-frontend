@@ -406,6 +406,7 @@
     "sidebarShortcutTipHint": "በዴስክቶፕ ዳሽቦርድ ላይ ከየትኛውም ቦታ ይሰራል።",
     "pickDate": "ቀን ይምረጡ",
     "processing": "በማስኬድ ላይ…",
+    "saving": "በማስቀመጥ ላይ…",
     "refresh": "አድስ",
     "retry": "እንደገና ሞክር",
     "remove": "አስወግድ",
@@ -431,6 +432,7 @@
     "saveBranch": "ቅርንጫፍ ማስቀመጥ አልተሳካም",
     "loadActivity": "እንቅስቃሴን መጫን አልተሳካም",
     "loadTeam": "ቡድንን መጫን አልተሳካም",
+    "trainersUnavailable": "ይህ የጂም አገልጋይ አሰልጣኞችን ገና አይደግፍም። ኤፒአይውን ያዘምኑ፣ ከዚያ እንደገና ይሞክሩ።",
     "createStaff": "የሰራተኛ መለያ መፍጠር አልተሳካም",
     "updateStaff": "የሰራተኛ መለያ ማዘመን አልተሳካም",
     "loadMembers": "አባላትን መጫን አልተሳካም",
@@ -1203,7 +1205,9 @@
       "searchTrainersPlaceholder": "አሰልጣኝ ፈልግ…",
       "searchFormerTrainersPlaceholder": "የቀድሞ አሰልጣኝ ፈልግ…",
       "emptySearchTitle": "ምንም አልተገኘም",
-      "emptySearchBody": "ሌላ ስም ይሞክሩ፣ ወይም ፍለጋውን ያጽዱ።"
+      "emptySearchBody": "ሌላ ስም ይሞክሩ፣ ወይም ፍለጋውን ያጽዱ።",
+      "assignedMembers": "{{count}} አባላት",
+      "assignedMembers_one": "1 አባል"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",

@@ -417,6 +417,7 @@
     "disabled": "Dhaabbateera",
     "enabled": "Banameera",
     "processing": "Adeemsisamaa jira…",
+    "saving": "Olkaa'aa jira…",
     "noResults": "Bu'aan hin argamne.",
     "noData": "Daataan ammaaf hin jiru.",
     "viewAll": "Hunda ilaali",
@@ -436,6 +437,7 @@
     "saveBranch": "Damee kuusuu hin milkoofne",
     "loadActivity": "Sochii fe'uun hin milkoofne",
     "loadTeam": "Garee fe'uun hin milkoofne",
+    "trainersUnavailable": "Serveerri jimii kanaa ammatti leenjistoota hin deeggaru. API haaromsi, sana booda irra deebi'ii yaali.",
     "createStaff": "Akkaawuntii hojjettootaa uumuu hin milkoofne",
     "updateStaff": "Akkaawuntii hojjettootaa haaromsuu hin milkoofne",
     "loadMembers": "Miseensota fe'uun hin milkoofne",
@@ -831,7 +833,9 @@
       "searchTrainersPlaceholder": "Leenjistaa barbaadi…",
       "searchFormerTrainersPlaceholder": "Leenjistoota duraan turan barbaadi…",
       "emptySearchTitle": "Wal qabsiisuun hin jiru",
-      "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi."
+      "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi.",
+      "assignedMembers": "Miseensota {{count}}",
+      "assignedMembers_one": "Miseensa 1"
     },
     "activity": {
       "title": "Sosocho'iinsota",

@@ -489,7 +489,7 @@ export default function MemberModal({
   ];
 
   const trainerAssignFields = (
-    <section className={`space-y-4 ${isEdit ? 'border-t border-app-border-subtle pt-4' : ''}`}>
+    <section className="space-y-4 rounded-xl border border-app-border-subtle bg-app-surface/70 p-4">
       <h3 className={sectionTitleClass}>{t('modals.member.sectionTrainer')}</h3>
       {trainers.length === 0 ? (
         <p className="text-xs text-app-muted">{t('modals.member.noTrainersYet')}</p>

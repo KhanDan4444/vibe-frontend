@@ -1,5 +1,5 @@
 /** Quiet toolbar chip for short discrete filters (actor / status / type). */
-export function ToolbarChip({ label, active = false, onClick }) {
+export function ToolbarChip({ label, count, active = false, onClick }) {
   return (
     <button
       type="button"
@@ -7,7 +7,8 @@ export function ToolbarChip({ label, active = false, onClick }) {
       aria-pressed={active}
       className={`toolbar-chip ${active ? 'toolbar-chip--active' : ''}`}
     >
-      {label}
+      <span>{label}</span>
+      {count != null ? <span className="toolbar-chip-count">{count}</span> : null}
     </button>
   );
 }
@@ -19,4 +20,9 @@ export function ToolbarChipBar({ children, className = '' }) {
       <div className="filter-chip-row">{children}</div>
     </div>
   );
+}
+
+/** Joined Staff | Trainers control — one selected pill, teal fill. */
+export function TeamSegment({ children }) {
+  return <div className="team-segment" role="tablist">{children}</div>;
 }

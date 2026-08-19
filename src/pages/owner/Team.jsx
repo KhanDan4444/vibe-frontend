@@ -17,7 +17,8 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import RowMoreMenu from '../../components/RowMoreMenu';
-import { FilterChip, FilterChipBar } from '../../components/FilterChip';
+import { FilterChip } from '../../components/FilterChip';
+import { TeamSegment, ToolbarChip } from '../../components/ToolbarChip';
 import SearchField from '../../components/SearchField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
@@ -270,7 +271,11 @@ export default function Team() {
     try {
       const res = await createTrainer(apiFetch, payload);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || t('errors.createTrainer'));
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404 ? t('errors.trainersUnavailable') : (data.error || t('errors.createTrainer'))
+        );
+      }
       setTrainerModal({ isOpen: false, trainer: null });
       showFlash(flashFromKey(t, 'trainerCreated', { subtitleParams: { name: data.trainer.name } }));
       loadTrainers();
@@ -292,7 +297,11 @@ export default function Team() {
     try {
       const res = await updateTrainer(apiFetch, trainerModal.trainer.id, payload);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || t('errors.updateTrainer'));
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404 ? t('errors.trainersUnavailable') : (data.error || t('errors.updateTrainer'))
+        );
+      }
       setTrainerModal({ isOpen: false, trainer: null });
       showFlash(flashFromKey(t, 'trainerUpdated'));
       loadTrainers();
@@ -313,7 +322,11 @@ export default function Team() {
     try {
       const res = await archiveTrainer(apiFetch, trainerToArchive.id);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || t('errors.updateTrainer'));
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404 ? t('errors.trainersUnavailable') : (data.error || t('errors.updateTrainer'))
+        );
+      }
       showFlash(flashFromKey(t, 'trainerArchived', { subtitleParams: { name: trainerToArchive.name } }));
       setTrainerToArchive(null);
       loadTrainers();
@@ -331,7 +344,11 @@ export default function Team() {
     try {
       const res = await restoreTrainer(apiFetch, trainer.id);
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || t('errors.updateTrainer'));
+      if (!res.ok) {
+        throw new Error(
+          res.status === 404 ? t('errors.trainersUnavailable') : (data.error || t('errors.updateTrainer'))
+        );
+      }
       showFlash(flashFromKey(t, 'trainerRestored', { subtitleParams: { name: trainer.name } }));
       loadTrainers();
     } catch (err) {
@@ -387,9 +404,8 @@ export default function Team() {
             className="sm:max-w-xs"
           />
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <FilterChipBar className="!mb-0 min-w-0">
-              <FilterChip
-                variant="all"
+            <TeamSegment>
+              <ToolbarChip
                 label={t('pages.team.tabStaff')}
                 count={staff.length}
                 active={tab === 'staff'}
@@ -399,8 +415,7 @@ export default function Team() {
                   setSearchQuery('');
                 }}
               />
-              <FilterChip
-                variant="all"
+              <ToolbarChip
                 label={t('pages.team.tabTrainers')}
                 count={liveTrainerTotal}
                 active={tab === 'trainers' && !showingFormerTrainers}
@@ -410,7 +425,7 @@ export default function Team() {
                   setSearchQuery('');
                 }}
               />
-            </FilterChipBar>
+            </TeamSegment>
             {tab === 'trainers' && (archivedTrainerTotal > 0 || showingFormerTrainers) ? (
               <FilterChip
                 variant="former"
@@ -638,6 +653,9 @@ export default function Team() {
                       <p className="mt-0.5 text-xs text-app-muted">{trainer.specialty}</p>
                     ) : null}
                     <p className="mt-0.5 text-xs text-app-muted">{trainer.branch_name || t('pages.team.noBranch')}</p>
+                    <p className="mt-0.5 text-xs text-app-muted">
+                      {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
+                    </p>
                     <div className="mt-3">
                       <TrainerRowActions
                         trainer={trainer}
@@ -664,6 +682,7 @@ export default function Team() {
                         <th>{t('table.branch')}</th>
                         <th>{t('table.phone')}</th>
                         <th>{t('table.specialty')}</th>
+                        <th>{t('table.members')}</th>
                         {!readOnly && <th className="text-right">{t('table.actions')}</th>}
                       </tr>
                     </thead>
@@ -674,6 +693,9 @@ export default function Team() {
                           <td className="truncate text-app-text">{trainer.branch_name || '—'}</td>
                           <td className="truncate font-mono text-sm text-app-muted">{trainer.phone || '—'}</td>
                           <td className="truncate text-app-text">{trainer.specialty || '—'}</td>
+                          <td className="text-app-muted">
+                            {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
+                          </td>
                           {!readOnly && (
                             <td>
                               <TrainerRowActions

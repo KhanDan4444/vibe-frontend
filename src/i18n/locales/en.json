@@ -417,6 +417,7 @@
     "disabled": "Disabled",
     "enabled": "Enabled",
     "processing": "Processing…",
+    "saving": "Saving…",
     "noResults": "No results found.",
     "noData": "No data yet.",
     "viewAll": "View all",
@@ -441,6 +442,7 @@
     "loadTrainers": "Failed to load trainers",
     "createTrainer": "Failed to create trainer",
     "updateTrainer": "Failed to update trainer",
+    "trainersUnavailable": "This gym server doesn’t support trainers yet. Update the API, then try again.",
     "loadMembers": "Failed to load members",
     "loadMemberReport": "Failed to load member report",
     "loadRevenueReport": "Failed to load revenue report"
@@ -836,7 +838,9 @@
       "searchTrainersPlaceholder": "Search trainers…",
       "searchFormerTrainersPlaceholder": "Search former trainers…",
       "emptySearchTitle": "No matches",
-      "emptySearchBody": "Try a different name, or clear the search."
+      "emptySearchBody": "Try a different name, or clear the search.",
+      "assignedMembers": "{{count}} members",
+      "assignedMembers_one": "1 member"
     },
     "activity": {
       "title": "Activity",

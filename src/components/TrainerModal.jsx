@@ -194,9 +194,9 @@ export default function TrainerModal({
           <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
             {t('common.cancel')}
           </Button>
-          <Button type="submit" disabled={saving}>
+          <Button type="submit" loading={saving} disabled={saving}>
             {saving
-              ? t('common.saving')
+              ? t('common.processing')
               : isEdit
                 ? t('modals.trainer.saveUpdate')
                 : t('modals.trainer.saveCreate')}
