@@ -106,7 +106,6 @@ export default function Team() {
 
   const [trainers, setTrainers] = useState([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
-  const [trainersError, setTrainersError] = useState('');
   const [showingFormerTrainers, setShowingFormerTrainers] = useState(false);
   const [archivedTrainerTotal, setArchivedTrainerTotal] = useState(0);
   const [liveTrainerTotal, setLiveTrainerTotal] = useState(0);
@@ -162,21 +161,26 @@ export default function Team() {
 
   const loadTrainers = useCallback(async () => {
     setTrainersLoading(true);
-    setTrainersError('');
     try {
       const res = await listTrainers(apiFetch, showingFormerTrainers ? { archived: 1 } : {});
       const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(data.error || t('errors.loadTrainers'));
+      if (!res.ok) {
+        setTrainers([]);
+        setArchivedTrainerTotal(0);
+        if (!showingFormerTrainers) setLiveTrainerTotal(0);
+        return;
+      }
       setTrainers(data.trainers || []);
       setArchivedTrainerTotal(data.archivedTotal ?? 0);
       if (!showingFormerTrainers) setLiveTrainerTotal((data.trainers || []).length);
-    } catch (err) {
-      setTrainersError(err.message);
+    } catch {
       setTrainers([]);
+      setArchivedTrainerTotal(0);
+      if (!showingFormerTrainers) setLiveTrainerTotal(0);
     } finally {
       setTrainersLoading(false);
     }
-  }, [apiFetch, showingFormerTrainers, t]);
+  }, [apiFetch, showingFormerTrainers]);
 
   useEffect(() => {
     loadTeam();
@@ -580,10 +584,6 @@ export default function Team() {
         </>
       ) : (
         <>
-          {trainersError ? (
-            <ErrorRetryBanner message={trainersError} onRetry={() => void loadTrainers()} />
-          ) : null}
-
           {noTrainersYet ? (
             <Card className="overflow-hidden">
               <EmptyState
