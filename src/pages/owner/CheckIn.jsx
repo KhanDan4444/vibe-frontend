@@ -358,50 +358,48 @@ export default function CheckIn() {
                 return (
                   <div
                     key={member.id}
-                    className={`${cardSurface} flex items-center gap-5 p-5 transition-[border-color,transform] duration-200 hover:border-[color:var(--color-brand)]/35 motion-safe:hover:-translate-y-0.5`}
+                    className={`${cardSurface} flex flex-wrap items-center gap-3 p-4 transition-[border-color,transform] duration-200 hover:border-[color:var(--color-brand)]/35 motion-safe:hover:-translate-y-0.5 sm:flex-nowrap sm:gap-4`}
                   >
                     <VisitRing
                       visits={member.visits_this_week ?? 0}
                       limit={member.visits_limit}
-                      size={100}
-                      stroke={8}
+                      size={88}
+                      stroke={7}
                     />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start gap-3">
-                        <MemberPhoto
-                          memberId={member.id}
-                          apiFetch={apiFetch}
-                          name={member.name}
-                          hasPhoto={Boolean(member.photo_url)}
-                          className="h-11 w-11 rounded-xl object-cover"
-                          fallbackClassName="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
-                        />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-display text-lg font-semibold tracking-tight text-app-text-strong">
-                            {member.name}
-                          </p>
-                          <p className="truncate text-sm text-app-muted">{member.phone || '—'}</p>
-                          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                            <StatusBadge status={status} />
-                            {member.is_unpaid ? <UnpaidBadge /> : null}
-                            {member.trainer_name ? (
-                              <span className="text-[11px] text-app-muted">
-                                {member.trainer_name}
-                              </span>
-                            ) : null}
-                          </div>
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <MemberPhoto
+                        memberId={member.id}
+                        apiFetch={apiFetch}
+                        name={member.name}
+                        hasPhoto={Boolean(member.photo_url)}
+                        className="h-10 w-10 rounded-xl object-cover"
+                        fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-display text-base font-semibold tracking-tight text-app-text-strong">
+                          {member.name}
+                        </p>
+                        <p className="truncate text-sm text-app-muted">{member.phone || '—'}</p>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <StatusBadge status={status} />
+                          {member.is_unpaid ? <UnpaidBadge /> : null}
+                          {member.trainer_name ? (
+                            <span className="text-[11px] text-app-muted">
+                              {member.trainer_name}
+                            </span>
+                          ) : null}
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        disabled={readOnly || busy}
-                        onClick={() => void runCheckIn(member)}
-                        className={`${renewActionBtn} mt-3`}
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        {busy ? t('common.processing') : t('pages.checkIn.checkInAction')}
-                      </button>
                     </div>
+                    <button
+                      type="button"
+                      disabled={readOnly || busy}
+                      onClick={() => void runCheckIn(member)}
+                      className={`${renewActionBtn} ml-auto shrink-0`}
+                    >
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      {busy ? t('common.processing') : t('pages.checkIn.checkInAction')}
+                    </button>
                   </div>
                 );
               })}
