@@ -360,35 +360,38 @@ export default function CheckIn() {
                     key={member.id}
                     className={`${cardSurface} flex flex-wrap items-center gap-3 p-4 transition-[border-color,transform] duration-200 hover:border-[color:var(--color-brand)]/35 motion-safe:hover:-translate-y-0.5 sm:flex-nowrap sm:gap-4`}
                   >
-                    <VisitRing
-                      visits={member.visits_this_week ?? 0}
-                      limit={member.visits_limit}
-                      size={88}
-                      stroke={7}
-                    />
-                    <div className="flex min-w-0 flex-1 items-center gap-3">
-                      <MemberPhoto
-                        memberId={member.id}
-                        apiFetch={apiFetch}
-                        name={member.name}
-                        hasPhoto={Boolean(member.photo_url)}
-                        className="h-10 w-10 rounded-xl object-cover"
-                        fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
+                    <div className="relative mr-1.5 shrink-0">
+                      <VisitRing
+                        visits={member.visits_this_week ?? 0}
+                        limit={member.visits_limit}
+                        size={88}
+                        stroke={7}
                       />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-display text-base font-semibold tracking-tight text-app-text-strong">
-                          {member.name}
-                        </p>
-                        <p className="truncate text-sm text-app-muted">{member.phone || '—'}</p>
-                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                          <StatusBadge status={status} />
-                          {member.is_unpaid ? <UnpaidBadge /> : null}
-                          {member.trainer_name ? (
-                            <span className="text-[11px] text-app-muted">
-                              {member.trainer_name}
-                            </span>
-                          ) : null}
-                        </div>
+                      <div className="absolute bottom-0 right-0 translate-x-0.5 translate-y-0.5 rounded-full ring-2 ring-[color:var(--color-app-surface)]">
+                        <MemberPhoto
+                          memberId={member.id}
+                          apiFetch={apiFetch}
+                          name={member.name}
+                          hasPhoto={Boolean(member.photo_url)}
+                          expandable={false}
+                          className="h-7 w-7 rounded-full object-cover"
+                          fallbackClassName="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-app-border text-[11px] font-bold text-app-text"
+                        />
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-display text-base font-semibold tracking-tight text-app-text-strong">
+                        {member.name}
+                      </p>
+                      <p className="truncate text-sm text-app-muted">{member.phone || '—'}</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                        <StatusBadge status={status} />
+                        {member.is_unpaid ? <UnpaidBadge /> : null}
+                        {member.trainer_name ? (
+                          <span className="text-[11px] text-app-muted">
+                            {member.trainer_name}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                     <button
