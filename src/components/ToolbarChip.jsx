@@ -22,7 +22,7 @@ export function ToolbarChipBar({ children, className = '' }) {
   );
 }
 
-/** Joined Staff | Trainers control — one selected pill, teal fill. */
+/** Joined Staff | Trainers control — solid selected pill + hairline between. */
 export function TeamSegment({ children }) {
   return <div className="team-segment" role="tablist">{children}</div>;
 }
