@@ -837,7 +837,7 @@
       "ringProgress": "{{count}} of {{limit}} visits",
       "ringUnlimited": "{{count}} visits (unlimited)",
       "capChipUnlimited": "Unlimited",
-      "capChipDays": "{{count}} / week",
+      "capChipDays": "{{count}} days / week",
       "heroHint": "Search a member to check them in. The ring shows visits used this week.",
       "todayEmptyTitle": "No one yet today"
     },
