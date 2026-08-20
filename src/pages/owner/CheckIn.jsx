@@ -358,16 +358,16 @@ export default function CheckIn() {
                 return (
                   <div
                     key={member.id}
-                    className={`${cardSurface} flex flex-wrap items-center gap-3 p-4 transition-[border-color,transform] duration-200 hover:border-[color:var(--color-brand)]/35 motion-safe:hover:-translate-y-0.5 sm:flex-nowrap sm:gap-4`}
+                    className={`${cardSurface} flex flex-wrap items-center gap-3 overflow-visible p-4 pb-5 pr-5 transition-[border-color,transform] duration-200 hover:border-[color:var(--color-brand)]/35 motion-safe:hover:-translate-y-0.5 sm:flex-nowrap sm:gap-3`}
                   >
-                    <div className="relative mr-1.5 shrink-0">
+                    <div className="relative shrink-0 pb-2 pr-2">
                       <VisitRing
                         visits={member.visits_this_week ?? 0}
                         limit={member.visits_limit}
                         size={88}
                         stroke={7}
                       />
-                      <div className="absolute bottom-0 right-0 translate-x-0.5 translate-y-0.5 rounded-full ring-2 ring-[color:var(--color-app-surface)]">
+                      <div className="absolute bottom-0 right-0 rounded-full ring-2 ring-[color:var(--color-app-raised)]">
                         <MemberPhoto
                           memberId={member.id}
                           apiFetch={apiFetch}
@@ -379,7 +379,7 @@ export default function CheckIn() {
                         />
                       </div>
                     </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 max-w-[13.5rem] sm:max-w-[15rem]">
                       <p className="truncate font-display text-base font-semibold tracking-tight text-app-text-strong">
                         {member.name}
                       </p>
@@ -388,7 +388,7 @@ export default function CheckIn() {
                         <StatusBadge status={status} />
                         {member.is_unpaid ? <UnpaidBadge /> : null}
                         {member.trainer_name ? (
-                          <span className="text-[11px] text-app-muted">
+                          <span className="truncate text-[11px] text-app-muted">
                             {member.trainer_name}
                           </span>
                         ) : null}
@@ -398,7 +398,7 @@ export default function CheckIn() {
                       type="button"
                       disabled={readOnly || busy}
                       onClick={() => void runCheckIn(member)}
-                      className={`${renewActionBtn} ml-auto shrink-0`}
+                      className={`${renewActionBtn} shrink-0`}
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {busy ? t('common.processing') : t('pages.checkIn.checkInAction')}

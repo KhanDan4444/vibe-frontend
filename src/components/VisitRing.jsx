@@ -20,11 +20,12 @@ export default function VisitRing({
     : Math.min(1, safeVisits > 0 ? 0.12 + Math.min(safeVisits, 7) * 0.08 : 0);
   const atLimit = capped && safeVisits >= limit;
   const nearLimit = capped && !atLimit && safeVisits === limit - 1 && limit > 1;
+  const empty = capped && safeVisits === 0;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - progress);
 
-  const track = 'var(--color-app-border-subtle)';
+  const track = empty ? 'var(--color-app-border)' : 'var(--color-app-border-subtle)';
   const fill = atLimit
     ? 'var(--color-status-expired)'
     : nearLimit
@@ -34,7 +35,9 @@ export default function VisitRing({
     ? 'text-[color:var(--color-status-expired)]'
     : nearLimit
       ? 'text-[color:var(--color-status-due-soon)]'
-      : 'text-app-text-strong';
+      : empty
+        ? 'text-app-muted'
+        : 'text-app-text-strong';
 
   return (
     <div
@@ -55,19 +58,23 @@ export default function VisitRing({
           fill="none"
           stroke={track}
           strokeWidth={stroke}
+          strokeDasharray={empty ? `${Math.max(2, stroke * 0.55)} ${Math.max(3, stroke * 0.9)}` : undefined}
+          strokeLinecap={empty ? 'butt' : undefined}
         />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke={fill}
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-          className="transition-[stroke-dashoffset,stroke] duration-500 ease-out"
-        />
+        {!empty ? (
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            stroke={fill}
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={c}
+            strokeDashoffset={offset}
+            className="transition-[stroke-dashoffset,stroke] duration-500 ease-out"
+          />
+        ) : null}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
         {capped ? (
