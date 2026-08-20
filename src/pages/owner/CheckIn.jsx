@@ -57,8 +57,6 @@ export default function CheckIn() {
   const [searchNonce, setSearchNonce] = useState(0);
   /** @type {Record<number, { code: string, message: string }>} */
   const [cardErrors, setCardErrors] = useState({});
-  const [todayPulse, setTodayPulse] = useState(false);
-  const prevTodayTotal = React.useRef(null);
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(query.trim()), 280);
@@ -102,20 +100,6 @@ export default function CheckIn() {
     void loadSettings();
     void loadToday();
   }, [loadSettings, loadToday]);
-
-  useEffect(() => {
-    if (todayLoading) return;
-    const prev = prevTodayTotal.current;
-    prevTodayTotal.current = today.total;
-    if (prev == null || today.total <= prev) return;
-    setTodayPulse(true);
-    const id = setTimeout(() => setTodayPulse(false), 700);
-    return () => clearTimeout(id);
-  }, [today.total, todayLoading]);
-
-  const scrollToTodayList = () => {
-    document.getElementById('check-in-today')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
 
   useEffect(() => {
     if (!debounced) {
@@ -371,26 +355,16 @@ export default function CheckIn() {
                 {t('pages.checkIn.heroHint')}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={scrollToTodayList}
-              className={`shrink-0 rounded-2xl border px-4 py-3 text-left transition-[transform,box-shadow,background-color] duration-300 sm:min-w-[7.5rem] sm:text-right ${
-                todayPulse
-                  ? 'scale-[1.03] border-[color:var(--color-brand)]/50 bg-[color:var(--color-brand-soft)] shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-brand)_18%,transparent)]'
-                  : 'border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)]/70 hover:border-[color:var(--color-brand)]/45 hover:bg-[color:var(--color-brand-soft)]'
-              }`}
-              aria-label={t('pages.checkIn.todayStatAria', { count: today.total })}
-            >
-              <p className="font-display text-3xl font-semibold tabular-nums tracking-tight text-[color:var(--color-brand-text)] sm:text-4xl">
+            <div className="shrink-0 text-left sm:text-right">
+              <p className="font-display text-5xl font-semibold tabular-nums tracking-tight text-app-text-strong sm:text-6xl">
                 {todayLoading ? '—' : today.total}
               </p>
-              <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[color:var(--color-brand-text)]/80">
-                {t('pages.checkIn.todayCount')}
+              <p className="mt-0.5 text-xs font-medium uppercase tracking-wide text-app-muted">
+                {todayLoading
+                  ? t('pages.checkIn.todayCount')
+                  : t('pages.checkIn.todayMembers', { count: today.total })}
               </p>
-              <p className="mt-1 text-[11px] font-medium text-app-muted">
-                {t('pages.checkIn.todayStatHint')}
-              </p>
-            </button>
+            </div>
           </div>
           <SearchField
             value={query}
@@ -515,7 +489,7 @@ export default function CheckIn() {
         </div>
       ) : null}
 
-      <Card id="check-in-today" className="scroll-mt-4 overflow-hidden">
+      <Card className="overflow-hidden">
         <div className="admin-panel-header">
           <h2 className={panelTitle}>{t('pages.checkIn.todayTitle')}</h2>
           <p className="text-xs text-app-muted">
