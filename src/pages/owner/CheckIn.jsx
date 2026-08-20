@@ -25,7 +25,7 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, mutedText, panelTitle, renewActionBtn } from '../../utils/surfaceClasses';
-import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
+import { formatMemberStatusForDisplay, DISPLAY_STATUS } from '../../utils/memberStatus';
 import { formatDisplayDate } from '../../utils/date';
 
 const CAP_OPTIONS = [
@@ -55,6 +55,8 @@ export default function CheckIn() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [savingSettings, setSavingSettings] = useState(false);
   const [searchNonce, setSearchNonce] = useState(0);
+  /** @type {Record<number, { code: string, message: string }>} */
+  const [cardErrors, setCardErrors] = useState({});
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(query.trim()), 280);
@@ -103,8 +105,10 @@ export default function CheckIn() {
     if (!debounced) {
       setResults([]);
       setSearching(false);
+      setCardErrors({});
       return;
     }
+    setCardErrors({});
     let cancelled = false;
     (async () => {
       setSearching(true);
@@ -139,6 +143,17 @@ export default function CheckIn() {
     return t('pages.checkIn.capChipDays', { count: settings.visits_per_week });
   }, [settings, t]);
 
+  const alreadyTodayIds = useMemo(
+    () => new Set((today.checkIns || []).map((row) => row.member_id)),
+    [today.checkIns]
+  );
+
+  const cardErrorMessage = (code, fallback) => {
+    if (code === 'ALREADY_TODAY') return t('pages.checkIn.alreadyToday');
+    if (code === 'WEEKLY_LIMIT') return t('pages.checkIn.weeklyLimitReached');
+    return fallback || t('errors.checkInFailed');
+  };
+
   const applyCheckInSuccess = (data, memberName) => {
     showFlash(
       flashFromKey(t, 'checkedIn', {
@@ -151,9 +166,17 @@ export default function CheckIn() {
         },
       })
     );
+    const memberId = data.member?.id ?? data.checkIn?.member_id;
+    if (memberId != null) {
+      setCardErrors((prev) => {
+        const next = { ...prev };
+        delete next[memberId];
+        return next;
+      });
+    }
     setResults((prev) =>
       prev.map((m) =>
-        m.id === data.member?.id || m.id === data.checkIn?.member_id
+        m.id === memberId
           ? {
               ...m,
               visits_this_week: data.visits_this_week,
@@ -168,8 +191,22 @@ export default function CheckIn() {
 
   const runCheckIn = async (member, { force = false } = {}) => {
     if (readOnly) return;
+    const status = formatMemberStatusForDisplay(member.status);
+    if (status === DISPLAY_STATUS.EXPIRED) return;
+    if (alreadyTodayIds.has(member.id) || cardErrors[member.id]?.code === 'ALREADY_TODAY') {
+      setCardErrors((prev) => ({
+        ...prev,
+        [member.id]: { code: 'ALREADY_TODAY', message: t('pages.checkIn.alreadyToday') },
+      }));
+      return;
+    }
     setCheckingId(member.id);
     setSearchError('');
+    setCardErrors((prev) => {
+      const next = { ...prev };
+      delete next[member.id];
+      return next;
+    });
     try {
       const res = await createCheckIn(apiFetch, { member_id: member.id, force });
       const data = await parseApiResponse(res);
@@ -178,9 +215,18 @@ export default function CheckIn() {
         return;
       }
       if (!res.ok) {
-        throw Object.assign(new Error(data.error || t('errors.checkInFailed')), {
-          code: data.code,
-        });
+        const code = data.code || 'CHECK_IN_FAILED';
+        if (code === 'ALREADY_TODAY' || code === 'WEEKLY_LIMIT') {
+          setCardErrors((prev) => ({
+            ...prev,
+            [member.id]: {
+              code,
+              message: cardErrorMessage(code, data.error),
+            },
+          }));
+          return;
+        }
+        throw Object.assign(new Error(data.error || t('errors.checkInFailed')), { code });
       }
       applyCheckInSuccess(data, member.name);
     } catch (err) {
@@ -355,10 +401,21 @@ export default function CheckIn() {
               {results.map((member) => {
                 const status = formatMemberStatusForDisplay(member.status);
                 const busy = checkingId === member.id;
+                const checkInBlocked = status === DISPLAY_STATUS.EXPIRED;
+                const cardError = cardErrors[member.id];
+                const alreadyToday =
+                  alreadyTodayIds.has(member.id) || cardError?.code === 'ALREADY_TODAY';
+                const showCardError = Boolean(cardError) || alreadyToday;
+                const errorText = cardError?.message
+                  || (alreadyToday ? t('pages.checkIn.alreadyToday') : '');
                 return (
                   <div
                     key={member.id}
-                    className={`${cardSurface} flex flex-wrap items-center gap-3 overflow-visible p-4 pb-5 pr-5 transition-[border-color,transform] duration-200 hover:border-[color:var(--color-brand)]/35 motion-safe:hover:-translate-y-0.5 sm:flex-nowrap sm:gap-3`}
+                    className={`${cardSurface} flex items-center gap-4 overflow-visible p-4 transition-[box-shadow,transform] duration-200 motion-safe:hover:-translate-y-0.5 ${
+                      showCardError
+                        ? '!ring-2 !ring-[color:var(--color-status-expired)]'
+                        : 'hover:ring-[color:var(--color-brand)]/35'
+                    }`}
                   >
                     <div className="relative shrink-0 pb-2 pr-2">
                       <VisitRing
@@ -379,7 +436,7 @@ export default function CheckIn() {
                         />
                       </div>
                     </div>
-                    <div className="min-w-0 max-w-[13.5rem] sm:max-w-[15rem]">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate font-display text-base font-semibold tracking-tight text-app-text-strong">
                         {member.name}
                       </p>
@@ -393,16 +450,37 @@ export default function CheckIn() {
                           </span>
                         ) : null}
                       </div>
+                      {showCardError && errorText ? (
+                        <p className="mt-1.5 text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
+                          {errorText}
+                        </p>
+                      ) : null}
                     </div>
-                    <button
-                      type="button"
-                      disabled={readOnly || busy}
-                      onClick={() => void runCheckIn(member)}
-                      className={`${renewActionBtn} shrink-0`}
-                    >
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      {busy ? t('common.processing') : t('pages.checkIn.checkInAction')}
-                    </button>
+                    <div className="w-[6.75rem] shrink-0 self-center text-right">
+                      {checkInBlocked ? (
+                        <p className="text-xs font-medium leading-snug text-app-muted">
+                          {t('pages.checkIn.blockedExpired')}
+                        </p>
+                      ) : alreadyToday ? (
+                        <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
+                          {t('pages.checkIn.alreadyTodayShort')}
+                        </p>
+                      ) : cardError?.code === 'WEEKLY_LIMIT' ? (
+                        <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
+                          {t('pages.checkIn.weeklyLimitShort')}
+                        </p>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={readOnly || busy}
+                          onClick={() => void runCheckIn(member)}
+                          className={`${renewActionBtn} disabled:cursor-not-allowed disabled:opacity-50`}
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {busy ? t('common.processing') : t('pages.checkIn.checkInAction')}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}
