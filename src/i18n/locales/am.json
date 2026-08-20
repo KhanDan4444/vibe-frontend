@@ -959,7 +959,9 @@
   },
   "nav": {
     "activity": "እንቅስቃሴ",
-    "messages": "SMS መልእክቶች",
+    "messages": "SMS",
+    "sectionManage": "አስተዳደር",
+    "sectionInsights": "መረጃ",
     "ownerSms": "የባለቤት SMS",
     "ownerMessages": "የባለቤት SMS",
     "smsLog": "የSMS መዝገብ",

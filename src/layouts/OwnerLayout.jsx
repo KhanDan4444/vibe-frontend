@@ -112,28 +112,35 @@ export default function OwnerLayout() {
 
   const unreadCount = notifications.filter((n) => !readIds.includes(n.id)).length;
 
-  const menuItems = useMemo(() => {
-    const items = [
+  const menuSections = useMemo(() => {
+    const primary = [
       { nameKey: 'nav.dashboard', path: '/dashboard', icon: LayoutDashboard },
       { nameKey: 'nav.members', path: '/dashboard/members', icon: Users },
       { nameKey: 'nav.checkIn', path: '/dashboard/check-in', icon: ClipboardCheck },
-      { nameKey: 'nav.plans', path: '/dashboard/plans', icon: Dumbbell },
       { nameKey: 'nav.revenue', path: '/dashboard/revenue', icon: DollarSign },
-      { nameKey: 'nav.reports', path: '/dashboard/reports', icon: FileBarChart },
     ];
+
+    const manage = [{ nameKey: 'nav.plans', path: '/dashboard/plans', icon: Dumbbell }];
     if (showTeamNav) {
-      items.push({ nameKey: 'nav.team', path: '/dashboard/team', icon: UserCog });
+      manage.push({ nameKey: 'nav.team', path: '/dashboard/team', icon: UserCog });
     }
     if (showManagementNav) {
-      items.push({ nameKey: 'nav.branches', path: '/dashboard/branches', icon: MapPin });
+      manage.push({ nameKey: 'nav.branches', path: '/dashboard/branches', icon: MapPin });
     }
+
+    const insights = [{ nameKey: 'nav.reports', path: '/dashboard/reports', icon: FileBarChart }];
     if (showActivityNav) {
-      items.push({ nameKey: 'nav.activity', path: '/dashboard/activity', icon: ScrollText });
+      insights.push({ nameKey: 'nav.activity', path: '/dashboard/activity', icon: ScrollText });
     }
     if (showMessagesNav) {
-      items.push({ nameKey: 'nav.messages', path: '/dashboard/messages', icon: MessageSquare });
+      insights.push({ nameKey: 'nav.messages', path: '/dashboard/messages', icon: MessageSquare });
     }
-    return items;
+
+    return [
+      { id: 'primary', labelKey: null, items: primary },
+      { id: 'manage', labelKey: 'nav.sectionManage', items: manage },
+      { id: 'insights', labelKey: 'nav.sectionInsights', items: insights },
+    ].filter((section) => section.items.length > 0);
   }, [showManagementNav, showTeamNav, showActivityNav, showMessagesNav]);
 
   const markAllAsRead = () => {
@@ -202,6 +209,28 @@ export default function OwnerLayout() {
     );
   };
 
+  const renderNavSection = (section, onNavigate, { railCompact = false, labelsVisible = true } = {}) => {
+    const showHeading = Boolean(section.labelKey) && section.items.length >= 2;
+    return (
+      <div key={section.id} className={showHeading || section.labelKey ? 'pt-3 first:pt-0' : undefined}>
+        {showHeading && labelsVisible ? (
+          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted/80">
+            {t(section.labelKey)}
+          </p>
+        ) : null}
+        {section.labelKey && railCompact && !labelsVisible ? (
+          <div
+            className="mx-auto mb-1.5 mt-1 h-px w-6 bg-app-border-subtle opacity-70"
+            aria-hidden
+          />
+        ) : null}
+        <div className={labelsVisible ? 'space-y-1' : 'space-y-0.5'}>
+          {section.items.map((item) => renderNavLink(item, onNavigate, { railCompact, labelsVisible }))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={shellPage}>
       <header className={`safe-top sticky top-0 z-40 flex h-14 min-h-[3.5rem] items-center gap-2 px-4 lg:hidden ${shellHeader}`}>
@@ -253,7 +282,7 @@ export default function OwnerLayout() {
               <BrandLogo to="/dashboard" onClick={() => setSidebarOpen(false)} />
             </div>
             <nav className="flex-1 space-y-1">
-              {menuItems.map((item) => renderNavLink(item, () => setSidebarOpen(false)))}
+              {menuSections.map((section) => renderNavSection(section, () => setSidebarOpen(false)))}
             </nav>
           </div>
         </div>
@@ -274,9 +303,9 @@ export default function OwnerLayout() {
           dismissShortcutCoach={dismissShortcutCoach}
           collapseToggleRef={collapseToggleRef}
         />
-        <nav className={`flex-1 ${showLabels ? 'space-y-1' : 'space-y-0.5 px-0.5'}`}>
-          {menuItems.map((item) =>
-            renderNavLink(item, undefined, { railCompact: compact, labelsVisible: showLabels })
+        <nav className={`flex-1 ${showLabels ? 'space-y-0' : 'space-y-0 px-0.5'}`}>
+          {menuSections.map((section) =>
+            renderNavSection(section, undefined, { railCompact: compact, labelsVisible: showLabels })
           )}
         </nav>
       </aside>

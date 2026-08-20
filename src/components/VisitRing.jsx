@@ -46,11 +46,15 @@ export default function VisitRing({
   const lastWeekOfMonth = isLastWeekOfMonth(new Date(), weekStartsOn);
   const warnAmber = nearLimit || (atLimit && !lastWeekOfMonth);
   const warnRed = atLimit && lastWeekOfMonth;
-  const r = (size - stroke) / 2;
+  const emptyStroke = Math.max(stroke + 1, 8);
+  const drawStroke = empty ? emptyStroke : stroke;
+  const r = (size - drawStroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - progress);
 
-  const track = empty ? 'var(--color-app-border)' : 'var(--color-app-border-subtle)';
+  const track = empty
+    ? 'color-mix(in srgb, var(--color-app-text) 32%, var(--color-app-border))'
+    : 'var(--color-app-border-subtle)';
   const fill = warnRed
     ? 'var(--color-status-expired)'
     : warnAmber
@@ -61,8 +65,9 @@ export default function VisitRing({
     : warnAmber
       ? 'text-[color:var(--color-status-due-soon)]'
       : empty
-        ? 'text-app-muted'
+        ? 'text-app-text'
         : 'text-app-text-strong';
+  const emptyDash = `${Math.round(emptyStroke * 1.15)} ${Math.round(emptyStroke * 0.55)}`;
 
   return (
     <div
@@ -82,8 +87,8 @@ export default function VisitRing({
           r={r}
           fill="none"
           stroke={track}
-          strokeWidth={stroke}
-          strokeDasharray={empty ? `${Math.max(2, stroke * 0.55)} ${Math.max(3, stroke * 0.9)}` : undefined}
+          strokeWidth={drawStroke}
+          strokeDasharray={empty ? emptyDash : undefined}
           strokeLinecap={empty ? 'butt' : undefined}
         />
         {!empty ? (
