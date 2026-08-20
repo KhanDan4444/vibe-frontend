@@ -408,7 +408,7 @@ export default function Team() {
             }
             className="sm:max-w-xs"
           />
-          <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <TeamSegment>
               <ToolbarChip
                 label={t('pages.team.tabStaff')}
@@ -432,16 +432,19 @@ export default function Team() {
               />
             </TeamSegment>
             {tab === 'trainers' && (archivedTrainerTotal > 0 || showingFormerTrainers) ? (
-              <FilterChip
-                variant="former"
-                label={t('status.former')}
-                count={archivedTrainerTotal}
-                active={showingFormerTrainers}
-                onClick={() => {
-                  setShowingFormerTrainers((current) => !current);
-                  setSearchQuery('');
-                }}
-              />
+              <>
+                <span className="filter-chip-archive-rule" aria-hidden />
+                <FilterChip
+                  variant="former"
+                  label={t('status.former')}
+                  count={archivedTrainerTotal}
+                  active={showingFormerTrainers}
+                  onClick={() => {
+                    setShowingFormerTrainers((current) => !current);
+                    setSearchQuery('');
+                  }}
+                />
+              </>
             ) : null}
           </div>
         </div>
