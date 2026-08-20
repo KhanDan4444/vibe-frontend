@@ -821,19 +821,19 @@
       "tabTrainers": "Trainers",
       "trainersTitle": "Trainers",
       "trainersSubtitle": "Personal trainers at your gym. No login — staff assign them to members.",
-      "formerTrainersSubtitle": "Moved off the roster. Restore to assign them again.",
+      "formerTrainersSubtitle": "Removed trainers. Restore to assign them again.",
       "addTrainer": "Add trainer",
       "createFirstTrainer": "Add trainer",
       "emptyTrainersTitle": "No trainers yet",
       "emptyTrainersBody": "Register trainers so you can assign them at enroll and collect a trainer fee.",
       "emptyFormerTrainers": "No former trainers",
-      "emptyFormerTrainersBody": "Archived trainers will appear here. Restore to assign them again.",
+      "emptyFormerTrainersBody": "Removed trainers appear here. Restore to assign them again.",
       "emptyBranchTrainers": "No trainers at this branch",
       "emptyBranchTrainersBody": "Switch to All branches, or add a trainer for this location.",
-      "archiveTrainer": "Move to Former",
+      "archiveTrainer": "Remove",
       "restoreTrainer": "Restore",
-      "archiveTrainerTitle": "Move trainer to Former?",
-      "archiveTrainerMessage": "{{name}} will no longer be assignable. Members keep their trainer history.",
+      "archiveTrainerTitle": "Remove from roster?",
+      "archiveTrainerMessage": "{{name}} will move to Former trainers. Members keep their trainer link until you change it.",
       "searchStaffPlaceholder": "Search staff…",
       "searchTrainersPlaceholder": "Search trainers…",
       "searchFormerTrainersPlaceholder": "Search former trainers…",
@@ -947,7 +947,7 @@
       "trainer": {
         "created": "Added trainer",
         "updated": "Updated trainer",
-        "deleted": "Moved trainer to Former",
+        "deleted": "Removed trainer",
         "restored": "Restored trainer"
       }
     },
@@ -1663,8 +1663,8 @@
       "subtitle": "Name, phone, and branch were saved."
     },
     "trainerArchived": {
-      "title": "Trainer moved to Former",
-      "subtitle": "{{name}} can no longer be assigned."
+      "title": "Trainer removed",
+      "subtitle": "{{name}} moved to Former trainers."
     },
     "trainerRestored": {
       "title": "Trainer restored",
