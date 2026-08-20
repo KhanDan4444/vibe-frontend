@@ -21,13 +21,3 @@ export function ToolbarChipBar({ children, className = '' }) {
     </div>
   );
 }
-
-/** Joined Staff | Trainers control — solid selected pill + hairline between. */
-export function TeamSegment({ children }) {
-  return <div className="team-segment" role="tablist">{children}</div>;
-}
-
-/** Hairline between Staff and Trainers in TeamSegment. */
-export function TeamSegmentRule() {
-  return <span className="team-segment-rule" aria-hidden />;
-}

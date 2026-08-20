@@ -18,7 +18,7 @@ import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import RowMoreMenu from '../../components/RowMoreMenu';
 import { FilterChip } from '../../components/FilterChip';
-import { TeamSegment, TeamSegmentRule, ToolbarChip } from '../../components/ToolbarChip';
+import { ToolbarChip, ToolbarChipBar } from '../../components/ToolbarChip';
 import SearchField from '../../components/SearchField';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
@@ -409,7 +409,7 @@ export default function Team() {
             className="sm:max-w-xs"
           />
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <TeamSegment>
+            <ToolbarChipBar className="mb-0">
               <ToolbarChip
                 label={t('pages.team.tabStaff')}
                 count={staff.length}
@@ -420,7 +420,6 @@ export default function Team() {
                   setSearchQuery('');
                 }}
               />
-              <TeamSegmentRule />
               <ToolbarChip
                 label={t('pages.team.tabTrainers')}
                 count={liveTrainerTotal}
@@ -431,7 +430,7 @@ export default function Team() {
                   setSearchQuery('');
                 }}
               />
-            </TeamSegment>
+            </ToolbarChipBar>
             {tab === 'trainers' && (archivedTrainerTotal > 0 || showingFormerTrainers) ? (
               <FilterChip
                 variant="former"
