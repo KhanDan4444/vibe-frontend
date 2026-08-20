@@ -820,6 +820,7 @@
       "todayCount": "today",
       "todayMembers_one": "member today",
       "todayMembers_other": "members today",
+      "checkedInBy": "Checked in by {{name}}",
       "todayEmpty": "No check-ins yet today.",
       "visitRules": "Visit rules",
       "visitRulesTitle": "Visits per week",

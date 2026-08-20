@@ -38,7 +38,7 @@ const CAP_OPTIONS = [
 export default function CheckIn() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
-  const { showFlash, readOnly, getBranchQueryParams, refreshSummary } = useGym();
+  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, branches } = useGym();
   const owner = isGymOwner(user?.role);
 
   const [query, setQuery] = useState('');
@@ -147,6 +147,16 @@ export default function CheckIn() {
     () => new Set((today.checkIns || []).map((row) => row.member_id)),
     [today.checkIns]
   );
+
+  const showBranchOnToday = (branches?.length || 0) > 1;
+
+  const formatCheckInTime = (value) => {
+    if (!value) return '—';
+    return new Date(value).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
   const cardErrorMessage = (code, fallback) => {
     if (code === 'ALREADY_TODAY') return t('pages.checkIn.alreadyToday');
@@ -491,15 +501,22 @@ export default function CheckIn() {
 
       <Card className="overflow-hidden">
         <div className="admin-panel-header">
-          <h2 className={panelTitle}>{t('pages.checkIn.todayTitle')}</h2>
-          <p className="text-xs text-app-muted">
-            {today.date ? formatDisplayDate(today.date) : '—'}
-          </p>
+          <div className="min-w-0">
+            <h2 className={panelTitle}>{t('pages.checkIn.todayTitle')}</h2>
+            <p className="mt-0.5 text-xs text-app-muted">
+              {today.date ? formatDisplayDate(today.date) : '—'}
+            </p>
+          </div>
+          {!todayLoading && today.total > 0 ? (
+            <span className="shrink-0 rounded-full border border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)] px-2.5 py-1 text-[11px] font-semibold tabular-nums text-[color:var(--color-brand-text)]">
+              {t('pages.checkIn.todayMembers', { count: today.total })}
+            </span>
+          ) : null}
         </div>
         {todayLoading ? (
-          <div className="space-y-2 p-4">
+          <div className="space-y-2 p-3 sm:p-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 animate-pulse rounded-lg bg-app-bg" />
+              <div key={i} className="h-14 animate-pulse rounded-xl bg-app-bg" />
             ))}
           </div>
         ) : today.checkIns.length === 0 ? (
@@ -511,34 +528,36 @@ export default function CheckIn() {
             body={t('pages.checkIn.todayEmpty')}
           />
         ) : (
-          <ul className="divide-y divide-app-border-subtle">
+          <ul className="space-y-1 p-2 sm:p-3">
             {today.checkIns.map((row) => (
               <li
                 key={row.id}
-                className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-app-bg/50"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-app-bg/60"
+                title={
+                  row.checked_in_by_name
+                    ? t('pages.checkIn.checkedInBy', { name: row.checked_in_by_name })
+                    : undefined
+                }
               >
                 <MemberPhoto
                   memberId={row.member_id}
                   apiFetch={apiFetch}
                   name={row.member_name}
                   hasPhoto={Boolean(row.member_photo_url)}
-                  className="h-10 w-10 rounded-xl object-cover"
-                  fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
+                  expandable={false}
+                  className="h-10 w-10 rounded-full object-cover"
+                  fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-app-text-strong">{row.member_name}</p>
-                  <p className="truncate text-xs text-app-muted">
-                    {row.branch_name || '—'}
-                    {row.checked_in_by_name ? ` · ${row.checked_in_by_name}` : ''}
+                  <p className="truncate font-display text-sm font-semibold tracking-tight text-app-text-strong sm:text-base">
+                    {row.member_name}
                   </p>
+                  {showBranchOnToday && row.branch_name ? (
+                    <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
+                  ) : null}
                 </div>
-                <time className="shrink-0 text-xs font-medium tabular-nums text-app-muted">
-                  {row.checked_in_at
-                    ? new Date(row.checked_in_at).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })
-                    : '—'}
+                <time className="shrink-0 text-sm font-semibold tabular-nums tracking-tight text-app-text-strong">
+                  {formatCheckInTime(row.checked_in_at)}
                 </time>
               </li>
             ))}
