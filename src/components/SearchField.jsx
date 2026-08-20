@@ -10,7 +10,7 @@ export default function SearchField({
   className = '',
 }) {
   return (
-    <div className={`relative w-full sm:max-w-md ${className}`}>
+    <div className={`relative w-full ${className || 'sm:max-w-md'}`}>
       <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-app-muted">
         <Search className="h-5 w-5" aria-hidden />
       </span>

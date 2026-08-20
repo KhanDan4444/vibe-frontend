@@ -384,6 +384,7 @@
     "moreActions": "More actions",
     "loading": "Loading…",
     "close": "Close",
+    "done": "Done",
     "refresh": "Refresh",
     "retry": "Retry",
     "openMenu": "Open menu",
@@ -825,7 +826,11 @@
       "forceConfirm": "Check in anyway",
       "ringLabel": "This week",
       "ringProgress": "{{count}} of {{limit}} visits",
-      "ringUnlimited": "{{count}} visits (unlimited)"
+      "ringUnlimited": "{{count}} visits (unlimited)",
+      "capChipUnlimited": "Unlimited",
+      "capChipDays": "{{count}} / week",
+      "heroHint": "Search a member to check them in. The ring shows visits used this week.",
+      "todayEmptyTitle": "No one yet today"
     },
     "team": {
       "title": "Staff",
