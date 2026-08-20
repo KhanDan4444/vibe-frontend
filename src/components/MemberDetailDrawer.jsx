@@ -352,6 +352,7 @@ export default function MemberDetailDrawer({
                   visits={visitSummary.visits_this_week ?? 0}
                   limit={visitSummary.visits_limit}
                   size={72}
+                  weekStartsOn={visitSummary.week_starts_on || 'monday'}
                 />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-app-text-strong">

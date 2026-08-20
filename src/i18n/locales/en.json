@@ -835,7 +835,9 @@
       "ringUnlimited": "{{count}} visits (unlimited)",
       "capChipUnlimited": "Unlimited",
       "capChipDays": "{{count}} / week",
-      "heroHint": "Search a member to check them in. The ring shows visits used this week.",
+      "heroHint": "Search a member to check them in. Tap their photo to see visits this week.",
+      "showWeekRing": "Show week visits for {{name}}",
+      "hideWeekRing": "Hide week visits for {{name}}",
       "todayEmptyTitle": "No one yet today"
     },
     "team": {

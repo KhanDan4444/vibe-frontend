@@ -1,15 +1,37 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+function startOfWeekLocal(date, weekStartsOn = 'monday') {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay(); // 0 Sun … 6 Sat
+  const startDow = weekStartsOn === 'sunday' ? 0 : 1;
+  const diff = (day - startDow + 7) % 7;
+  d.setDate(d.getDate() - diff);
+  return d;
+}
+
+/** True when this gym week contains the last calendar day of the month. */
+function isLastWeekOfMonth(date = new Date(), weekStartsOn = 'monday') {
+  const weekStart = startOfWeekLocal(date, weekStartsOn);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  lastDay.setHours(0, 0, 0, 0);
+  return lastDay >= weekStart && lastDay < weekEnd;
+}
+
 /**
  * Weekly visit progress ring — e.g. 2/5 when gym allows 5 days/week.
- * Unlimited: shows count with open ring (no cap).
+ * Amber = last visit left (normal weeks).
+ * Red = at/over weekly limit only in the last week of the month.
  */
 export default function VisitRing({
   visits = 0,
   limit = null,
   size = 88,
   stroke = 7,
+  weekStartsOn = 'monday',
   className = '',
 }) {
   const { t } = useTranslation();
@@ -21,19 +43,22 @@ export default function VisitRing({
   const atLimit = capped && safeVisits >= limit;
   const nearLimit = capped && !atLimit && safeVisits === limit - 1 && limit > 1;
   const empty = capped && safeVisits === 0;
+  const lastWeekOfMonth = isLastWeekOfMonth(new Date(), weekStartsOn);
+  const warnAmber = nearLimit || (atLimit && !lastWeekOfMonth);
+  const warnRed = atLimit && lastWeekOfMonth;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - progress);
 
   const track = empty ? 'var(--color-app-border)' : 'var(--color-app-border-subtle)';
-  const fill = atLimit
+  const fill = warnRed
     ? 'var(--color-status-expired)'
-    : nearLimit
+    : warnAmber
       ? 'var(--color-status-due-soon)'
       : 'var(--color-brand)';
-  const countClass = atLimit
+  const countClass = warnRed
     ? 'text-[color:var(--color-status-expired)]'
-    : nearLimit
+    : warnAmber
       ? 'text-[color:var(--color-status-due-soon)]'
       : empty
         ? 'text-app-muted'

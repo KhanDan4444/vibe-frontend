@@ -57,6 +57,7 @@ export default function CheckIn() {
   const [searchNonce, setSearchNonce] = useState(0);
   /** @type {Record<number, { code: string, message: string }>} */
   const [cardErrors, setCardErrors] = useState({});
+  const [ringMemberId, setRingMemberId] = useState(null);
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(query.trim()), 280);
@@ -106,9 +107,11 @@ export default function CheckIn() {
       setResults([]);
       setSearching(false);
       setCardErrors({});
+      setRingMemberId(null);
       return;
     }
     setCardErrors({});
+    setRingMemberId(null);
     let cancelled = false;
     (async () => {
       setSearching(true);
@@ -408,6 +411,7 @@ export default function CheckIn() {
                 const showCardError = Boolean(cardError) || alreadyToday;
                 const errorText = cardError?.message
                   || (alreadyToday ? t('pages.checkIn.alreadyToday') : '');
+                const ringOpen = ringMemberId === member.id;
                 return (
                   <div
                     key={member.id}
@@ -417,25 +421,57 @@ export default function CheckIn() {
                         : 'hover:ring-[color:var(--color-brand)]/35'
                     }`}
                   >
-                    <div className="relative shrink-0 pb-2 pr-2">
-                      <VisitRing
-                        visits={member.visits_this_week ?? 0}
-                        limit={member.visits_limit}
-                        size={88}
-                        stroke={7}
-                      />
-                      <div className="absolute bottom-0 right-0 rounded-full ring-2 ring-[color:var(--color-app-raised)]">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setRingMemberId((id) => (id === member.id ? null : member.id))
+                      }
+                      className="relative shrink-0 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--color-brand)]/40"
+                      aria-expanded={ringOpen}
+                      aria-label={
+                        ringOpen
+                          ? t('pages.checkIn.hideWeekRing', { name: member.name })
+                          : t('pages.checkIn.showWeekRing', { name: member.name })
+                      }
+                      title={
+                        ringOpen
+                          ? t('pages.checkIn.hideWeekRing', { name: member.name })
+                          : t('pages.checkIn.showWeekRing', { name: member.name })
+                      }
+                    >
+                      {ringOpen ? (
+                        <div className="relative pb-1 pr-1">
+                          <VisitRing
+                            visits={member.visits_this_week ?? 0}
+                            limit={member.visits_limit}
+                            size={88}
+                            stroke={7}
+                            weekStartsOn={settings?.week_starts_on || 'monday'}
+                          />
+                          <div className="pointer-events-none absolute bottom-0 right-0 rounded-full ring-2 ring-[color:var(--color-app-raised)]">
+                            <MemberPhoto
+                              memberId={member.id}
+                              apiFetch={apiFetch}
+                              name={member.name}
+                              hasPhoto={Boolean(member.photo_url)}
+                              expandable={false}
+                              className="h-7 w-7 rounded-full object-cover"
+                              fallbackClassName="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-app-border text-[11px] font-bold text-app-text"
+                            />
+                          </div>
+                        </div>
+                      ) : (
                         <MemberPhoto
                           memberId={member.id}
                           apiFetch={apiFetch}
                           name={member.name}
                           hasPhoto={Boolean(member.photo_url)}
                           expandable={false}
-                          className="h-7 w-7 rounded-full object-cover"
-                          fallbackClassName="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-app-border text-[11px] font-bold text-app-text"
+                          className="h-11 w-11 rounded-full object-cover"
+                          fallbackClassName="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text"
                         />
-                      </div>
-                    </div>
+                      )}
+                    </button>
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-display text-base font-semibold tracking-tight text-app-text-strong">
                         {member.name}
