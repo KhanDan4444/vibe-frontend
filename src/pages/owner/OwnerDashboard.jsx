@@ -3,7 +3,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Users, AlertTriangle, XCircle, TrendingUp, RefreshCw, UserPlus } from 'lucide-react';
+import { Users, AlertTriangle, XCircle, TrendingUp, RefreshCw, ClipboardCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import StatusBadge from '../../components/StatusBadge';
@@ -71,9 +71,8 @@ export default function OwnerDashboard() {
   const expiredMembersCount = summary.expiredMembers ?? 0;
   const totalMembersCount = summary.totalMembers ?? 0;
   const monthlyIncome = summary.monthlyIncome ?? 0;
-  const newMembersThisMonth = summary.newMembersThisMonth ?? 0;
+  const checkedInToday = summary.checkedInToday ?? 0;
   const revenueTrend = summary.revenueTrendPercent ?? null;
-  const newMembersTrend = summary.newMembersTrendPercent ?? null;
 
   const alertMembers = (summary.alertMembers || []).map((m) => mapMemberFromApi(m)).filter(Boolean);
 
@@ -152,14 +151,13 @@ export default function OwnerDashboard() {
               color="rose"
             />
             <MetricCard
-              className="lg:col-span-1"
+              className="lg:col-span-1 cursor-pointer"
               variant="dense"
-              label={t('pages.dashboard.newMembersThisMonth')}
-              value={newMembersThisMonth}
-              icon={UserPlus}
+              label={t('metrics.checkedInToday')}
+              value={checkedInToday}
+              icon={ClipboardCheck}
               color="amber"
-              trend={newMembersTrend}
-              trendCaption={t('pages.dashboard.lastMonthCount', { count: summary.newMembersLastMonth ?? 0 })}
+              onClick={() => navigate('/dashboard/check-in')}
             />
             <MetricCard
               className="lg:col-span-1"

@@ -21,6 +21,7 @@ import {
   MapPin,
   MessageSquare,
   CheckCircle2,
+  ClipboardCheck,
 } from 'lucide-react';
 import OfflineStatusBar from '../components/OfflineStatusBar';
 import UserProfileMenu from '../components/UserProfileMenu';
@@ -115,6 +116,7 @@ export default function OwnerLayout() {
     const items = [
       { nameKey: 'nav.dashboard', path: '/dashboard', icon: LayoutDashboard },
       { nameKey: 'nav.members', path: '/dashboard/members', icon: Users },
+      { nameKey: 'nav.checkIn', path: '/dashboard/check-in', icon: ClipboardCheck },
       { nameKey: 'nav.plans', path: '/dashboard/plans', icon: Dumbbell },
       { nameKey: 'nav.revenue', path: '/dashboard/revenue', icon: DollarSign },
       { nameKey: 'nav.reports', path: '/dashboard/reports', icon: FileBarChart },

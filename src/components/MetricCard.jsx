@@ -66,6 +66,7 @@ export default function MetricCard({
   trendCaption = 'vs last month',
   variant = 'default',
   className = '',
+  onClick,
 }) {
   const progressBarColor = PROGRESS_COLOR[color] || PROGRESS_COLOR.teal;
   const badgeClass = BADGE_COLOR[color] || BADGE_COLOR.teal;
@@ -78,8 +79,22 @@ export default function MetricCard({
   return (
     <Card
       quiet={!isHero}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick(e);
+              }
+            }
+          : undefined
+      }
       className={[
         isHero ? 'app-metric-hero p-5 sm:p-6' : isDense ? 'app-metric-dense p-3.5 sm:p-4' : 'app-card-lift p-4 sm:p-5',
+        onClick ? 'cursor-pointer' : '',
         className,
       ]
         .filter(Boolean)

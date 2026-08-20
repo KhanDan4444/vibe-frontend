@@ -5,6 +5,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "members": "Members",
+    "checkIn": "Check in",
     "plans": "Plans",
     "revenue": "Revenue",
     "reports": "Reports",
@@ -444,6 +445,9 @@
     "updateTrainer": "Failed to update trainer",
     "trainersUnavailable": "This gym server doesn’t support trainers yet. Update the API, then try again.",
     "loadMembers": "Failed to load members",
+    "loadCheckIns": "Failed to load today’s check-ins",
+    "searchMembers": "Failed to search members",
+    "checkInFailed": "Check-in failed",
     "loadMemberReport": "Failed to load member report",
     "loadRevenueReport": "Failed to load revenue report"
   },
@@ -578,6 +582,7 @@
     "totalMembers": "Total members",
     "dueSoon": "Due soon",
     "expired": "Expired",
+    "checkedInToday": "Checked in today",
     "unpaid": "Unpaid",
     "estimatedMrc": "Est. monthly revenue",
     "totalGyms": "Total gyms",
@@ -794,6 +799,33 @@
         "inactive": "Inactive only"
       },
       "createFirst": "Add branch"
+    },
+    "checkIn": {
+      "title": "Check in",
+      "subtitle": "Search a member and record today’s visit.",
+      "deskLabel": "Front desk",
+      "searchPlaceholder": "Search by name or phone…",
+      "searchEmptyTitle": "Find a member",
+      "searchEmptyBody": "Type a name or phone to check someone in. Their week ring shows visits used.",
+      "noMatchesTitle": "No members found",
+      "noMatchesBody": "Try another name or phone number.",
+      "checkInAction": "Check in",
+      "todayTitle": "Checked in today",
+      "todayCount": "today",
+      "todayEmpty": "No check-ins yet today.",
+      "visitRules": "Visit rules",
+      "visitRulesTitle": "Visits per week",
+      "visitRulesBody": "The ring on each member fills toward this weekly cap (for example 2 of 5).",
+      "capUnlimited": "Unlimited",
+      "capDays": "{{count}} days / week",
+      "capHint": "Weekly cap: {{count}} visits. The ring fills as they check in.",
+      "capHintUnlimited": "Unlimited visits this week — the ring tracks how many times they’ve come in.",
+      "forceTitle": "Over weekly limit?",
+      "forceMessage": "{{name}} is already at {{count}}/{{limit}} this week. Check in anyway?",
+      "forceConfirm": "Check in anyway",
+      "ringLabel": "This week",
+      "ringProgress": "{{count}} of {{limit}} visits",
+      "ringUnlimited": "{{count}} visits (unlimited)"
     },
     "team": {
       "title": "Staff",
@@ -1669,6 +1701,14 @@
     "trainerRestored": {
       "title": "Trainer restored",
       "subtitle": "{{name}} can be assigned again."
+    },
+    "checkedIn": {
+      "title": "Checked in",
+      "subtitle": "{{name}} — {{progress}} this week"
+    },
+    "attendanceSettingsSaved": {
+      "title": "Visit rules saved",
+      "subtitle": "Weekly caps apply to the check-in ring."
     },
     "gymUpdated": {
       "title": "Gym updated",

@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Status** | Phase 1 (Trainers) in implementation — check-in still later |
+| **Status** | Phase 2 (Desk check-in) in implementation — QR still later |
 | **Date** | 18 August 2026 |
 | **Product** | Vibe (API `vibe`, web `vibe-frontend`, mobile `vibe-mobile`) |
 | **Depends on** | Live memberships, Former/archive, Front Desk staff, SMS, branch scoping |

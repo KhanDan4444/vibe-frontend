@@ -20,6 +20,8 @@ import PaymentMethodBadge from './PaymentMethodBadge';
 import { formatFriendlyDate } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { getMemberPayments } from '../services/memberService';
+import { getMemberVisitSummary } from '../services/checkInService';
+import VisitRing from './VisitRing';
 import ConfirmDialog from './ConfirmDialog';
 import MemberModal from './MemberModal';
 import MemberPhoto from './MemberPhoto';
@@ -73,6 +75,7 @@ export default function MemberDetailDrawer({
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [paymentsError, setPaymentsError] = useState('');
   const [showAllPayments, setShowAllPayments] = useState(false);
+  const [visitSummary, setVisitSummary] = useState(null);
 
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
@@ -101,7 +104,25 @@ export default function MemberDetailDrawer({
 
   useEffect(() => {
     setShowAllPayments(false);
+    setVisitSummary(null);
   }, [member?.id]);
+
+  useEffect(() => {
+    if (!member?.id || !apiFetch || member.deletedAt) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await getMemberVisitSummary(apiFetch, member.id);
+        const data = await parseApiResponse(res);
+        if (!cancelled && res.ok) setVisitSummary(data);
+      } catch {
+        if (!cancelled) setVisitSummary(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [member?.id, member?.deletedAt, apiFetch]);
 
   const planLabel = useMemo(
     () =>
@@ -325,6 +346,30 @@ export default function MemberDetailDrawer({
           />
 
           <SlidePanelSection title={t('drawer.subscription')}>
+            {visitSummary && !isFormer ? (
+              <div className="mb-3 flex items-center gap-4 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3">
+                <VisitRing
+                  visits={visitSummary.visits_this_week ?? 0}
+                  limit={visitSummary.visits_limit}
+                  size={72}
+                />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-app-text-strong">
+                    {t('pages.checkIn.ringLabel')}
+                  </p>
+                  <p className="mt-0.5 text-xs text-app-muted">
+                    {visitSummary.visits_limit != null
+                      ? t('pages.checkIn.ringProgress', {
+                          count: visitSummary.visits_this_week,
+                          limit: visitSummary.visits_limit,
+                        })
+                      : t('pages.checkIn.ringUnlimited', {
+                          count: visitSummary.visits_this_week,
+                        })}
+                  </p>
+                </div>
+              </div>
+            ) : null}
             <SlidePanelCard>
               {member.branchName && (
                 <SlidePanelRow

@@ -16,6 +16,7 @@ const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
 const OwnerLayout = lazyWithRetry(() => import('./layouts/OwnerLayout'));
 const OwnerDashboard = lazyWithRetry(() => import('./pages/owner/OwnerDashboard'));
 const Members = lazyWithRetry(() => import('./pages/owner/Members'));
+const CheckIn = lazyWithRetry(() => import('./pages/owner/CheckIn'));
 const EnrollMember = lazyWithRetry(() => import('./pages/owner/EnrollMember'));
 const Plans = lazyWithRetry(() => import('./pages/owner/Plans'));
 const Revenue = lazyWithRetry(() => import('./pages/owner/Revenue'));
@@ -122,6 +123,7 @@ export default function App() {
               >
                 <Route index element={<OwnerDashboard />} />
                 <Route path="members" element={<Members />} />
+                <Route path="check-in" element={<CheckIn />} />
                 <Route path="members/enroll" element={<EnrollMember />} />
                 <Route path="plans" element={<Plans />} />
                 <Route path="revenue" element={<Revenue />} />

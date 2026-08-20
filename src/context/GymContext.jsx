@@ -21,6 +21,7 @@ const EMPTY_SUMMARY = {
   expiredMembers: 0,
   dueSoonMembers: 0,
   unpaidCount: 0,
+  checkedInToday: 0,
   monthlyIncome: 0,
   previousMonthIncome: 0,
   revenueTrendPercent: null,
