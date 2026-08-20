@@ -21,3 +21,8 @@ export function ToolbarChipBar({ children, className = '' }) {
     </div>
   );
 }
+
+/** Joined Staff | Trainers control — soft selected pill, slight gap. */
+export function TeamSegment({ children }) {
+  return <div className="team-segment" role="tablist">{children}</div>;
+}
