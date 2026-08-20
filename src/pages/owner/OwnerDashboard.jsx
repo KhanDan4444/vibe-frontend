@@ -237,7 +237,7 @@ export default function OwnerDashboard() {
                               hasPhoto={member.hasPhoto}
                               expandable={false}
                               className="h-9 w-9 rounded-full object-cover"
-                              fallbackClassName="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
+                              fallbackClassName="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text"
                             />
                             <div className="min-w-0">
                               <span className="block truncate font-semibold text-app-text-strong">{member.name}</span>
@@ -302,7 +302,7 @@ export default function OwnerDashboard() {
                                   hasPhoto={member.hasPhoto}
                                   expandable={false}
                                   className="h-8 w-8 rounded-full object-cover"
-                                  fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-700 text-xs font-bold text-white dark:bg-teal-600"
+                                  fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text"
                                 />
                                 <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
                               </div>

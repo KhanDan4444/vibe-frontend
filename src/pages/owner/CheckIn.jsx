@@ -366,7 +366,7 @@ export default function CheckIn() {
                       size={100}
                       stroke={8}
                     />
-                    <div className="min-w-0 flex-1 space-y-3">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-start gap-3">
                         <MemberPhoto
                           memberId={member.id}
@@ -374,7 +374,7 @@ export default function CheckIn() {
                           name={member.name}
                           hasPhoto={Boolean(member.photo_url)}
                           className="h-11 w-11 rounded-xl object-cover"
-                          fallbackClassName="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-700 text-sm font-bold text-white dark:bg-teal-600"
+                          fallbackClassName="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
                         />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-display text-lg font-semibold tracking-tight text-app-text-strong">
@@ -396,9 +396,9 @@ export default function CheckIn() {
                         type="button"
                         disabled={readOnly || busy}
                         onClick={() => void runCheckIn(member)}
-                        className={`${renewActionBtn} w-full justify-center py-2.5 text-sm`}
+                        className={`${renewActionBtn} mt-3`}
                       >
-                        <CheckCircle2 className="h-4 w-4" />
+                        <CheckCircle2 className="h-3.5 w-3.5" />
                         {busy ? t('common.processing') : t('pages.checkIn.checkInAction')}
                       </button>
                     </div>
@@ -444,7 +444,7 @@ export default function CheckIn() {
                   name={row.member_name}
                   hasPhoto={Boolean(row.member_photo_url)}
                   className="h-10 w-10 rounded-xl object-cover"
-                  fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-700 text-sm font-bold text-white dark:bg-teal-600"
+                  fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium text-app-text-strong">{row.member_name}</p>

@@ -50,7 +50,7 @@ const MEMBER_FILTER_STORAGE_KEY = 'vibe.members.statusFilter';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 const LIST_AVATAR_CLASS = 'h-10 w-10 rounded-full object-cover';
 const LIST_AVATAR_FALLBACK_CLASS =
-  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-700 text-sm font-bold text-white dark:bg-teal-600 dark:text-white';
+  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text';
 
 function statusFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };

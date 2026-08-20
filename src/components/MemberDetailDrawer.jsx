@@ -334,7 +334,7 @@ export default function MemberDetailDrawer({
                 name={member.name}
                 hasPhoto={member.hasPhoto}
                 className="h-16 w-16 rounded-2xl object-cover"
-                fallbackClassName="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-teal-700 text-2xl font-bold text-white dark:bg-teal-600 dark:text-white"
+                fallbackClassName="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-app-border text-2xl font-bold text-app-text"
               />
             }
             lines={

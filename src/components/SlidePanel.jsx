@@ -83,7 +83,7 @@ export function SlidePanelProfileHeader({ name, lines = [], badge, avatar }) {
   return (
     <div className="flex items-start gap-4">
       {avatar || (
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-teal-700 text-2xl font-bold text-white dark:bg-teal-600">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-app-border text-2xl font-bold text-app-text">
           {initial}
         </div>
       )}
