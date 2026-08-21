@@ -356,15 +356,22 @@ export default function CheckIn() {
         </Card>
       ) : null}
 
-      {/* Desk hero: tall enough to breathe; large today count top-right */}
+      {/* Desk hero: teal wash reads in light; glow orb stronger than flat white */}
       <div
-        className={`relative overflow-hidden ${cardSurface}`}
+        className={`relative overflow-hidden ${cardSurface} !bg-transparent`}
         style={{
           background:
-            'linear-gradient(160deg, color-mix(in srgb, var(--color-brand) 8%, var(--color-app-surface)) 0%, var(--color-app-surface) 55%, var(--color-app-surface) 100%)',
+            'linear-gradient(155deg, color-mix(in srgb, var(--color-brand) 16%, var(--color-app-raised)) 0%, color-mix(in srgb, var(--color-brand) 5%, var(--color-app-raised)) 42%, var(--color-app-raised) 100%)',
         }}
       >
-        <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[color:var(--color-brand)] opacity-[0.05] blur-3xl" />
+        <div
+          className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full bg-[color:var(--color-brand)] opacity-[0.16] blur-3xl dark:opacity-[0.22]"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -left-10 bottom-0 h-36 w-36 rounded-full bg-[color:var(--color-brand)] opacity-[0.07] blur-3xl dark:opacity-[0.12]"
+          aria-hidden
+        />
         <div className="relative space-y-5 p-5 sm:space-y-6 sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0 flex flex-wrap items-center gap-2.5">
