@@ -815,7 +815,7 @@
       "checkInAction": "Check in",
       "blockedExpired": "Renew to check in",
       "alreadyToday": "Already checked in today",
-      "alreadyTodayShort": "Checked in",
+      "alreadyTodayShort": "Already checked in",
       "weeklyLimitReached": "Weekly visit limit reached",
       "weeklyLimitShort": "Limit reached",
       "todayTitle": "Checked in today",

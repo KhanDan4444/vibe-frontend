@@ -499,7 +499,7 @@ export default function CheckIn() {
                         </p>
                       ) : null}
                     </div>
-                    <div className="w-[6.75rem] shrink-0 self-center text-right">
+                    <div className="w-[7.5rem] shrink-0 self-center text-right">
                       {checkInBlocked ? (
                         <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
                           {t('pages.checkIn.blockedExpired')}
