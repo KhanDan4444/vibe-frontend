@@ -812,6 +812,8 @@
       "todayCount": "har'a",
       "todayMembers_one": "miseensa har'a",
       "todayMembers_other": "miseensota har'a",
+      "todayMembersShort_one": "miseensa",
+      "todayMembersShort_other": "miseensota",
       "checkedInBy": "Kan {{name}}n galchame",
       "todayEmpty": "Daawwannaa jalqabaa galmeessuuf miseensa olitti barbaadi.",
       "todayEmptyTitle": "Galchuu jalqabaa eegaa jira",

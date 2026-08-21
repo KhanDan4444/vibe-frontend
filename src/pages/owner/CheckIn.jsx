@@ -387,14 +387,17 @@ export default function CheckIn() {
                 </button>
               ) : null}
             </div>
-            <div className="shrink-0 text-right tabular-nums">
-              <p className="font-display text-5xl font-semibold tracking-tight text-app-text-strong sm:text-6xl">
+            <div className="grid shrink-0 grid-cols-[auto_auto] grid-rows-[auto_auto] items-center gap-x-2.5 tabular-nums">
+              <p className="font-display text-5xl font-semibold leading-none tracking-tight text-app-text-strong sm:text-6xl">
                 {todayLoading ? '—' : today.total}
               </p>
-              <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-app-muted">
+              <p className="self-center whitespace-nowrap text-[11px] font-semibold uppercase tracking-wide text-app-muted">
                 {todayLoading
-                  ? t('pages.checkIn.todayCount')
-                  : t('pages.checkIn.todayMembers', { count: today.total })}
+                  ? '—'
+                  : t('pages.checkIn.todayMembersShort', { count: today.total })}
+              </p>
+              <p className="col-start-1 mt-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-app-muted">
+                {t('pages.checkIn.todayCount')}
               </p>
             </div>
           </div>

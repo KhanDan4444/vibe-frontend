@@ -1184,6 +1184,8 @@
       "todayCount": "ዛሬ",
       "todayMembers_one": "አባል ዛሬ",
       "todayMembers_other": "አባላት ዛሬ",
+      "todayMembersShort_one": "አባል",
+      "todayMembersShort_other": "አባላት",
       "checkedInBy": "በ{{name}} ገብተዋል",
       "todayEmpty": "የመጀመሪያ ጉብኝት ለመመዝገብ ከላይ አባል ይፈልጉ።",
       "todayEmptyTitle": "የመጀመሪያ መግቢያ በመጠባበቅ ላይ",
