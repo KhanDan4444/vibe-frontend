@@ -356,7 +356,7 @@ export default function CheckIn() {
         </Card>
       ) : null}
 
-      {/* Desk hero: search primary, count beside it */}
+      {/* Desk hero: tall enough to breathe; large today count top-right */}
       <div
         className={`relative overflow-hidden ${cardSurface}`}
         style={{
@@ -365,46 +365,46 @@ export default function CheckIn() {
         }}
       >
         <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[color:var(--color-brand)] opacity-[0.05] blur-3xl" />
-        <div className="relative space-y-3 p-3.5 sm:space-y-3.5 sm:p-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted">
-              {t('pages.checkIn.deskLabel')}
-            </p>
-            {capChipLabel ? (
-              <button
-                type="button"
-                disabled={!owner || !canManage || readOnly}
-                onClick={() => owner && canManage && setSettingsOpen(true)}
-                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition-colors ${
-                  owner && canManage
-                    ? 'border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)] hover:border-[color:var(--color-brand)]/45'
-                    : 'border-app-border-subtle bg-app-raised text-app-muted'
-                }`}
-                title={owner && canManage ? t('pages.checkIn.visitRules') : undefined}
-              >
-                {capChipLabel}
-              </button>
-            ) : null}
-          </div>
-
-          <div className="flex items-center gap-4 sm:gap-6">
-            <SearchField
-              value={query}
-              onChange={setQuery}
-              placeholder={t('pages.checkIn.searchPlaceholder')}
-              className="w-full max-w-md sm:max-w-lg"
-            />
-            <div className="ml-auto shrink-0 text-right tabular-nums">
-              <p className="font-display text-3xl font-semibold tracking-tight text-app-text-strong sm:text-4xl">
+        <div className="relative space-y-5 p-5 sm:space-y-6 sm:p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 flex flex-wrap items-center gap-2 pt-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted">
+                {t('pages.checkIn.deskLabel')}
+              </p>
+              {capChipLabel ? (
+                <button
+                  type="button"
+                  disabled={!owner || !canManage || readOnly}
+                  onClick={() => owner && canManage && setSettingsOpen(true)}
+                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition-colors ${
+                    owner && canManage
+                      ? 'border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)] hover:border-[color:var(--color-brand)]/45'
+                      : 'border-app-border-subtle bg-app-raised text-app-muted'
+                  }`}
+                  title={owner && canManage ? t('pages.checkIn.visitRules') : undefined}
+                >
+                  {capChipLabel}
+                </button>
+              ) : null}
+            </div>
+            <div className="shrink-0 text-right tabular-nums">
+              <p className="font-display text-5xl font-semibold tracking-tight text-app-text-strong sm:text-6xl">
                 {todayLoading ? '—' : today.total}
               </p>
-              <p className="mt-0.5 max-w-[5.5rem] text-[10px] font-semibold uppercase leading-tight tracking-wide text-app-muted">
+              <p className="mt-0.5 text-xs font-semibold uppercase tracking-wide text-app-muted">
                 {todayLoading
                   ? t('pages.checkIn.todayCount')
                   : t('pages.checkIn.todayMembers', { count: today.total })}
               </p>
             </div>
           </div>
+
+          <SearchField
+            value={query}
+            onChange={setQuery}
+            placeholder={t('pages.checkIn.searchPlaceholder')}
+            className="w-full max-w-md sm:max-w-lg"
+          />
         </div>
       </div>
 
