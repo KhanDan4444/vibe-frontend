@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageSquare, Printer, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
+import MemberPhoto from './MemberPhoto';
 import Button from './ui/Button';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 import { modalTitle, mutedText } from '../utils/surfaceClasses';
@@ -152,6 +153,11 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   if (!open || !member) return null;
 
   const busy = loading || regenerating || printing || smsSending;
+  const phone = member.phone || pass?.member?.phone || null;
+  const hasPhoto = Boolean(
+    member.hasPhoto || pass?.member?.photo_data_url || pass?.member?.photo_url
+  );
+  const photoDataUrl = pass?.member?.photo_data_url || null;
 
   return (
     <>
@@ -186,26 +192,51 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-col items-center rounded-2xl border border-app-border-subtle bg-app-bg/60 px-4 py-6">
+          <div className="mt-5 flex flex-col items-center rounded-2xl border border-app-border-subtle bg-app-bg/60 px-5 py-6">
+            {pass?.gym_name ? (
+              <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
+                {pass.gym_name}
+              </p>
+            ) : null}
+
             {loading ? (
-              <div className="h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
+              <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
+            ) : photoDataUrl ? (
+              <img
+                src={photoDataUrl}
+                alt=""
+                className="h-14 w-14 rounded-2xl object-cover ring-1 ring-black/10"
+              />
+            ) : (
+              <MemberPhoto
+                memberId={member.id}
+                apiFetch={apiFetch}
+                name={member.name}
+                hasPhoto={hasPhoto}
+                expandable={false}
+                className="h-14 w-14 rounded-2xl object-cover"
+                fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-app-border text-lg font-bold text-app-text"
+              />
+            )}
+
+            {loading ? (
+              <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
             ) : pass?.qr_data_url ? (
               <img
                 src={pass.qr_data_url}
                 alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
-                className="h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
               />
             ) : (
-              <div className="flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+              <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
                 —
               </div>
             )}
+
             <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
               {member.name}
             </p>
-            {member.phone ? (
-              <p className="mt-0.5 font-mono text-xs text-app-muted">{member.phone}</p>
-            ) : null}
+            {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
             {pass?.pass_version != null ? (
               <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-app-muted">
                 {t('pages.checkIn.passVersion', { version: pass.pass_version })}
@@ -213,45 +244,48 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             ) : null}
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div className="mt-4 grid grid-cols-2 gap-2">
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
+              size="sm"
               disabled={busy || !pass?.qr_data_url}
+              loading={printing}
               onClick={() => void handlePrint()}
               className="w-full"
             >
-              <Printer className="h-4 w-4" />
-              {printing ? t('common.processing') : t('pages.checkIn.printPass')}
+              {!printing ? <Printer className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {t('pages.checkIn.printPass')}
             </Button>
             <Button
               type="button"
-              variant="secondary"
-              disabled={busy || !member.phone}
+              variant="outline"
+              size="sm"
+              disabled={busy || !phone}
+              loading={smsSending}
               onClick={() => void handleSms()}
               className="w-full"
-              title={!member.phone ? t('errors.memberPassNoPhone') : undefined}
+              title={!phone ? t('errors.memberPassNoPhone') : undefined}
             >
-              <MessageSquare className="h-4 w-4" />
-              {smsSending ? t('common.processing') : t('pages.checkIn.smsPass')}
+              {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {t('pages.checkIn.smsPass')}
             </Button>
           </div>
         </div>
-        <div className={modalFooter}>
-          <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
+        <div className={`${modalFooter} !justify-between`}>
+          <Button type="button" variant="secondary" size="sm" onClick={onClose} className="w-full sm:w-auto">
             {t('common.close')}
           </Button>
           {owner ? (
-            <Button
+            <button
               type="button"
-              variant="ghost"
               disabled={busy}
               onClick={() => setConfirmRegen(true)}
-              className="w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-medium text-app-muted transition-colors hover:text-app-text disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${regenerating ? 'animate-spin' : ''}`} aria-hidden />
               {t('pages.checkIn.regeneratePass')}
-            </Button>
+            </button>
           ) : null}
         </div>
       </ResponsiveModal>

@@ -216,9 +216,9 @@ export function SlidePanelFooter({ alerts = [], children }) {
 }
 
 /** Horizontal wrap / grid for secondary panel actions. */
-export function SlidePanelActionGrid({ children, columns = 2 }) {
+export function SlidePanelActionGrid({ children, columns = 2, className = '' }) {
   const cols = columns === 1 ? 'grid-cols-1' : columns === 3 ? 'grid-cols-3' : 'grid-cols-2';
-  return <div className={`grid ${cols} gap-2.5`}>{children}</div>;
+  return <div className={`grid ${cols} gap-2.5 ${className}`.trim()}>{children}</div>;
 }
 
 /**
@@ -264,7 +264,7 @@ export function SlidePanelActionButton({
       <button
         type="button"
         onClick={onClick}
-        className={`flex w-full min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-[15px] font-semibold text-white transition hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
+        className={`flex w-full min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#0f766e] px-4 py-2.5 text-[15px] font-semibold text-white transition hover:bg-[#0d9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 focus-visible:ring-offset-2 dark:bg-teal-600 dark:hover:bg-teal-500 dark:focus-visible:ring-offset-app-surface disabled:opacity-50 ${className}`}
         {...props}
       >
         {Icon && <Icon className="h-4 w-4 shrink-0 opacity-90" aria-hidden />}

@@ -854,7 +854,7 @@
       "regeneratePassConfirm": "QR haaromsii",
       "showPass": "QR agarsiisi",
       "printPass": "Paasii maxxansi",
-      "smsPass": "SMS ergi"
+      "smsPass": "Liinkii paasii deebisii ergi"
     },
     "team": {
       "title": "Hojjettoota",
@@ -1748,8 +1748,8 @@
       "subtitle": "PDF {{name}} buufameera."
     },
     "memberPassSmsSent": {
-      "title": "Liinkin paasii ergameera",
-      "subtitle": "SMS gara {{name}} ({{phone}}) ergameera."
+      "title": "Liinkin paasii deebi'ee ergameera",
+      "subtitle": "SMS gara {{name}} ({{phone}}) deebi'ee ergameera."
     }
   },
   "publicPass": {

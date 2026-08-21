@@ -1225,7 +1225,7 @@
       "regeneratePassConfirm": "QR እንደገና ፍጠር",
       "showPass": "QR አሳይ",
       "printPass": "ፓስ አትም",
-      "smsPass": "በSMS ላክ"
+      "smsPass": "የፓስ አገናኝ እንደገና ላክ"
     },
     "team": {
       "title": "ሰራተኞች",
@@ -1736,8 +1736,8 @@
       "subtitle": "የ{{name}} PDF ወርዷል።"
     },
     "memberPassSmsSent": {
-      "title": "የፓስ አገናኝ ተልኳል",
-      "subtitle": "SMS ወደ {{name}} ({{phone}}) ተልኳል።"
+      "title": "የፓስ አገናኝ እንደገና ተልኳል",
+      "subtitle": "SMS ወደ {{name}} ({{phone}}) እንደገና ተልኳል።"
     }
   },
   "publicPass": {

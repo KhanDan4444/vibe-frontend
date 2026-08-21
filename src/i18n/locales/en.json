@@ -869,7 +869,7 @@
       "regeneratePassConfirm": "Regenerate QR",
       "showPass": "Show QR",
       "printPass": "Print pass",
-      "smsPass": "Send SMS link"
+      "smsPass": "Resend pass link"
     },
     "team": {
       "title": "Staff",
@@ -1764,8 +1764,8 @@
       "subtitle": "PDF downloaded for {{name}}."
     },
     "memberPassSmsSent": {
-      "title": "Pass link sent",
-      "subtitle": "SMS sent to {{name}} ({{phone}})."
+      "title": "Pass link resent",
+      "subtitle": "SMS resent to {{name}} ({{phone}})."
     },
     "gymUpdated": {
       "title": "Gym updated",

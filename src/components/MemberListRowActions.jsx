@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Edit, Trash2, RefreshCw, Undo2, DollarSign } from 'lucide-react';
+import { Layers, Edit, Trash2, RefreshCw, Undo2, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DISPLAY_STATUS } from '../utils/memberStatus';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
@@ -49,7 +49,7 @@ export default function MemberListRowActions({
     secondaryItems.push({
       key: 'change-plan',
       label: t('actions.changePlan'),
-      icon: <ArrowLeftRight className="h-4 w-4 shrink-0" />,
+      icon: <Layers className="h-4 w-4 shrink-0" />,
       onClick: () => onChangePlan(member),
     });
   }

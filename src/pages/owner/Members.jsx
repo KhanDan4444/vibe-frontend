@@ -153,7 +153,8 @@ export default function Members() {
   const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
   const showBranchColumn =
     isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
-  const showTransfer = isGymOwner(user?.role) && (!readOnly || branchReadOnly);
+  const showTransfer =
+    isGymOwner(user?.role) && activeBranchCount > 1 && (!readOnly || branchReadOnly);
   const canDeleteMembers = isGymOwner(user?.role);
   const canRestoreMembers = canDeleteMembers && !readOnly;
   const showBranchPicker = isGymOwner(user?.role) && activeBranchCount > 1;

@@ -7,8 +7,8 @@ import {
   Trash2,
   CircleDollarSign,
   RefreshCw,
-  ArrowRightLeft,
-  ArrowLeftRight,
+  GitBranch,
+  Layers,
   Undo2,
   QrCode,
 } from 'lucide-react';
@@ -166,11 +166,58 @@ export default function MemberDetailDrawer({
   const canShowPass = !isFormer && (isGymOwner(user?.role) || isGymStaff(user?.role));
   const canShowChangePlan = !readOnly && !isFormer && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
   const canShowTransfer = showTransfer && onTransfer && !isFormer;
-  const hasSecondaryActions = canShowChangePlan || (!readOnly && canShowTransfer);
   const hasPrimaryLifecycle =
     !readOnly &&
     !isFormer &&
     ((canCollectMissedPayment && onRecordPayment) || (canRenewMember(member) && onRenew));
+
+  const utilityTiles = [];
+  if (!readOnly && !isFormer) {
+    if (canShowChangePlan) {
+      utilityTiles.push({
+        key: 'change-plan',
+        label: t('actions.changePlan'),
+        icon: Layers,
+        onClick: () => onChangePlan(member),
+      });
+    }
+    if (canShowTransfer) {
+      utilityTiles.push({
+        key: 'transfer',
+        label: t('drawer.transferBranch'),
+        icon: GitBranch,
+        onClick: () => onTransfer(member),
+      });
+    }
+    utilityTiles.push({
+      key: 'edit',
+      label: t('drawer.editContact'),
+      icon: Pencil,
+      onClick: () => {
+        setError('');
+        setIsEditOpen(true);
+      },
+    });
+    if (canDelete) {
+      utilityTiles.push({
+        key: 'remove',
+        label: t('drawer.deleteMember'),
+        icon: Trash2,
+        danger: true,
+        onClick: () => setIsDeleteOpen(true),
+      });
+    }
+  }
+
+  /**
+   * Premium footer rows under Renew/Collect:
+   * - 1–3 tiles → one equal row
+   * - 4 tiles (change + transfer + edit + remove) → 2+2
+   */
+  const utilityRows =
+    utilityTiles.length <= 3
+      ? [utilityTiles]
+      : [utilityTiles.slice(0, 2), utilityTiles.slice(2)];
 
   const handleEditSubmit = async (data) => {
     setSaving(true);
@@ -235,7 +282,7 @@ export default function MemberDetailDrawer({
             ) : footerAlerts.length > 0 ? (
               <SlidePanelFooter alerts={footerAlerts} />
             ) : null
-          ) : !readOnly || showTransfer ? (
+          ) : !readOnly || canShowTransfer ? (
           <SlidePanelFooter alerts={footerAlerts}>
             {!readOnly && (
               <div className="space-y-2.5">
@@ -257,71 +304,47 @@ export default function MemberDetailDrawer({
                   </SlidePanelActionButton>
                 ) : null}
 
-                {hasSecondaryActions && (
-                  <SlidePanelActionGrid columns={2}>
-                    {canShowChangePlan && (
-                      <SlidePanelActionButton
-                        variant="tile"
-                        icon={ArrowLeftRight}
-                        className={!canShowTransfer ? 'col-span-2' : ''}
-                        onClick={() => onChangePlan(member)}
-                      >
-                        {t('actions.changePlan')}
-                      </SlidePanelActionButton>
-                    )}
-                    {canShowTransfer && (
-                      <SlidePanelActionButton
-                        variant="tile"
-                        icon={ArrowRightLeft}
-                        className={!canShowChangePlan ? 'col-span-2' : ''}
-                        onClick={() => onTransfer(member)}
-                      >
-                        {t('drawer.transferBranch')}
-                      </SlidePanelActionButton>
-                    )}
-                  </SlidePanelActionGrid>
+                {utilityRows.map((row, rowIndex) =>
+                  row.length > 0 ? (
+                    <SlidePanelActionGrid
+                      key={`utility-row-${rowIndex}`}
+                      columns={row.length}
+                      className={
+                        hasPrimaryLifecycle && rowIndex === 0
+                          ? 'border-t border-app-border-subtle pt-2.5'
+                          : ''
+                      }
+                    >
+                      {row.map((action) => (
+                        <SlidePanelActionButton
+                          key={action.key}
+                          variant="tile"
+                          icon={action.icon}
+                          className={
+                            action.danger
+                              ? 'border-[color:var(--color-status-expired)]/25 text-[color:var(--color-status-expired)] hover:border-[color:var(--color-status-expired)]/45 hover:bg-[color:var(--color-status-expired)]/[0.06] hover:text-[color:var(--color-status-expired)] dark:hover:text-rose-300'
+                              : ''
+                          }
+                          onClick={action.onClick}
+                        >
+                          {action.label}
+                        </SlidePanelActionButton>
+                      ))}
+                    </SlidePanelActionGrid>
+                  ) : null
                 )}
               </div>
             )}
-            {readOnly && canShowTransfer && (
+            {readOnly && canShowTransfer ? (
               <SlidePanelActionButton
                 variant="tile"
-                icon={ArrowRightLeft}
+                icon={GitBranch}
                 className="w-full"
                 onClick={() => onTransfer(member)}
               >
                 {t('drawer.transferBranch')}
               </SlidePanelActionButton>
-            )}
-            {!readOnly && (
-              <div
-                className={`flex items-center justify-between gap-2 ${
-                  hasPrimaryLifecycle || hasSecondaryActions
-                    ? 'border-t border-app-border-subtle pt-2.5'
-                    : ''
-                }`}
-              >
-                <SlidePanelActionButton
-                  variant="secondary"
-                  icon={Pencil}
-                  onClick={() => {
-                    setError('');
-                    setIsEditOpen(true);
-                  }}
-                >
-                  {t('drawer.editContact')}
-                </SlidePanelActionButton>
-                {canDelete && (
-                  <SlidePanelActionButton
-                    variant="danger"
-                    icon={Trash2}
-                    onClick={() => setIsDeleteOpen(true)}
-                  >
-                    {t('drawer.deleteMember')}
-                  </SlidePanelActionButton>
-                )}
-              </div>
-            )}
+            ) : null}
           </SlidePanelFooter>
           ) : footerAlerts.length > 0 ? (
             <SlidePanelFooter alerts={footerAlerts} />
@@ -356,53 +379,45 @@ export default function MemberDetailDrawer({
           />
 
           <SlidePanelSection title={t('drawer.subscription')}>
-            {visitSummary && !isFormer ? (
-              <div className="mb-3 flex items-center gap-4 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3">
-                <VisitRing
-                  visits={visitSummary.visits_this_week ?? 0}
-                  limit={visitSummary.visits_limit}
-                  size={72}
-                  weekStartsOn={visitSummary.week_starts_on || 'monday'}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-app-text-strong">
-                    {t('pages.checkIn.ringLabel')}
-                  </p>
-                  <p className="mt-0.5 text-xs text-app-muted">
-                    {visitSummary.visits_limit != null
-                      ? t('pages.checkIn.ringProgress', {
-                          count: visitSummary.visits_this_week,
-                          limit: visitSummary.visits_limit,
-                        })
-                      : t('pages.checkIn.ringUnlimited', {
-                          count: visitSummary.visits_this_week,
-                        })}
-                  </p>
-                </div>
+            {!isFormer ? (
+              <div className="mb-3 space-y-2.5">
+                {visitSummary ? (
+                  <div className="flex items-center gap-4 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
+                    <VisitRing
+                      visits={visitSummary.visits_this_week ?? 0}
+                      limit={visitSummary.visits_limit}
+                      size={72}
+                      weekStartsOn={visitSummary.week_starts_on || 'monday'}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                        {t('pages.checkIn.ringLabel')}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-app-muted">
+                        {visitSummary.visits_limit != null
+                          ? t('pages.checkIn.ringProgress', {
+                              count: visitSummary.visits_this_week,
+                              limit: visitSummary.visits_limit,
+                            })
+                          : t('pages.checkIn.ringUnlimited', {
+                              count: visitSummary.visits_this_week,
+                            })}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
                 {canShowPass ? (
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="outline"
                     size="sm"
-                    className="shrink-0"
+                    className="w-full"
                     onClick={() => setIsPassOpen(true)}
                   >
-                    <QrCode className="h-3.5 w-3.5" />
+                    <QrCode className="h-3.5 w-3.5 shrink-0" aria-hidden />
                     {t('drawer.showPass')}
                   </Button>
                 ) : null}
-              </div>
-            ) : canShowPass ? (
-              <div className="mb-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setIsPassOpen(true)}
-                >
-                  <QrCode className="h-3.5 w-3.5" />
-                  {t('drawer.showPass')}
-                </Button>
               </div>
             ) : null}
             <SlidePanelCard>

@@ -14,12 +14,15 @@ export function formatPlanDisplayName(name) {
     if (head && tag) return `${head} · ${tag}`;
   }
 
-  // Spaced dash/en-dash/em-dash only — avoids breaking hyphenated single tokens.
-  const dash = raw.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+  // Spaced or tight dash/en-dash/em-dash — "Monthly - Gym", "Monthly–Gym"
+  const dash = raw.match(/^(.+?)\s*[-–—]\s*(.+)$/);
   if (dash) {
     const head = dash[1].trim();
     const tag = dash[2].trim();
-    if (head && tag) return `${head} · ${tag}`;
+    // Only rewrite short tags (Gym, Pool, …) so "Non-member offer" stays intact
+    if (head && tag && tag.length <= 24 && !/\s{2,}/.test(tag)) {
+      return `${head} · ${tag}`;
+    }
   }
 
   return raw;
