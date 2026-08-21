@@ -366,9 +366,9 @@ export default function CheckIn() {
       >
         <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[color:var(--color-brand)] opacity-[0.05] blur-3xl" />
         <div className="relative space-y-5 p-5 sm:space-y-6 sm:p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0 flex flex-wrap items-center gap-2 pt-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0 flex flex-wrap items-center gap-2.5">
+              <p className="font-display text-xl font-semibold tracking-tight text-app-text-strong sm:text-2xl">
                 {t('pages.checkIn.deskLabel')}
               </p>
               {capChipLabel ? (
@@ -376,7 +376,7 @@ export default function CheckIn() {
                   type="button"
                   disabled={!owner || !canManage || readOnly}
                   onClick={() => owner && canManage && setSettingsOpen(true)}
-                  className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition-colors ${
+                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tabular-nums transition-colors ${
                     owner && canManage
                       ? 'border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)] hover:border-[color:var(--color-brand)]/45'
                       : 'border-app-border-subtle bg-app-raised text-app-muted'
