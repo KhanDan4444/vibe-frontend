@@ -1185,7 +1185,9 @@
       "todayMembers_one": "አባል ዛሬ",
       "todayMembers_other": "አባላት ዛሬ",
       "checkedInBy": "በ{{name}} ገብተዋል",
-      "todayEmpty": "እስካሁን መግቢያ የለም።",
+      "todayEmpty": "የመጀመሪያ ጉብኝት ለመመዝገብ ከላይ አባል ይፈልጉ።",
+      "todayEmptyTitle": "የመጀመሪያ መግቢያ በመጠባበቅ ላይ",
+      "todayEmptyHint": "ሰዎች ሲመጡ ጉብኝቶች እዚህ ይታያሉ።",
       "visitRules": "የጉብኝት ህጎች",
       "visitRulesTitle": "በሳምንት ጉብኝቶች",
       "visitRulesBody": "ቀለበቱ ወደ ሳምንታዊ ገደቡ ይሞላል።",
@@ -1203,7 +1205,6 @@
       "capChipUnlimited": "ያልተገደበ",
       "capChipDays": "{{count}} ቀን / ሳምንት",
       "heroHint": "አባል ፈልገው ይመዝግቡ። ቀለበቱ የሳምንቱን ጉብኝቶች ያሳያል።",
-      "todayEmptyTitle": "ዛሬ ማንም የለም",
       "showMore": "ተጨማሪ አሳይ",
       "showingOf": "{{shown}} ከ {{total}}"
     },

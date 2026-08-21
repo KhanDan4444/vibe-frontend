@@ -813,7 +813,9 @@
       "todayMembers_one": "miseensa har'a",
       "todayMembers_other": "miseensota har'a",
       "checkedInBy": "Kan {{name}}n galchame",
-      "todayEmpty": "Ammatti galchiin hin jiru.",
+      "todayEmpty": "Daawwannaa jalqabaa galmeessuuf miseensa olitti barbaadi.",
+      "todayEmptyTitle": "Galchuu jalqabaa eegaa jira",
+      "todayEmptyHint": "Namoonni yeroo dhufan daawwanni asitti mul'ata.",
       "visitRules": "Seera daawwannaa",
       "visitRulesTitle": "Daawwannaa torbee",
       "visitRulesBody": "Ringiin gara daangaa torbee guutuu dha.",
@@ -831,7 +833,6 @@
       "capChipUnlimited": "Daangaa malee",
       "capChipDays": "Guyyaa {{count}} / torbee",
       "heroHint": "Miseensa barbaadii galchi. Ringiin daawwannaa torbee agarsiisa.",
-      "todayEmptyTitle": "Har'a namni hin jiru",
       "showMore": "Dabalataan agarsiisi",
       "showingOf": "{{shown}} keessaa {{total}}"
     },

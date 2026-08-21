@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search, CheckCircle2, Settings2, UserRound } from 'lucide-react';
+import { CheckCircle2, Settings2, UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -542,13 +542,34 @@ export default function CheckIn() {
             ))}
           </div>
         ) : today.checkIns.length === 0 ? (
-          <EmptyState
-            tone="muted"
-            compact
-            icon={Search}
-            title={t('pages.checkIn.todayEmptyTitle')}
-            body={t('pages.checkIn.todayEmpty')}
-          />
+          <div className="px-3 py-4 sm:px-4 sm:py-5">
+            <div className="mb-4 text-center sm:mb-5">
+              <p className="font-display text-sm font-semibold tracking-tight text-app-text">
+                {t('pages.checkIn.todayEmptyTitle')}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-app-muted">
+                {t('pages.checkIn.todayEmpty')}
+              </p>
+            </div>
+            <ul className="pointer-events-none space-y-1 opacity-[0.35]" aria-hidden>
+              {[0, 1, 2].map((i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+                >
+                  <span className="h-10 w-10 shrink-0 rounded-full bg-app-border" />
+                  <span className="min-w-0 flex-1 space-y-2">
+                    <span className="block h-3 w-[42%] rounded-full bg-app-border" />
+                    <span className="block h-2.5 w-[28%] rounded-full bg-app-border" />
+                  </span>
+                  <span className="h-3 w-10 shrink-0 rounded-full bg-app-border" />
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-center text-[11px] text-app-muted">
+              {t('pages.checkIn.todayEmptyHint')}
+            </p>
+          </div>
         ) : (
           <>
             <ul className="space-y-1 p-2 sm:p-3">

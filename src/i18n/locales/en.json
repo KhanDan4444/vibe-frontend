@@ -823,7 +823,9 @@
       "todayMembers_one": "member today",
       "todayMembers_other": "members today",
       "checkedInBy": "Checked in by {{name}}",
-      "todayEmpty": "No check-ins yet today.",
+      "todayEmpty": "Search a member above to record the first visit.",
+      "todayEmptyTitle": "Waiting for the first check-in",
+      "todayEmptyHint": "Visits appear here as people arrive.",
       "visitRules": "Visit rules",
       "visitRulesTitle": "Visits per week",
       "visitRulesBody": "The ring on each member fills toward this weekly cap (for example 2 of 5).",
@@ -841,7 +843,6 @@
       "capChipUnlimited": "Unlimited",
       "capChipDays": "{{count}} days / week",
       "heroHint": "Search a member to check them in. The ring shows visits used this week.",
-      "todayEmptyTitle": "No one yet today",
       "showMore": "Show more",
       "showingOf": "{{shown}} of {{total}}"
     },
