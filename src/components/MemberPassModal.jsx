@@ -17,7 +17,7 @@ import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
 
 /**
- * Premium member QR pass modal — print card + SMS link + regenerate.
+ * Member QR pass modal — compact so QR + actions fit without scrolling.
  */
 export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const { t } = useTranslation();
@@ -178,23 +178,23 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
         zIndexClass="z-[90]"
         labelledBy="member-pass-title"
       >
-        <div className={modalBody}>
+        <div className={`${modalBody} sm:overflow-y-visible`}>
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]">
-              <QrCode className="h-5 w-5" aria-hidden />
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]">
+              <QrCode className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
               <h3 id="member-pass-title" className={modalTitle}>
                 {t('pages.checkIn.memberPassTitle')}
               </h3>
-              <p className={`mt-1 text-sm ${mutedText}`}>
+              <p className={`mt-1 text-xs leading-relaxed ${mutedText}`}>
                 {t('pages.checkIn.memberPassBody', { name: member.name })}
               </p>
             </div>
           </div>
 
           {error ? (
-            <div className="ui-alert-rose mt-5">
+            <div className="ui-alert-rose mt-4">
               <p className="text-sm">{error}</p>
               <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={() => void loadPass()}>
                 {t('common.retry')}
@@ -202,59 +202,63 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-col items-center rounded-2xl border border-app-border-subtle bg-app-bg/60 px-5 py-6">
+          <div className="mt-4 flex flex-col items-center rounded-2xl border border-app-border-subtle bg-app-bg/60 px-4 py-4">
             {pass?.gym_name ? (
-              <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
+              <p className="mb-2.5 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--color-brand-text)]">
                 {pass.gym_name}
               </p>
             ) : null}
 
-            {loading ? (
-              <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
-            ) : photoDataUrl ? (
-              <img
-                src={photoDataUrl}
-                alt=""
-                className="h-14 w-14 rounded-2xl object-cover ring-1 ring-black/10"
-              />
-            ) : (
-              <MemberPhoto
-                memberId={member.id}
-                apiFetch={apiFetch}
-                name={member.name}
-                hasPhoto={hasPhoto}
-                expandable={false}
-                className="h-14 w-14 rounded-2xl object-cover"
-                fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-app-border text-lg font-bold text-app-text"
-              />
-            )}
+            <div className="flex w-full items-center justify-center gap-2.5">
+              {loading ? (
+                <div className="h-10 w-10 shrink-0 animate-pulse rounded-xl bg-app-border" />
+              ) : photoDataUrl ? (
+                <img
+                  src={photoDataUrl}
+                  alt=""
+                  className="h-10 w-10 shrink-0 rounded-xl object-cover ring-1 ring-black/10"
+                />
+              ) : (
+                <MemberPhoto
+                  memberId={member.id}
+                  apiFetch={apiFetch}
+                  name={member.name}
+                  hasPhoto={hasPhoto}
+                  expandable={false}
+                  className="h-10 w-10 rounded-xl object-cover"
+                  fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-app-border text-sm font-bold text-app-text"
+                />
+              )}
+              <div className="min-w-0 text-left">
+                <p className="truncate font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                  {member.name}
+                </p>
+                {phone ? <p className="truncate font-mono text-[11px] text-app-muted">{phone}</p> : null}
+              </div>
+            </div>
 
             {loading ? (
-              <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
+              <div className="mt-3 h-[156px] w-[156px] animate-pulse rounded-2xl bg-app-border" />
             ) : pass?.qr_data_url ? (
               <img
                 src={pass.qr_data_url}
                 alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
-                className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                className="mt-3 h-[156px] w-[156px] rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-black/5"
               />
             ) : (
-              <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+              <div className="mt-3 flex h-[156px] w-[156px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
                 —
               </div>
             )}
 
-            <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
-              {member.name}
-            </p>
-            {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
             {pass?.pass_version != null ? (
-              <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-app-muted">
+              <p className="mt-2 text-[10px] font-medium uppercase tracking-wide text-app-muted">
                 {t('pages.checkIn.passVersion', { version: pass.pass_version })}
               </p>
             ) : null}
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             <Button
               type="button"
               variant="outline"
@@ -281,25 +285,22 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               {t('pages.checkIn.smsPass')}
             </Button>
           </div>
-
-          {owner ? (
-            <div className="mt-3 flex justify-center">
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => setConfirmRegen(true)}
-                className="inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-semibold text-[#0f766e] transition-colors hover:text-[#0d9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 disabled:cursor-not-allowed disabled:opacity-50 dark:text-teal-400 dark:hover:text-teal-300"
-              >
-                <RefreshCw className={`h-3.5 w-3.5 ${regenerating ? 'animate-spin' : ''}`} aria-hidden />
-                {t('pages.checkIn.regeneratePass')}
-              </button>
-            </div>
-          ) : null}
         </div>
-        <div className={modalFooter}>
+        <div className={`${modalFooter} !justify-between`}>
           <Button type="button" variant="secondary" size="sm" onClick={onClose} className="w-full sm:w-auto">
             {t('common.close')}
           </Button>
+          {owner ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => setConfirmRegen(true)}
+              className="inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-semibold text-[#0f766e] transition-colors hover:text-[#0d9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 disabled:cursor-not-allowed disabled:opacity-50 dark:text-teal-400 dark:hover:text-teal-300"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${regenerating ? 'animate-spin' : ''}`} aria-hidden />
+              {t('pages.checkIn.regeneratePass')}
+            </button>
+          ) : null}
         </div>
       </ResponsiveModal>
 

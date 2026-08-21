@@ -845,7 +845,7 @@
       "scanStarting": "Kaameeraa jalqabaa jira…",
       "scanCameraError": "Kaameeraa banuu hin dandeenye. Hayyama mirkaneessi.",
       "memberPassTitle": "Paasii miseensaa",
-      "memberPassBody": "Galchuuf QR kana desk irratti agarsiisi. Haaromsuun koodii walfakkaataa eega. Liinkin paasii SMS galmeessuu fi haaromsuu wajjin ni ergamu — yoo barbaachise Resend fayyadami.",
+      "memberPassBody": "Galchuuf desk irratti agarsiisi. Haaromsuun QR hin jijjiiru; liinkin SMS galmeessuu/haaromsuu wajjin ni ergamu.",
       "memberPassQrAlt": "QR galchuu {{name}}",
       "passVersion": "Paasii v{{version}}",
       "regeneratePass": "QR haaromsii",

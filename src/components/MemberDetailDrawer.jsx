@@ -1,6 +1,5 @@
 // src/components/MemberDetailDrawer.jsx
 import React, { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
-import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Pencil,
@@ -24,7 +23,6 @@ import { getMemberPayments } from '../services/memberService';
 import { getMemberVisitSummary } from '../services/checkInService';
 import VisitRing from './VisitRing';
 import ConfirmDialog from './ConfirmDialog';
-import MemberModal from './MemberModal';
 import MemberPhoto from './MemberPhoto';
 import Button from './ui/Button';
 import { formatMoney } from '../utils/formatMoney';
@@ -46,6 +44,7 @@ import {
 } from './SlidePanel';
 
 const MemberPassModal = React.lazy(() => import('./MemberPassModal'));
+const MemberModal = React.lazy(() => import('./MemberModal'));
 
 const PAYMENTS_PREVIEW = 3;
 
@@ -108,18 +107,40 @@ export default function MemberDetailDrawer({
   }, [member?.id, apiFetch, t]);
 
   useEffect(() => {
-    loadPayments();
-  }, [loadPayments, paymentsRefreshKey, member?.startDate, member?.isUnpaid]);
+    if (!member?.id || !apiFetch) return undefined;
+    let cancelled = false;
+    let idleId = 0;
+    const run = () => {
+      if (cancelled) return;
+      void loadPayments();
+    };
+    // Let the panel paint first — payments are below the fold.
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(run, { timeout: 600 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(idleId);
+      };
+    }
+    const t = window.setTimeout(run, 120);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(t);
+    };
+  }, [loadPayments, paymentsRefreshKey, member?.id]);
 
   useEffect(() => {
     setShowAllPayments(false);
     setVisitSummary(null);
+    setMemberPayments([]);
+    setPaymentsError('');
   }, [member?.id]);
 
   useEffect(() => {
     if (!member?.id || !apiFetch || member.deletedAt) return undefined;
     let cancelled = false;
-    (async () => {
+    let idleId = 0;
+    const run = async () => {
       try {
         const res = await getMemberVisitSummary(apiFetch, member.id);
         const data = await parseApiResponse(res);
@@ -127,9 +148,22 @@ export default function MemberDetailDrawer({
       } catch {
         if (!cancelled) setVisitSummary(null);
       }
-    })();
+    };
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(() => {
+        void run();
+      }, { timeout: 400 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(idleId);
+      };
+    }
+    const t = window.setTimeout(() => {
+      void run();
+    }, 80);
     return () => {
       cancelled = true;
+      window.clearTimeout(t);
     };
   }, [member?.id, member?.deletedAt, apiFetch]);
 
@@ -261,7 +295,7 @@ export default function MemberDetailDrawer({
     });
   }
 
-  return createPortal(
+  return (
     <>
       <SlidePanel
         open
@@ -557,20 +591,24 @@ export default function MemberDetailDrawer({
         </div>
       </SlidePanel>
 
-      <MemberModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        onSubmit={handleEditSubmit}
-        plans={plans}
-        member={isEditOpen ? member : null}
-        branches={branches}
-        defaultBranchId={defaultBranchId}
-        showBranchPicker={showBranchPicker}
-        showPhotoUpload={showPhotoUpload}
-        apiFetch={apiFetch}
-        saving={saving}
-        error={error}
-      />
+      {isEditOpen ? (
+        <Suspense fallback={null}>
+          <MemberModal
+            isOpen={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+            onSubmit={handleEditSubmit}
+            plans={plans}
+            member={member}
+            branches={branches}
+            defaultBranchId={defaultBranchId}
+            showBranchPicker={showBranchPicker}
+            showPhotoUpload={showPhotoUpload}
+            apiFetch={apiFetch}
+            saving={saving}
+            error={error}
+          />
+        </Suspense>
+      ) : null}
 
       <ConfirmDialog
         isOpen={isDeleteOpen}
@@ -591,7 +629,6 @@ export default function MemberDetailDrawer({
           />
         </Suspense>
       ) : null}
-    </>,
-    document.body
+    </>
   );
 }

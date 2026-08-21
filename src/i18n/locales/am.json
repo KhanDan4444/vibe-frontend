@@ -1216,7 +1216,7 @@
       "scanStarting": "ካሜራ እየተጀመረ ነው…",
       "scanCameraError": "ካሜራ መክፈት አልተቻለም። ፈቃዶችን ያረጋግጡ።",
       "memberPassTitle": "የአባል ፓስ",
-      "memberPassBody": "ለመግቢያ ይህን QR በዴስክ አሳዩ። ማደስ ተመሳሳይ ኮድ ይጠብቃል። የፓስ አገናኝ በምዝገባና ማደስ SMS ይላካል — እንደገና ካስፈለገ Resend ይጠቀሙ።",
+      "memberPassBody": "ለመግቢያ በዴስክ አሳዩ። ማደስ QR አይቀይርም፤ አገናኙ በምዝገባ/ማደስ SMS ይላካል።",
       "memberPassQrAlt": "የ{{name}} የመግቢያ QR",
       "passVersion": "ፓስ v{{version}}",
       "regeneratePass": "QR እንደገና ፍጠር",

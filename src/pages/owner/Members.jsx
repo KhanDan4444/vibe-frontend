@@ -318,23 +318,24 @@ export default function Members() {
     setRenewState({ isOpen: true, member, error: '' });
   }, [apiFetch]);
 
-  const openMemberRow = useCallback(async (member) => {
-    // Open immediately with list-row data so the drawer feels instant.
+  const openMemberRow = useCallback((member) => {
+    // Sync open — do not await network before painting the drawer.
     const openedId = member.id;
     setSelectedMember(member);
-    try {
-      const res = await getMember(apiFetch, openedId);
-      const data = await parseApiResponse(res);
-      if (res.ok) {
+    void (async () => {
+      try {
+        const res = await getMember(apiFetch, openedId);
+        const data = await parseApiResponse(res);
+        if (!res.ok) return;
         startTransition(() => {
           setSelectedMember((current) =>
             current?.id === openedId ? mapMemberFromApi(data) : current
           );
         });
+      } catch {
+        /* keep list row data */
       }
-    } catch {
-      /* keep list row data */
-    }
+    })();
   }, [apiFetch]);
 
   useEffect(() => {

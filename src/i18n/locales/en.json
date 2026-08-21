@@ -860,7 +860,7 @@
       "scanStarting": "Starting camera…",
       "scanCameraError": "Could not open the camera. Check permissions and try again.",
       "memberPassTitle": "Member pass",
-      "memberPassBody": "Show this QR at the desk to check in. Renew keeps the same code. Enrollment and renewal SMS already include the pass link — Resend if they need it again.",
+      "memberPassBody": "Show at the desk to check in. Renew keeps this QR; enroll/renew SMS already include the link.",
       "memberPassQrAlt": "Check-in QR for {{name}}",
       "passVersion": "Pass v{{version}}",
       "regeneratePass": "Regenerate QR",

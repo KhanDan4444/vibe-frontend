@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
-import { overlayBackdrop, modalTitle } from '../utils/surfaceClasses';
+import { modalTitle, slidePanelBackdrop } from '../utils/surfaceClasses';
 import Button from './ui/Button';
 
 /**
@@ -56,7 +56,7 @@ export function SlidePanel({
     <div className={`fixed inset-0 ${zIndexClass} flex justify-end`}>
       <button
         type="button"
-        className={`absolute inset-0 ${overlayBackdrop}`}
+        className={`absolute inset-0 ${slidePanelBackdrop}`}
         aria-label={t('aria.closePanel')}
         onPointerDown={handleBackdropPointerDown}
       />
@@ -64,7 +64,7 @@ export function SlidePanel({
         role="dialog"
         aria-modal="true"
         aria-labelledby="slide-panel-title"
-        className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-app-border-subtle bg-app-raised shadow-[0_12px_40px_rgb(28_25_23/0.12)] animate-in slide-in-from-right duration-200 dark:shadow-xl`}
+        className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-app-border-subtle bg-app-raised shadow-[0_12px_40px_rgb(28_25_23/0.12)] motion-safe:animate-in motion-safe:slide-in-from-right motion-safe:duration-150 dark:shadow-xl`}
         onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >

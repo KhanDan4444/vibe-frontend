@@ -49,6 +49,9 @@ export const menuItem =
 export const overlayBackdrop =
   'bg-slate-900/50 backdrop-blur-sm dark:bg-black/55 dark:backdrop-blur-[2px]';
 
+/** Slide-over dimmer — no blur (blur stalls open on many GPUs / Firefox). */
+export const slidePanelBackdrop = 'bg-slate-900/45 dark:bg-black/55';
+
 export const mutedText = 'text-app-muted';
 
 export const headingText = 'text-app-text-strong';
