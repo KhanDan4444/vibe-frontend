@@ -74,9 +74,7 @@ export default function VisitRing({
     ? 'bg-[color:var(--color-status-expired)]/10'
     : warnAmber
       ? 'bg-[color:var(--color-status-due-soon)]/10'
-      : empty
-        ? 'bg-app-bg'
-        : 'bg-app-bg dark:bg-[color:var(--color-brand-soft)]';
+      : 'bg-app-bg';
   const emptyDash = `${Math.round(emptyStroke * 1.2)} ${Math.round(emptyStroke * 0.65)}`;
 
   return (
