@@ -387,14 +387,14 @@ export default function CheckIn() {
             ) : null}
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-4 sm:gap-6">
             <SearchField
               value={query}
               onChange={setQuery}
               placeholder={t('pages.checkIn.searchPlaceholder')}
-              className="min-w-0 flex-1"
+              className="w-full max-w-md sm:max-w-lg"
             />
-            <div className="shrink-0 text-right tabular-nums">
+            <div className="ml-auto shrink-0 text-right tabular-nums">
               <p className="font-display text-3xl font-semibold tracking-tight text-app-text-strong sm:text-4xl">
                 {todayLoading ? '—' : today.total}
               </p>
@@ -542,33 +542,33 @@ export default function CheckIn() {
             ))}
           </div>
         ) : today.checkIns.length === 0 ? (
-          <div className="px-3 py-4 sm:px-4 sm:py-5">
-            <div className="mb-4 text-center sm:mb-5">
+          <div className="flex justify-center px-4 py-8 sm:py-10">
+            <div className="w-full max-w-sm text-center">
               <p className="font-display text-sm font-semibold tracking-tight text-app-text">
                 {t('pages.checkIn.todayEmptyTitle')}
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-app-muted">
+              <p className="mt-1.5 text-xs leading-relaxed text-app-muted">
                 {t('pages.checkIn.todayEmpty')}
               </p>
+              <ul className="pointer-events-none mt-6 space-y-2 opacity-[0.4]" aria-hidden>
+                {[0, 1, 2].map((i) => (
+                  <li
+                    key={i}
+                    className="flex items-center gap-3 rounded-xl bg-app-bg/50 px-3 py-2.5"
+                  >
+                    <span className="h-9 w-9 shrink-0 rounded-full bg-app-border" />
+                    <span className="min-w-0 flex-1 space-y-2 text-left">
+                      <span className="block h-2.5 w-[55%] rounded-full bg-app-border" />
+                      <span className="block h-2 w-[35%] rounded-full bg-app-border" />
+                    </span>
+                    <span className="h-2.5 w-8 shrink-0 rounded-full bg-app-border" />
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-[11px] text-app-muted">
+                {t('pages.checkIn.todayEmptyHint')}
+              </p>
             </div>
-            <ul className="pointer-events-none space-y-1 opacity-[0.35]" aria-hidden>
-              {[0, 1, 2].map((i) => (
-                <li
-                  key={i}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5"
-                >
-                  <span className="h-10 w-10 shrink-0 rounded-full bg-app-border" />
-                  <span className="min-w-0 flex-1 space-y-2">
-                    <span className="block h-3 w-[42%] rounded-full bg-app-border" />
-                    <span className="block h-2.5 w-[28%] rounded-full bg-app-border" />
-                  </span>
-                  <span className="h-3 w-10 shrink-0 rounded-full bg-app-border" />
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 text-center text-[11px] text-app-muted">
-              {t('pages.checkIn.todayEmptyHint')}
-            </p>
           </div>
         ) : (
           <>
