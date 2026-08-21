@@ -12,6 +12,11 @@ export const getMember = (apiFetch, id) => apiFetch(`/members/${id}`);
 
 export const getMemberPayments = (apiFetch, id) => apiFetch(`/members/${id}/payments`);
 
+export const getMemberPass = (apiFetch, id) => apiFetch(`/members/${id}/pass`);
+
+export const regenerateMemberPass = (apiFetch, id) =>
+  apiFetch(`/members/${id}/pass/regenerate`, { method: 'POST' });
+
 export const enrollMember = (apiFetch, payload) =>
   apiFetch('/members/enroll', {
     method: 'POST',

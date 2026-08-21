@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, Settings2, UserRound } from 'lucide-react';
+import { CheckCircle2, ScanLine, Settings2, UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -23,6 +23,7 @@ import StatusBadge from '../../components/StatusBadge';
 import UnpaidBadge from '../../components/UnpaidBadge';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
+import ScanMemberQrModal from '../../components/ScanMemberQrModal';
 import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, mutedText, panelTitle, renewActionBtn } from '../../utils/surfaceClasses';
 import { formatMemberStatusForDisplay, DISPLAY_STATUS } from '../../utils/memberStatus';
@@ -59,6 +60,8 @@ export default function CheckIn() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [savingSettings, setSavingSettings] = useState(false);
   const [searchNonce, setSearchNonce] = useState(0);
+  const [scanOpen, setScanOpen] = useState(false);
+  const [scanBusy, setScanBusy] = useState(false);
   /** @type {Record<number, { code: string, message: string }>} */
   const [cardErrors, setCardErrors] = useState({});
   /** @type {Record<number, boolean>} */
@@ -273,6 +276,44 @@ export default function CheckIn() {
     }
   };
 
+  const runCheckInFromPass = useCallback(
+    async (token, { force = false, forceMember = null } = {}) => {
+      if (readOnly || !token) return;
+      setScanBusy(true);
+      setSearchError('');
+      try {
+        const res = await createCheckIn(apiFetch, {
+          member_pass_token: token,
+          force,
+        });
+        const data = await parseApiResponse(res);
+        if (res.status === 409 && data.code === 'WEEKLY_LIMIT' && data.can_force) {
+          setForceTarget({
+            member: forceMember || {
+              id: data.member?.id,
+              name: data.member?.name || t('pages.checkIn.scanTitle'),
+            },
+            data,
+            passToken: token,
+          });
+          return;
+        }
+        if (!res.ok) {
+          throw new Error(data.error || t('errors.checkInFailed'));
+        }
+        applyCheckInSuccess(data, data.member?.name || t('pages.checkIn.checkInAction'));
+        setScanOpen(false);
+      } catch (err) {
+        showFlash({ title: err.message, variant: 'danger' });
+      } finally {
+        setScanBusy(false);
+      }
+    },
+    // applyCheckInSuccess closes over latest state helpers — keep deps intentional
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiFetch, readOnly, showFlash, t]
+  );
+
   const saveCap = async (raw) => {
     if (!canManage || savingSettings) return;
     setSavingSettings(true);
@@ -301,18 +342,31 @@ export default function CheckIn() {
         title={t('pages.checkIn.title')}
         subtitle={t('pages.checkIn.subtitle')}
         actions={
-          owner && canManage ? (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              aria-expanded={settingsOpen}
-              onClick={() => setSettingsOpen((o) => !o)}
-            >
-              <Settings2 className="h-4 w-4" />
-              {t('pages.checkIn.visitRules')}
-            </Button>
-          ) : null
+          <div className="flex flex-wrap items-center gap-2">
+            {!readOnly ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setScanOpen(true)}
+              >
+                <ScanLine className="h-4 w-4" />
+                {t('pages.checkIn.scanAction')}
+              </Button>
+            ) : null}
+            {owner && canManage ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                aria-expanded={settingsOpen}
+                onClick={() => setSettingsOpen((o) => !o)}
+              >
+                <Settings2 className="h-4 w-4" />
+                {t('pages.checkIn.visitRules')}
+              </Button>
+            ) : null}
+          </div>
         }
       />
 
@@ -672,11 +726,27 @@ export default function CheckIn() {
         confirmText={t('pages.checkIn.forceConfirm')}
         type="danger"
         onConfirm={() => {
-          const target = forceTarget?.member;
+          const target = forceTarget;
           setForceTarget(null);
-          if (target) void runCheckIn(target, { force: true });
+          if (target?.passToken) {
+            void runCheckInFromPass(target.passToken, {
+              force: true,
+              forceMember: target.member,
+            });
+            return;
+          }
+          if (target?.member) void runCheckIn(target.member, { force: true });
         }}
         onCancel={() => setForceTarget(null)}
+      />
+
+      <ScanMemberQrModal
+        open={scanOpen}
+        busy={scanBusy}
+        onClose={() => {
+          if (!scanBusy) setScanOpen(false);
+        }}
+        onScan={(token) => runCheckInFromPass(token)}
       />
     </div>
   );

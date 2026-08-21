@@ -10,6 +10,7 @@ import {
   ArrowRightLeft,
   ArrowLeftRight,
   Undo2,
+  QrCode,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
@@ -25,8 +26,12 @@ import VisitRing from './VisitRing';
 import ConfirmDialog from './ConfirmDialog';
 import MemberModal from './MemberModal';
 import MemberPhoto from './MemberPhoto';
+import MemberPassModal from './MemberPassModal';
 import Button from './ui/Button';
 import { formatMoney } from '../utils/formatMoney';
+import { useAuth } from '../context/AuthContext';
+import { useGym } from '../context/GymContext';
+import { isGymOwner, isGymStaff } from '../utils/roles';
 import {
   SlidePanel,
   SlidePanelProfileHeader,
@@ -66,9 +71,13 @@ export default function MemberDetailDrawer({
   readOnly = false,
 }) {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const { showFlash } = useGym();
+  const canShowPass = !isFormer && (isGymOwner(user?.role) || isGymStaff(user?.role));
   const friendlyDate = (value) => formatFriendlyDate(value, i18n.language);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isPassOpen, setIsPassOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [memberPayments, setMemberPayments] = useState([]);
@@ -354,7 +363,7 @@ export default function MemberDetailDrawer({
                   size={72}
                   weekStartsOn={visitSummary.week_starts_on || 'monday'}
                 />
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-app-text-strong">
                     {t('pages.checkIn.ringLabel')}
                   </p>
@@ -369,6 +378,30 @@ export default function MemberDetailDrawer({
                         })}
                   </p>
                 </div>
+                {canShowPass ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="shrink-0"
+                    onClick={() => setIsPassOpen(true)}
+                  >
+                    <QrCode className="h-3.5 w-3.5" />
+                    {t('drawer.showPass')}
+                  </Button>
+                ) : null}
+              </div>
+            ) : canShowPass ? (
+              <div className="mb-3">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setIsPassOpen(true)}
+                >
+                  <QrCode className="h-3.5 w-3.5" />
+                  {t('drawer.showPass')}
+                </Button>
               </div>
             ) : null}
             <SlidePanelCard>
@@ -527,6 +560,13 @@ export default function MemberDetailDrawer({
         confirmText={t('drawer.deleteConfirm')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setIsDeleteOpen(false)}
+      />
+
+      <MemberPassModal
+        open={isPassOpen}
+        member={member}
+        onClose={() => setIsPassOpen(false)}
+        onFlash={showFlash}
       />
     </>,
     document.body

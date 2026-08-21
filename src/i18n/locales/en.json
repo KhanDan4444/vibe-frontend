@@ -451,6 +451,8 @@
     "loadCheckIns": "Failed to load today’s check-ins",
     "searchMembers": "Failed to search members",
     "checkInFailed": "Check-in failed",
+    "loadMemberPass": "Failed to load member QR",
+    "regeneratePass": "Failed to regenerate member QR",
     "loadMemberReport": "Failed to load member report",
     "loadRevenueReport": "Failed to load revenue report"
   },
@@ -805,7 +807,7 @@
     },
     "checkIn": {
       "title": "Check in",
-      "subtitle": "Search a member and record today’s visit.",
+      "subtitle": "Search or scan a member QR to record today’s visit.",
       "deskLabel": "Front desk",
       "searchPlaceholder": "Search by name or phone…",
       "searchEmptyTitle": "Find a member",
@@ -846,7 +848,21 @@
       "capChipDays": "{{count}} days / week",
       "heroHint": "Search a member to check them in. The ring shows visits used this week.",
       "showMore": "Show more",
-      "showingOf": "{{shown}} of {{total}}"
+      "showingOf": "{{shown}} of {{total}}",
+      "scanAction": "Scan QR",
+      "scanTitle": "Scan member QR",
+      "scanBody": "Point the camera at the member’s pass. We’ll check them in when it reads.",
+      "scanStarting": "Starting camera…",
+      "scanCameraError": "Could not open the camera. Check permissions and try again.",
+      "memberPassTitle": "Member pass",
+      "memberPassBody": "Show this code at the desk for a fast check-in. Renewing membership does not change it.",
+      "memberPassQrAlt": "Check-in QR for {{name}}",
+      "passVersion": "Pass v{{version}}",
+      "regeneratePass": "Regenerate",
+      "regeneratePassTitle": "Regenerate member QR?",
+      "regeneratePassMessage": "The old QR for {{name}} will stop working immediately. Print or show the new code.",
+      "regeneratePassConfirm": "Regenerate QR",
+      "showPass": "Show QR"
     },
     "team": {
       "title": "Staff",
@@ -1395,6 +1411,7 @@
     "paymentsLoadError": "Could not load payment history.",
     "retry": "Retry",
     "noPayments": "No payments recorded for this member.",
+    "showPass": "Show QR",
     "editContact": "Edit contact",
     "transferBranch": "Transfer branch",
     "deleteMember": "Remove",
@@ -1730,6 +1747,10 @@
     "attendanceSettingsSaved": {
       "title": "Visit rules saved",
       "subtitle": "Weekly caps apply to the check-in ring."
+    },
+    "memberPassRegenerated": {
+      "title": "QR regenerated",
+      "subtitle": "Old codes for {{name}} no longer work."
     },
     "gymUpdated": {
       "title": "Gym updated",
