@@ -21,6 +21,14 @@ export function SlidePanel({
   bodyClassName,
 }) {
   const { t } = useTranslation();
+  const openedAtRef = React.useRef(0);
+  const wasOpenRef = React.useRef(false);
+
+  if (open && !wasOpenRef.current) {
+    openedAtRef.current = Date.now();
+  }
+  wasOpenRef.current = Boolean(open);
+
   if (!open) return null;
 
   const panelWidth = {
@@ -29,13 +37,28 @@ export function SlidePanel({
     'max-w-xl': 'max-w-full sm:max-w-xl',
   }[maxWidth] || 'max-w-full sm:max-w-lg';
 
+  const isOpeningGesture = () => Date.now() - openedAtRef.current < 400;
+
+  const handleBackdropPointerDown = (e) => {
+    // Ignore the opening gesture: panel can mount under the cursor between
+    // pointerdown and pointerup, so the same tap would otherwise dismiss it.
+    if (isOpeningGesture()) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    // Close on press and prevent the leftover click from hitting the row beneath.
+    e.preventDefault();
+    onClose?.();
+  };
+
   return createPortal(
     <div className={`fixed inset-0 ${zIndexClass} flex justify-end`}>
       <button
         type="button"
         className={`absolute inset-0 ${overlayBackdrop}`}
         aria-label={t('aria.closePanel')}
-        onClick={onClose}
+        onPointerDown={handleBackdropPointerDown}
       />
       <aside
         role="dialog"
@@ -43,6 +66,7 @@ export function SlidePanel({
         aria-labelledby="slide-panel-title"
         className={`relative flex h-full w-full ${panelWidth} flex-col border-l border-app-border-subtle bg-app-raised shadow-[0_12px_40px_rgb(28_25_23/0.12)] animate-in slide-in-from-right duration-200 dark:shadow-xl`}
         onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="flex shrink-0 items-start justify-between gap-4 border-b px-4 py-4 border-app-border-subtle sm:px-6">
           <div className="min-w-0 flex-1">
@@ -225,6 +249,7 @@ export function SlidePanelActionGrid({ children, columns = 2, className = '' }) 
  * Panel action control.
  * - hero: full-width primary money/lifecycle CTA
  * - tile: quiet outline for secondary workflows
+ * - tileDanger: quiet outline for destructive workflows (never teal hover)
  * - primary / secondary / success / danger: row buttons
  * - dangerIcon: compact destructive control
  */
@@ -254,6 +279,20 @@ export function SlidePanelActionButton({
         {...props}
       >
         {Icon && <Icon className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />}
+        <span className="leading-tight">{children}</span>
+      </button>
+    );
+  }
+
+  if (variant === 'tileDanger') {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-[color:var(--color-status-expired)]/30 bg-transparent px-3 py-2.5 text-sm font-semibold text-[color:var(--color-status-expired)] transition-colors hover:border-[color:var(--color-status-expired)]/50 hover:bg-[color:var(--color-status-expired)]/[0.08] hover:text-[color:var(--color-status-expired)] focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/30 dark:hover:bg-[color:var(--color-status-expired)]/[0.12] dark:hover:text-rose-300 disabled:opacity-50 ${className}`}
+        {...props}
+      >
+        {Icon && <Icon className="h-4 w-4 shrink-0" aria-hidden />}
         <span className="leading-tight">{children}</span>
       </button>
     );

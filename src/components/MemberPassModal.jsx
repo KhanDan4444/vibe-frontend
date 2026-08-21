@@ -83,11 +83,22 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('errors.regeneratePass'));
       setPass(data);
       setConfirmRegen(false);
-      onFlash?.({
-        title: t('flash.memberPassRegenerated.title'),
-        subtitle: t('flash.memberPassRegenerated.subtitle', { name: member.name }),
-        variant: 'success',
-      });
+      if (data.sms_sent) {
+        onFlash?.({
+          title: t('flash.memberPassRegeneratedSms.title'),
+          subtitle: t('flash.memberPassRegeneratedSms.subtitle', {
+            name: member.name,
+            phone: data.member?.phone || member.phone,
+          }),
+          variant: 'success',
+        });
+      } else {
+        onFlash?.({
+          title: t('flash.memberPassRegenerated.title'),
+          subtitle: t('flash.memberPassRegenerated.subtitle', { name: member.name }),
+          variant: 'success',
+        });
+      }
     } catch (err) {
       onFlash?.({ title: err.message, variant: 'danger' });
     } finally {
@@ -108,8 +119,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
         photoDataUrl: pass.member?.photo_data_url || null,
         passVersion: pass.pass_version,
         labels: {
-          title: t('pages.checkIn.memberPassTitle'),
-          passVersion: t('pages.checkIn.passVersion', { version: '{{version}}' }),
+          passVersion: 'v{{version}}',
         },
       });
       onFlash?.({
@@ -271,28 +281,31 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               {t('pages.checkIn.smsPass')}
             </Button>
           </div>
+
+          {owner ? (
+            <div className="mt-3 flex justify-center">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => setConfirmRegen(true)}
+                className="inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-semibold text-[#0f766e] transition-colors hover:text-[#0d9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 disabled:cursor-not-allowed disabled:opacity-50 dark:text-teal-400 dark:hover:text-teal-300"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${regenerating ? 'animate-spin' : ''}`} aria-hidden />
+                {t('pages.checkIn.regeneratePass')}
+              </button>
+            </div>
+          ) : null}
         </div>
-        <div className={`${modalFooter} !justify-between`}>
+        <div className={modalFooter}>
           <Button type="button" variant="secondary" size="sm" onClick={onClose} className="w-full sm:w-auto">
             {t('common.close')}
           </Button>
-          {owner ? (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => setConfirmRegen(true)}
-              className="inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-medium text-app-muted transition-colors hover:text-app-text disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${regenerating ? 'animate-spin' : ''}`} aria-hidden />
-              {t('pages.checkIn.regeneratePass')}
-            </button>
-          ) : null}
         </div>
       </ResponsiveModal>
 
       <ConfirmDialog
         isOpen={confirmRegen}
-        type="danger"
+        type="primary"
         title={t('pages.checkIn.regeneratePassTitle')}
         message={t('pages.checkIn.regeneratePassMessage', { name: member.name })}
         confirmText={t('pages.checkIn.regeneratePassConfirm')}

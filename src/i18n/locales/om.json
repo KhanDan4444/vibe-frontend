@@ -845,12 +845,12 @@
       "scanStarting": "Kaameeraa jalqabaa jira…",
       "scanCameraError": "Kaameeraa banuu hin dandeenye. Hayyama mirkaneessi.",
       "memberPassTitle": "Paasii miseensaa",
-      "memberPassBody": "Galchuu saffisaaf koodii kana desk irratti agarsiisi. Haaromsuun miseensummaa hin jijjiiru.",
+      "memberPassBody": "Galchuuf QR kana desk irratti agarsiisi. Haaromsuun koodii walfakkaataa eega. Liinkin paasii SMS galmeessuu fi haaromsuu wajjin ni ergamu — yoo barbaachise Resend fayyadami.",
       "memberPassQrAlt": "QR galchuu {{name}}",
       "passVersion": "Paasii v{{version}}",
-      "regeneratePass": "Haaromsii",
+      "regeneratePass": "QR haaromsii",
       "regeneratePassTitle": "QR miseensaa haaromsuu?",
-      "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Koodii haaraa agarsiisi ykn maxxansi.",
+      "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Bilbila yoo qabaatan liinkii paasii haaraa SMS dhaan ni ergina.",
       "regeneratePassConfirm": "QR haaromsii",
       "showPass": "QR agarsiisi",
       "printPass": "Paasii maxxansi",
@@ -1746,6 +1746,14 @@
     "memberPassPrinted": {
       "title": "Paasii maxxansaaf qophaa'e",
       "subtitle": "PDF {{name}} buufameera."
+    },
+    "memberPassRegenerated": {
+      "title": "QR haaromfameera",
+      "subtitle": "Koodiiwwan durii {{name}} hin hojjetan."
+    },
+    "memberPassRegeneratedSms": {
+      "title": "QR haaromfameera",
+      "subtitle": "Koodiiwwan durii {{name}} hin hojjetan. Liinkin haaraa gara {{phone}} ergameera."
     },
     "memberPassSmsSent": {
       "title": "Liinkin paasii deebi'ee ergameera",

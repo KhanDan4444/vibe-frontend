@@ -860,12 +860,12 @@
       "scanStarting": "Starting camera…",
       "scanCameraError": "Could not open the camera. Check permissions and try again.",
       "memberPassTitle": "Member pass",
-      "memberPassBody": "Show this code at the desk for a fast check-in. Renewing membership does not change it.",
+      "memberPassBody": "Show this QR at the desk to check in. Renew keeps the same code. Enrollment and renewal SMS already include the pass link — Resend if they need it again.",
       "memberPassQrAlt": "Check-in QR for {{name}}",
       "passVersion": "Pass v{{version}}",
-      "regeneratePass": "Regenerate",
+      "regeneratePass": "Regenerate QR",
       "regeneratePassTitle": "Regenerate member QR?",
-      "regeneratePassMessage": "The old QR for {{name}} will stop working immediately. Print or show the new code.",
+      "regeneratePassMessage": "The old QR for {{name}} will stop working immediately. If they have a phone, we'll SMS the new pass link.",
       "regeneratePassConfirm": "Regenerate QR",
       "showPass": "Show QR",
       "printPass": "Print pass",
@@ -1758,6 +1758,10 @@
     "memberPassRegenerated": {
       "title": "QR regenerated",
       "subtitle": "Old codes for {{name}} no longer work."
+    },
+    "memberPassRegeneratedSms": {
+      "title": "QR regenerated",
+      "subtitle": "Old codes for {{name}} no longer work. New pass link sent to {{phone}}."
     },
     "memberPassPrinted": {
       "title": "Pass ready to print",

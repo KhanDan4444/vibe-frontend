@@ -318,13 +318,8 @@ export default function MemberDetailDrawer({
                       {row.map((action) => (
                         <SlidePanelActionButton
                           key={action.key}
-                          variant="tile"
+                          variant={action.danger ? 'tileDanger' : 'tile'}
                           icon={action.icon}
-                          className={
-                            action.danger
-                              ? 'border-[color:var(--color-status-expired)]/25 text-[color:var(--color-status-expired)] hover:border-[color:var(--color-status-expired)]/45 hover:bg-[color:var(--color-status-expired)]/[0.06] hover:text-[color:var(--color-status-expired)] dark:hover:text-rose-300'
-                              : ''
-                          }
                           onClick={action.onClick}
                         >
                           {action.label}
@@ -379,45 +374,53 @@ export default function MemberDetailDrawer({
           />
 
           <SlidePanelSection title={t('drawer.subscription')}>
-            {!isFormer ? (
-              <div className="mb-3 space-y-2.5">
-                {visitSummary ? (
-                  <div className="flex items-center gap-4 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
-                    <VisitRing
-                      visits={visitSummary.visits_this_week ?? 0}
-                      limit={visitSummary.visits_limit}
-                      size={72}
-                      weekStartsOn={visitSummary.week_starts_on || 'monday'}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
-                        {t('pages.checkIn.ringLabel')}
-                      </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-app-muted">
-                        {visitSummary.visits_limit != null
-                          ? t('pages.checkIn.ringProgress', {
-                              count: visitSummary.visits_this_week,
-                              limit: visitSummary.visits_limit,
-                            })
-                          : t('pages.checkIn.ringUnlimited', {
-                              count: visitSummary.visits_this_week,
-                            })}
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
+            {visitSummary && !isFormer ? (
+              <div className="mb-3 flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
+                <VisitRing
+                  visits={visitSummary.visits_this_week ?? 0}
+                  limit={visitSummary.visits_limit}
+                  size={72}
+                  weekStartsOn={visitSummary.week_starts_on || 'monday'}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                    {t('pages.checkIn.ringLabel')}
+                  </p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-app-muted">
+                    {visitSummary.visits_limit != null
+                      ? t('pages.checkIn.ringProgress', {
+                          count: visitSummary.visits_this_week,
+                          limit: visitSummary.visits_limit,
+                        })
+                      : t('pages.checkIn.ringUnlimited', {
+                          count: visitSummary.visits_this_week,
+                        })}
+                  </p>
+                </div>
                 {canShowPass ? (
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className="shrink-0"
                     onClick={() => setIsPassOpen(true)}
                   >
                     <QrCode className="h-3.5 w-3.5 shrink-0" aria-hidden />
                     {t('drawer.showPass')}
                   </Button>
                 ) : null}
+              </div>
+            ) : canShowPass && !isFormer ? (
+              <div className="mb-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsPassOpen(true)}
+                >
+                  <QrCode className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  {t('drawer.showPass')}
+                </Button>
               </div>
             ) : null}
             <SlidePanelCard>

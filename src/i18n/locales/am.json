@@ -1216,12 +1216,12 @@
       "scanStarting": "ካሜራ እየተጀመረ ነው…",
       "scanCameraError": "ካሜራ መክፈት አልተቻለም። ፈቃዶችን ያረጋግጡ።",
       "memberPassTitle": "የአባል ፓስ",
-      "memberPassBody": "ለፈጣን መግቢያ ይህን ኮድ በዴስክ አሳዩ። አባልነት ማደስ ኮዱን አይቀይርም።",
+      "memberPassBody": "ለመግቢያ ይህን QR በዴስክ አሳዩ። ማደስ ተመሳሳይ ኮድ ይጠብቃል። የፓስ አገናኝ በምዝገባና ማደስ SMS ይላካል — እንደገና ካስፈለገ Resend ይጠቀሙ።",
       "memberPassQrAlt": "የ{{name}} የመግቢያ QR",
       "passVersion": "ፓስ v{{version}}",
-      "regeneratePass": "እንደገና ፍጠር",
+      "regeneratePass": "QR እንደገና ፍጠር",
       "regeneratePassTitle": "የአባል QR እንደገና ይፈጠር?",
-      "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። አዲሱን ኮድ አሳዩ ወይም ያትሙ።",
+      "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። ስልክ ካላቸው አዲሱን የፓስ አገናኝ በSMS እንልካለን።",
       "regeneratePassConfirm": "QR እንደገና ፍጠር",
       "showPass": "QR አሳይ",
       "printPass": "ፓስ አትም",
@@ -1734,6 +1734,14 @@
     "memberPassPrinted": {
       "title": "ፓስ ለህትመት ዝግጁ",
       "subtitle": "የ{{name}} PDF ወርዷል።"
+    },
+    "memberPassRegenerated": {
+      "title": "QR እንደገና ተፈጥሯል",
+      "subtitle": "የ{{name}} የድሮ ኮዶች አይሰሩም።"
+    },
+    "memberPassRegeneratedSms": {
+      "title": "QR እንደገና ተፈጥሯል",
+      "subtitle": "የ{{name}} የድሮ ኮዶች አይሰሩም። አዲሱ አገናኝ ወደ {{phone}} ተልኳል።"
     },
     "memberPassSmsSent": {
       "title": "የፓስ አገናኝ እንደገና ተልኳል",

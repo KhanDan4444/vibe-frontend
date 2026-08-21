@@ -1,8 +1,17 @@
 /**
- * Portrait member pass PDF — name, photo, QR (not report landscape layout).
+ * Compact portrait member pass PDF — gym-branded card for desk / laminate.
+ * Sized for cutting (~85×125mm) and centered on A4.
  */
 
 import { createPdfDoc } from './reportExportCore';
+
+/** Deep teal brand (#0f766e). */
+const TEAL = [15, 118, 110];
+const INK = [15, 23, 42];
+const MUTED = [100, 116, 139];
+const FAINT = [148, 163, 184];
+const CARD_FILL = [255, 255, 255];
+const CARD_EDGE = [226, 232, 240];
 
 /**
  * @param {{
@@ -12,7 +21,7 @@ import { createPdfDoc } from './reportExportCore';
  *   qrDataUrl: string,
  *   photoDataUrl?: string | null,
  *   passVersion?: number | null,
- *   labels?: { title?: string, passVersion?: string },
+ *   labels?: { passVersion?: string },
  * }} opts
  */
 export async function downloadMemberPassPdf(opts) {
@@ -28,29 +37,46 @@ export async function downloadMemberPassPdf(opts) {
 
   const doc = await createPdfDoc({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageW = doc.internal.pageSize.getWidth();
-  const margin = 18;
-  const cardX = margin;
-  const cardY = 28;
-  const cardW = pageW - margin * 2;
-  const cardH = 170;
+  const pageH = doc.internal.pageSize.getHeight();
 
-  doc.setFillColor(248, 250, 252);
-  doc.roundedRect(cardX, cardY, cardW, cardH, 4, 4, 'F');
-  doc.setDrawColor(226, 232, 240);
-  doc.setLineWidth(0.4);
-  doc.roundedRect(cardX, cardY, cardW, cardH, 4, 4, 'S');
+  const cardW = 85;
+  const cardH = 125;
+  const cardX = (pageW - cardW) / 2;
+  const cardY = Math.max(20, (pageH - cardH) / 2 - 10);
+  const cx = cardX + cardW / 2;
+  const pad = 8;
 
-  doc.setFontSize(11);
-  doc.setTextColor(100, 116, 139);
-  doc.text(labels.title || 'Member pass', pageW / 2, cardY + 12, { align: 'center' });
+  // Soft page wash so the card reads as a cut piece
+  doc.setFillColor(241, 245, 249);
+  doc.rect(0, 0, pageW, pageH, 'F');
 
-  if (gymName) {
-    doc.setFontSize(16);
-    doc.setTextColor(15, 23, 42);
-    doc.text(String(gymName), pageW / 2, cardY + 22, { align: 'center' });
+  // Card
+  doc.setFillColor(...CARD_FILL);
+  doc.roundedRect(cardX, cardY, cardW, cardH, 3.5, 3.5, 'F');
+  doc.setDrawColor(...CARD_EDGE);
+  doc.setLineWidth(0.35);
+  doc.roundedRect(cardX, cardY, cardW, cardH, 3.5, 3.5, 'S');
+
+  // Deep teal brand bar
+  doc.setFillColor(...TEAL);
+  doc.roundedRect(cardX, cardY, cardW, 5.5, 3.5, 3.5, 'F');
+  doc.rect(cardX, cardY + 2.5, cardW, 3, 'F');
+
+  let y = cardY + 14;
+
+  // Gym name leads
+  const gym = String(gymName || '').trim();
+  if (gym) {
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(...TEAL);
+    const gymLines = doc.splitTextToSize(gym.toUpperCase(), cardW - pad * 2);
+    const gymBlock = gymLines.slice(0, 2);
+    doc.text(gymBlock, cx, y, { align: 'center', lineHeightFactor: 1.15 });
+    y += gymBlock.length * 5 + 5;
   }
 
-  let y = cardY + 32;
+  // Photo
   if (photoDataUrl) {
     try {
       const fmt = photoDataUrl.includes('image/png')
@@ -58,42 +84,54 @@ export async function downloadMemberPassPdf(opts) {
         : photoDataUrl.includes('image/webp')
           ? 'WEBP'
           : 'JPEG';
-      const photoSize = 28;
-      doc.addImage(photoDataUrl, fmt, (pageW - photoSize) / 2, y, photoSize, photoSize);
-      y += photoSize + 8;
+      const photoSize = 22;
+      doc.addImage(photoDataUrl, fmt, cx - photoSize / 2, y, photoSize, photoSize);
+      y += photoSize + 5;
     } catch {
-      y += 4;
+      y += 2;
     }
   }
 
-  doc.setFontSize(18);
-  doc.setTextColor(15, 23, 42);
-  doc.text(String(memberName || '—'), pageW / 2, y, { align: 'center' });
-  y += 7;
+  // Member name
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(...INK);
+  const nameLines = doc.splitTextToSize(String(memberName || '—'), cardW - pad * 2);
+  const nameBlock = nameLines.slice(0, 2);
+  doc.text(nameBlock, cx, y, { align: 'center', lineHeightFactor: 1.1 });
+  y += nameBlock.length * 5.5 + 2;
 
   if (memberPhone) {
-    doc.setFontSize(11);
-    doc.setTextColor(100, 116, 139);
-    doc.text(String(memberPhone), pageW / 2, y, { align: 'center' });
-    y += 8;
-  } else {
-    y += 4;
-  }
-
-  if (qrDataUrl) {
-    const qrSize = 70;
-    doc.addImage(qrDataUrl, 'PNG', (pageW - qrSize) / 2, y, qrSize, qrSize);
-    y += qrSize + 8;
-  }
-
-  if (passVersion != null) {
+    doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
-    doc.setTextColor(148, 163, 184);
-    const versionLabel = (labels.passVersion || 'Pass v{{version}}').replace(
+    doc.setTextColor(...MUTED);
+    doc.text(String(memberPhone), cx, y, { align: 'center' });
+    y += 5;
+  } else {
+    y += 2;
+  }
+
+  // QR — dominant scan target
+  if (qrDataUrl) {
+    const qrSize = 52;
+    const qrX = cx - qrSize / 2;
+    // White pad behind QR for clean scans on tinted printers
+    doc.setFillColor(255, 255, 255);
+    doc.roundedRect(qrX - 2, y - 2, qrSize + 4, qrSize + 4, 2, 2, 'F');
+    doc.addImage(qrDataUrl, 'PNG', qrX, y, qrSize, qrSize);
+    y += qrSize + 6;
+  }
+
+  // Quiet version for staff reprints only
+  if (passVersion != null) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(...FAINT);
+    const versionLabel = (labels.passVersion || 'v{{version}}').replace(
       '{{version}}',
       String(passVersion)
     );
-    doc.text(versionLabel, pageW / 2, y, { align: 'center' });
+    doc.text(versionLabel, cx, Math.min(y, cardY + cardH - 5), { align: 'center' });
   }
 
   const safeName = String(memberName || 'member')

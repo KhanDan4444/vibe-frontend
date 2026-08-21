@@ -1,5 +1,5 @@
 // src/pages/owner/Members.jsx
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef, startTransition } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { runInBackground } from '../../utils/runInBackground';
 import { useAuth } from '../../context/AuthContext';
@@ -326,9 +326,11 @@ export default function Members() {
       const res = await getMember(apiFetch, openedId);
       const data = await parseApiResponse(res);
       if (res.ok) {
-        setSelectedMember((current) =>
-          current?.id === openedId ? mapMemberFromApi(data) : current
-        );
+        startTransition(() => {
+          setSelectedMember((current) =>
+            current?.id === openedId ? mapMemberFromApi(data) : current
+          );
+        });
       }
     } catch {
       /* keep list row data */
