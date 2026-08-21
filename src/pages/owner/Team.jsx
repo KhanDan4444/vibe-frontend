@@ -26,6 +26,7 @@ import { tableRowHover, cardSurface, panelTitle, renewActionBtn } from '../../ut
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
+import InitialsAvatar from '../../components/InitialsAvatar';
 import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 function StaffRowActions({ member, readOnly, t, onEdit, onToggle }) {
@@ -517,22 +518,27 @@ export default function Team() {
               {displayedStaff.map((member) => (
                 <div key={member.id} className={`${cardSurface} p-4`}>
                   <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-medium text-app-text-strong">{member.name}</p>
-                      <p className="mt-0.5 text-sm text-app-muted">{member.email}</p>
-                      {member.username && (
-                        <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
-                      )}
-                      <p className="mt-0.5 text-xs text-app-muted">{member.branch_name || t('pages.team.noBranch')}</p>
-                      <span
-                        className={`mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                          member.is_active
-                            ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
-                            : 'bg-app-surface text-app-muted border-app-border-subtle'
-                        }`}
-                      >
-                        {member.is_active ? t('status.active') : t('common.disabled')}
-                      </span>
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
+                      <InitialsAvatar name={member.name} size="sm" />
+                      <div className="min-w-0">
+                        <p className="font-medium text-app-text-strong">{member.name}</p>
+                        <p className="mt-0.5 text-sm text-app-muted">{member.email}</p>
+                        {member.username && (
+                          <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
+                        )}
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {member.branch_name || t('pages.team.noBranch')}
+                        </p>
+                        <span
+                          className={`mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                            member.is_active
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20'
+                              : 'bg-app-surface text-app-muted border-app-border-subtle'
+                          }`}
+                        >
+                          {member.is_active ? t('status.active') : t('common.disabled')}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="mt-3">
@@ -567,7 +573,12 @@ export default function Team() {
               <tbody>
                 {displayedStaff.map((member) => (
                   <tr key={member.id} className={tableRowHover}>
-                    <td className="truncate font-medium text-app-text-strong">{member.name}</td>
+                    <td>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <InitialsAvatar name={member.name} size="sm" />
+                        <span className="truncate font-medium text-app-text-strong">{member.name}</span>
+                      </div>
+                    </td>
                     <td className="truncate text-app-text">{member.branch_name || '—'}</td>
                     <td className="truncate text-app-text">{member.email}</td>
                     <td className="truncate text-app-text">{member.username || '—'}</td>
@@ -655,15 +666,22 @@ export default function Team() {
               <div className="lg:hidden space-y-3">
                 {displayedTrainers.map((trainer) => (
                   <div key={trainer.id} className={`${cardSurface} p-4`}>
-                    <p className="font-medium text-app-text-strong">{trainer.name}</p>
-                    <p className="mt-0.5 text-sm text-app-muted">{trainer.phone || '—'}</p>
-                    {trainer.specialty ? (
-                      <p className="mt-0.5 text-xs text-app-muted">{trainer.specialty}</p>
-                    ) : null}
-                    <p className="mt-0.5 text-xs text-app-muted">{trainer.branch_name || t('pages.team.noBranch')}</p>
-                    <p className="mt-0.5 text-xs text-app-muted">
-                      {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
-                    </p>
+                    <div className="flex items-start gap-3">
+                      <InitialsAvatar name={trainer.name} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-app-text-strong">{trainer.name}</p>
+                        <p className="mt-0.5 text-sm text-app-muted">{trainer.phone || '—'}</p>
+                        {trainer.specialty ? (
+                          <p className="mt-0.5 text-xs text-app-muted">{trainer.specialty}</p>
+                        ) : null}
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {trainer.branch_name || t('pages.team.noBranch')}
+                        </p>
+                        <p className="mt-0.5 text-xs text-app-muted">
+                          {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
+                        </p>
+                      </div>
+                    </div>
                     <div className="mt-3">
                       <TrainerRowActions
                         trainer={trainer}
@@ -697,7 +715,14 @@ export default function Team() {
                     <tbody>
                       {displayedTrainers.map((trainer) => (
                         <tr key={trainer.id} className={tableRowHover}>
-                          <td className="truncate font-medium text-app-text-strong">{trainer.name}</td>
+                          <td>
+                            <div className="flex min-w-0 items-center gap-3">
+                              <InitialsAvatar name={trainer.name} size="sm" />
+                              <span className="truncate font-medium text-app-text-strong">
+                                {trainer.name}
+                              </span>
+                            </div>
+                          </td>
                           <td className="truncate text-app-text">{trainer.branch_name || '—'}</td>
                           <td className="truncate font-mono text-sm text-app-muted">{trainer.phone || '—'}</td>
                           <td className="truncate text-app-text">{trainer.specialty || '—'}</td>
