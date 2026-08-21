@@ -6,6 +6,7 @@ const MEMBER_TYPE_KEYS = {
   member_expired: 'smsLog.types.expired',
   member_renewed: 'smsLog.types.renewed',
   member_enrolled: 'smsLog.types.enrolled',
+  member_pass_link: 'smsLog.types.passLink',
 };
 
 const MEMBER_TYPE_PREVIEW_KEYS = {
@@ -14,6 +15,7 @@ const MEMBER_TYPE_PREVIEW_KEYS = {
   member_expired: 'smsLog.previews.expired',
   member_renewed: 'smsLog.previews.renewed',
   member_enrolled: 'smsLog.previews.enrolled',
+  member_pass_link: 'smsLog.previews.passLink',
 };
 
 const GYM_LICENSE_TYPE_KEYS = {
@@ -61,6 +63,7 @@ export const SMS_TYPE_FILTER_OPTIONS = [
   { value: 'member_expires_today', labelKey: 'smsLog.types.expiresToday' },
   { value: 'member_expired', labelKey: 'smsLog.types.expired' },
   { value: 'member_renewed', labelKey: 'smsLog.types.renewed' },
+  { value: 'member_pass_link', labelKey: 'smsLog.types.passLink' },
 ];
 
 export const GYM_SMS_TYPE_FILTER_OPTIONS = [

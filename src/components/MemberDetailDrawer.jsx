@@ -1,5 +1,5 @@
 // src/components/MemberDetailDrawer.jsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,11 +26,10 @@ import VisitRing from './VisitRing';
 import ConfirmDialog from './ConfirmDialog';
 import MemberModal from './MemberModal';
 import MemberPhoto from './MemberPhoto';
-import MemberPassModal from './MemberPassModal';
 import Button from './ui/Button';
 import { formatMoney } from '../utils/formatMoney';
 import { useAuth } from '../context/AuthContext';
-import { useGym } from '../context/GymContext';
+import { useFlash } from '../context/FlashContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import {
   SlidePanel,
@@ -45,6 +44,8 @@ import {
   SlidePanelActionButton,
   SlidePanelActionGrid,
 } from './SlidePanel';
+
+const MemberPassModal = React.lazy(() => import('./MemberPassModal'));
 
 const PAYMENTS_PREVIEW = 3;
 
@@ -72,8 +73,7 @@ export default function MemberDetailDrawer({
 }) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const { showFlash } = useGym();
-  const canShowPass = !isFormer && (isGymOwner(user?.role) || isGymStaff(user?.role));
+  const { showFlash } = useFlash();
   const friendlyDate = (value) => formatFriendlyDate(value, i18n.language);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -163,6 +163,7 @@ export default function MemberDetailDrawer({
   const currency = (amount) => formatMoney(amount);
 
   const isFormer = Boolean(member.deletedAt);
+  const canShowPass = !isFormer && (isGymOwner(user?.role) || isGymStaff(user?.role));
   const canShowChangePlan = !readOnly && !isFormer && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
   const canShowTransfer = showTransfer && onTransfer && !isFormer;
   const hasSecondaryActions = canShowChangePlan || (!readOnly && canShowTransfer);
@@ -562,12 +563,16 @@ export default function MemberDetailDrawer({
         onCancel={() => setIsDeleteOpen(false)}
       />
 
-      <MemberPassModal
-        open={isPassOpen}
-        member={member}
-        onClose={() => setIsPassOpen(false)}
-        onFlash={showFlash}
-      />
+      {isPassOpen ? (
+        <Suspense fallback={null}>
+          <MemberPassModal
+            open={isPassOpen}
+            member={member}
+            onClose={() => setIsPassOpen(false)}
+            onFlash={showFlash}
+          />
+        </Suspense>
+      ) : null}
     </>,
     document.body
   );

@@ -274,14 +274,16 @@
       "expiresToday": "Har'a dhumata",
       "expired": "Beeksisa dhumuu",
       "renewed": "Haaromsa mirkanaa'e",
-      "enrolled": "Galmeessi mirkanaa'e"
+      "enrolled": "Galmeessi mirkanaa'e",
+      "passLink": "Liinkii paasii miseensaa"
     },
     "previews": {
       "dueSoon": "Miseensa karoorri isaa akka dhihaatuuf yaadachiisa",
       "expiresToday": "Miseensummaan har'a akka dhumu hima",
       "expired": "Miseensummaan akka darbe hima",
       "renewed": "Haaromsa milkaa'e mirkaneessa",
-      "enrolled": "Galmeessuu mirkaneessaa fi baga nagaan dhufte jedha"
+      "enrolled": "Galmeessuu mirkaneessaa fi baga nagaan dhufte jedha",
+      "passLink": "Liinkii QR galchuu erga"
     },
     "gymTypes": {
       "dueSoon": "Hayyamni dhiyeenyatti dhumata (guyyaa 3)",
@@ -850,7 +852,9 @@
       "regeneratePassTitle": "QR miseensaa haaromsuu?",
       "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Koodii haaraa agarsiisi ykn maxxansi.",
       "regeneratePassConfirm": "QR haaromsii",
-      "showPass": "QR agarsiisi"
+      "showPass": "QR agarsiisi",
+      "printPass": "Paasii maxxansi",
+      "smsPass": "SMS ergi"
     },
     "team": {
       "title": "Hojjettoota",
@@ -1738,6 +1742,22 @@
     },
     "undoHint": "Eeguuf Deebi'i tuqi — kana cufuun haquu hin dhaabu.",
     "undoActionLabel": "{{action}} — jijjiirama kana haqi",
-    "dismissPending": "Beeksisa dhoksi — gochi itti fufa"
+    "dismissPending": "Beeksisa dhoksi — gochi itti fufa",
+    "memberPassPrinted": {
+      "title": "Paasii maxxansaaf qophaa'e",
+      "subtitle": "PDF {{name}} buufameera."
+    },
+    "memberPassSmsSent": {
+      "title": "Liinkin paasii ergameera",
+      "subtitle": "SMS gara {{name}} ({{phone}}) ergameera."
+    }
+  },
+  "publicPass": {
+    "title": "Paasii galchuu kee",
+    "hint": "Galchuuf QR kana desk irratti agarsiisi.",
+    "qrAlt": "QR galchuu {{name}}",
+    "missingToken": "Liinkin paasii kana hin guutamne. Desk akka deebisee ergitu gaafadhu.",
+    "loadFailed": "Paasii kana banuu hin dandeenye.",
+    "errorTitle": "Paasii hin jiru"
   }
 }

@@ -137,8 +137,6 @@
     "emptyFormer": "ቀድሞ የነበሩ ጂሞች የሉም",
     "emptyFormerBody": "ከማውጫ የወጡ ጂሞች እዚህ ይታያሉ። ወደ ማውጫ ለመመለስ መልስ ይጠቀሙ።",
     "restoreGym": "መልስ",
-    "expiresOn": "የሚያልቀው {{date}}",
-    "expiryDateCol": "ማለቂያ ቀን",
     "fromActivePlans": "ከንቁ የSaaS ዕቅዶች",
     "fullReportCsv": "ሙሉ ሪፖርት CSV",
     "fullReportPdf": "ሙሉ ሪፖርት PDF",
@@ -988,14 +986,16 @@
       "expiresToday": "ዛሬ የሚያልቅ",
       "expired": "ጊዜው ያለፈበት ማስታወሻ",
       "renewed": "እድሳት ተረጋግጧል",
-      "enrolled": "ምዝገባ ተረጋግጧል"
+      "enrolled": "ምዝገባ ተረጋግጧል",
+      "passLink": "የአባል ፓስ አገናኝ"
     },
     "previews": {
       "dueSoon": "ዕቅዳቸው በቅርብ እንደሚያልቅ ያሳውቃል",
       "expiresToday": "አባልነት ዛሬ እንደሚያበቃ ያሳውቃል",
       "expired": "አባልነት ጊዜው እንደአለፈ ያሳውቃል",
       "renewed": "እድሳት መሳካቱን ያረጋግጣል",
-      "enrolled": "ምዝገባን ያረጋግጣል እና እንኳን ደህና መጡ ይላል"
+      "enrolled": "ምዝገባን ያረጋግጣል እና እንኳን ደህና መጡ ይላል",
+      "passLink": "የመግቢያ QR አገናኝ ይልካል"
     },
     "gymTypes": {
       "dueSoon": "ፈቃድ በ3 ቀናት ውስጥ ያበቃል",
@@ -1223,7 +1223,9 @@
       "regeneratePassTitle": "የአባል QR እንደገና ይፈጠር?",
       "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። አዲሱን ኮድ አሳዩ ወይም ያትሙ።",
       "regeneratePassConfirm": "QR እንደገና ፍጠር",
-      "showPass": "QR አሳይ"
+      "showPass": "QR አሳይ",
+      "printPass": "ፓስ አትም",
+      "smsPass": "በSMS ላክ"
     },
     "team": {
       "title": "ሰራተኞች",
@@ -1728,6 +1730,22 @@
     },
     "undoHint": "ለመጠበቅ «መልስ»ን ይጫኑ — ይህን ማጥፋት አያስተላልፍም።",
     "undoActionLabel": "{{action}} — ለውጡን ሰርዝ",
-    "dismissPending": "ማሳወቂያውን ደብቅ — ተግባሩ እንደገና ይቀጥላል"
+    "dismissPending": "ማሳወቂያውን ደብቅ — ተግባሩ እንደገና ይቀጥላል",
+    "memberPassPrinted": {
+      "title": "ፓስ ለህትመት ዝግጁ",
+      "subtitle": "የ{{name}} PDF ወርዷል።"
+    },
+    "memberPassSmsSent": {
+      "title": "የፓስ አገናኝ ተልኳል",
+      "subtitle": "SMS ወደ {{name}} ({{phone}}) ተልኳል።"
+    }
+  },
+  "publicPass": {
+    "title": "የመግቢያ ፓስዎ",
+    "hint": "ለመግቢያ ይህን QR በዴስክ አሳዩ።",
+    "qrAlt": "የ{{name}} የመግቢያ QR",
+    "missingToken": "ይህ የፓስ አገናኝ ያልተሟላ ነው። ዴስኩ እንደገና እንዲልክ ይጠይቁ።",
+    "loadFailed": "ይህን ፓስ መክፈት አልተቻለም።",
+    "errorTitle": "ፓስ አይገኝም"
   }
 }

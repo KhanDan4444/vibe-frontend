@@ -274,14 +274,16 @@
       "expiresToday": "Expires today",
       "expired": "Expired notice",
       "renewed": "Renewal confirmed",
-      "enrolled": "Enrollment confirmed"
+      "enrolled": "Enrollment confirmed",
+      "passLink": "Member pass link"
     },
     "previews": {
       "dueSoon": "Reminds the member their plan is due soon",
       "expiresToday": "Lets them know membership ends today",
       "expired": "Notifies that the membership has expired",
       "renewed": "Confirms a successful renewal",
-      "enrolled": "Confirms enrollment and welcomes them"
+      "enrolled": "Confirms enrollment and welcomes them",
+      "passLink": "Sends a link to show their check-in QR"
     },
     "gymTypes": {
       "dueSoon": "License due soon (3 days)",
@@ -453,6 +455,9 @@
     "checkInFailed": "Check-in failed",
     "loadMemberPass": "Failed to load member QR",
     "regeneratePass": "Failed to regenerate member QR",
+    "printMemberPass": "Failed to print member pass",
+    "sendMemberPassSms": "Failed to send pass SMS",
+    "memberPassNoPhone": "Add a phone number before sending the pass by SMS.",
     "loadMemberReport": "Failed to load member report",
     "loadRevenueReport": "Failed to load revenue report"
   },
@@ -862,7 +867,9 @@
       "regeneratePassTitle": "Regenerate member QR?",
       "regeneratePassMessage": "The old QR for {{name}} will stop working immediately. Print or show the new code.",
       "regeneratePassConfirm": "Regenerate QR",
-      "showPass": "Show QR"
+      "showPass": "Show QR",
+      "printPass": "Print pass",
+      "smsPass": "Send SMS link"
     },
     "team": {
       "title": "Staff",
@@ -1752,6 +1759,14 @@
       "title": "QR regenerated",
       "subtitle": "Old codes for {{name}} no longer work."
     },
+    "memberPassPrinted": {
+      "title": "Pass ready to print",
+      "subtitle": "PDF downloaded for {{name}}."
+    },
+    "memberPassSmsSent": {
+      "title": "Pass link sent",
+      "subtitle": "SMS sent to {{name}} ({{phone}})."
+    },
     "gymUpdated": {
       "title": "Gym updated",
       "subtitle": "Registry details were saved."
@@ -1807,5 +1822,13 @@
     "undoHint": "Tap Undo to keep — closing this won't cancel.",
     "undoActionLabel": "{{action}} — cancel this change",
     "dismissPending": "Hide notification — action still continues"
+  },
+  "publicPass": {
+    "title": "Your check-in pass",
+    "hint": "Show this QR at the front desk to check in.",
+    "qrAlt": "Check-in QR for {{name}}",
+    "missingToken": "This pass link is incomplete. Ask the desk to send it again.",
+    "loadFailed": "Could not open this pass.",
+    "errorTitle": "Pass unavailable"
   }
 }

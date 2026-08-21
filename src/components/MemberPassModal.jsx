@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { QrCode, RefreshCw } from 'lucide-react';
+import { MessageSquare, Printer, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
 import Button from './ui/Button';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 import { modalTitle, mutedText } from '../utils/surfaceClasses';
 import { parseApiResponse, formatApiError } from '../utils/api';
-import { getMemberPass, regenerateMemberPass } from '../services/memberService';
+import {
+  getMemberPass,
+  regenerateMemberPass,
+  sendMemberPassSms,
+} from '../services/memberService';
 import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
 
 /**
- * Premium member QR pass modal — SoftSurface card, ConfirmDialog regenerate.
+ * Premium member QR pass modal — print card + SMS link + regenerate.
  */
 export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const { t } = useTranslation();
@@ -23,6 +27,8 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const [pass, setPass] = useState(null);
   const [confirmRegen, setConfirmRegen] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [printing, setPrinting] = useState(false);
+  const [smsSending, setSmsSending] = useState(false);
 
   const loadPass = useCallback(async () => {
     if (!member?.id) return;
@@ -88,7 +94,64 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
     }
   };
 
+  const handlePrint = async () => {
+    if (!pass?.qr_data_url || printing) return;
+    setPrinting(true);
+    try {
+      const { downloadMemberPassPdf } = await import('../utils/printMemberPass');
+      await downloadMemberPassPdf({
+        gymName: pass.gym_name,
+        memberName: member.name,
+        memberPhone: member.phone || pass.member?.phone,
+        qrDataUrl: pass.qr_data_url,
+        photoDataUrl: pass.member?.photo_data_url || null,
+        passVersion: pass.pass_version,
+        labels: {
+          title: t('pages.checkIn.memberPassTitle'),
+          passVersion: t('pages.checkIn.passVersion', { version: '{{version}}' }),
+        },
+      });
+      onFlash?.({
+        title: t('flash.memberPassPrinted.title'),
+        subtitle: t('flash.memberPassPrinted.subtitle', { name: member.name }),
+        variant: 'success',
+      });
+    } catch (err) {
+      onFlash?.({ title: err.message || t('errors.printMemberPass'), variant: 'danger' });
+    } finally {
+      setPrinting(false);
+    }
+  };
+
+  const handleSms = async () => {
+    if (!member?.id || smsSending) return;
+    if (!member.phone && !pass?.member?.phone) {
+      onFlash?.({ title: t('errors.memberPassNoPhone'), variant: 'danger' });
+      return;
+    }
+    setSmsSending(true);
+    try {
+      const res = await sendMemberPassSms(apiFetch, member.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(formatApiError(data) || data.error || t('errors.sendMemberPassSms'));
+      onFlash?.({
+        title: t('flash.memberPassSmsSent.title'),
+        subtitle: t('flash.memberPassSmsSent.subtitle', {
+          name: member.name,
+          phone: data.phone || member.phone,
+        }),
+        variant: 'success',
+      });
+    } catch (err) {
+      onFlash?.({ title: err.message, variant: 'danger' });
+    } finally {
+      setSmsSending(false);
+    }
+  };
+
   if (!open || !member) return null;
+
+  const busy = loading || regenerating || printing || smsSending;
 
   return (
     <>
@@ -149,6 +212,30 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               </p>
             ) : null}
           </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={busy || !pass?.qr_data_url}
+              onClick={() => void handlePrint()}
+              className="w-full"
+            >
+              <Printer className="h-4 w-4" />
+              {printing ? t('common.processing') : t('pages.checkIn.printPass')}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={busy || !member.phone}
+              onClick={() => void handleSms()}
+              className="w-full"
+              title={!member.phone ? t('errors.memberPassNoPhone') : undefined}
+            >
+              <MessageSquare className="h-4 w-4" />
+              {smsSending ? t('common.processing') : t('pages.checkIn.smsPass')}
+            </Button>
+          </div>
         </div>
         <div className={modalFooter}>
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
@@ -158,7 +245,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             <Button
               type="button"
               variant="ghost"
-              disabled={loading || regenerating}
+              disabled={busy}
               onClick={() => setConfirmRegen(true)}
               className="w-full sm:w-auto"
             >

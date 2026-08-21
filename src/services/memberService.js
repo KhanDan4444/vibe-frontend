@@ -17,6 +17,9 @@ export const getMemberPass = (apiFetch, id) => apiFetch(`/members/${id}/pass`);
 export const regenerateMemberPass = (apiFetch, id) =>
   apiFetch(`/members/${id}/pass/regenerate`, { method: 'POST' });
 
+export const sendMemberPassSms = (apiFetch, id) =>
+  apiFetch(`/members/${id}/pass/sms`, { method: 'POST' });
+
 export const enrollMember = (apiFetch, payload) =>
   apiFetch('/members/enroll', {
     method: 'POST',
