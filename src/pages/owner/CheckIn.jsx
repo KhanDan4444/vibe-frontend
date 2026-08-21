@@ -356,7 +356,7 @@ export default function CheckIn() {
         </Card>
       ) : null}
 
-      {/* Desk hero: teal wash reads in light; glow orb stronger than flat white */}
+      {/* Desk hero: stronger teal wash in light only; dark keeps the quieter glow */}
       <div
         className={`relative overflow-hidden ${cardSurface} !bg-transparent`}
         style={{
@@ -364,12 +364,25 @@ export default function CheckIn() {
             'linear-gradient(155deg, color-mix(in srgb, var(--color-brand) 16%, var(--color-app-raised)) 0%, color-mix(in srgb, var(--color-brand) 5%, var(--color-app-raised)) 42%, var(--color-app-raised) 100%)',
         }}
       >
+        {/* Light: richer orbs. Dark: original soft single glow */}
         <div
-          className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full bg-[color:var(--color-brand)] opacity-[0.16] blur-3xl dark:opacity-[0.22]"
+          className="pointer-events-none absolute -right-12 -top-16 h-56 w-56 rounded-full bg-[color:var(--color-brand)] opacity-[0.16] blur-3xl dark:hidden"
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -left-10 bottom-0 h-36 w-36 rounded-full bg-[color:var(--color-brand)] opacity-[0.07] blur-3xl dark:opacity-[0.12]"
+          className="pointer-events-none absolute -left-10 bottom-0 h-36 w-36 rounded-full bg-[color:var(--color-brand)] opacity-[0.07] blur-3xl dark:hidden"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -right-16 -top-20 hidden h-48 w-48 rounded-full bg-[color:var(--color-brand)] opacity-[0.05] blur-3xl dark:block"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 hidden dark:block"
+          style={{
+            background:
+              'linear-gradient(160deg, color-mix(in srgb, var(--color-brand) 8%, var(--color-app-surface)) 0%, var(--color-app-surface) 55%, var(--color-app-surface) 100%)',
+          }}
           aria-hidden
         />
         <div className="relative space-y-5 p-5 sm:space-y-6 sm:p-6">
