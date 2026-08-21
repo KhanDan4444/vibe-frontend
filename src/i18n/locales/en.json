@@ -841,7 +841,9 @@
       "capChipUnlimited": "Unlimited",
       "capChipDays": "{{count}} days / week",
       "heroHint": "Search a member to check them in. The ring shows visits used this week.",
-      "todayEmptyTitle": "No one yet today"
+      "todayEmptyTitle": "No one yet today",
+      "showMore": "Show more",
+      "showingOf": "{{shown}} of {{total}}"
     },
     "team": {
       "title": "Staff",

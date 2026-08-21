@@ -2,12 +2,12 @@
 
 | | |
 |---|---|
-| **Status** | Phase 2 (Desk check-in) in implementation — QR still later |
+| **Status** | Phase 2 desk check-in live on web + mobile — QR still later |
 | **Date** | 18 August 2026 |
 | **Product** | Vibe (API `vibe`, web `vibe-frontend`, mobile `vibe-mobile`) |
 | **Depends on** | Live memberships, Former/archive, Front Desk staff, SMS, branch scoping |
 
-This document is the implementation blueprint. Do **not** treat it as in-scope until a later sprint. When executed, update `docs/SRS.md` (attendance is currently listed as out of scope).
+This document is the implementation blueprint. Desk check-in (Phase 2) is live on web + mobile. QR remains later. Attendance desk check-in is now in-scope in `docs/SRS.md` (QR / absence SMS still out of scope).
 
 ---
 

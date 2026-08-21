@@ -35,10 +35,13 @@ const CAP_OPTIONS = [
   { value: '6', labelKey: 'pages.checkIn.capDays', days: 6 },
 ];
 
+const TODAY_PAGE_SIZE = 40;
+
 export default function CheckIn() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
-  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, branches } = useGym();
+  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, branches, selectedBranchId } =
+    useGym();
   const owner = isGymOwner(user?.role);
 
   const [query, setQuery] = useState('');
@@ -49,6 +52,7 @@ export default function CheckIn() {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [today, setToday] = useState({ date: '', total: 0, checkIns: [] });
+  const [todayLimit, setTodayLimit] = useState(TODAY_PAGE_SIZE);
   const [todayLoading, setTodayLoading] = useState(true);
   const [checkingId, setCheckingId] = useState(null);
   const [forceTarget, setForceTarget] = useState(null);
@@ -57,11 +61,18 @@ export default function CheckIn() {
   const [searchNonce, setSearchNonce] = useState(0);
   /** @type {Record<number, { code: string, message: string }>} */
   const [cardErrors, setCardErrors] = useState({});
+  /** @type {Record<number, boolean>} */
+  const [successIds, setSuccessIds] = useState({});
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(query.trim()), 280);
     return () => clearTimeout(id);
   }, [query]);
+
+  useEffect(() => {
+    setCardErrors({});
+    setSuccessIds({});
+  }, [debounced]);
 
   const loadSettings = useCallback(async () => {
     try {
@@ -79,7 +90,10 @@ export default function CheckIn() {
   const loadToday = useCallback(async () => {
     setTodayLoading(true);
     try {
-      const res = await listCheckIns(apiFetch, { ...getBranchQueryParams(), limit: 40 });
+      const res = await listCheckIns(apiFetch, {
+        ...getBranchQueryParams(),
+        limit: todayLimit,
+      });
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || t('errors.loadCheckIns'));
       setToday({
@@ -94,7 +108,11 @@ export default function CheckIn() {
     } finally {
       setTodayLoading(false);
     }
-  }, [apiFetch, getBranchQueryParams, t]);
+  }, [apiFetch, getBranchQueryParams, t, todayLimit]);
+
+  useEffect(() => {
+    setTodayLimit(TODAY_PAGE_SIZE);
+  }, [selectedBranchId]);
 
   useEffect(() => {
     void loadSettings();
@@ -106,9 +124,11 @@ export default function CheckIn() {
       setResults([]);
       setSearching(false);
       setCardErrors({});
+      setSuccessIds({});
       return;
     }
     setCardErrors({});
+    setSuccessIds({});
     let cancelled = false;
     (async () => {
       setSearching(true);
@@ -178,23 +198,30 @@ export default function CheckIn() {
     );
     const memberId = data.member?.id ?? data.checkIn?.member_id;
     if (memberId != null) {
-      setCardErrors((prev) => {
-        const next = { ...prev };
-        delete next[memberId];
-        return next;
-      });
+      setCardErrors((prev) => ({
+        ...prev,
+        [memberId]: { code: 'ALREADY_TODAY', message: t('pages.checkIn.alreadyToday') },
+      }));
+      setSuccessIds((prev) => ({ ...prev, [memberId]: true }));
+      window.setTimeout(() => {
+        setSuccessIds((prev) => {
+          const next = { ...prev };
+          delete next[memberId];
+          return next;
+        });
+      }, 900);
+      setResults((prev) =>
+        prev.map((m) =>
+          m.id === memberId
+            ? {
+                ...m,
+                visits_this_week: data.visits_this_week,
+                visits_limit: data.visits_limit,
+              }
+            : m
+        )
+      );
     }
-    setResults((prev) =>
-      prev.map((m) =>
-        m.id === memberId
-          ? {
-              ...m,
-              visits_this_week: data.visits_this_week,
-              visits_limit: data.visits_limit,
-            }
-          : m
-      )
-    );
     void loadToday();
     void refreshSummary?.();
   };
@@ -329,59 +356,55 @@ export default function CheckIn() {
         </Card>
       ) : null}
 
-      {/* First viewport: desk cue + search + today */}
+      {/* Desk hero: search primary, count beside it */}
       <div
         className={`relative overflow-hidden ${cardSurface}`}
         style={{
           background:
-            'linear-gradient(160deg, color-mix(in srgb, var(--color-brand) 10%, var(--color-app-surface)) 0%, var(--color-app-surface) 48%, var(--color-app-surface) 100%)',
+            'linear-gradient(160deg, color-mix(in srgb, var(--color-brand) 8%, var(--color-app-surface)) 0%, var(--color-app-surface) 55%, var(--color-app-surface) 100%)',
         }}
       >
-        <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-[color:var(--color-brand)] opacity-[0.06] blur-3xl" />
-        <div className="relative space-y-5 p-4 sm:p-6">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
-                  {t('pages.checkIn.deskLabel')}
-                </p>
-                {capChipLabel ? (
-                  <button
-                    type="button"
-                    disabled={!owner || !canManage || readOnly}
-                    onClick={() => owner && canManage && setSettingsOpen(true)}
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold tabular-nums transition-colors ${
-                      owner && canManage
-                        ? 'border-[color:var(--color-brand)]/30 bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)] hover:border-[color:var(--color-brand)]/50'
-                        : 'border-app-border-subtle bg-app-raised text-app-muted'
-                    }`}
-                    title={owner && canManage ? t('pages.checkIn.visitRules') : undefined}
-                  >
-                    {capChipLabel}
-                  </button>
-                ) : null}
-              </div>
-              <p className="mt-2 max-w-lg text-sm leading-relaxed text-app-muted">
-                {t('pages.checkIn.heroHint')}
-              </p>
-            </div>
-            <div className="shrink-0 text-left sm:text-right">
-              <p className="font-display text-5xl font-semibold tabular-nums tracking-tight text-app-text-strong sm:text-6xl">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[color:var(--color-brand)] opacity-[0.05] blur-3xl" />
+        <div className="relative space-y-3 p-3.5 sm:space-y-3.5 sm:p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted">
+              {t('pages.checkIn.deskLabel')}
+            </p>
+            {capChipLabel ? (
+              <button
+                type="button"
+                disabled={!owner || !canManage || readOnly}
+                onClick={() => owner && canManage && setSettingsOpen(true)}
+                className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold tabular-nums transition-colors ${
+                  owner && canManage
+                    ? 'border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)] hover:border-[color:var(--color-brand)]/45'
+                    : 'border-app-border-subtle bg-app-raised text-app-muted'
+                }`}
+                title={owner && canManage ? t('pages.checkIn.visitRules') : undefined}
+              >
+                {capChipLabel}
+              </button>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-3 sm:gap-4">
+            <SearchField
+              value={query}
+              onChange={setQuery}
+              placeholder={t('pages.checkIn.searchPlaceholder')}
+              className="min-w-0 flex-1"
+            />
+            <div className="shrink-0 text-right tabular-nums">
+              <p className="font-display text-3xl font-semibold tracking-tight text-app-text-strong sm:text-4xl">
                 {todayLoading ? '—' : today.total}
               </p>
-              <p className="mt-0.5 text-xs font-medium uppercase tracking-wide text-app-muted">
+              <p className="mt-0.5 max-w-[5.5rem] text-[10px] font-semibold uppercase leading-tight tracking-wide text-app-muted">
                 {todayLoading
                   ? t('pages.checkIn.todayCount')
                   : t('pages.checkIn.todayMembers', { count: today.total })}
               </p>
             </div>
           </div>
-          <SearchField
-            value={query}
-            onChange={setQuery}
-            placeholder={t('pages.checkIn.searchPlaceholder')}
-            className="max-w-2xl"
-          />
         </div>
       </div>
 
@@ -401,7 +424,7 @@ export default function CheckIn() {
           ) : results.length === 0 ? (
             <Card className="overflow-hidden">
               <EmptyState
-                tone="brand"
+                tone="muted"
                 compact
                 icon={UserRound}
                 title={t('pages.checkIn.noMatchesTitle')}
@@ -409,32 +432,36 @@ export default function CheckIn() {
               />
             </Card>
           ) : (
-            <div className="grid gap-3 lg:grid-cols-2">
+            <div className="grid gap-3 lg:grid-cols-2 check-in-results">
               {results.map((member) => {
                 const status = formatMemberStatusForDisplay(member.status);
                 const busy = checkingId === member.id;
                 const checkInBlocked = status === DISPLAY_STATUS.EXPIRED;
                 const cardError = cardErrors[member.id];
-                const showCardError = Boolean(cardError);
+                const showCardError = Boolean(cardError) && !successIds[member.id];
+                const justCheckedIn = Boolean(successIds[member.id]);
                 const errorText = cardError?.message || '';
                 return (
                   <div
                     key={member.id}
-                    className={`${cardSurface} flex items-center gap-4 overflow-visible p-4 transition-[box-shadow,transform] duration-200 motion-safe:hover:-translate-y-0.5 ${
-                      showCardError
-                        ? '!ring-2 !ring-[color:var(--color-status-expired)]'
-                        : 'hover:ring-[color:var(--color-brand)]/35'
+                    className={`check-in-result-card ${cardSurface} flex items-center gap-4 overflow-visible p-4 transition-[box-shadow,transform,background-color] duration-200 motion-safe:hover:-translate-y-0.5 ${
+                      justCheckedIn
+                        ? '!border-[color:var(--color-brand)]/40 !bg-[color:var(--color-brand-soft)]'
+                        : showCardError
+                          ? '!border-[color:var(--color-status-expired)]/50 !bg-[color:var(--color-status-expired)]/[0.06] !ring-1 !ring-[color:var(--color-status-expired)]/35'
+                          : 'hover:ring-[color:var(--color-brand)]/30'
                     }`}
                   >
-                    <div className="relative shrink-0 pb-2 pr-2">
+                    <div className="relative shrink-0 pb-1.5 pr-1.5">
                       <VisitRing
                         visits={member.visits_this_week ?? 0}
                         limit={member.visits_limit}
-                        size={88}
-                        stroke={7}
+                        size={92}
+                        stroke={6.5}
                         weekStartsOn={settings?.week_starts_on || 'monday'}
+                        celebrate={justCheckedIn}
                       />
-                      <div className="absolute bottom-0 right-0 rounded-full ring-2 ring-[color:var(--color-app-raised)]">
+                      <div className="absolute bottom-0 right-0 rounded-full bg-[color:var(--color-app-raised)] p-[2px] shadow-sm ring-1 ring-black/5">
                         <MemberPhoto
                           memberId={member.id}
                           apiFetch={apiFetch}
@@ -454,11 +481,6 @@ export default function CheckIn() {
                       <div className="mt-1 flex flex-wrap items-center gap-1.5">
                         <StatusBadge status={status} />
                         {member.is_unpaid ? <UnpaidBadge /> : null}
-                        {member.trainer_name ? (
-                          <span className="truncate text-[11px] text-app-muted">
-                            {member.trainer_name}
-                          </span>
-                        ) : null}
                       </div>
                       {showCardError && errorText ? (
                         <p className="mt-1.5 text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
@@ -471,8 +493,8 @@ export default function CheckIn() {
                         <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
                           {t('pages.checkIn.blockedExpired')}
                         </p>
-                      ) : cardError?.code === 'ALREADY_TODAY' ? (
-                        <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
+                      ) : justCheckedIn || cardError?.code === 'ALREADY_TODAY' ? (
+                        <p className="text-xs font-semibold leading-snug text-[color:var(--color-brand-text)]">
                           {t('pages.checkIn.alreadyTodayShort')}
                         </p>
                       ) : cardError?.code === 'WEEKLY_LIMIT' ? (
@@ -482,7 +504,7 @@ export default function CheckIn() {
                       ) : (
                         <button
                           type="button"
-                          disabled={readOnly || busy}
+                          disabled={readOnly || busy || checkingId != null}
                           onClick={() => void runCheckIn(member)}
                           className={`${renewActionBtn} disabled:cursor-not-allowed disabled:opacity-50`}
                         >
@@ -528,40 +550,62 @@ export default function CheckIn() {
             body={t('pages.checkIn.todayEmpty')}
           />
         ) : (
-          <ul className="space-y-1 p-2 sm:p-3">
-            {today.checkIns.map((row) => (
-              <li
-                key={row.id}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-app-bg/60"
-                title={
-                  row.checked_in_by_name
-                    ? t('pages.checkIn.checkedInBy', { name: row.checked_in_by_name })
-                    : undefined
-                }
-              >
-                <MemberPhoto
-                  memberId={row.member_id}
-                  apiFetch={apiFetch}
-                  name={row.member_name}
-                  hasPhoto={Boolean(row.member_photo_url)}
-                  expandable={false}
-                  className="h-10 w-10 rounded-full object-cover"
-                  fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-display text-sm font-semibold tracking-tight text-app-text-strong sm:text-base">
-                    {row.member_name}
-                  </p>
-                  {showBranchOnToday && row.branch_name ? (
-                    <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
-                  ) : null}
-                </div>
-                <time className="shrink-0 text-sm font-semibold tabular-nums tracking-tight text-app-text-strong">
+          <>
+            <ul className="space-y-1 p-2 sm:p-3">
+              {today.checkIns.map((row) => (
+                <li
+                  key={row.id}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-app-bg/60"
+                  title={
+                    row.checked_in_by_name
+                      ? t('pages.checkIn.checkedInBy', { name: row.checked_in_by_name })
+                      : undefined
+                  }
+                >
+                  <MemberPhoto
+                    memberId={row.member_id}
+                    apiFetch={apiFetch}
+                    name={row.member_name}
+                    hasPhoto={Boolean(row.member_photo_url)}
+                    expandable={false}
+                    className="h-10 w-10 rounded-full object-cover"
+                    fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-display text-sm font-semibold tracking-tight text-app-text-strong sm:text-base">
+                      {row.member_name}
+                    </p>
+                    {showBranchOnToday && row.branch_name ? (
+                      <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
+                    ) : null}
+                  </div>
+                <time className="shrink-0 font-display text-sm font-semibold tabular-nums tracking-tight text-[color:var(--color-brand-text)]">
                   {formatCheckInTime(row.checked_in_at)}
                 </time>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+            {today.total > today.checkIns.length ? (
+              <div className="border-t border-app-border px-3 py-3 sm:px-4">
+                <p className="mb-2 text-center text-[11px] text-app-muted">
+                  {t('pages.checkIn.showingOf', {
+                    shown: today.checkIns.length,
+                    total: today.total,
+                  })}
+                </p>
+                {today.checkIns.length < 100 ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setTodayLimit((n) => Math.min(100, n + TODAY_PAGE_SIZE))}
+                  >
+                    {t('pages.checkIn.showMore')}
+                  </Button>
+                ) : null}
+              </div>
+            ) : null}
+          </>
         )}
       </Card>
 

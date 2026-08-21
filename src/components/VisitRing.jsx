@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Check } from 'lucide-react';
 
 function startOfWeekLocal(date, weekStartsOn = 'monday') {
   const d = new Date(date);
@@ -32,6 +33,7 @@ export default function VisitRing({
   size = 88,
   stroke = 7,
   weekStartsOn = 'monday',
+  celebrate = false,
   className = '',
 }) {
   const { t } = useTranslation();
@@ -51,10 +53,11 @@ export default function VisitRing({
   const r = (size - drawStroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c * (1 - progress);
+  const discSize = Math.max(size - stroke * 2 - 10, size * 0.55);
 
   const track = empty
     ? 'color-mix(in srgb, var(--color-app-text) 32%, var(--color-app-border))'
-    : 'var(--color-app-border-subtle)';
+    : 'color-mix(in srgb, var(--color-app-text) 8%, var(--color-app-border-subtle))';
   const fill = warnRed
     ? 'var(--color-status-expired)'
     : warnAmber
@@ -67,7 +70,14 @@ export default function VisitRing({
       : empty
         ? 'text-app-text'
         : 'text-app-text-strong';
-  const emptyDash = `${Math.round(emptyStroke * 1.15)} ${Math.round(emptyStroke * 0.55)}`;
+  const discClass = warnRed
+    ? 'bg-[color:var(--color-status-expired)]/10'
+    : warnAmber
+      ? 'bg-[color:var(--color-status-due-soon)]/10'
+      : empty
+        ? 'bg-app-bg'
+        : 'bg-[color:var(--color-brand-soft)]';
+  const emptyDash = `${Math.round(emptyStroke * 1.2)} ${Math.round(emptyStroke * 0.65)}`;
 
   return (
     <div
@@ -80,6 +90,11 @@ export default function VisitRing({
           : t('pages.checkIn.ringUnlimited', { count: safeVisits })
       }
     >
+      <div
+        className={`pointer-events-none absolute rounded-full ${discClass}`}
+        style={{ width: discSize, height: discSize }}
+        aria-hidden
+      />
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
         <circle
           cx={size / 2}
@@ -89,7 +104,7 @@ export default function VisitRing({
           stroke={track}
           strokeWidth={drawStroke}
           strokeDasharray={empty ? emptyDash : undefined}
-          strokeLinecap={empty ? 'butt' : undefined}
+          strokeLinecap={empty ? 'butt' : 'round'}
         />
         {!empty ? (
           <circle
@@ -106,28 +121,42 @@ export default function VisitRing({
           />
         ) : null}
       </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center leading-none">
+      <div
+        className={`absolute inset-0 flex flex-col items-center justify-center text-center leading-none transition-opacity duration-200 ${
+          celebrate ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
         {capped ? (
           <>
-            <span className={`text-lg font-semibold tracking-tight tabular-nums ${countClass}`}>
+            <span
+              className={`font-display text-lg font-semibold tracking-tight tabular-nums ${countClass}`}
+            >
               {safeVisits}
-              <span className="font-medium text-app-muted">/{limit}</span>
+              <span className="text-[0.9em] font-medium text-app-muted">/{limit}</span>
             </span>
-            <span className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-app-muted">
+            <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.08em] text-app-muted">
               {t('pages.checkIn.ringUnit')}
             </span>
           </>
         ) : (
           <>
-            <span className="text-lg font-semibold tracking-tight text-app-text-strong tabular-nums">
+            <span className="font-display text-lg font-semibold tracking-tight text-app-text-strong tabular-nums">
               {safeVisits}
             </span>
-            <span className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-app-muted">
+            <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.08em] text-app-muted">
               {t('pages.checkIn.ringUnit')}
             </span>
           </>
         )}
       </div>
+      {celebrate ? (
+        <div
+          className="visit-ring-tick pointer-events-none absolute inset-0 flex items-center justify-center text-[color:var(--color-brand)]"
+          aria-hidden
+        >
+          <Check className="h-7 w-7" strokeWidth={2.75} />
+        </div>
+      ) : null}
     </div>
   );
 }

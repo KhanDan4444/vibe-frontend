@@ -75,13 +75,16 @@ The system consists of three deliverables:
 - Subscription enforcement (active / suspended read-only / expired lockout)
 - Audit logging of gym operations
 - Offline-first mobile operation with a write queue and sync
+- Desk check-in: staff search members and record visits (web + mobile), with optional weekly visit caps and dashboards showing who checked in today
 
 **Out of scope (explicitly not provided):**
 
 - Online payment gateway integration (all payments are recorded manually)
 - Member-facing self-service portal or member mobile app
 - Push notifications (notifications are in-app and SMS only)
-- Class/session scheduling, attendance tracking, or access-control hardware integration
+- Class/session scheduling or access-control hardware integration
+- QR / barcode member passes and staff scan check-in (planned later)
+- Automated absence SMS based on missed visits
 - Payroll or inventory management
 
 ### 1.3 Definitions, Acronyms, and Abbreviations
