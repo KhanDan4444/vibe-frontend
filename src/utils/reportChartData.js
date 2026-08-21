@@ -4,6 +4,7 @@
  */
 
 import { formatDisplayDate } from './date';
+import { formatPlanDisplayName } from './formatPlanDisplayName';
 
 /** Distinct slice colors for payment method donut charts. */
 export const PAYMENT_METHOD_COLORS = {
@@ -187,7 +188,7 @@ export function aggregateMembersOverview(members) {
 export function aggregateMembersByPlan(members) {
   const counts = {};
   members.forEach((m) => {
-    const name = m.plan_name || 'No plan';
+    const name = formatPlanDisplayName(m.plan_name) || 'No plan';
     counts[name] = (counts[name] || 0) + 1;
   });
   return Object.entries(counts)

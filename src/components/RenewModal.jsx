@@ -14,6 +14,7 @@ import FieldError from './FieldError';
 import { DateField } from './DateField';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import { formatMoney } from '../utils/formatMoney';
+import { formatPlanDisplayName } from '../utils/formatPlanDisplayName';
 import { DISPLAY_STATUS } from '../utils/memberStatus';
 import { defaultRenewStartDate, canRenewMember } from '../utils/memberRenew';
 import { calculateEndDate } from '../utils/memberDates';
@@ -177,7 +178,7 @@ export default function RenewModal({
               <option value="" disabled>{t('modals.renew.selectPlan')}</option>
               {plans.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — {formatMoney(p.price)} / {p.duration}mo
+                  {formatPlanDisplayName(p.name)} — {formatMoney(p.price)} / {p.duration}mo
                 </option>
               ))}
             </select>

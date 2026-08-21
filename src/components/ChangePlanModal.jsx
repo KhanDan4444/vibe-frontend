@@ -27,6 +27,7 @@ import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { getMemberPayments } from '../services/memberService';
 import { formatMoney } from '../utils/formatMoney';
+import { formatPlanDisplayName } from '../utils/formatPlanDisplayName';
 import ChangePlanPaymentSummary from './ChangePlanPaymentSummary';
 import ChangePlanAmountHint from './ChangePlanAmountHint';
 import ResponsiveModal from './ResponsiveModal';
@@ -330,7 +331,7 @@ export default function ChangePlanModal({
               </option>
               {otherPlans.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — {formatMoney(p.price)} / {p.duration}mo
+                  {formatPlanDisplayName(p.name)} — {formatMoney(p.price)} / {p.duration}mo
                 </option>
               ))}
             </select>

@@ -13,6 +13,7 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import RowMoreMenu from '../../components/RowMoreMenu';
 import { formatMoney } from '../../utils/formatMoney';
+import { formatPlanDisplayName } from '../../utils/formatPlanDisplayName';
 import { cardSurface } from '../../utils/surfaceClasses';
 import ToolbarPicker from '../../components/ToolbarPicker';
 import { flashFromKey } from '../../i18n/flashToast';
@@ -153,7 +154,7 @@ export default function Plans() {
 
     if (activeDependentsCount > 0) {
       setError(
-        t('pages.plans.cannotDelete', { name: plan.name, count: activeDependentsCount })
+        t('pages.plans.cannotDelete', { name: formatPlanDisplayName(plan.name), count: activeDependentsCount })
       );
       return;
     }
@@ -275,9 +276,9 @@ export default function Plans() {
 
                   <h3
                     className="mt-4 truncate text-base font-semibold text-app-text-strong"
-                    title={plan.name}
+                    title={formatPlanDisplayName(plan.name)}
                   >
-                    {plan.name}
+                    {formatPlanDisplayName(plan.name)}
                   </h3>
 
                   {plan.description ? (
@@ -338,7 +339,9 @@ export default function Plans() {
       <ConfirmDialog
         isOpen={!!planToDelete}
         title={t('pages.plans.deleteTitle')}
-        message={t('pages.plans.deleteConfirmMessage', { name: planToDelete?.name })}
+        message={t('pages.plans.deleteConfirmMessage', {
+          name: formatPlanDisplayName(planToDelete?.name),
+        })}
         confirmText={t('common.delete')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setPlanToDelete(null)}

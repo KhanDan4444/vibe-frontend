@@ -1,5 +1,6 @@
 import { formatMoney } from '../utils/formatMoney';
 import { formatDisplayDate } from '../utils/date';
+import { formatPlanDisplayName } from '../utils/formatPlanDisplayName';
 
 /**
  * Scannable amount hint: bold suggested total + muted one-line explanation.
@@ -31,20 +32,20 @@ export default function ChangePlanAmountHint({
     detail = t(
       license ? 'modals.changeSaasPlan.suggestedFreshTermDetail' : 'modals.changePlan.suggestedFreshTermDetail',
       {
-        planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
+        planName: formatPlanDisplayName(selectedPlan?.name) || t('modals.billing.newPlanFallback'),
         paidThrough: formatDisplayDate(paidThrough),
       }
     );
   } else if (upgradeHint.prePayment) {
     detail = t('modals.changePlan.suggestedPrePaymentDetail', {
-      planName: selectedPlan?.name || t('modals.billing.newPlanFallback'),
+      planName: formatPlanDisplayName(selectedPlan?.name) || t('modals.billing.newPlanFallback'),
     });
   } else if (upgradeHint.isDowngrade) {
     detail = t(
       license ? 'modals.changeSaasPlan.suggestedDowngradeDetail' : 'modals.changePlan.suggestedDowngradeDetail',
       {
         endDate: formatDisplayDate(paidThrough),
-        planName: currentPlan?.name || '—',
+        planName: formatPlanDisplayName(currentPlan?.name) || '—',
       }
     );
   } else {
@@ -52,7 +53,7 @@ export default function ChangePlanAmountHint({
       credit: formatMoney(upgradeHint.credit),
       days: upgradeHint.remainingDays,
       dayLabel: t(upgradeHint.remainingDays === 1 ? 'modals.billing.day' : 'modals.billing.days'),
-      planName: currentPlan?.name || '—',
+      planName: formatPlanDisplayName(currentPlan?.name) || '—',
     });
   }
 

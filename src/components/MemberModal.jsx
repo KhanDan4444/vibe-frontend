@@ -24,6 +24,7 @@ import {
 } from '../utils/validation';
 import { compressMemberPhoto } from '../utils/compressMemberPhoto';
 import { calculateEndDate } from '../utils/memberDates';
+import { formatPlanDisplayName, resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../i18n/helpers.js';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
@@ -478,7 +479,7 @@ export default function MemberModal({
   }));
   const planOptions = plans.map((p) => ({
     value: String(p.id),
-    label: `${p.name} (${formatMoney(p.price)})`,
+    label: `${formatPlanDisplayName(p.name)} (${formatMoney(p.price)})`,
   }));
   const trainerOptions = [
     { value: '', label: t('modals.member.noTrainer') },
@@ -867,7 +868,9 @@ export default function MemberModal({
                       >
                         <option value="">{t('modals.renew.selectPlan')}</option>
                         {plans.map((p) => (
-                          <option key={p.id} value={p.id}>{p.name} ({formatMoney(p.price)})</option>
+                          <option key={p.id} value={p.id}>
+                            {formatPlanDisplayName(p.name)} ({formatMoney(p.price)})
+                          </option>
                         ))}
                       </select>
                     </>
@@ -911,7 +914,7 @@ export default function MemberModal({
             <div className="rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text">
               <p>
                 <span className="font-medium text-app-text-strong">{t('table.plan')}:</span>{' '}
-                {plans.find((p) => p.id === member.planId)?.name || member.planName || '—'}
+                {resolveMemberPlanLabel(member, plans, '—')}
               </p>
               <p className="mt-1">
                 <span className="font-medium text-app-text-strong">{t('modals.member.term')}:</span> {formatDisplayDate(member.startDate)} → {formatDisplayDate(member.endDate)}
@@ -1163,7 +1166,9 @@ export default function MemberModal({
                   {enrollDone.planName ? (
                     <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
                       <dt className="shrink-0 text-app-muted">{t('table.plan')}</dt>
-                      <dd className="truncate font-medium text-app-text-strong">{enrollDone.planName}</dd>
+                      <dd className="truncate font-medium text-app-text-strong">
+                        {formatPlanDisplayName(enrollDone.planName)}
+                      </dd>
                     </div>
                   ) : null}
                   {termLabel ? (

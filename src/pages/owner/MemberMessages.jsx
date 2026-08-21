@@ -10,6 +10,7 @@ import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
+import MemberPhoto from '../../components/MemberPhoto';
 import { formatDisplayDateTime } from '../../utils/date';
 import {
   formatSmsMessageType,
@@ -30,6 +31,11 @@ const CHIP_ACTIVE =
   'inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300';
 const CHIP_MUTED =
   'inline-flex rounded-full bg-app-surface px-2.5 py-1 text-xs font-medium text-app-muted';
+
+const SMS_AVATAR =
+  'h-9 w-9 rounded-full object-cover';
+const SMS_AVATAR_FALLBACK =
+  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text';
 
 export default function MemberMessages() {
   const { t } = useTranslation();
@@ -172,9 +178,15 @@ export default function MemberMessages() {
                 onClick={() => openMember(row.member_id)}
                 className={`${cardSurface} flex w-full gap-3 p-4 text-left active:bg-app-surface/60`}
               >
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-50 text-teal-700 dark:bg-teal-600/15 dark:text-teal-300">
-                  <MessageSquare className="h-4 w-4" />
-                </span>
+                <MemberPhoto
+                  memberId={row.member_id}
+                  apiFetch={apiFetch}
+                  name={row.member_name}
+                  hasPhoto={Boolean(row.member_photo_url)}
+                  expandable={false}
+                  className={SMS_AVATAR}
+                  fallbackClassName={SMS_AVATAR_FALLBACK}
+                />
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-app-text-strong">{row.member_name}</p>
                   <p className="mt-1">
@@ -228,7 +240,22 @@ export default function MemberMessages() {
                       className={`cursor-pointer ${tableRowHover}`}
                       onClick={() => openMember(row.member_id)}
                     >
-                      <td className="font-semibold text-app-text-strong">{row.member_name}</td>
+                      <td>
+                        <div className="flex min-w-0 items-center gap-3">
+                          <MemberPhoto
+                            memberId={row.member_id}
+                            apiFetch={apiFetch}
+                            name={row.member_name}
+                            hasPhoto={Boolean(row.member_photo_url)}
+                            expandable={false}
+                            className={SMS_AVATAR}
+                            fallbackClassName={SMS_AVATAR_FALLBACK}
+                          />
+                          <span className="truncate font-semibold text-app-text-strong">
+                            {row.member_name}
+                          </span>
+                        </div>
+                      </td>
                       <td className="text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
                       <td>
                         <div className="min-w-0 max-w-xs">

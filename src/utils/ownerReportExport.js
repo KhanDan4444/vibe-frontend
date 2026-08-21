@@ -18,6 +18,7 @@ import {
   pdfStartNewPage,
 } from './reportExportCore';
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
+import { formatPlanDisplayName } from './formatPlanDisplayName';
 
 function formatMemberStatus(m) {
   if (m.deleted_at) return exportText('status.former');
@@ -58,7 +59,7 @@ function memberExportRow(m, meta = {}) {
   const row = [m.name || '—', m.phone || '—'];
   if (showBranch) row.push(m.branch_name || '—');
   row.push(
-    m.plan_name || '—',
+    formatPlanDisplayName(m.plan_name) || '—',
     formatMemberStatus(m),
     formatDate(m.start_date),
     formatDate(m.end_date),

@@ -2,6 +2,7 @@
 import i18n from '../i18n/index.js';
 import { translatePaymentMethod } from '../i18n/helpers.js';
 import { formatMoney } from './formatMoney.js';
+import { formatPlanDisplayName } from './formatPlanDisplayName.js';
 
 const ACTION_KEYS = {
   'member.created': 'activity.actions.member.created',
@@ -87,7 +88,9 @@ export function formatAuditDetails(entry) {
     parts.push(`${d.from_branch_name} → ${d.to_branch_name}`);
   }
   if (d.previous_plan_name && d.plan_name) {
-    parts.push(`${d.previous_plan_name} → ${d.plan_name}`);
+    parts.push(
+      `${formatPlanDisplayName(d.previous_plan_name)} → ${formatPlanDisplayName(d.plan_name)}`
+    );
   }
   if (d.duration != null && d.price != null) {
     parts.push(`${d.duration} mo · ${formatMoney(d.price)}`);
