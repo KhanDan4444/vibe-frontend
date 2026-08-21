@@ -127,7 +127,7 @@ export default function VisitRing({
         {capped ? (
           <>
             <span
-              className={`font-display text-lg font-semibold tracking-tight tabular-nums ${countClass}`}
+              className={`font-display text-xl font-semibold tracking-tight tabular-nums ${countClass}`}
             >
               {safeVisits}
               <span className="text-[0.9em] font-medium text-app-muted">/{limit}</span>
@@ -138,7 +138,7 @@ export default function VisitRing({
           </>
         ) : (
           <>
-            <span className="font-display text-lg font-semibold tracking-tight text-app-text-strong tabular-nums">
+            <span className="font-display text-xl font-semibold tracking-tight text-app-text-strong tabular-nums">
               {safeVisits}
             </span>
             <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.08em] text-app-muted">
