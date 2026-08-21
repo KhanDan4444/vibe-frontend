@@ -443,18 +443,24 @@ export default function CheckIn() {
                 const busy = checkingId === member.id;
                 const checkInBlocked = status === DISPLAY_STATUS.EXPIRED;
                 const cardError = cardErrors[member.id];
-                const showCardError = Boolean(cardError) && !successIds[member.id];
+                const alreadyToday =
+                  alreadyTodayIds.has(member.id) ||
+                  Boolean(successIds[member.id]) ||
+                  cardError?.code === 'ALREADY_TODAY';
+                const showCardError =
+                  Boolean(cardError) &&
+                  !alreadyToday &&
+                  cardError?.code !== 'ALREADY_TODAY';
                 const justCheckedIn = Boolean(successIds[member.id]);
-                const errorText = cardError?.message || '';
+                const errorText =
+                  cardError?.code === 'ALREADY_TODAY' ? '' : cardError?.message || '';
                 return (
                   <div
                     key={member.id}
                     className={`check-in-result-card ${cardSurface} flex items-center gap-4 overflow-visible p-4 transition-[box-shadow,transform,background-color] duration-200 motion-safe:hover:-translate-y-0.5 ${
-                      justCheckedIn
-                        ? '!border-[color:var(--color-brand)]/40 !bg-[color:var(--color-brand-soft)]'
-                        : showCardError
-                          ? '!border-[color:var(--color-status-expired)]/50 !bg-[color:var(--color-status-expired)]/[0.06] !ring-1 !ring-[color:var(--color-status-expired)]/35'
-                          : 'hover:ring-[color:var(--color-brand)]/30'
+                      showCardError
+                        ? '!border-[color:var(--color-status-expired)]/50 !bg-[color:var(--color-status-expired)]/[0.06] !ring-1 !ring-[color:var(--color-status-expired)]/35'
+                        : 'hover:ring-[color:var(--color-brand)]/30'
                     }`}
                   >
                     <div className="relative shrink-0 pb-1.5 pr-1.5">
@@ -498,8 +504,8 @@ export default function CheckIn() {
                         <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
                           {t('pages.checkIn.blockedExpired')}
                         </p>
-                      ) : justCheckedIn || cardError?.code === 'ALREADY_TODAY' ? (
-                        <p className="text-xs font-semibold leading-snug text-[color:var(--color-brand-text)]">
+                      ) : alreadyToday ? (
+                        <p className="text-xs font-semibold leading-snug text-[color:var(--color-status-expired)]">
                           {t('pages.checkIn.alreadyTodayShort')}
                         </p>
                       ) : cardError?.code === 'WEEKLY_LIMIT' ? (
