@@ -631,7 +631,7 @@ export default function CheckIn() {
                       <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
                     ) : null}
                   </div>
-                <time className="shrink-0 font-display text-sm font-semibold tabular-nums tracking-tight text-[color:var(--color-brand-text)]">
+                <time className="shrink-0 font-display text-sm font-semibold tabular-nums tracking-tight text-app-text-strong">
                   {formatCheckInTime(row.checked_in_at)}
                 </time>
                 </li>
