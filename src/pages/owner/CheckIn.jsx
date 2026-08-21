@@ -368,7 +368,7 @@ export default function CheckIn() {
         <div className="relative space-y-5 p-5 sm:space-y-6 sm:p-6">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0 flex flex-wrap items-center gap-2.5">
-              <p className="font-display text-xl font-semibold tracking-tight text-app-text-strong sm:text-2xl">
+              <p className="font-display text-xl font-semibold uppercase tracking-wide text-app-text-strong sm:text-2xl">
                 {t('pages.checkIn.deskLabel')}
               </p>
               {capChipLabel ? (
