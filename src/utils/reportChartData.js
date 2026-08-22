@@ -5,13 +5,14 @@
 
 import { formatDisplayDate } from './date';
 import { formatPlanDisplayName } from './formatPlanDisplayName';
+import { comparePaymentMethodOrder } from '../i18n/helpers';
 
 /** Distinct slice colors for payment method donut charts. */
 export const PAYMENT_METHOD_COLORS = {
-  Card: '#38bdf8', // sky
-  'Bank Transfer': '#f59e0b', // amber
   Cash: '#14b8a6', // teal
-  'Tele Birr': '#8b5cf6', // violet — clear split from Bank Transfer amber
+  'Bank Transfer': '#f59e0b', // amber
+  'Tele Birr': '#38bdf8', // sky
+  Card: '#8b5cf6', // violet
   Other: '#94a3b8', // slate
 };
 
@@ -215,7 +216,7 @@ export function aggregateRevenueByMethod(summary) {
   return Object.entries(byMethod)
     .map(([name, value]) => ({ name, value: Number(value) }))
     .filter((d) => d.value > 0)
-    .sort((a, b) => b.value - a.value);
+    .sort((a, b) => comparePaymentMethodOrder(a.name, b.name));
 }
 
 export function aggregateRevenueByGym(payments, limit = 6) {

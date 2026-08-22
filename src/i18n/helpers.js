@@ -10,9 +10,9 @@ export function translateOptions(options) {
 
 const PAYMENT_METHOD_KEYS = {
   Cash: 'paymentMethod.cash',
-  Card: 'paymentMethod.card',
   'Bank Transfer': 'paymentMethod.bankTransfer',
   'Tele Birr': 'paymentMethod.teleBirr',
+  Card: 'paymentMethod.card',
 };
 
 /** Display label for a stored payment method value (API values stay English). */
@@ -29,12 +29,28 @@ export function exportPaymentMethod(method) {
   return key ? exportT()(key) : method;
 }
 
-export const PAYMENT_METHOD_OPTIONS = [
-  { value: 'Cash', labelKey: 'paymentMethod.cash' },
-  { value: 'Card', labelKey: 'paymentMethod.card' },
-  { value: 'Bank Transfer', labelKey: 'paymentMethod.bankTransfer' },
-  { value: 'Tele Birr', labelKey: 'paymentMethod.teleBirr' },
+/** Canonical order for selects, revenue bar, and legends (Tele Birr before Card). */
+export const PAYMENT_METHOD_ORDER = [
+  'Cash',
+  'Bank Transfer',
+  'Tele Birr',
+  'Card',
 ];
+
+export const PAYMENT_METHOD_OPTIONS = PAYMENT_METHOD_ORDER.map((value) => ({
+  value,
+  labelKey: PAYMENT_METHOD_KEYS[value],
+}));
+
+/** Sort payment-method rows for charts / legends. */
+export function comparePaymentMethodOrder(a, b) {
+  const ai = PAYMENT_METHOD_ORDER.indexOf(a);
+  const bi = PAYMENT_METHOD_ORDER.indexOf(b);
+  const aRank = ai === -1 ? PAYMENT_METHOD_ORDER.length : ai;
+  const bRank = bi === -1 ? PAYMENT_METHOD_ORDER.length : bi;
+  if (aRank !== bRank) return aRank - bRank;
+  return String(a).localeCompare(String(b));
+}
 
 /** Fixed English translator for CSV/PDF exports (jsPDF cannot render Ethiopic script). */
 function exportT() {

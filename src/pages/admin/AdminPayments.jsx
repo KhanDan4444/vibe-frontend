@@ -30,6 +30,7 @@ import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { PERIOD_PRESETS, saasPaymentsToCsv, downloadCsv } from '../../utils/saasPaymentReport';
 import { PAYMENT_METHOD_COLORS } from '../../utils/reportChartData';
+import { comparePaymentMethodOrder } from '../../i18n/helpers';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortAdminPaymentsList } from '../../utils/listSort';
 import { getSaasPayments, updateSaasPayment, getGyms, collectGymPayment } from '../../services/gymAdminService';
 import { getSaasPlans } from '../../services/saasPlanService';
@@ -295,7 +296,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
     const methodTotal = entries.reduce((sum, row) => sum + row.amount, 0);
     const base = methodTotal > 0 ? methodTotal : periodRevenue;
     return entries
-      .sort((a, b) => b.amount - a.amount)
+      .sort((a, b) => comparePaymentMethodOrder(a.method, b.method))
       .map((row) => ({
         ...row,
         percent: base > 0 ? Math.round((row.amount / base) * 100) : 0,

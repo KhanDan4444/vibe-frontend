@@ -14,6 +14,7 @@ import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
 import { PAYMENT_METHOD_COLORS } from '../../utils/reportChartData';
+import { comparePaymentMethodOrder } from '../../i18n/helpers';
 import { parseApiResponse } from '../../utils/api';
 import { runInBackground } from '../../utils/runInBackground';
 import { mapPaymentFromApi } from '../../utils/apiMappers';
@@ -205,7 +206,7 @@ export default function Revenue() {
     const methodTotal = entries.reduce((sum, row) => sum + row.amount, 0);
     const base = methodTotal > 0 ? methodTotal : periodRevenue;
     return entries
-      .sort((a, b) => b.amount - a.amount)
+      .sort((a, b) => comparePaymentMethodOrder(a.method, b.method))
       .map((row) => ({
         ...row,
         percent: base > 0 ? Math.round((row.amount / base) * 100) : 0,

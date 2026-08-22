@@ -4,9 +4,9 @@ import { paymentMethodStyle } from '../utils/paymentSources';
 
 const METHOD_ICONS = {
   Cash: Banknote,
-  Card: CreditCard,
   'Bank Transfer': ArrowLeftRight,
   'Tele Birr': Smartphone,
+  Card: CreditCard,
 };
 
 export function paymentMethodIcon(method) {

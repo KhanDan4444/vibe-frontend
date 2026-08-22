@@ -4,7 +4,7 @@
  * jsPDF is loaded on demand so the main bundle stays lean.
  */
 
-import { exportPaymentMethod, exportText } from '../i18n/helpers';
+import { exportPaymentMethod, exportText, comparePaymentMethodOrder } from '../i18n/helpers';
 import { formatDisplayDate, formatDisplayDateTime, todayString } from './date';
 import { formatMoney } from './formatMoney';
 
@@ -236,11 +236,12 @@ function buildRevenueByMethodEntries(summary) {
   const byMethod = summary?.byMethod || {};
   return Object.entries(byMethod)
     .map(([method, amount]) => ({
+      methodKey: method,
       method: exportPaymentMethod(method) || method,
       amount: Number(amount) || 0,
     }))
     .filter((e) => e.amount > 0)
-    .sort((a, b) => b.amount - a.amount || compareLocale(a.method, b.method));
+    .sort((a, b) => comparePaymentMethodOrder(a.methodKey, b.methodKey));
 }
 
 /** CSV block: revenue totals grouped by payment method. */
