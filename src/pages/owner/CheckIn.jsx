@@ -615,7 +615,7 @@ export default function CheckIn() {
             </p>
           </div>
           {!todayLoading && today.total > 0 ? (
-            <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-app-text-strong">
+            <span className="shrink-0 font-display text-sm font-bold uppercase tracking-wide text-app-text-strong">
               {t('pages.checkIn.todayTimeLabel')}
             </span>
           ) : null}
