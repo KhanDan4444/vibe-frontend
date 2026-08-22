@@ -257,7 +257,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
           <div className="mt-4 grid grid-cols-2 gap-2">
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="sm"
               disabled={busy || !pass?.qr_data_url}
               loading={printing}
@@ -269,7 +269,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               size="sm"
               disabled={busy || !phone}
               loading={smsSending}
