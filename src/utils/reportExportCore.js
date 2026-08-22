@@ -162,12 +162,12 @@ export function pdfStartNewPage(doc) {
 }
 
 /**
- * Footer chrome on every page: left label · page · brand text.
+ * Footer chrome on every page: left label · page.
  * Call once after all pages are drawn, before save.
  * @param {import('jspdf').jsPDF} doc
- * @param {{ left?: string, right?: string }} [opts]
+ * @param {{ left?: string }} [opts]
  */
-export function pdfApplyPageChrome(doc, { left = '', right = 'Vibe' } = {}) {
+export function pdfApplyPageChrome(doc, { left = '' } = {}) {
   const pageCount = doc.getNumberOfPages();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -185,7 +185,6 @@ export function pdfApplyPageChrome(doc, { left = '', right = 'Vibe' } = {}) {
       doc.text(String(left).slice(0, 60), 14, pageH - 6.5);
     }
     doc.text(`${i} / ${pageCount}`, pageW / 2, pageH - 6.5, { align: 'center' });
-    doc.text(right, pageW - 14, pageH - 6.5, { align: 'right' });
   }
 }
 
@@ -266,7 +265,48 @@ export function pdfRevenueByMethodBlock(doc, startY, summary) {
   const entries = buildRevenueByMethodEntries(summary);
   if (entries.length === 0) return startY;
 
-  const total = Number(summary?.total ?? entries.reduce((s, e) => s + e.amount, 0));
+  return pdfShareBarsBlock(doc, startY, {
+    title: exportText('export.revenueByMethod'),
+    entries: entries.map((e) => ({ label: e.method, value: e.amount })),
+    formatValue: (v) => formatMoney(v),
+    totalLabel: exportText('export.total'),
+    formatTotal: (v) => formatMoney(v),
+  });
+}
+
+/**
+ * PDF section: plans in use with member-count share bars.
+ * @param {import('jspdf').jsPDF} doc
+ * @param {Array<{ name: string, count: number }>} planEntries
+ */
+export function pdfPlansUsedBlock(doc, startY, planEntries) {
+  if (!planEntries?.length) return startY;
+
+  const memberTotal = planEntries.reduce((s, e) => s + e.count, 0);
+  return pdfShareBarsBlock(doc, startY, {
+    title: exportText('export.plansUsed'),
+    entries: planEntries.map((e) => ({ label: e.name, value: e.count })),
+    formatValue: (v) => String(v),
+    totalLabel: exportText('export.plansUsedTotal', {
+      plans: planEntries.length,
+      members: memberTotal,
+    }),
+    formatTotal: null,
+  });
+}
+
+/**
+ * Shared horizontal share bars (method revenue or plan counts).
+ * @param {import('jspdf').jsPDF} doc
+ */
+function pdfShareBarsBlock(doc, startY, {
+  title,
+  entries,
+  formatValue,
+  totalLabel,
+  formatTotal,
+}) {
+  const total = entries.reduce((s, e) => s + e.value, 0);
   const pageW = doc.internal.pageSize.getWidth();
   const barLeft = 58;
   const barMax = pageW - barLeft - 72;
@@ -274,19 +314,20 @@ export function pdfRevenueByMethodBlock(doc, startY, summary) {
   doc.setFontSize(10);
   doc.setTextColor(...PDF_BRAND.muted);
   doc.setFont('helvetica', 'bold');
-  doc.text(exportText('export.revenueByMethod'), 14, startY);
+  doc.text(title, 14, startY);
   doc.setFont('helvetica', 'normal');
 
   let y = startY + 7;
 
   entries.forEach((entry, i) => {
-    const pct = total > 0 ? entry.amount / total : 0;
+    const pct = total > 0 ? entry.value / total : 0;
     const barW = Math.max(1.5, barMax * pct);
     const color = METHOD_BAR_COLORS[i % METHOD_BAR_COLORS.length];
+    const label = String(entry.label || '').slice(0, 22);
 
     doc.setFontSize(9);
     doc.setTextColor(...PDF_BRAND.text);
-    doc.text(entry.method, 14, y);
+    doc.text(label, 14, y);
 
     doc.setFillColor(...PDF_BRAND.stripe);
     if (typeof doc.roundedRect === 'function') {
@@ -302,7 +343,7 @@ export function pdfRevenueByMethodBlock(doc, startY, summary) {
     doc.setTextColor(...PDF_BRAND.muted);
     doc.setFontSize(8);
     doc.text(
-      `${formatMoney(entry.amount)} · ${Math.round(pct * 100)}%`,
+      `${formatValue(entry.value)} · ${Math.round(pct * 100)}%`,
       pageW - 14,
       y,
       { align: 'right' },
@@ -317,8 +358,12 @@ export function pdfRevenueByMethodBlock(doc, startY, summary) {
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(...PDF_BRAND.teal);
-  doc.text(exportText('export.total'), 14, y + 4);
-  doc.text(formatMoney(total), pageW - 14, y + 4, { align: 'right' });
+  if (formatTotal) {
+    doc.text(totalLabel, 14, y + 4);
+    doc.text(formatTotal(total), pageW - 14, y + 4, { align: 'right' });
+  } else {
+    doc.text(totalLabel, 14, y + 4);
+  }
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0);
 

@@ -16,6 +16,7 @@ import {
   pdfHeader,
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
+  pdfPlansUsedBlock,
   pdfStartNewPage,
   pdfApplyPageChrome,
   pdfStatusDidParseCell,
@@ -57,6 +58,18 @@ function headerOpts(meta, title, subtitle, lines) {
 
 function finishPdf(doc, meta) {
   pdfApplyPageChrome(doc, { left: footerLeft(meta) });
+}
+
+/** Distinct plans in the member set, with membership counts. */
+function plansUsedEntries(members) {
+  const counts = new Map();
+  for (const m of members) {
+    const name = formatPlanDisplayName(m.plan_name) || exportText('export.noPlan');
+    counts.set(name, (counts.get(name) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 }
 
 function formatMemberStatus(m) {
@@ -259,10 +272,17 @@ export function fullOwnerReportToCsv(members, payments, meta = {}) {
   const { memberFilterLabel = exportText('filters.allMembers'), periodLabel = exportText('period.allTime'), summary } = meta;
   const methodBlock = revenueByMethodCsvBlock(summary);
   const branchNote = meta.branchLabel ? exportText('export.branchNote', { name: meta.branchLabel }) : '';
+  const plans = plansUsedEntries(members);
+  const plansLine = plans.length
+    ? exportText('export.plansUsedLine', {
+      plans: plans.map((p) => `${p.name} (${p.count})`).join(' · '),
+    })
+    : '';
 
   return [
     exportText('export.gymReportCsvHeader', { date: formatGeneratedAt() }),
     exportText('export.gymReportCsvMeta', { members: memberFilterLabel, period: periodLabel, branch: branchNote }),
+    plansLine ? `# ${plansLine}` : '',
     '',
     exportText('export.memberDirectorySectionUpper'),
     membersToCsv(members, meta),
@@ -284,8 +304,9 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
   const doc = await createPdfDoc();
   const { memberFilterLabel = exportText('filters.allMembers'), periodLabel = exportText('period.allTime'), summary } = meta;
   const reportLabel = exportText('export.gymReport');
+  const plans = plansUsedEntries(sortedMembers);
 
-  const startY = pdfHeader(doc, headerOpts(
+  let startY = pdfHeader(doc, headerOpts(
     meta,
     reportTitle(meta, reportLabel),
     reportSubtitle(meta, reportLabel),
@@ -293,11 +314,14 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
       exportText('export.fullReportMembersRevenue', { members: memberFilterLabel, period: periodLabel }),
       exportText('export.fullReportSummary', {
         members: sortedMembers.length,
+        plans: plans.length,
         revenue: formatMoney(summary?.total ?? 0),
         payments: sortedPayments.length,
       }),
     ]),
   ));
+
+  startY = pdfPlansUsedBlock(doc, startY, plans);
 
   sectionLabel(doc, exportText('export.memberDirectorySection'), startY);
 
