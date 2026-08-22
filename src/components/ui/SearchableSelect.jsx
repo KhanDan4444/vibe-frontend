@@ -6,11 +6,14 @@ import RequiredMark from './RequiredMark';
 
 const MENU_MAX_HEIGHT = 240;
 const MENU_CHROME = 44; // search row
+const OPTION_ROW_HEIGHT = 36;
 
 /**
  * Filterable single-select for growing option lists (branch, plan, etc.).
  * Menu is portaled + positioned with useLayoutEffect so it never stretches
  * scrollable modal bodies or flashes at the wrong place.
+ *
+ * @param {'auto' | 'bottom' | 'top'} [placement='auto'] — force menu direction when needed
  */
 export default function SearchableSelect({
   id,
@@ -23,6 +26,7 @@ export default function SearchableSelect({
   error = false,
   required = false,
   className = '',
+  placement = 'auto',
 }) {
   const { t } = useTranslation();
   const autoId = useId();
@@ -62,8 +66,22 @@ export default function SearchableSelect({
       const gap = 4;
       const spaceBelow = window.innerHeight - rect.bottom - gap - 8;
       const spaceAbove = rect.top - gap - 8;
-      const openUp = spaceBelow < 160 && spaceAbove > spaceBelow;
-      const available = Math.max(120, openUp ? spaceAbove : spaceBelow);
+      const estimatedHeight = Math.min(
+        MENU_MAX_HEIGHT,
+        MENU_CHROME + Math.max(1, filtered.length) * OPTION_ROW_HEIGHT + 8
+      );
+
+      let openUp = false;
+      if (placement === 'top') {
+        openUp = true;
+      } else if (placement === 'bottom') {
+        openUp = false;
+      } else {
+        // Prefer down; flip up only when the menu cannot fit below and above has more room.
+        openUp = spaceBelow < estimatedHeight && spaceAbove > spaceBelow;
+      }
+
+      const available = Math.max(96, openUp ? spaceAbove : spaceBelow);
       const maxHeight = Math.min(MENU_MAX_HEIGHT, available);
 
       // Prefer bottom-anchoring when opening up so short menus sit on the trigger
@@ -97,7 +115,7 @@ export default function SearchableSelect({
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
     };
-  }, [open, filtered.length]);
+  }, [open, filtered.length, placement]);
 
   useEffect(() => {
     if (!open) return undefined;

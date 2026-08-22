@@ -1,6 +1,6 @@
 // src/components/MemberModal.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Upload, User, ArrowLeft, Check, Camera } from 'lucide-react';
+import { X, Upload, User, ArrowLeft, Check, Camera, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
@@ -552,6 +552,7 @@ export default function MemberModal({
         value={trainerId}
         options={trainerOptions}
         placeholder={t('modals.member.noTrainer')}
+        placement="bottom"
         onChange={(next) => {
           setTrainerId(String(next ?? ''));
           markEnrollTouched();
@@ -1260,14 +1261,10 @@ export default function MemberModal({
               </p>
 
               {enrollDone.phone && enrollDone.smsSent === false ? (
-                <div className="mt-4 w-full rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-left text-sm text-amber-900 dark:text-amber-200">
-                  <p className="font-semibold">{t('modals.member.smsFailedTitle')}</p>
-                  <p className="mt-1 text-xs leading-relaxed opacity-90">
-                    {enrollDone.smsError
-                      ? t('modals.member.smsFailedDetail', { detail: enrollDone.smsError })
-                      : t('modals.member.smsFailedBody')}
-                  </p>
-                </div>
+                <p className="mt-4 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-400">
+                  <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
+                  {t('modals.member.smsFailedTitle')}
+                </p>
               ) : null}
 
               {(enrollDone.phone ||

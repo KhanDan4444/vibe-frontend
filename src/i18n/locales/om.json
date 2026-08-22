@@ -1073,7 +1073,7 @@
       "successDone": "Xumurameera",
       "successPaid": "Kaffaltiin galmeeffameera. Tajaajilaaf qophaa'aa dha.",
       "successSkip": "Akka hin kaffalamneetti mallatteeffame — yeroo qophaa'an kaffaltii sassaabi.",
-      "smsFailedTitle": "SMS baga nagaan dhufte hin ergamne",
+      "smsFailedTitle": "Ergaan SMS hin ergamne!",
       "smsFailedBody": "Miseensi galmaa'eera, garuu ergaan hin geenye. Liinkii paasii irraa profile isaani irraa deebisuu dandeessa.",
       "smsFailedDetail": "Miseensi galmaa'eera, garuu SMS hin milkoofne: {{detail}}",
       "enrollAnother": "Kan biraa galmeessi",

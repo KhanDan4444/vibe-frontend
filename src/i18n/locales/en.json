@@ -1096,7 +1096,7 @@
       "successDone": "Done",
       "successPaid": "Payment recorded. They’re ready for the floor.",
       "successSkip": "Marked unpaid — collect payment when they’re ready.",
-      "smsFailedTitle": "Welcome SMS not sent",
+      "smsFailedTitle": "SMS message is not sent!",
       "smsFailedBody": "The member is enrolled, but the phone message could not be delivered. You can resend the pass link from their profile.",
       "smsFailedDetail": "The member is enrolled, but SMS failed: {{detail}}",
       "enrollAnother": "Enroll another",

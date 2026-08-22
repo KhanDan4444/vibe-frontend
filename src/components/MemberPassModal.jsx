@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Download, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
-import MemberPhoto from './MemberPhoto';
 import Button from './ui/Button';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 import { modalTitle, mutedText } from '../utils/surfaceClasses';
@@ -116,7 +115,6 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
         memberName: member.name,
         memberPhone: member.phone || pass.member?.phone,
         qrDataUrl: pass.qr_data_url,
-        photoDataUrl: pass.member?.photo_data_url || null,
         labels: {
           checkInPass: t('publicPass.title'),
         },
@@ -163,10 +161,6 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
 
   const busy = loading || regenerating || printing || smsSending;
   const phone = member.phone || pass?.member?.phone || null;
-  const hasPhoto = Boolean(
-    member.hasPhoto || pass?.member?.photo_data_url || pass?.member?.photo_url
-  );
-  const photoDataUrl = pass?.member?.photo_data_url || null;
 
   return (
     <>
@@ -184,7 +178,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             </span>
             <div className="min-w-0 flex-1">
               <h3 id="member-pass-title" className={modalTitle}>
-                {t('pages.checkIn.memberPassTitle')}
+                {t('publicPass.title')}
               </h3>
               <p className={`mt-1 text-sm ${mutedText}`}>
                 {t('pages.checkIn.memberPassBody', { name: member.name })}
@@ -205,30 +199,13 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
             <div className="flex w-full flex-col items-center px-5 py-6">
               {pass?.gym_name ? (
-                <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
+                <p className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
                   {pass.gym_name}
                 </p>
               ) : null}
-
-              {loading ? (
-                <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
-              ) : photoDataUrl ? (
-                <img
-                  src={photoDataUrl}
-                  alt=""
-                  className="h-14 w-14 rounded-2xl object-cover ring-1 ring-black/10"
-                />
-              ) : (
-                <MemberPhoto
-                  memberId={member.id}
-                  apiFetch={apiFetch}
-                  name={member.name}
-                  hasPhoto={hasPhoto}
-                  expandable={false}
-                  className="h-14 w-14 rounded-2xl object-cover"
-                  fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-app-border text-lg font-bold text-app-text"
-                />
-              )}
+              <p className="mt-2 text-center text-sm font-medium text-app-muted">
+                {t('publicPass.title')}
+              </p>
 
               <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
                 {member.name}
@@ -248,10 +225,6 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
                   —
                 </div>
               )}
-
-              <p className="mt-3 text-center text-[11px] text-app-muted">
-                {t('pages.checkIn.memberPassTitle')}
-              </p>
             </div>
           </div>
 

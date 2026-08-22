@@ -817,7 +817,7 @@
       "successDone": "ተጠናቋል",
       "successPaid": "ክፍያ ተመዝግቧል። ለአገልግሎት ዝግጁ ናቸው።",
       "successSkip": "እንዳልከፈሉ ምልክት ተደርጓል — ክፍያ ሲዘጋጁ ይቀበሉ።",
-      "smsFailedTitle": "የእንኳን ደህና መጡ SMS አልተላከም",
+      "smsFailedTitle": "የSMS መልእክት አልተላከም!",
       "smsFailedBody": "አባሉ ተመዝግቧል፣ ነገር ግን መልእክቱ አልደረሰም። ከመገለጫቸው የፓስ አገናኝ እንደገና መላክ ይችላሉ።",
       "smsFailedDetail": "አባሉ ተመዝግቧል፣ ነገር ግን SMS አልተሳካም፦ {{detail}}",
       "enrollAnother": "ሌላ አባል መዝግብ",
