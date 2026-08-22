@@ -16,6 +16,7 @@ import {
   pdfHeader,
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
+  pdfPlansUsedBlock,
   pdfStartNewPage,
   pdfApplyPageChrome,
   pdfStatusDidParseCell,
@@ -41,6 +42,29 @@ function platformHeader(title, lines) {
 
 function finishPlatformPdf(doc, left) {
   pdfApplyPageChrome(doc, { left });
+}
+
+/** Distinct SaaS plans across gyms, with gym counts. */
+function saasPlansUsedEntries(gyms) {
+  const counts = new Map();
+  for (const g of gyms) {
+    const name = String(g.saas_plan_name || '').trim() || exportText('export.noPlan');
+    counts.set(name, (counts.get(name) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+}
+
+function saasPlansUsedLabels(plans) {
+  const gymTotal = plans.reduce((s, p) => s + p.count, 0);
+  return {
+    title: exportText('export.saasPlansUsed'),
+    totalLabel: exportText('export.saasPlansUsedTotal', {
+      plans: plans.length,
+      gyms: gymTotal,
+    }),
+  };
 }
 
 const GYM_EXPORT_COLUMNS = ['gym', 'ownerContact', 'activeMembers', 'saasPlan', 'status', 'licenseStart', 'licenseEnd'].map(exportColumn);
@@ -139,13 +163,17 @@ export async function downloadGymsPdf(gyms, meta = {}) {
   const doc = await createPdfDoc();
   const snap = buildGymSnapshot(sorted);
   const filterLabel = meta.filterLabel || exportText('filters.allGyms');
+  const plans = saasPlansUsedEntries(sorted);
 
-  const startY = pdfHeader(doc, platformHeader(
+  let startY = pdfHeader(doc, platformHeader(
     exportText('export.gymRegistry'),
     [
       exportText('export.gymReportMeta', { date: formatGeneratedAt(), filter: filterLabel, count: snap.total }),
+      exportText('export.saasPlansUsedTotal', { plans: plans.length, gyms: sorted.length }),
     ],
   ));
+
+  startY = pdfPlansUsedBlock(doc, startY, plans, saasPlansUsedLabels(plans));
 
   pdfTable(doc, {
     startY,
@@ -208,10 +236,17 @@ export function downloadRevenueCsv(payments, periodSlug = 'report', summary = nu
 export function fullReportToCsv(gyms, payments, meta = {}) {
   const { gymFilterLabel = exportText('filters.allGyms'), periodLabel = exportText('period.allTime'), summary } = meta;
   const methodBlock = revenueByMethodCsvBlock(summary);
+  const plans = saasPlansUsedEntries(gyms);
+  const plansLine = plans.length
+    ? exportText('export.saasPlansUsedLine', {
+      plans: plans.map((p) => `${p.name} (${p.count})`).join(' · '),
+    })
+    : '';
 
   return [
     exportText('export.platformReportCsvHeader', { date: formatGeneratedAt() }),
     exportText('export.platformReportCsvMeta', { gyms: gymFilterLabel, period: periodLabel }),
+    plansLine ? `# ${plansLine}` : '',
     '',
     exportText('export.gymDirectorySectionUpper'),
     gymsToCsv(gyms),
@@ -233,8 +268,9 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
   const sortedPayments = sortAdminPaymentsList(payments, DEFAULT_EXPORT_SORT);
   const doc = await createPdfDoc();
   const { gymFilterLabel = exportText('filters.allGyms'), periodLabel = exportText('period.allTime'), summary } = meta;
+  const plans = saasPlansUsedEntries(sortedGyms);
 
-  const startY = pdfHeader(doc, platformHeader(
+  let startY = pdfHeader(doc, platformHeader(
     exportText('export.platformReport'),
     [
       exportText('export.fullReportPdfMeta', {
@@ -244,11 +280,14 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
       }),
       exportText('export.fullReportGymsSummary', {
         gyms: sortedGyms.length,
+        plans: plans.length,
         revenue: formatMoney(summary?.total ?? 0),
         payments: sortedPayments.length,
       }),
     ],
   ));
+
+  startY = pdfPlansUsedBlock(doc, startY, plans, saasPlansUsedLabels(plans));
 
   sectionLabel(doc, exportText('export.gymDirectorySection'), startY);
 

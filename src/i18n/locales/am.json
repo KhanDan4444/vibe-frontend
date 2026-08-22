@@ -535,7 +535,10 @@
     "plansUsedLine": "የተጠቀሙ ዕቅዶች፦ {{plans}}",
     "plansUsedTotal": "{{plans}} ዕቅድ(ዎች) · {{members}} አባል(ዎች)",
     "noPlan": "ዕቅድ የለም",
-    "fullReportGymsSummary": "{{gyms}} ጂም(ዎች) · {{revenue}} ገቢ · {{payments}} ክፍያ(ዎች) · ከA–Z",
+    "fullReportGymsSummary": "{{gyms}} ጂም(ዎች) · {{plans}} የSaaS ዕቅድ(ዎች) · {{revenue}} ገቢ · {{payments}} ክፍያ(ዎች)",
+    "saasPlansUsed": "የተጠቀሙ የSaaS ዕቅዶች",
+    "saasPlansUsedLine": "የተጠቀሙ የSaaS ዕቅዶች፦ {{plans}}",
+    "saasPlansUsedTotal": "{{plans}} የSaaS ዕቅድ(ዎች) · {{gyms}} ጂም(ዎች)",
     "periodPayments": "{{period}} · {{count}} ክፍያ(ዎች)",
     "branchNote": " · ቅርንጫፍ፦ {{name}}",
     "adminRevenueMeta": "የተፈጠረው፦ {{date}} · {{period}}"

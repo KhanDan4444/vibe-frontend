@@ -125,11 +125,56 @@ export default function GymDetailsModal({
   const canShowChangePlan =
     !isFormer && Boolean(gymForActions && canChangeSaasPlan(gymForActions) && onChangePlan && otherPlans.length > 0);
   const canShowResetPassword = !isFormer && Boolean(onResetOwnerPassword && gymDetail?.owner_user_id);
-  const hasSecondaryActions = canShowChangePlan || canShowResetPassword;
   const hasPrimaryLifecycle =
     !isFormer &&
     ((canCollect && onCollectPayment) ||
       Boolean(gymForActions && canRenewGym(gymForActions) && onRenew));
+
+  const utilityTiles = [];
+  if (!isFormer && gymDetail) {
+    if (canShowChangePlan) {
+      utilityTiles.push({
+        key: 'change-plan',
+        label: t('modals.gymDetails.changePlan'),
+        icon: ArrowLeftRight,
+        onClick: () => onChangePlan(gymForActions),
+      });
+    }
+    if (canShowResetPassword) {
+      utilityTiles.push({
+        key: 'reset-password',
+        label: t('modals.gymDetails.resetOwnerPassword'),
+        icon: KeyRound,
+        onClick: () => {
+          setResetError('');
+          setIsResetOpen(true);
+        },
+      });
+    }
+    utilityTiles.push({
+      key: 'edit',
+      label: t('modals.gymDetails.editGym'),
+      icon: Pencil,
+      onClick: () => {
+        setMutationError('');
+        setIsEditOpen(true);
+      },
+    });
+    utilityTiles.push({
+      key: 'delete',
+      label: t('modals.gymDetails.deleteGym'),
+      icon: Trash2,
+      danger: true,
+      onClick: () => setIsDeleteOpen(true),
+    });
+  }
+
+  /** Match member drawer: 1–3 tiles → one row; 4 → 2+2. */
+  const utilityRows =
+    utilityTiles.length <= 3
+      ? [utilityTiles]
+      : [utilityTiles.slice(0, 2), utilityTiles.slice(2)];
+
   const displayError = mutationError || (gymDetail ? detailError : '');
   const currency = (amount) => formatMoney(amount);
 
@@ -209,7 +254,7 @@ export default function GymDetailsModal({
                   </SlidePanelActionButton>
                 ) : null
               ) : (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {canCollect && onCollectPayment ? (
                   <SlidePanelActionButton
                     variant="hero"
@@ -228,57 +273,30 @@ export default function GymDetailsModal({
                   </SlidePanelActionButton>
                 ) : null}
 
-                {hasSecondaryActions && (
-                  <SlidePanelActionGrid columns={2}>
-                    {canShowChangePlan && (
-                      <SlidePanelActionButton
-                        variant="tile"
-                        icon={ArrowLeftRight}
-                        className={!canShowResetPassword ? 'col-span-2' : ''}
-                        onClick={() => onChangePlan(gymForActions)}
-                      >
-                        {t('modals.gymDetails.changePlan')}
-                      </SlidePanelActionButton>
-                    )}
-                    {canShowResetPassword && (
-                      <SlidePanelActionButton
-                        variant="tile"
-                        icon={KeyRound}
-                        className={!canShowChangePlan ? 'col-span-2' : ''}
-                        onClick={() => {
-                          setResetError('');
-                          setIsResetOpen(true);
-                        }}
-                      >
-                        {t('modals.gymDetails.resetOwnerPassword')}
-                      </SlidePanelActionButton>
-                    )}
-                  </SlidePanelActionGrid>
+                {utilityRows.map((row, rowIndex) =>
+                  row.length > 0 ? (
+                    <SlidePanelActionGrid
+                      key={`utility-row-${rowIndex}`}
+                      columns={row.length}
+                      className={
+                        hasPrimaryLifecycle && rowIndex === 0
+                          ? 'border-t border-app-border-subtle pt-2.5'
+                          : ''
+                      }
+                    >
+                      {row.map((action) => (
+                        <SlidePanelActionButton
+                          key={action.key}
+                          variant={action.danger ? 'tileDanger' : 'tile'}
+                          icon={action.icon}
+                          onClick={action.onClick}
+                        >
+                          {action.label}
+                        </SlidePanelActionButton>
+                      ))}
+                    </SlidePanelActionGrid>
+                  ) : null
                 )}
-
-                <div
-                  className={`flex items-stretch gap-2 ${hasPrimaryLifecycle || hasSecondaryActions ? 'pt-0.5' : ''}`}
-                >
-                  <SlidePanelActionButton
-                    variant="secondary"
-                    icon={Pencil}
-                    className="flex-1"
-                    onClick={() => {
-                      setMutationError('');
-                      setIsEditOpen(true);
-                    }}
-                  >
-                    {t('modals.gymDetails.editGym')}
-                  </SlidePanelActionButton>
-                  <SlidePanelActionButton
-                    variant="danger"
-                    icon={Trash2}
-                    className="shrink-0"
-                    onClick={() => setIsDeleteOpen(true)}
-                  >
-                    {t('modals.gymDetails.deleteGym')}
-                  </SlidePanelActionButton>
-                </div>
               </div>
               )}
             </SlidePanelFooter>

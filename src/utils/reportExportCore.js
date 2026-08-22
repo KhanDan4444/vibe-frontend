@@ -275,22 +275,25 @@ export function pdfRevenueByMethodBlock(doc, startY, summary) {
 }
 
 /**
- * PDF section: plans in use with member-count share bars.
+ * PDF section: plans in use with share bars (members or gyms).
  * @param {import('jspdf').jsPDF} doc
  * @param {Array<{ name: string, count: number }>} planEntries
+ * @param {{ title?: string, totalLabel?: string }} [labels]
  */
-export function pdfPlansUsedBlock(doc, startY, planEntries) {
+export function pdfPlansUsedBlock(doc, startY, planEntries, labels = {}) {
   if (!planEntries?.length) return startY;
 
-  const memberTotal = planEntries.reduce((s, e) => s + e.count, 0);
+  const entityTotal = planEntries.reduce((s, e) => s + e.count, 0);
   return pdfShareBarsBlock(doc, startY, {
-    title: exportText('export.plansUsed'),
+    title: labels.title || exportText('export.plansUsed'),
     entries: planEntries.map((e) => ({ label: e.name, value: e.count })),
     formatValue: (v) => String(v),
-    totalLabel: exportText('export.plansUsedTotal', {
-      plans: planEntries.length,
-      members: memberTotal,
-    }),
+    totalLabel:
+      labels.totalLabel ||
+      exportText('export.plansUsedTotal', {
+        plans: planEntries.length,
+        members: entityTotal,
+      }),
     formatTotal: null,
   });
 }
