@@ -817,6 +817,9 @@
       "successDone": "ተጠናቋል",
       "successPaid": "ክፍያ ተመዝግቧል። ለአገልግሎት ዝግጁ ናቸው።",
       "successSkip": "እንዳልከፈሉ ምልክት ተደርጓል — ክፍያ ሲዘጋጁ ይቀበሉ።",
+      "smsFailedTitle": "የእንኳን ደህና መጡ SMS አልተላከም",
+      "smsFailedBody": "አባሉ ተመዝግቧል፣ ነገር ግን መልእክቱ አልደረሰም። ከመገለጫቸው የፓስ አገናኝ እንደገና መላክ ይችላሉ።",
+      "smsFailedDetail": "አባሉ ተመዝግቧል፣ ነገር ግን SMS አልተሳካም፦ {{detail}}",
       "enrollAnother": "ሌላ አባል መዝግብ",
       "viewMembers": "አባላትን ይመልከቱ",
       "phone": "ስልክ",
@@ -1600,6 +1603,10 @@
       "title": "አባል ተመዝግቧል",
       "subtitle": "{{name}} ንቁ ነው እና ክፍያ ተመዝግቧል።"
     },
+    "enrolledSmsFailed": {
+      "title": "አባል ተመዝግቧል — SMS አልተላከም",
+      "subtitle": "{{name}} ተቀምጧል፣ ነገር ግን የእንኳን ደህና መጡ መልእክት አልተሳካም{{detail}}።"
+    },
     "memberUpdated": {
       "title": "አባል ተዘምኗል",
       "subtitle": "የመገለጫ እና የአባልነት መረጃ ተቀምጧል።"
@@ -1611,6 +1618,10 @@
     "renewed": {
       "title": "አባልነት ተደሰቷል",
       "subtitle": "አዲሱ የ{{name}} ጊዜ ገደብ ቀኖች ተዘምነዋል።"
+    },
+    "renewedSmsFailed": {
+      "title": "ታድሷል — SMS አልተላከም",
+      "subtitle": "{{name}} ታድሷል፣ ነገር ግን SMS አልተሳካም{{detail}}።"
     },
     "planChanged": {
       "title": "ዕቅድ ተዘምኗል",

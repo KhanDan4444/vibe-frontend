@@ -395,11 +395,21 @@ export default function Members() {
     setSaving(true);
     setRenewState((s) => ({ ...s, error: '', fieldErrors: {} }));
     try {
-      await renewMember(renewState.member.id, data);
+      const result = await renewMember(renewState.member.id, data);
       const memberId = renewState.member.id;
       const name = renewState.member.name;
       setRenewState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
+      if (renewState.member.phone && result && result.sms_sent === false) {
+        const detail = result.sms_error ? `: ${result.sms_error}` : '';
+        showFlash(
+          flashFromKey(t, 'renewedSmsFailed', {
+            variant: 'warning',
+            subtitleParams: { name, detail },
+          })
+        );
+      } else {
+        showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
+      }
       refreshAfterMemberChange(memberId);
     } catch (err) {
       setRenewState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));

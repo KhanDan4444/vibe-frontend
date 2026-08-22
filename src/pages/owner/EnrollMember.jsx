@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
+import { useFlash } from '../../context/FlashContext';
 import { isGymOwner } from '../../utils/roles';
 import { mutationErrorState } from '../../utils/validation';
+import { flashFromKey } from '../../i18n/flashToast';
 import MemberModal from '../../components/MemberModal';
 
 /**
@@ -13,7 +16,9 @@ import MemberModal from '../../components/MemberModal';
  */
 export default function EnrollMember() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
+  const { showFlash } = useFlash();
   const {
     plans,
     enrollMember,
@@ -44,8 +49,20 @@ export default function EnrollMember() {
     setError('');
     setFieldErrors({});
     try {
-      await enrollMember(data);
+      const result = await enrollMember(data);
       void refreshSummary();
+      const name = result?.member?.name || data.name;
+      const expectedSms = Boolean(data.phone?.trim());
+      if (expectedSms && result && result.sms_sent === false) {
+        const detail = result.sms_error ? `: ${result.sms_error}` : '';
+        showFlash(
+          flashFromKey(t, 'enrolledSmsFailed', {
+            variant: 'warning',
+            subtitleParams: { name, detail },
+          })
+        );
+      }
+      return result;
     } catch (err) {
       const next = mutationErrorState(err, { date: 'paymentDate' });
       setError(next.error || err.message);

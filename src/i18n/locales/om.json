@@ -1073,6 +1073,9 @@
       "successDone": "Xumurameera",
       "successPaid": "Kaffaltiin galmeeffameera. Tajaajilaaf qophaa'aa dha.",
       "successSkip": "Akka hin kaffalamneetti mallatteeffame — yeroo qophaa'an kaffaltii sassaabi.",
+      "smsFailedTitle": "SMS baga nagaan dhufte hin ergamne",
+      "smsFailedBody": "Miseensi galmaa'eera, garuu ergaan hin geenye. Liinkii paasii irraa profile isaani irraa deebisuu dandeessa.",
+      "smsFailedDetail": "Miseensi galmaa'eera, garuu SMS hin milkoofne: {{detail}}",
       "enrollAnother": "Kan biraa galmeessi",
       "viewMembers": "Miseensota ilaali",
       "paymentSection": "Kaffaltii jalqabaa",
@@ -1612,6 +1615,10 @@
       "title": "Miseensi galmaa'eera",
       "subtitle": "{{name}} si'aawaa fi kaffaltiin galmeeffameera."
     },
+    "enrolledSmsFailed": {
+      "title": "Miseensi galmaa'eera — SMS hin ergamne",
+      "subtitle": "{{name}} olkaa'ameera, garuu ergaan baga nagaan dhufte hin milkoofne{{detail}}."
+    },
     "memberUpdated": {
       "title": "Miseensi haaromfameera",
       "subtitle": "Odeeffannoon profaayilii fi miseensummaa olkaa'ameera."
@@ -1623,6 +1630,10 @@
     "renewed": {
       "title": "Miseensummaan haaromfameera",
       "subtitle": "Guyyoonni yeroo haaraa {{name}} haaromfameera."
+    },
+    "renewedSmsFailed": {
+      "title": "Haaromfameera — SMS hin ergamne",
+      "subtitle": "{{name}} haaromfameera, garuu SMS hin milkoofne{{detail}}."
     },
     "planChanged": {
       "title": "Karooraan haaromfameera",

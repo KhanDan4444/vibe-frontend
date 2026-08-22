@@ -401,7 +401,7 @@ export default function MemberModal({
       const parsedAmount = parseMoneyAmount(enrollAmount);
       setSubmitting(true);
       try {
-        await onSubmit({
+        const result = await onSubmit({
           ...base,
           amount: parsedAmount,
           paymentDate,
@@ -417,6 +417,8 @@ export default function MemberModal({
             skipPayment: false,
             amount: parsedAmount,
             method,
+            smsSent: result?.sms_sent,
+            smsError: result?.sms_error || '',
           });
           setEnrollStep(1);
           setEnrollMaxStep(1);
@@ -431,7 +433,7 @@ export default function MemberModal({
     } else {
       setSubmitting(true);
       try {
-        await onSubmit({
+        const result = await onSubmit({
           ...base,
           skipPayment: true,
           branchId: showBranchPicker && branchId ? parseInt(branchId, 10) : undefined,
@@ -442,6 +444,8 @@ export default function MemberModal({
           setEnrollDone({
             ...doneSummary,
             skipPayment: true,
+            smsSent: result?.sms_sent,
+            smsError: result?.sms_error || '',
           });
           setEnrollStep(1);
           setEnrollMaxStep(1);
@@ -1254,6 +1258,17 @@ export default function MemberModal({
                   ? t('modals.member.successSkip')
                   : t('modals.member.successPaid')}
               </p>
+
+              {enrollDone.phone && enrollDone.smsSent === false ? (
+                <div className="mt-4 w-full rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-3 text-left text-sm text-amber-900 dark:text-amber-200">
+                  <p className="font-semibold">{t('modals.member.smsFailedTitle')}</p>
+                  <p className="mt-1 text-xs leading-relaxed opacity-90">
+                    {enrollDone.smsError
+                      ? t('modals.member.smsFailedDetail', { detail: enrollDone.smsError })
+                      : t('modals.member.smsFailedBody')}
+                  </p>
+                </div>
+              ) : null}
 
               {(enrollDone.phone ||
                 enrollDone.branchName ||

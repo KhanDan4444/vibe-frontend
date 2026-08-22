@@ -1096,6 +1096,9 @@
       "successDone": "Done",
       "successPaid": "Payment recorded. They’re ready for the floor.",
       "successSkip": "Marked unpaid — collect payment when they’re ready.",
+      "smsFailedTitle": "Welcome SMS not sent",
+      "smsFailedBody": "The member is enrolled, but the phone message could not be delivered. You can resend the pass link from their profile.",
+      "smsFailedDetail": "The member is enrolled, but SMS failed: {{detail}}",
       "enrollAnother": "Enroll another",
       "viewMembers": "View members",
       "paymentSection": "Initial payment",
@@ -1642,6 +1645,10 @@
       "title": "Member enrolled",
       "subtitle": "{{name}} is active and payment is on file."
     },
+    "enrolledSmsFailed": {
+      "title": "Member enrolled — SMS not sent",
+      "subtitle": "{{name}} is saved, but the welcome message failed{{detail}}."
+    },
     "memberUpdated": {
       "title": "Member updated",
       "subtitle": "Profile and membership details were saved."
@@ -1653,6 +1660,10 @@
     "renewed": {
       "title": "Membership renewed",
       "subtitle": "{{name}}'s new term dates are updated."
+    },
+    "renewedSmsFailed": {
+      "title": "Renewed — SMS not sent",
+      "subtitle": "{{name}} was renewed, but the SMS failed{{detail}}."
     },
     "planChanged": {
       "title": "Plan updated",
