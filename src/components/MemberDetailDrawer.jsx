@@ -468,7 +468,7 @@ export default function MemberDetailDrawer({
               <SlidePanelRow
                 label={t('table.plan')}
                 value={planLabel}
-                valueClassName="text-sm font-semibold text-teal-700 dark:text-teal-300"
+                valueClassName="text-sm font-semibold text-app-text-strong"
               />
               {member.trainerName ? (
                 <SlidePanelRow
@@ -523,7 +523,7 @@ export default function MemberDetailDrawer({
                     value={paidForCurrentTerm ? t('drawer.paid') : t('drawer.unpaid')}
                     valueClassName={
                       paidForCurrentTerm
-                        ? 'text-sm font-semibold text-emerald-700 dark:text-emerald-300'
+                        ? 'text-sm font-semibold text-app-text-strong'
                         : 'text-sm font-semibold text-amber-700 dark:text-amber-300'
                     }
                   />
@@ -570,7 +570,7 @@ export default function MemberDetailDrawer({
                     <button
                       type="button"
                       onClick={() => setShowAllPayments((open) => !open)}
-                      className="mt-2 w-full text-center text-xs font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
+                      className="mt-2 w-full text-center text-xs font-semibold text-app-muted hover:text-app-text-strong"
                     >
                       {showAllPayments
                         ? t('drawer.showLessPayments')

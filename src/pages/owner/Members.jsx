@@ -887,7 +887,7 @@ export default function Members() {
                         <td className="truncate text-app-text">{member.branchName || '—'}</td>
                       )}
                       <td className="truncate font-mono text-sm text-app-muted">{member.phone}</td>
-                      <td className="truncate font-semibold text-teal-700">
+                      <td className="truncate font-medium text-app-text-strong">
                         {planLabel}
                       </td>
                       <td className="owner-members-col-trainer truncate text-app-muted">
