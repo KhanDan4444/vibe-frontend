@@ -40,7 +40,9 @@ export default function StaffModal({
   const [staffRole, setStaffRole] = useState(DEFAULT_STAFF_ROLE);
   const [branchId, setBranchId] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
@@ -59,6 +61,7 @@ export default function StaffModal({
   const isEdit = !!staff;
   const selectedRole = STAFF_ROLE_OPTIONS.find((opt) => opt.id === staffRole) ?? STAFF_ROLE_OPTIONS[0];
   const showRoleSelect = STAFF_ROLE_OPTIONS.length > 1;
+  const passwordRequired = !isEdit || Boolean(password.trim());
 
   const initDefaults = useCallback(() => {
     if (staff) {
@@ -68,6 +71,7 @@ export default function StaffModal({
       setStaffRole(normalizeStaffRole(staff.staff_role));
       setBranchId(staff.branch_id ? String(staff.branch_id) : defaultBranchId);
       setPassword('');
+      setConfirmPassword('');
     } else {
       setName('');
       setEmail('');
@@ -75,8 +79,10 @@ export default function StaffModal({
       setStaffRole(DEFAULT_STAFF_ROLE);
       setBranchId(defaultBranchId);
       setPassword('');
+      setConfirmPassword('');
     }
     setShowPassword(false);
+    setShowConfirmPassword(false);
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
   }, [staff, defaultBranchId]);
@@ -105,6 +111,7 @@ export default function StaffModal({
       username,
       email,
       password,
+      confirmPassword,
       branchId: resolvedBranchId,
       isEdit,
     });
@@ -308,6 +315,7 @@ export default function StaffModal({
                   onChange={(e) => {
                     setPassword(e.target.value);
                     clearFieldError(setLocalFieldErrors, 'password');
+                    clearFieldError(setLocalFieldErrors, 'confirmPassword');
                   }}
                   className={inputClass('w-full app-field pr-10', fieldErrors, 'password')}
                 />
@@ -323,6 +331,42 @@ export default function StaffModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
               <p className="mt-1.5 text-xs leading-relaxed text-app-muted">{t('modals.staff.passwordHint')}</p>
             </div>
+
+            {passwordRequired ? (
+              <div>
+                <label htmlFor="staff-confirm-password" className="form-label">
+                  {t('auth.confirmPassword')}
+                  <RequiredMark />
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    id="staff-confirm-password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required={passwordRequired}
+                    minLength={8}
+                    autoComplete="new-password"
+                    name="staff-confirm-password"
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      clearFieldError(setLocalFieldErrors, 'confirmPassword');
+                    }}
+                    className={inputClass('w-full app-field pr-10', fieldErrors, 'confirmPassword')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((v) => !v)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface hover:text-app-text"
+                    aria-label={
+                      showConfirmPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')
+                    }
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
+              </div>
+            ) : null}
           </section>
         </div>
 

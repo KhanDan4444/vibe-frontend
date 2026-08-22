@@ -4,6 +4,8 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
   validatePassword,
+  validatePasswordMatch,
+  firstFailure,
   showValidationError,
   inputClass,
   fieldErrorMessage,
@@ -35,14 +37,18 @@ export default function ResetPasswordModal({
 }) {
   const { t } = useTranslation();
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
 
   const initDefaults = useCallback(() => {
     setPassword('');
+    setConfirmPassword('');
     setShowPassword(false);
+    setShowConfirmPassword(false);
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
   }, []);
@@ -59,7 +65,11 @@ export default function ResetPasswordModal({
     if (saving) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
-    if (!showValidationError(validatePassword(password), setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
+    const result = firstFailure(
+      validatePassword(password),
+      validatePasswordMatch(password, confirmPassword)
+    );
+    if (!showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
     setValidationError('');
     onSubmit(password);
   };
@@ -82,11 +92,11 @@ export default function ResetPasswordModal({
           </button>
         </div>
 
-        <div className={modalBody}>
-          {subtitle && <p className="mb-4 text-sm text-app-muted">{subtitle}</p>}
+        <div className={`${modalBody} space-y-4`}>
+          {subtitle && <p className="text-sm text-app-muted">{subtitle}</p>}
 
           {displayError && (
-            <div className="ui-alert-rose mb-4">
+            <div className="ui-alert-rose">
               {displayError}
             </div>
           )}
@@ -107,6 +117,7 @@ export default function ResetPasswordModal({
                 onChange={(e) => {
                   setPassword(e.target.value);
                   clearFieldError(setLocalFieldErrors, 'password');
+                  clearFieldError(setLocalFieldErrors, 'confirmPassword');
                 }}
                 className={inputClass('w-full app-field pr-10', fieldErrors, 'password')}
               />
@@ -125,6 +136,39 @@ export default function ResetPasswordModal({
               ok={lengthOk}
               label={t('modals.resetPassword.passwordHint')}
             />
+          </div>
+
+          <div>
+            <label htmlFor="reset-confirm-password" className="form-label">
+              {t('auth.confirmPassword')}
+              <RequiredMark />
+            </label>
+            <div className="relative mt-1.5">
+              <input
+                id="reset-confirm-password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                required
+                minLength={8}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  clearFieldError(setLocalFieldErrors, 'confirmPassword');
+                }}
+                className={inputClass('w-full app-field pr-10', fieldErrors, 'confirmPassword')}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface hover:text-app-text"
+                aria-label={
+                  showConfirmPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')
+                }
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+            <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
           </div>
         </div>
 

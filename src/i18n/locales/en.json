@@ -864,6 +864,7 @@
       "memberPassBody": "Show at the desk to check in. Renew keeps this QR; enroll/renew SMS already include the link.",
       "memberPassQrAlt": "Check-in QR for {{name}}",
       "passVersion": "Pass v{{version}}",
+      "passValidUntil": "Valid until",
       "regeneratePass": "Regenerate QR",
       "regeneratePassTitle": "Regenerate member QR?",
       "regeneratePassMessage": "The old QR for {{name}} will stop working immediately. If they have a phone, we'll SMS the new pass link.",

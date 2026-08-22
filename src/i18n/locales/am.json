@@ -1249,6 +1249,7 @@
       "memberPassBody": "ለመግቢያ በዴስክ አሳዩ። ማደስ QR አይቀይርም፤ አገናኙ በምዝገባ/ማደስ SMS ይላካል።",
       "memberPassQrAlt": "የ{{name}} የመግቢያ QR",
       "passVersion": "ፓስ v{{version}}",
+      "passValidUntil": "የሚያበቃበት",
       "regeneratePass": "QR እንደገና ፍጠር",
       "regeneratePassTitle": "የአባል QR እንደገና ይፈጠር?",
       "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። ስልክ ካላቸው አዲሱን የፓስ አገናኝ በSMS እንልካለን።",

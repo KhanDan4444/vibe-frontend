@@ -849,6 +849,7 @@
       "memberPassBody": "Galchuuf desk irratti agarsiisi. Haaromsuun QR hin jijjiiru; liinkin SMS galmeessuu/haaromsuu wajjin ni ergamu.",
       "memberPassQrAlt": "QR galchuu {{name}}",
       "passVersion": "Paasii v{{version}}",
+      "passValidUntil": "Hanga",
       "regeneratePass": "QR haaromsii",
       "regeneratePassTitle": "QR miseensaa haaromsuu?",
       "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Bilbila yoo qabaatan liinkii paasii haaraa SMS dhaan ni ergina.",

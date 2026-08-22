@@ -15,6 +15,8 @@ import {
 } from '../services/memberService';
 import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
+import { formatDisplayDate } from '../utils/date';
+import { formatPlanDisplayName } from '../utils/formatPlanDisplayName';
 
 /**
  * Premium member QR pass modal — print card + SMS link + regenerate.
@@ -115,10 +117,15 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
         gymName: pass.gym_name,
         memberName: member.name,
         memberPhone: member.phone || pass.member?.phone,
+        branchName: pass.member?.branch_name || member.branchName || null,
+        planName: pass.member?.plan_name || member.planName || null,
+        endDate: pass.member?.end_date || member.endDate || null,
         qrDataUrl: pass.qr_data_url,
         photoDataUrl: pass.member?.photo_data_url || null,
         passVersion: pass.pass_version,
         labels: {
+          validUntil: t('pages.checkIn.passValidUntil'),
+          memberPass: t('pages.checkIn.memberPassTitle'),
           passVersion: 'v{{version}}',
         },
       });
@@ -202,56 +209,81 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-col items-center rounded-2xl border border-app-border-subtle bg-app-bg/60 px-5 py-6">
-            {pass?.gym_name ? (
-              <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
-                {pass.gym_name}
-              </p>
-            ) : null}
+          <div className="mt-5 overflow-hidden rounded-2xl border border-app-border-subtle bg-app-raised shadow-sm">
+            <div className="flex items-center gap-3 bg-[color:var(--color-brand)] px-4 py-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-[color:var(--color-brand-text)]">
+                {(pass?.gym_name || member.name || 'V').trim().charAt(0).toUpperCase()}
+              </span>
+              {pass?.gym_name ? (
+                <p className="min-w-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                  {pass.gym_name}
+                </p>
+              ) : null}
+            </div>
 
-            {loading ? (
-              <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
-            ) : photoDataUrl ? (
-              <img
-                src={photoDataUrl}
-                alt=""
-                className="h-14 w-14 rounded-2xl object-cover ring-1 ring-black/10"
-              />
-            ) : (
-              <MemberPhoto
-                memberId={member.id}
-                apiFetch={apiFetch}
-                name={member.name}
-                hasPhoto={hasPhoto}
-                expandable={false}
-                className="h-14 w-14 rounded-2xl object-cover"
-                fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-app-border text-lg font-bold text-app-text"
-              />
-            )}
-
-            {loading ? (
-              <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
-            ) : pass?.qr_data_url ? (
-              <img
-                src={pass.qr_data_url}
-                alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
-                className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
-              />
-            ) : (
-              <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
-                —
+            <div className="px-5 py-5">
+              <div className="flex items-center gap-3">
+                {loading ? (
+                  <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
+                ) : photoDataUrl ? (
+                  <img
+                    src={photoDataUrl}
+                    alt=""
+                    className="h-14 w-14 rounded-2xl object-cover ring-2 ring-[color:var(--color-brand-soft)]"
+                  />
+                ) : (
+                  <MemberPhoto
+                    memberId={member.id}
+                    apiFetch={apiFetch}
+                    name={member.name}
+                    hasPhoto={hasPhoto}
+                    expandable={false}
+                    className="h-14 w-14 rounded-2xl object-cover"
+                    fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-lg font-bold text-[color:var(--color-brand-text)]"
+                  />
+                )}
+                <div className="min-w-0">
+                  <p className="font-display text-base font-semibold tracking-tight text-app-text-strong">
+                    {member.name}
+                  </p>
+                  {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
+                  {pass?.member?.branch_name ? (
+                    <p className="mt-0.5 text-xs text-app-muted">{pass.member.branch_name}</p>
+                  ) : null}
+                </div>
               </div>
-            )}
 
-            <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
-              {member.name}
-            </p>
-            {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
-            {pass?.pass_version != null ? (
-              <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-app-muted">
-                {t('pages.checkIn.passVersion', { version: pass.pass_version })}
-              </p>
-            ) : null}
+              {(pass?.member?.plan_name || pass?.member?.end_date) && !loading ? (
+                <p className="mt-4 border-t border-app-border-subtle pt-3 text-center text-xs text-app-muted">
+                  {[
+                    pass.member.plan_name
+                      ? formatPlanDisplayName(pass.member.plan_name)
+                      : null,
+                    pass.member.end_date
+                      ? `${t('pages.checkIn.passValidUntil')} ${formatDisplayDate(pass.member.end_date)}`
+                      : null,
+                  ]
+                    .filter(Boolean)
+                    .join('  ·  ')}
+                </p>
+              ) : null}
+
+              {loading ? (
+                <div className="mx-auto mt-4 h-[180px] w-[180px] animate-pulse rounded-2xl bg-app-border" />
+              ) : pass?.qr_data_url ? (
+                <img
+                  src={pass.qr_data_url}
+                  alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
+                  className="mx-auto mt-4 h-[180px] w-[180px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                />
+              ) : (
+                <div className="mx-auto mt-4 flex h-[180px] w-[180px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+                  —
+                </div>
+              )}
+
+              <p className="mt-3 text-center text-[11px] text-app-muted">{t('pages.checkIn.memberPassTitle')}</p>
+            </div>
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-2">
