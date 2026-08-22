@@ -61,8 +61,6 @@ export const PDF_TABLE_DEFAULTS = {
 };
 
 let pdfReady = null;
-let brandMarkDataUrl = null;
-let brandMarkTried = false;
 
 /** Dynamically load jsPDF + autotable once. */
 export async function loadJsPdf() {
@@ -83,29 +81,6 @@ export async function loadJsPdf() {
 export async function createPdfDoc(format = PDF_FORMAT) {
   const jsPDF = await loadJsPdf();
   return new jsPDF(format);
-}
-
-/** Small ንቁ mark for PDF headers (cached). */
-export async function loadBrandMarkDataUrl() {
-  if (brandMarkTried) return brandMarkDataUrl;
-  brandMarkTried = true;
-  try {
-    const base = typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL
-      ? import.meta.env.BASE_URL
-      : '/';
-    const res = await fetch(`${base}brand-mark-256.png`);
-    if (!res.ok) return null;
-    const blob = await res.blob();
-    brandMarkDataUrl = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    brandMarkDataUrl = null;
-  }
-  return brandMarkDataUrl;
 }
 
 /** @param {import('jspdf').jsPDF} doc */
@@ -187,12 +162,12 @@ export function pdfStartNewPage(doc) {
 }
 
 /**
- * Footer chrome on every page: left label · page · brand mark/text.
+ * Footer chrome on every page: left label · page · brand text.
  * Call once after all pages are drawn, before save.
  * @param {import('jspdf').jsPDF} doc
- * @param {{ left?: string, right?: string, brandMark?: string|null }} [opts]
+ * @param {{ left?: string, right?: string }} [opts]
  */
-export function pdfApplyPageChrome(doc, { left = '', right = 'Vibe', brandMark = null } = {}) {
+export function pdfApplyPageChrome(doc, { left = '', right = 'Vibe' } = {}) {
   const pageCount = doc.getNumberOfPages();
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -210,54 +185,18 @@ export function pdfApplyPageChrome(doc, { left = '', right = 'Vibe', brandMark =
       doc.text(String(left).slice(0, 60), 14, pageH - 6.5);
     }
     doc.text(`${i} / ${pageCount}`, pageW / 2, pageH - 6.5, { align: 'center' });
-    if (brandMark) {
-      try {
-        doc.addImage(brandMark, 'PNG', pageW - 22, pageH - 10.5, 6, 6);
-      } catch {
-        doc.text(right, pageW - 14, pageH - 6.5, { align: 'right' });
-      }
-    } else {
-      doc.text(right, pageW - 14, pageH - 6.5, { align: 'right' });
-    }
+    doc.text(right, pageW - 14, pageH - 6.5, { align: 'right' });
   }
-}
-
-function drawHeaderMark(doc, { monogram, brandMark, x, y }) {
-  const size = 11;
-  if (brandMark) {
-    try {
-      doc.addImage(brandMark, 'PNG', x, y - 4, size, size);
-      return x + size + 4;
-    } catch {
-      // fall through to monogram
-    }
-  }
-  const raw = String(monogram || 'V').trim().charAt(0);
-  const letter = /^[A-Za-z0-9]$/.test(raw) ? raw.toUpperCase() : 'V';
-  doc.setFillColor(...PDF_BRAND.teal);
-  if (typeof doc.roundedRect === 'function') {
-    doc.roundedRect(x, y - 4, size, size, 2, 2, 'F');
-  } else {
-    doc.rect(x, y - 4, size, size, 'F');
-  }
-  doc.setTextColor(...PDF_BRAND.white);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.text(letter, x + size / 2, y + 3.2, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  return x + size + 4;
 }
 
 /**
- * Report header: teal brand bar, mark/monogram, title, optional subtitle, meta lines.
+ * Report header: teal brand bar, title, optional subtitle, meta lines.
  * @param {import('jspdf').jsPDF} doc
  * @param {{
  *   title: string,
  *   subtitle?: string,
  *   lines?: string[],
  *   startY?: number,
- *   monogram?: string,
- *   brandMark?: string|null,
  * }} opts
  */
 export function pdfHeader(doc, {
@@ -265,27 +204,18 @@ export function pdfHeader(doc, {
   subtitle,
   lines = [],
   startY = 14,
-  monogram,
-  brandMark = null,
 }) {
   const pageW = doc.internal.pageSize.getWidth();
   doc.setFillColor(...PDF_BRAND.teal);
   doc.rect(0, 0, pageW, 8, 'F');
 
   let y = Math.max(startY, 18);
-  const textX = drawHeaderMark(doc, {
-    monogram: monogram || title,
-    brandMark,
-    x: 14,
-    y,
-  });
-
   doc.setFontSize(16);
   doc.setTextColor(...PDF_BRAND.text);
   doc.setFont('helvetica', 'bold');
-  doc.text(title, textX, y + 3);
+  doc.text(title, 14, y);
   doc.setFont('helvetica', 'normal');
-  y += 8;
+  y += 6;
 
   if (subtitle) {
     doc.setFontSize(10);

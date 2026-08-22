@@ -19,7 +19,6 @@ import {
   pdfStartNewPage,
   pdfApplyPageChrome,
   pdfStatusDidParseCell,
-  loadBrandMarkDataUrl,
   PDF_BRAND,
 } from './reportExportCore';
 import { sortGymsList, sortAdminPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
@@ -33,19 +32,15 @@ function sectionLabel(doc, text, y) {
   doc.setTextColor(0);
 }
 
-async function platformHeader(title, lines) {
-  const brandMark = await loadBrandMarkDataUrl();
+function platformHeader(title, lines) {
   return {
     title,
     lines,
-    monogram: title,
-    brandMark,
   };
 }
 
-async function finishPlatformPdf(doc, left) {
-  const brandMark = await loadBrandMarkDataUrl();
-  pdfApplyPageChrome(doc, { left, brandMark });
+function finishPlatformPdf(doc, left) {
+  pdfApplyPageChrome(doc, { left });
 }
 
 const GYM_EXPORT_COLUMNS = ['gym', 'ownerContact', 'activeMembers', 'saasPlan', 'status', 'licenseStart', 'licenseEnd'].map(exportColumn);
@@ -145,7 +140,7 @@ export async function downloadGymsPdf(gyms, meta = {}) {
   const snap = buildGymSnapshot(sorted);
   const filterLabel = meta.filterLabel || exportText('filters.allGyms');
 
-  const startY = pdfHeader(doc, await platformHeader(
+  const startY = pdfHeader(doc, platformHeader(
     exportText('export.gymRegistry'),
     [
       exportText('export.gymReportMeta', { date: formatGeneratedAt(), filter: filterLabel, count: snap.total }),
@@ -160,7 +155,7 @@ export async function downloadGymsPdf(gyms, meta = {}) {
     didParseCell: pdfStatusDidParseCell(4),
   });
 
-  await finishPlatformPdf(doc, exportText('export.gymRegistry'));
+  finishPlatformPdf(doc, exportText('export.gymRegistry'));
   doc.save(`gym-registry-${reportTimestamp()}.pdf`);
 }
 
@@ -170,7 +165,7 @@ export async function downloadRevenuePdf(payments, meta) {
   const doc = await createPdfDoc();
   const { periodLabel, summary } = meta;
 
-  let startY = pdfHeader(doc, await platformHeader(
+  let startY = pdfHeader(doc, platformHeader(
     exportText('export.platformRevenue'),
     [
       exportText('export.adminRevenueMeta', { date: formatGeneratedAt(), period: periodLabel }),
@@ -192,7 +187,7 @@ export async function downloadRevenuePdf(payments, meta) {
     columnStyles: REVENUE_PDF_COLUMN_STYLES,
   });
 
-  await finishPlatformPdf(doc, exportText('export.platformRevenue'));
+  finishPlatformPdf(doc, exportText('export.platformRevenue'));
   doc.save(`platform-revenue-${reportTimestamp()}.pdf`);
 }
 
@@ -239,7 +234,7 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
   const doc = await createPdfDoc();
   const { gymFilterLabel = exportText('filters.allGyms'), periodLabel = exportText('period.allTime'), summary } = meta;
 
-  const startY = pdfHeader(doc, await platformHeader(
+  const startY = pdfHeader(doc, platformHeader(
     exportText('export.platformReport'),
     [
       exportText('export.fullReportPdfMeta', {
@@ -284,7 +279,7 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
     columnStyles: REVENUE_PDF_COLUMN_STYLES,
   });
 
-  await finishPlatformPdf(doc, exportText('export.platformReport'));
+  finishPlatformPdf(doc, exportText('export.platformReport'));
   doc.save(`platform-report-${reportTimestamp()}.pdf`);
 }
 

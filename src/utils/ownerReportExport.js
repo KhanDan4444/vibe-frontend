@@ -19,7 +19,6 @@ import {
   pdfStartNewPage,
   pdfApplyPageChrome,
   pdfStatusDidParseCell,
-  loadBrandMarkDataUrl,
   PDF_BRAND,
 } from './reportExportCore';
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
@@ -48,20 +47,16 @@ function sectionLabel(doc, text, y) {
   doc.setTextColor(0);
 }
 
-async function headerOpts(meta, title, subtitle, lines) {
-  const brandMark = await loadBrandMarkDataUrl();
+function headerOpts(meta, title, subtitle, lines) {
   return {
     title,
     subtitle,
     lines,
-    monogram: meta?.gymName || title,
-    brandMark,
   };
 }
 
-async function finishPdf(doc, meta) {
-  const brandMark = await loadBrandMarkDataUrl();
-  pdfApplyPageChrome(doc, { left: footerLeft(meta), brandMark });
+function finishPdf(doc, meta) {
+  pdfApplyPageChrome(doc, { left: footerLeft(meta) });
 }
 
 function formatMemberStatus(m) {
@@ -186,7 +181,7 @@ export async function downloadMembersPdf(members, meta = {}) {
   const filterLabel = meta.filterLabel || exportText('filters.allMembers');
   const directoryLabel = exportText('export.memberDirectory');
 
-  const startY = pdfHeader(doc, await headerOpts(
+  const startY = pdfHeader(doc, headerOpts(
     meta,
     reportTitle(meta, directoryLabel),
     reportSubtitle(meta, directoryLabel),
@@ -205,7 +200,7 @@ export async function downloadMembersPdf(members, meta = {}) {
     didParseCell: pdfStatusDidParseCell(memberStatusColIndex(meta)),
   });
 
-  await finishPdf(doc, meta);
+  finishPdf(doc, meta);
   doc.save(`member-directory-${reportTimestamp()}.pdf`);
 }
 
@@ -219,7 +214,7 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
   const { periodLabel, summary } = meta;
   const revenueLabel = exportText('export.gymRevenue');
 
-  let startY = pdfHeader(doc, await headerOpts(
+  let startY = pdfHeader(doc, headerOpts(
     meta,
     reportTitle(meta, revenueLabel),
     reportSubtitle(meta, revenueLabel),
@@ -246,7 +241,7 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
     didParseCell: pdfStatusDidParseCell(revenueStatusColIndex(meta)),
   });
 
-  await finishPdf(doc, meta);
+  finishPdf(doc, meta);
   doc.save(`gym-revenue-${reportTimestamp()}.pdf`);
 }
 
@@ -290,7 +285,7 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
   const { memberFilterLabel = exportText('filters.allMembers'), periodLabel = exportText('period.allTime'), summary } = meta;
   const reportLabel = exportText('export.gymReport');
 
-  const startY = pdfHeader(doc, await headerOpts(
+  const startY = pdfHeader(doc, headerOpts(
     meta,
     reportTitle(meta, reportLabel),
     reportSubtitle(meta, reportLabel),
@@ -338,7 +333,7 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
     didParseCell: pdfStatusDidParseCell(revenueStatusColIndex(meta)),
   });
 
-  await finishPdf(doc, meta);
+  finishPdf(doc, meta);
   doc.save(`gym-report-${reportTimestamp()}.pdf`);
 }
 
