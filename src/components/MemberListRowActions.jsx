@@ -94,7 +94,6 @@ export default function MemberListRowActions({
 
   return (
     <div className="admin-row-actions" onClick={(e) => e.stopPropagation()}>
-      {detailsBtn}
       {showRenew ? (
         <button
           type="button"
@@ -115,6 +114,7 @@ export default function MemberListRowActions({
           <DollarSign className="h-3 w-3" /> {t('actions.collect')}
         </button>
       ) : null}
+      {detailsBtn}
       <RowMoreMenu items={secondaryItems} />
     </div>
   );
