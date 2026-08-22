@@ -812,6 +812,7 @@ export default function Members() {
                     plans={plans}
                     readOnly={readOnly}
                     canDeleteMembers={canDeleteMembers && !showingFormer}
+                    onView={openMemberRow}
                     onRestore={canRestoreMembers && showingFormer ? (m) => handleRestore(m.id) : undefined}
                     onRenew={(m) => {
                       setError('');
@@ -928,6 +929,7 @@ export default function Members() {
                           plans={plans}
                           readOnly={readOnly}
                           canDeleteMembers={canDeleteMembers && !showingFormer}
+                          onView={openMemberRow}
                           onRestore={canRestoreMembers && showingFormer ? (m) => handleRestore(m.id) : undefined}
                           onRenew={(m) => {
                             setError('');

@@ -1,18 +1,20 @@
-import { Layers, Edit, Trash2, RefreshCw, Undo2, DollarSign } from 'lucide-react';
+import { Layers, Edit, Trash2, RefreshCw, Undo2, DollarSign, PanelRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DISPLAY_STATUS } from '../utils/memberStatus';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
-import { renewActionBtn, collectActionBtn } from '../utils/surfaceClasses';
+import { renewActionBtn, collectActionBtn, iconActionIdle } from '../utils/surfaceClasses';
 import RowMoreMenu from './RowMoreMenu';
 
 /**
  * Primary CTAs stay visible; edit / change-plan / delete tuck into ⋯.
+ * Details is always shown so opening the profile is discoverable (row click remains a shortcut).
  */
 export default function MemberListRowActions({
   member,
   plans,
   readOnly,
   canDeleteMembers,
+  onView,
   onRenew,
   onCollect,
   onChangePlan,
@@ -22,23 +24,44 @@ export default function MemberListRowActions({
 }) {
   const { t } = useTranslation();
 
+  const detailsBtn = onView ? (
+    <button
+      type="button"
+      onClick={() => onView(member)}
+      className={`${iconActionIdle} row-icon-action`}
+      title={t('table.details')}
+      aria-label={t('table.details')}
+    >
+      <PanelRight className="h-4 w-4" />
+    </button>
+  ) : null;
+
   if (member.deletedAt) {
-    if (!onRestore) return null;
     return (
       <div className="admin-row-actions" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          onClick={() => onRestore(member)}
-          className={renewActionBtn}
-          title={t('pages.members.restore')}
-        >
-          <Undo2 className="h-3.5 w-3.5" /> {t('pages.members.restore')}
-        </button>
+        {detailsBtn}
+        {onRestore ? (
+          <button
+            type="button"
+            onClick={() => onRestore(member)}
+            className={renewActionBtn}
+            title={t('pages.members.restore')}
+          >
+            <Undo2 className="h-3.5 w-3.5" /> {t('pages.members.restore')}
+          </button>
+        ) : null}
       </div>
     );
   }
 
-  if (readOnly) return null;
+  if (readOnly) {
+    if (!detailsBtn) return null;
+    return (
+      <div className="admin-row-actions" onClick={(e) => e.stopPropagation()}>
+        {detailsBtn}
+      </div>
+    );
+  }
 
   const showRenew = canRenewMember(member);
   const showCollect = Boolean(member.isUnpaid);
@@ -71,6 +94,7 @@ export default function MemberListRowActions({
 
   return (
     <div className="admin-row-actions" onClick={(e) => e.stopPropagation()}>
+      {detailsBtn}
       {showRenew ? (
         <button
           type="button"
