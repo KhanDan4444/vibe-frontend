@@ -40,6 +40,7 @@ export default function ResetPasswordModal({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showMatchRule, setShowMatchRule] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
@@ -49,6 +50,7 @@ export default function ResetPasswordModal({
     setConfirmPassword('');
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setShowMatchRule(false);
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
   }, []);
@@ -76,6 +78,7 @@ export default function ResetPasswordModal({
 
   const displayError = (validationError || error) && !Object.keys(fieldErrors).length ? (validationError || error) : '';
   const lengthOk = password.length >= MIN_PASSWORD_LENGTH;
+  const matchOk = Boolean(password) && password === confirmPassword;
 
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
@@ -131,11 +134,7 @@ export default function ResetPasswordModal({
               </button>
             </div>
             <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-            <PasswordRule
-              show
-              ok={lengthOk}
-              label={t('modals.resetPassword.passwordHint')}
-            />
+            <PasswordRule show ok={lengthOk} label={t('account.passwordMin8')} />
           </div>
 
           <div>
@@ -151,8 +150,10 @@ export default function ResetPasswordModal({
                 minLength={8}
                 autoComplete="new-password"
                 value={confirmPassword}
+                onFocus={() => setShowMatchRule(true)}
                 onChange={(e) => {
                   setConfirmPassword(e.target.value);
+                  setShowMatchRule(true);
                   clearFieldError(setLocalFieldErrors, 'confirmPassword');
                 }}
                 className={inputClass('w-full app-field pr-10', fieldErrors, 'confirmPassword')}
@@ -169,6 +170,11 @@ export default function ResetPasswordModal({
               </button>
             </div>
             <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
+            <PasswordRule
+              show={showMatchRule || confirmPassword.length > 0}
+              ok={matchOk}
+              label={t('account.passwordsMatch')}
+            />
           </div>
         </div>
 

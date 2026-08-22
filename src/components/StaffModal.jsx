@@ -11,8 +11,10 @@ import {
   clearFieldError,
   clearAllFieldErrors,
   FORM_INPUT_CLASS,
+  MIN_PASSWORD_LENGTH,
 } from '../utils/validation';
 import FieldError from './FieldError';
+import PasswordRule from './auth/PasswordRule';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
@@ -43,10 +45,14 @@ export default function StaffModal({
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showLengthRule, setShowLengthRule] = useState(false);
+  const [showMatchRule, setShowMatchRule] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [localFieldErrors, setLocalFieldErrors] = useState({});
   const fieldErrors = localFieldErrors;
   const fc = (field) => inputClass(FORM_INPUT_CLASS, fieldErrors, field);
+  const lengthOk = password.length >= MIN_PASSWORD_LENGTH;
+  const matchOk = Boolean(password) && password === confirmPassword;
 
   const activeBranches = branches.filter((b) => b.is_active !== false);
   const defaultBranchId = String(
@@ -83,6 +89,8 @@ export default function StaffModal({
     }
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setShowLengthRule(false);
+    setShowMatchRule(false);
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
   }, [staff, defaultBranchId]);
@@ -135,19 +143,28 @@ export default function StaffModal({
   const displayError =
     (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
 
+  const canSubmit = Boolean(
+    name.trim() &&
+      username.trim() &&
+      (branchId || defaultBranchId) &&
+      (isEdit
+        ? !password.trim() || (lengthOk && matchOk)
+        : lengthOk && matchOk)
+  );
+
   return (
     <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
-      <div className={`${modalHeader} flex items-center justify-between gap-3`}>
+      <div className={`${modalHeader} flex items-center justify-between gap-3 !py-3.5 sm:!py-4`}>
         <div className="min-w-0">
           <h2 className={modalTitle}>
             {isEdit ? t('modals.staff.editTitle') : t('modals.staff.createTitle')}
           </h2>
-          <p className="mt-1 text-sm text-app-muted">{t('modals.staff.subtitle')}</p>
+          <p className="mt-0.5 text-sm text-app-muted">{t('modals.staff.subtitle')}</p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="shrink-0 rounded-lg p-2 text-app-muted hover:bg-app-surface hover:text-app-text"
+          className="shrink-0 rounded-lg p-2 text-app-muted transition-colors hover:bg-app-surface hover:text-app-text"
           aria-label={t('aria.close')}
         >
           <X className="h-5 w-5" />
@@ -160,14 +177,14 @@ export default function StaffModal({
         autoComplete="off"
         className="flex min-h-0 flex-1 flex-col"
       >
-        <div className={`${modalBody} space-y-6`}>
+        <div className={`${modalBody} space-y-4 !py-4 sm:!py-5`}>
           {displayError && (
-            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-300">
+            <div className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700 animate-in fade-in duration-150 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-300">
               {displayError}
             </div>
           )}
 
-          <section className="space-y-4">
+          <div className="space-y-3">
             {showBranchPicker ? (
               <>
                 <SearchableSelect
@@ -187,12 +204,12 @@ export default function StaffModal({
               </>
             ) : null}
 
-            <div>
-              <p className="form-label">
-                {t('modals.staff.role')}
-                <RequiredMark />
-              </p>
-              {showRoleSelect ? (
+            {showRoleSelect ? (
+              <div>
+                <label htmlFor="staff-role" className="form-label">
+                  {t('modals.staff.role')}
+                  <RequiredMark />
+                </label>
                 <select
                   id="staff-role"
                   required
@@ -206,67 +223,62 @@ export default function StaffModal({
                     </option>
                   ))}
                 </select>
-              ) : (
-                <div className="mt-1 rounded-xl border border-app-border-subtle bg-app-surface px-3.5 py-3">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" aria-hidden />
-                    <p className="text-sm font-semibold text-app-text-strong">
-                      {t(selectedRole.labelKey)}
-                    </p>
-                  </div>
-                  {selectedRole?.descriptionKey ? (
-                    <p className="mt-1.5 text-xs leading-relaxed text-app-muted">
-                      {t(selectedRole.descriptionKey)}
-                    </p>
-                  ) : null}
-                </div>
-              )}
-            </div>
-          </section>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 rounded-lg bg-app-surface px-2.5 py-1 ring-1 ring-app-border-subtle">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500 dark:bg-amber-400" aria-hidden />
+                <span className="text-xs font-medium text-app-muted">{t('modals.staff.role')}</span>
+                <span className="text-xs font-semibold text-app-text-strong">{t(selectedRole.labelKey)}</span>
+              </div>
+            )}
 
-          <section className="space-y-4 border-t border-app-border-subtle pt-5">
-            <div>
-              <label htmlFor="staff-name" className="form-label">
-                {t('modals.staff.name')}
-                <RequiredMark />
-              </label>
-              <input
-                id="staff-name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  clearFieldError(setLocalFieldErrors, 'name');
-                }}
-                className={fc('name')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
-            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="staff-name" className="form-label">
+                  {t('modals.staff.name')}
+                  <RequiredMark />
+                </label>
+                <input
+                  id="staff-name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    clearFieldError(setLocalFieldErrors, 'name');
+                  }}
+                  className={fc('name')}
+                />
+                <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
+              </div>
 
-            <div>
-              <label htmlFor="staff-email" className="form-label">
-                {t('modals.staff.email')}
-                <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
-              </label>
-              <input
-                id="staff-email"
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearFieldError(setLocalFieldErrors, 'email');
-                }}
-                className={fc('email')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+              <div>
+                <label htmlFor="staff-email" className="form-label">
+                  {t('modals.staff.email')}
+                  <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
+                </label>
+                <input
+                  id="staff-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    clearFieldError(setLocalFieldErrors, 'email');
+                  }}
+                  className={fc('email')}
+                />
+                <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+              </div>
             </div>
-          </section>
+          </div>
 
-          <section className="space-y-4 border-t border-app-border-subtle pt-5">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-app-muted">
-              {t('modals.staff.signInSection')}
-            </p>
+          <div className="space-y-3 rounded-xl bg-app-surface/70 p-3.5 ring-1 ring-app-border-subtle sm:p-4">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-0.5 shrink-0 rounded-full bg-teal-600 dark:bg-teal-400" aria-hidden />
+              <p className="text-[10px] font-bold uppercase tracking-wider text-app-muted">
+                {t('modals.staff.signInSection')}
+              </p>
+            </div>
 
             <div>
               <label htmlFor="staff-username" className="form-label">
@@ -290,7 +302,7 @@ export default function StaffModal({
                 }}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
-              <p className="mt-1.5 text-xs leading-relaxed text-app-muted">{t('modals.staff.usernameHint')}</p>
+              <p className="mt-1 text-[11px] leading-snug text-app-muted">{t('modals.staff.usernameHint')}</p>
             </div>
 
             <div>
@@ -312,8 +324,10 @@ export default function StaffModal({
                   autoComplete="new-password"
                   name="staff-password"
                   value={password}
+                  onFocus={() => setShowLengthRule(true)}
                   onChange={(e) => {
                     setPassword(e.target.value);
+                    setShowLengthRule(true);
                     clearFieldError(setLocalFieldErrors, 'password');
                     clearFieldError(setLocalFieldErrors, 'confirmPassword');
                   }}
@@ -322,18 +336,22 @@ export default function StaffModal({
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface hover:text-app-text"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted transition-colors hover:bg-app-raised hover:text-app-text"
                   aria-label={showPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-              <p className="mt-1.5 text-xs leading-relaxed text-app-muted">{t('modals.staff.passwordHint')}</p>
+              <PasswordRule
+                show={!isEdit || showLengthRule || password.length > 0}
+                ok={lengthOk}
+                label={t('account.passwordMin8')}
+              />
             </div>
 
             {passwordRequired ? (
-              <div>
+              <div className="animate-in fade-in slide-in-from-top-1 duration-150">
                 <label htmlFor="staff-confirm-password" className="form-label">
                   {t('auth.confirmPassword')}
                   <RequiredMark />
@@ -347,8 +365,10 @@ export default function StaffModal({
                     autoComplete="new-password"
                     name="staff-confirm-password"
                     value={confirmPassword}
+                    onFocus={() => setShowMatchRule(true)}
                     onChange={(e) => {
                       setConfirmPassword(e.target.value);
+                      setShowMatchRule(true);
                       clearFieldError(setLocalFieldErrors, 'confirmPassword');
                     }}
                     className={inputClass('w-full app-field pr-10', fieldErrors, 'confirmPassword')}
@@ -356,7 +376,7 @@ export default function StaffModal({
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword((v) => !v)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted hover:bg-app-surface hover:text-app-text"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md p-1 text-app-muted transition-colors hover:bg-app-raised hover:text-app-text"
                     aria-label={
                       showConfirmPassword ? t('modals.staff.hidePassword') : t('modals.staff.showPassword')
                     }
@@ -365,16 +385,21 @@ export default function StaffModal({
                   </button>
                 </div>
                 <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
+                <PasswordRule
+                  show={!isEdit || showMatchRule || confirmPassword.length > 0}
+                  ok={matchOk}
+                  label={t('account.passwordsMatch')}
+                />
               </div>
             ) : null}
-          </section>
+          </div>
         </div>
 
         <div className={modalFooter}>
           <Button type="button" variant="secondary" onClick={onClose} className="w-full sm:w-auto">
             {t('common.cancel')}
           </Button>
-          <Button type="submit" loading={saving} className="w-full sm:w-auto">
+          <Button type="submit" loading={saving} disabled={!canSubmit} className="w-full sm:w-auto">
             {saving
               ? t('common.processing')
               : isEdit
