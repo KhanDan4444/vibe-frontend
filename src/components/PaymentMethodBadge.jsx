@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Banknote, CreditCard, Wallet } from 'lucide-react';
+import { ArrowLeftRight, Banknote, CreditCard, Smartphone, Wallet } from 'lucide-react';
 import { translatePaymentMethod } from '../i18n/helpers';
 import { paymentMethodStyle } from '../utils/paymentSources';
 
@@ -6,6 +6,7 @@ const METHOD_ICONS = {
   Cash: Banknote,
   Card: CreditCard,
   'Bank Transfer': ArrowLeftRight,
+  'Tele Birr': Smartphone,
 };
 
 export function paymentMethodIcon(method) {

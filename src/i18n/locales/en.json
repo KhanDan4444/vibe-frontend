@@ -520,7 +520,8 @@
   "paymentMethod": {
     "cash": "Cash",
     "card": "Card",
-    "bankTransfer": "Bank Transfer"
+    "bankTransfer": "Bank Transfer",
+    "teleBirr": "Tele Birr"
   },
   "branch": {
     "allBranches": "All branches",

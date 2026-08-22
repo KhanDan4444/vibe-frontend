@@ -1459,7 +1459,8 @@
   "paymentMethod": {
     "bankTransfer": "ባንክ ማስተላለፍ",
     "card": "ካርድ",
-    "cash": "ጥሬ ገንዘብ"
+    "cash": "ጥሬ ገንዘብ",
+    "teleBirr": "ቴሌ ብር"
   },
   "paymentSource": {
     "change_plan": "የዕቅድ ለውጥ",

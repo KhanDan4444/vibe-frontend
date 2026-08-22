@@ -508,7 +508,8 @@
   "paymentMethod": {
     "cash": "Kaffaltii Kallattii (Kaashii)",
     "card": "Kardii",
-    "bankTransfer": "karaa Baankiin dabarsun"
+    "bankTransfer": "karaa Baankiin dabarsun",
+    "teleBirr": "Tele Birr"
   },
   "branch": {
     "allBranches": "Dameewwan hunda",

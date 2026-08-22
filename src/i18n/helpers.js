@@ -12,6 +12,7 @@ const PAYMENT_METHOD_KEYS = {
   Cash: 'paymentMethod.cash',
   Card: 'paymentMethod.card',
   'Bank Transfer': 'paymentMethod.bankTransfer',
+  'Tele Birr': 'paymentMethod.teleBirr',
 };
 
 /** Display label for a stored payment method value (API values stay English). */
@@ -32,6 +33,7 @@ export const PAYMENT_METHOD_OPTIONS = [
   { value: 'Cash', labelKey: 'paymentMethod.cash' },
   { value: 'Card', labelKey: 'paymentMethod.card' },
   { value: 'Bank Transfer', labelKey: 'paymentMethod.bankTransfer' },
+  { value: 'Tele Birr', labelKey: 'paymentMethod.teleBirr' },
 ];
 
 /** Fixed English translator for CSV/PDF exports (jsPDF cannot render Ethiopic script). */

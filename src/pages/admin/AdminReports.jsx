@@ -393,7 +393,7 @@ export default function AdminReports({ onBootingChange }) {
       </section>
 
       <p className="text-center text-xs text-app-muted pb-2">
-        <strong className="font-medium text-app-muted">PDF / CSV</strong> exports are landscape A–Z tables with revenue totals by method (Card, Bank Transfer, Cash).
+        <strong className="font-medium text-app-muted">PDF / CSV</strong> exports are landscape A–Z tables with revenue totals by method (Card, Bank Transfer, Cash, Tele Birr).
         Live gym and payment lists use the same alphabetical order.
       </p>
     </div>
