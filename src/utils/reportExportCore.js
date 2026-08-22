@@ -20,10 +20,29 @@ export const PDF_BRAND = {
   muted: [100, 116, 139],
   stripe: [248, 250, 252],
   line: [226, 232, 240],
+  white: [255, 255, 255],
 };
 
+/** Status text colors aligned with MEMBER_FILTER_CHART_COLORS. */
+export const PDF_STATUS_COLORS = {
+  active: [16, 185, 129],
+  unpaid: [249, 115, 22],
+  duesoon: [56, 189, 248],
+  expired: [251, 113, 133],
+  former: [120, 113, 108],
+  suspended: [251, 113, 133],
+};
+
+const METHOD_BAR_COLORS = [
+  [20, 184, 166],
+  [245, 158, 11],
+  [56, 189, 248],
+  [148, 163, 184],
+  [251, 113, 133],
+];
+
 export const PDF_TABLE_DEFAULTS = {
-  margin: { left: 14, right: 14 },
+  margin: { left: 14, right: 14, bottom: 18 },
   styles: {
     fontSize: 9,
     cellPadding: 2.5,
@@ -34,7 +53,7 @@ export const PDF_TABLE_DEFAULTS = {
   },
   headStyles: {
     fillColor: PDF_BRAND.teal,
-    textColor: [255, 255, 255],
+    textColor: PDF_BRAND.white,
     fontStyle: 'bold',
     fontSize: 8,
   },
@@ -42,6 +61,8 @@ export const PDF_TABLE_DEFAULTS = {
 };
 
 let pdfReady = null;
+let brandMarkDataUrl = null;
+let brandMarkTried = false;
 
 /** Dynamically load jsPDF + autotable once. */
 export async function loadJsPdf() {
@@ -64,6 +85,29 @@ export async function createPdfDoc(format = PDF_FORMAT) {
   return new jsPDF(format);
 }
 
+/** Small ንቁ mark for PDF headers (cached). */
+export async function loadBrandMarkDataUrl() {
+  if (brandMarkTried) return brandMarkDataUrl;
+  brandMarkTried = true;
+  try {
+    const base = typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL
+      ? import.meta.env.BASE_URL
+      : '/';
+    const res = await fetch(`${base}brand-mark-256.png`);
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    brandMarkDataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : null);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    brandMarkDataUrl = null;
+  }
+  return brandMarkDataUrl;
+}
+
 /** @param {import('jspdf').jsPDF} doc */
 export function pdfTable(doc, options) {
   if (typeof doc.autoTable !== 'function') {
@@ -73,7 +117,7 @@ export function pdfTable(doc, options) {
   doc.autoTable({
     ...PDF_TABLE_DEFAULTS,
     ...rest,
-    margin: margin || PDF_TABLE_DEFAULTS.margin,
+    margin: { ...PDF_TABLE_DEFAULTS.margin, ...margin },
     styles: { ...PDF_TABLE_DEFAULTS.styles, ...styles },
     headStyles: { ...PDF_TABLE_DEFAULTS.headStyles, ...headStyles },
     alternateRowStyles: { ...PDF_TABLE_DEFAULTS.alternateRowStyles, ...alternateRowStyles },
@@ -105,6 +149,34 @@ export function reportTimestamp() {
   return todayString();
 }
 
+/** Map a status cell label to RGB, or null. */
+export function pdfStatusTextColor(label) {
+  const s = String(label || '').toLowerCase();
+  if (!s || s === '—') return null;
+  if (s.includes('unpaid')) return PDF_STATUS_COLORS.unpaid;
+  if (s.includes('due')) return PDF_STATUS_COLORS.duesoon;
+  if (s.includes('expired')) return PDF_STATUS_COLORS.expired;
+  if (s.includes('former')) return PDF_STATUS_COLORS.former;
+  if (s.includes('suspend')) return PDF_STATUS_COLORS.suspended;
+  if (s.includes('active')) return PDF_STATUS_COLORS.active;
+  return null;
+}
+
+/**
+ * autotable didParseCell hook — colors the status column.
+ * @param {number} statusColIndex
+ */
+export function pdfStatusDidParseCell(statusColIndex) {
+  return (data) => {
+    if (data.section !== 'body' || data.column.index !== statusColIndex) return;
+    const color = pdfStatusTextColor(data.cell.raw ?? data.cell.text?.[0]);
+    if (color) {
+      data.cell.styles.textColor = color;
+      data.cell.styles.fontStyle = 'bold';
+    }
+  };
+}
+
 /** Start a new landscape page for the next report section. */
 export function pdfStartNewPage(doc) {
   doc.addPage();
@@ -115,22 +187,105 @@ export function pdfStartNewPage(doc) {
 }
 
 /**
- * Report header: teal brand bar, gym/product title, optional subtitle, meta lines.
+ * Footer chrome on every page: left label · page · brand mark/text.
+ * Call once after all pages are drawn, before save.
  * @param {import('jspdf').jsPDF} doc
- * @param {{ title: string, subtitle?: string, lines?: string[], startY?: number }} opts
+ * @param {{ left?: string, right?: string, brandMark?: string|null }} [opts]
  */
-export function pdfHeader(doc, { title, subtitle, lines = [], startY = 14 }) {
+export function pdfApplyPageChrome(doc, { left = '', right = 'Vibe', brandMark = null } = {}) {
+  const pageCount = doc.getNumberOfPages();
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+
+  for (let i = 1; i <= pageCount; i += 1) {
+    doc.setPage(i);
+    doc.setDrawColor(...PDF_BRAND.line);
+    doc.setLineWidth(0.25);
+    doc.line(14, pageH - 11, pageW - 14, pageH - 11);
+
+    doc.setFontSize(8);
+    doc.setTextColor(...PDF_BRAND.muted);
+    doc.setFont('helvetica', 'normal');
+    if (left) {
+      doc.text(String(left).slice(0, 60), 14, pageH - 6.5);
+    }
+    doc.text(`${i} / ${pageCount}`, pageW / 2, pageH - 6.5, { align: 'center' });
+    if (brandMark) {
+      try {
+        doc.addImage(brandMark, 'PNG', pageW - 22, pageH - 10.5, 6, 6);
+      } catch {
+        doc.text(right, pageW - 14, pageH - 6.5, { align: 'right' });
+      }
+    } else {
+      doc.text(right, pageW - 14, pageH - 6.5, { align: 'right' });
+    }
+  }
+}
+
+function drawHeaderMark(doc, { monogram, brandMark, x, y }) {
+  const size = 11;
+  if (brandMark) {
+    try {
+      doc.addImage(brandMark, 'PNG', x, y - 4, size, size);
+      return x + size + 4;
+    } catch {
+      // fall through to monogram
+    }
+  }
+  const raw = String(monogram || 'V').trim().charAt(0);
+  const letter = /^[A-Za-z0-9]$/.test(raw) ? raw.toUpperCase() : 'V';
+  doc.setFillColor(...PDF_BRAND.teal);
+  if (typeof doc.roundedRect === 'function') {
+    doc.roundedRect(x, y - 4, size, size, 2, 2, 'F');
+  } else {
+    doc.rect(x, y - 4, size, size, 'F');
+  }
+  doc.setTextColor(...PDF_BRAND.white);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text(letter, x + size / 2, y + 3.2, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  return x + size + 4;
+}
+
+/**
+ * Report header: teal brand bar, mark/monogram, title, optional subtitle, meta lines.
+ * @param {import('jspdf').jsPDF} doc
+ * @param {{
+ *   title: string,
+ *   subtitle?: string,
+ *   lines?: string[],
+ *   startY?: number,
+ *   monogram?: string,
+ *   brandMark?: string|null,
+ * }} opts
+ */
+export function pdfHeader(doc, {
+  title,
+  subtitle,
+  lines = [],
+  startY = 14,
+  monogram,
+  brandMark = null,
+}) {
   const pageW = doc.internal.pageSize.getWidth();
   doc.setFillColor(...PDF_BRAND.teal);
   doc.rect(0, 0, pageW, 8, 'F');
 
   let y = Math.max(startY, 18);
+  const textX = drawHeaderMark(doc, {
+    monogram: monogram || title,
+    brandMark,
+    x: 14,
+    y,
+  });
+
   doc.setFontSize(16);
   doc.setTextColor(...PDF_BRAND.text);
   doc.setFont('helvetica', 'bold');
-  doc.text(title, 14, y);
+  doc.text(title, textX, y + 3);
   doc.setFont('helvetica', 'normal');
-  y += 6;
+  y += 8;
 
   if (subtitle) {
     doc.setFontSize(10);
@@ -148,52 +303,94 @@ export function pdfHeader(doc, { title, subtitle, lines = [], startY = 14 }) {
   return y + lines.length * 5 + 5;
 }
 
-function buildRevenueByMethodRows(summary) {
+function buildRevenueByMethodEntries(summary) {
   const byMethod = summary?.byMethod || {};
   return Object.entries(byMethod)
-    .map(([method, amount]) => [exportPaymentMethod(method) || method, formatMoney(amount)])
-    .sort((a, b) => compareLocale(a[0], b[0]));
+    .map(([method, amount]) => ({
+      method: exportPaymentMethod(method) || method,
+      amount: Number(amount) || 0,
+    }))
+    .filter((e) => e.amount > 0)
+    .sort((a, b) => b.amount - a.amount || compareLocale(a.method, b.method));
 }
 
 /** CSV block: revenue totals grouped by payment method. */
 export function revenueByMethodCsvBlock(summary) {
-  const rows = buildRevenueByMethodRows(summary);
-  if (rows.length === 0) return '';
-  const total = formatMoney(summary?.total ?? 0);
+  const entries = buildRevenueByMethodEntries(summary);
+  if (entries.length === 0) return '';
+  const total = formatMoney(summary?.total ?? entries.reduce((s, e) => s + e.amount, 0));
   return [
     exportText('export.revenueByMethodUpper'),
     `${exportText('table.method')},${exportText('table.amount')}`,
-    ...rows.map((r) => `${escapeCsv(r[0])},${escapeCsv(r[1])}`),
+    ...entries.map((e) => `${escapeCsv(e.method)},${escapeCsv(formatMoney(e.amount))}`),
     `${exportText('export.total')},${escapeCsv(total)}`,
     '',
   ].join('\n');
 }
 
-/** PDF section: revenue totals grouped by payment method. */
+/**
+ * PDF section: revenue by method with share bars + total.
+ * @param {import('jspdf').jsPDF} doc
+ */
 export function pdfRevenueByMethodBlock(doc, startY, summary) {
-  const rows = buildRevenueByMethodRows(summary);
-  if (rows.length === 0) return startY;
+  const entries = buildRevenueByMethodEntries(summary);
+  if (entries.length === 0) return startY;
 
-  const body = [...rows, [exportText('export.total'), formatMoney(summary?.total ?? 0)]];
+  const total = Number(summary?.total ?? entries.reduce((s, e) => s + e.amount, 0));
+  const pageW = doc.internal.pageSize.getWidth();
+  const barLeft = 58;
+  const barMax = pageW - barLeft - 72;
 
   doc.setFontSize(10);
   doc.setTextColor(...PDF_BRAND.muted);
+  doc.setFont('helvetica', 'bold');
   doc.text(exportText('export.revenueByMethod'), 14, startY);
+  doc.setFont('helvetica', 'normal');
+
+  let y = startY + 7;
+
+  entries.forEach((entry, i) => {
+    const pct = total > 0 ? entry.amount / total : 0;
+    const barW = Math.max(1.5, barMax * pct);
+    const color = METHOD_BAR_COLORS[i % METHOD_BAR_COLORS.length];
+
+    doc.setFontSize(9);
+    doc.setTextColor(...PDF_BRAND.text);
+    doc.text(entry.method, 14, y);
+
+    doc.setFillColor(...PDF_BRAND.stripe);
+    if (typeof doc.roundedRect === 'function') {
+      doc.roundedRect(barLeft, y - 3.2, barMax, 4.5, 1, 1, 'F');
+      doc.setFillColor(...color);
+      doc.roundedRect(barLeft, y - 3.2, barW, 4.5, 1, 1, 'F');
+    } else {
+      doc.rect(barLeft, y - 3.2, barMax, 4.5, 'F');
+      doc.setFillColor(...color);
+      doc.rect(barLeft, y - 3.2, barW, 4.5, 'F');
+    }
+
+    doc.setTextColor(...PDF_BRAND.muted);
+    doc.setFontSize(8);
+    doc.text(
+      `${formatMoney(entry.amount)} · ${Math.round(pct * 100)}%`,
+      pageW - 14,
+      y,
+      { align: 'right' },
+    );
+    y += 8;
+  });
+
+  doc.setDrawColor(...PDF_BRAND.line);
+  doc.setLineWidth(0.2);
+  doc.line(14, y - 2, pageW - 14, y - 2);
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...PDF_BRAND.teal);
+  doc.text(exportText('export.total'), 14, y + 4);
+  doc.text(formatMoney(total), pageW - 14, y + 4, { align: 'right' });
+  doc.setFont('helvetica', 'normal');
   doc.setTextColor(0);
 
-  pdfTable(doc, {
-    startY: startY + 3,
-    head: [[exportText('table.method'), exportText('table.amount')]],
-    body,
-    styles: { fontSize: 9, cellPadding: 2 },
-    columnStyles: { 0: { cellWidth: 'auto' }, 1: { halign: 'right', cellWidth: 45 } },
-    theme: 'plain',
-    tableWidth: 120,
-    didParseCell: (data) => {
-      if (data.section === 'body' && data.row.index === body.length - 1) {
-        data.cell.styles.fontStyle = 'bold';
-      }
-    },
-  });
-  return doc.lastAutoTable.finalY + 8;
+  return y + 12;
 }

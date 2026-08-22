@@ -17,6 +17,9 @@ import {
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
   pdfStartNewPage,
+  pdfApplyPageChrome,
+  pdfStatusDidParseCell,
+  loadBrandMarkDataUrl,
   PDF_BRAND,
 } from './reportExportCore';
 import { sortGymsList, sortAdminPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
@@ -28,6 +31,21 @@ function sectionLabel(doc, text, y) {
   doc.text(text, 14, y);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0);
+}
+
+async function platformHeader(title, lines) {
+  const brandMark = await loadBrandMarkDataUrl();
+  return {
+    title,
+    lines,
+    monogram: title,
+    brandMark,
+  };
+}
+
+async function finishPlatformPdf(doc, left) {
+  const brandMark = await loadBrandMarkDataUrl();
+  pdfApplyPageChrome(doc, { left, brandMark });
 }
 
 const GYM_EXPORT_COLUMNS = ['gym', 'ownerContact', 'activeMembers', 'saasPlan', 'status', 'licenseStart', 'licenseEnd'].map(exportColumn);
@@ -127,20 +145,22 @@ export async function downloadGymsPdf(gyms, meta = {}) {
   const snap = buildGymSnapshot(sorted);
   const filterLabel = meta.filterLabel || exportText('filters.allGyms');
 
-  const startY = pdfHeader(doc, {
-    title: exportText('export.gymRegistry'),
-    lines: [
+  const startY = pdfHeader(doc, await platformHeader(
+    exportText('export.gymRegistry'),
+    [
       exportText('export.gymReportMeta', { date: formatGeneratedAt(), filter: filterLabel, count: snap.total }),
     ],
-  });
+  ));
 
   pdfTable(doc, {
     startY,
     head: [GYM_EXPORT_COLUMNS],
     body: sorted.map(gymExportRow),
     columnStyles: GYM_PDF_COLUMN_STYLES,
+    didParseCell: pdfStatusDidParseCell(4),
   });
 
+  await finishPlatformPdf(doc, exportText('export.gymRegistry'));
   doc.save(`gym-registry-${reportTimestamp()}.pdf`);
 }
 
@@ -150,16 +170,16 @@ export async function downloadRevenuePdf(payments, meta) {
   const doc = await createPdfDoc();
   const { periodLabel, summary } = meta;
 
-  let startY = pdfHeader(doc, {
-    title: exportText('export.platformRevenue'),
-    lines: [
+  let startY = pdfHeader(doc, await platformHeader(
+    exportText('export.platformRevenue'),
+    [
       exportText('export.adminRevenueMeta', { date: formatGeneratedAt(), period: periodLabel }),
       exportText('export.revenueSummaryMetaGym', {
         total: formatMoney(summary?.total ?? 0),
         count: summary?.count ?? 0,
       }),
     ],
-  });
+  ));
 
   startY = pdfRevenueByMethodBlock(doc, startY, summary);
 
@@ -172,6 +192,7 @@ export async function downloadRevenuePdf(payments, meta) {
     columnStyles: REVENUE_PDF_COLUMN_STYLES,
   });
 
+  await finishPlatformPdf(doc, exportText('export.platformRevenue'));
   doc.save(`platform-revenue-${reportTimestamp()}.pdf`);
 }
 
@@ -218,9 +239,9 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
   const doc = await createPdfDoc();
   const { gymFilterLabel = exportText('filters.allGyms'), periodLabel = exportText('period.allTime'), summary } = meta;
 
-  const startY = pdfHeader(doc, {
-    title: exportText('export.platformReport'),
-    lines: [
+  const startY = pdfHeader(doc, await platformHeader(
+    exportText('export.platformReport'),
+    [
       exportText('export.fullReportPdfMeta', {
         date: formatGeneratedAt(),
         gyms: gymFilterLabel,
@@ -232,7 +253,7 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
         payments: sortedPayments.length,
       }),
     ],
-  });
+  ));
 
   sectionLabel(doc, exportText('export.gymDirectorySection'), startY);
 
@@ -242,6 +263,7 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
     body: sortedGyms.map(gymExportRow),
     styles: { fontSize: 8, cellPadding: 2 },
     columnStyles: GYM_PDF_COLUMN_STYLES,
+    didParseCell: pdfStatusDidParseCell(4),
   });
 
   const revenueTop = pdfStartNewPage(doc);
@@ -262,6 +284,7 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
     columnStyles: REVENUE_PDF_COLUMN_STYLES,
   });
 
+  await finishPlatformPdf(doc, exportText('export.platformReport'));
   doc.save(`platform-report-${reportTimestamp()}.pdf`);
 }
 

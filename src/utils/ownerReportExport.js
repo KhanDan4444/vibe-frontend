@@ -17,6 +17,9 @@ import {
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
   pdfStartNewPage,
+  pdfApplyPageChrome,
+  pdfStatusDidParseCell,
+  loadBrandMarkDataUrl,
   PDF_BRAND,
 } from './reportExportCore';
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
@@ -32,6 +35,10 @@ function reportSubtitle(meta, reportLabel) {
   return name ? reportLabel : undefined;
 }
 
+function footerLeft(meta) {
+  return String(meta?.gymName || '').trim() || exportText('export.gymReport');
+}
+
 function sectionLabel(doc, text, y) {
   doc.setFontSize(11);
   doc.setTextColor(...PDF_BRAND.muted);
@@ -39,6 +46,22 @@ function sectionLabel(doc, text, y) {
   doc.text(text, 14, y);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(0);
+}
+
+async function headerOpts(meta, title, subtitle, lines) {
+  const brandMark = await loadBrandMarkDataUrl();
+  return {
+    title,
+    subtitle,
+    lines,
+    monogram: meta?.gymName || title,
+    brandMark,
+  };
+}
+
+async function finishPdf(doc, meta) {
+  const brandMark = await loadBrandMarkDataUrl();
+  pdfApplyPageChrome(doc, { left: footerLeft(meta), brandMark });
 }
 
 function formatMemberStatus(m) {
@@ -127,12 +150,20 @@ function memberPdfColumnStyles(meta = {}) {
   };
 }
 
+function memberStatusColIndex(meta = {}) {
+  return showBranchInExport(meta) ? 5 : 4;
+}
+
 function revenuePdfColumnStyles(meta = {}) {
   const amountIdx = showBranchInExport(meta) ? 6 : 5;
   return {
     0: { cellWidth: 14, halign: 'center' },
     [amountIdx]: { halign: 'right' },
   };
+}
+
+function revenueStatusColIndex(meta = {}) {
+  return showBranchInExport(meta) ? 4 : 3;
 }
 
 export function membersToCsv(members, meta = {}) {
@@ -155,13 +186,14 @@ export async function downloadMembersPdf(members, meta = {}) {
   const filterLabel = meta.filterLabel || exportText('filters.allMembers');
   const directoryLabel = exportText('export.memberDirectory');
 
-  const startY = pdfHeader(doc, {
-    title: reportTitle(meta, directoryLabel),
-    subtitle: reportSubtitle(meta, directoryLabel),
-    lines: exportHeaderLines(meta, [
+  const startY = pdfHeader(doc, await headerOpts(
+    meta,
+    reportTitle(meta, directoryLabel),
+    reportSubtitle(meta, directoryLabel),
+    exportHeaderLines(meta, [
       exportText('export.filterMembersMeta', { filter: filterLabel, count: sorted.length }),
     ]),
-  });
+  ));
 
   pdfTable(doc, {
     startY,
@@ -170,8 +202,10 @@ export async function downloadMembersPdf(members, meta = {}) {
       sorted.map((m) => memberExportRow(m, meta)),
     ),
     columnStyles: memberPdfColumnStyles(meta),
+    didParseCell: pdfStatusDidParseCell(memberStatusColIndex(meta)),
   });
 
+  await finishPdf(doc, meta);
   doc.save(`member-directory-${reportTimestamp()}.pdf`);
 }
 
@@ -185,17 +219,18 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
   const { periodLabel, summary } = meta;
   const revenueLabel = exportText('export.gymRevenue');
 
-  let startY = pdfHeader(doc, {
-    title: reportTitle(meta, revenueLabel),
-    subtitle: reportSubtitle(meta, revenueLabel),
-    lines: exportHeaderLines(meta, [
+  let startY = pdfHeader(doc, await headerOpts(
+    meta,
+    reportTitle(meta, revenueLabel),
+    reportSubtitle(meta, revenueLabel),
+    exportHeaderLines(meta, [
       periodLabel,
       exportText('export.revenueSummaryMeta', {
         total: formatMoney(summary?.total ?? 0),
         count: summary?.count ?? 0,
       }),
     ]),
-  });
+  ));
 
   startY = pdfRevenueByMethodBlock(doc, startY, summary);
 
@@ -208,8 +243,10 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
       sorted.map((p) => revenueExportRow(p, meta)),
     ),
     columnStyles: revenuePdfColumnStyles(meta),
+    didParseCell: pdfStatusDidParseCell(revenueStatusColIndex(meta)),
   });
 
+  await finishPdf(doc, meta);
   doc.save(`gym-revenue-${reportTimestamp()}.pdf`);
 }
 
@@ -253,10 +290,11 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
   const { memberFilterLabel = exportText('filters.allMembers'), periodLabel = exportText('period.allTime'), summary } = meta;
   const reportLabel = exportText('export.gymReport');
 
-  const startY = pdfHeader(doc, {
-    title: reportTitle(meta, reportLabel),
-    subtitle: reportSubtitle(meta, reportLabel),
-    lines: exportHeaderLines(meta, [
+  const startY = pdfHeader(doc, await headerOpts(
+    meta,
+    reportTitle(meta, reportLabel),
+    reportSubtitle(meta, reportLabel),
+    exportHeaderLines(meta, [
       exportText('export.fullReportMembersRevenue', { members: memberFilterLabel, period: periodLabel }),
       exportText('export.fullReportSummary', {
         members: sortedMembers.length,
@@ -264,7 +302,7 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
         payments: sortedPayments.length,
       }),
     ]),
-  });
+  ));
 
   sectionLabel(doc, exportText('export.memberDirectorySection'), startY);
 
@@ -276,6 +314,7 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
     ),
     styles: { fontSize: 8, cellPadding: 2 },
     columnStyles: memberPdfColumnStyles(meta),
+    didParseCell: pdfStatusDidParseCell(memberStatusColIndex(meta)),
   });
 
   const revenueTop = pdfStartNewPage(doc);
@@ -296,8 +335,10 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
       sortedPayments.map((p) => revenueExportRow(p, meta)),
     ),
     columnStyles: revenuePdfColumnStyles(meta),
+    didParseCell: pdfStatusDidParseCell(revenueStatusColIndex(meta)),
   });
 
+  await finishPdf(doc, meta);
   doc.save(`gym-report-${reportTimestamp()}.pdf`);
 }
 
