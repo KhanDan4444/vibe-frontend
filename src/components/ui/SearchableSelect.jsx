@@ -1,14 +1,16 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import RequiredMark from './RequiredMark';
 
-const MENU_EST_HEIGHT = 260;
+const MENU_MAX_HEIGHT = 240;
+const MENU_CHROME = 44; // search row
 
 /**
  * Filterable single-select for growing option lists (branch, plan, etc.).
- * Menu is portaled so it does not expand scrollable modal bodies.
+ * Menu is portaled + positioned with useLayoutEffect so it never stretches
+ * scrollable modal bodies or flashes at the wrong place.
  */
 export default function SearchableSelect({
   id,
@@ -31,7 +33,7 @@ export default function SearchableSelect({
   const inputRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+  const [position, setPosition] = useState(null);
 
   const selected = options.find((o) => String(o.value) === String(value));
   const filtered = useMemo(() => {
@@ -40,8 +42,11 @@ export default function SearchableSelect({
     return options.filter((o) => o.label.toLowerCase().includes(q));
   }, [options, query]);
 
-  useEffect(() => {
-    if (!open || !buttonRef.current) return undefined;
+  useLayoutEffect(() => {
+    if (!open || !buttonRef.current) {
+      setPosition(null);
+      return undefined;
+    }
 
     const updatePosition = () => {
       const rect = buttonRef.current.getBoundingClientRect();
@@ -51,11 +56,15 @@ export default function SearchableSelect({
         left = Math.max(8, window.innerWidth - width - 8);
       }
 
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const openUp = spaceNearBottom(spaceBelow, rect.top);
-      const top = openUp ? Math.max(8, rect.top - MENU_EST_HEIGHT - 4) : rect.bottom + 4;
+      const gap = 4;
+      const spaceBelow = window.innerHeight - rect.bottom - gap - 8;
+      const spaceAbove = rect.top - gap - 8;
+      const openUp = spaceBelow < 160 && spaceAbove > spaceBelow;
+      const available = Math.max(120, openUp ? spaceAbove : spaceBelow);
+      const maxHeight = Math.min(MENU_MAX_HEIGHT, available);
+      const top = openUp ? rect.top - gap - maxHeight : rect.bottom + gap;
 
-      setPosition({ top, left, width });
+      setPosition({ top, left, width, maxHeight, openUp });
     };
 
     updatePosition();
@@ -85,6 +94,8 @@ export default function SearchableSelect({
       document.removeEventListener('keydown', onKey);
     };
   }, [open]);
+
+  const listMax = position ? Math.max(80, position.maxHeight - MENU_CHROME) : 160;
 
   return (
     <div ref={rootRef} className={`relative ${className}`}>
@@ -128,12 +139,17 @@ export default function SearchableSelect({
         />
       </button>
 
-      {open
+      {open && position
         ? createPortal(
             <div
               ref={menuRef}
               className="fixed z-[200] overflow-hidden rounded-lg border border-app-border-subtle bg-app-raised shadow-lg"
-              style={{ top: position.top, left: position.left, width: position.width }}
+              style={{
+                top: position.top,
+                left: position.left,
+                width: position.width,
+                maxHeight: position.maxHeight,
+              }}
             >
               <div className="flex items-center gap-2 border-b border-app-border-subtle px-3 py-2">
                 <Search className="h-4 w-4 shrink-0 text-app-muted" />
@@ -147,7 +163,7 @@ export default function SearchableSelect({
                   aria-label={t('common.search')}
                 />
               </div>
-              <ul role="listbox" className="max-h-52 overflow-y-auto py-1">
+              <ul role="listbox" className="overflow-y-auto py-1" style={{ maxHeight: listMax }}>
                 {filtered.length === 0 ? (
                   <li className="px-3 py-2.5 text-sm text-app-muted">{t('common.noResults')}</li>
                 ) : (
@@ -183,8 +199,4 @@ export default function SearchableSelect({
         : null}
     </div>
   );
-}
-
-function spaceNearBottom(spaceBelow, spaceAbove) {
-  return spaceBelow < MENU_EST_HEIGHT && spaceAbove > MENU_EST_HEIGHT;
 }

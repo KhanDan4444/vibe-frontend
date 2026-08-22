@@ -489,71 +489,114 @@ export default function MemberModal({
     })),
   ];
 
-  const trainerAssignFields = (
-    <section className="space-y-4 rounded-xl border border-app-border-subtle bg-app-surface/70 p-4">
-      <h3 className={sectionTitleClass}>{t('modals.member.sectionTrainer')}</h3>
-      {trainers.length === 0 ? (
-        <p className="text-xs text-app-muted">{t('modals.member.noTrainersYet')}</p>
-      ) : (
-        <SearchableSelect
-          id="member-trainer"
-          label={t('modals.member.trainer')}
-          value={trainerId}
-          options={trainerOptions}
-          placeholder={t('modals.member.noTrainer')}
-          onChange={(next) => {
-            setTrainerId(String(next ?? ''));
-            markEnrollTouched();
-          }}
-        />
-      )}
-      {trainerId ? (
-        <div className="space-y-4">
+  const trainerFeeFields =
+    trainerId ? (
+      <div className={`grid grid-cols-1 gap-3 ${parseMoneyAmount(trainerFee) > 0 && (isEdit || skipPayment) ? 'sm:grid-cols-2' : ''}`}>
+        <div>
+          <label htmlFor="member-trainer-fee" className={modalFieldLabel}>
+            {t('modals.member.trainerFee')}
+          </label>
+          <MoneyAmountInput
+            id="member-trainer-fee"
+            field="trainerFee"
+            min="0"
+            fieldErrors={fieldErrors}
+            value={trainerFee}
+            onChange={(e) => {
+              setTrainerFee(e.target.value);
+              clearFieldError(setLocalFieldErrors, 'trainerFee');
+              markEnrollTouched();
+            }}
+          />
+          {!isEdit ? (
+            <p className="mt-1 text-xs text-app-muted">{t('modals.member.trainerFeeHint')}</p>
+          ) : null}
+          <FieldError message={fieldErrorMessage(fieldErrors, 'trainerFee')} />
+        </div>
+        {parseMoneyAmount(trainerFee) > 0 && (isEdit || skipPayment) ? (
           <div>
-            <label htmlFor="member-trainer-fee" className={modalFieldLabel}>
-              {t('modals.member.trainerFee')}
+            <label htmlFor="member-trainer-fee-method" className={modalFieldLabel}>
+              {t('modals.member.method')}
             </label>
-            <MoneyAmountInput
-              id="member-trainer-fee"
-              field="trainerFee"
-              min="0"
-              fieldErrors={fieldErrors}
-              value={trainerFee}
+            <select
+              id="member-trainer-fee-method"
+              className={`ui-select ${fc('trainerFeeMethod')} cursor-pointer`}
+              value={trainerFeeMethod}
               onChange={(e) => {
-                setTrainerFee(e.target.value);
-                clearFieldError(setLocalFieldErrors, 'trainerFee');
+                setTrainerFeeMethod(e.target.value);
                 markEnrollTouched();
               }}
-            />
-            <p className="mt-1 text-xs text-app-muted">{t('modals.member.trainerFeeHint')}</p>
-            <FieldError message={fieldErrorMessage(fieldErrors, 'trainerFee')} />
+            >
+              {PAYMENT_METHOD_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {t(opt.labelKey)}
+                </option>
+              ))}
+            </select>
           </div>
-          {parseMoneyAmount(trainerFee) > 0 && (isEdit || skipPayment) ? (
-            <div>
-              <label htmlFor="member-trainer-fee-method" className={modalFieldLabel}>
-                {t('modals.member.method')}
-              </label>
-              <select
-                id="member-trainer-fee-method"
-                className={`ui-select ${fc('trainerFeeMethod')} cursor-pointer`}
-                value={trainerFeeMethod}
-                onChange={(e) => {
-                  setTrainerFeeMethod(e.target.value);
-                  markEnrollTouched();
-                }}
-              >
-                {PAYMENT_METHOD_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.labelKey)}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
+        ) : null}
+      </div>
+    ) : null;
+
+  const trainerSelect =
+    trainers.length === 0 ? (
+      <p className="text-xs text-app-muted">{t('modals.member.noTrainersYet')}</p>
+    ) : (
+      <SearchableSelect
+        id="member-trainer"
+        label={t('modals.member.trainer')}
+        value={trainerId}
+        options={trainerOptions}
+        placeholder={t('modals.member.noTrainer')}
+        onChange={(next) => {
+          setTrainerId(String(next ?? ''));
+          markEnrollTouched();
+        }}
+      />
+    );
+
+  const trainerAssignFields = isEdit ? (
+    <div className="space-y-3">
+      {trainerSelect}
+      {trainerFeeFields}
+    </div>
+  ) : (
+    <section className="space-y-4 rounded-xl border border-app-border-subtle bg-app-surface/70 p-4">
+      <h3 className={sectionTitleClass}>{t('modals.member.sectionTrainer')}</h3>
+      {trainerSelect}
+      {trainerFeeFields}
     </section>
   );
+
+  const editPhotoAvatar = showPhotoUpload ? (
+    <div className="shrink-0">
+      <label className="group relative flex h-[4.5rem] w-[4.5rem] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border border-app-border-subtle bg-app-surface transition hover:border-teal-600/50">
+        {photoPreview ? (
+          <img src={photoPreview} alt={t('modals.member.photoPreviewAlt')} className="h-full w-full object-cover" />
+        ) : (
+          <User className="h-7 w-7 text-app-muted transition group-hover:text-teal-600 dark:group-hover:text-teal-400" />
+        )}
+        <span className="absolute inset-x-0 bottom-0 flex items-center justify-center bg-black/55 py-1 opacity-0 transition group-hover:opacity-100">
+          <Upload className="h-3.5 w-3.5 text-white" />
+        </span>
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          onChange={handlePhotoChange}
+        />
+      </label>
+      {photoPreview ? (
+        <button
+          type="button"
+          onClick={clearPhoto}
+          className="mt-1.5 block w-full text-center text-[11px] font-medium text-app-muted hover:text-rose-400"
+        >
+          {t('modals.member.removePhoto')}
+        </button>
+      ) : null}
+    </div>
+  ) : null;
 
   const title = isEdit ? t('modals.member.editTitle') : t('modals.member.enrollTitle');
   const subtitle = isEdit ? t('modals.member.editSubtitle') : t('modals.member.enrollSubtitle');
@@ -723,9 +766,73 @@ export default function MemberModal({
   const formFields = (
     <>
           {(!useSteps || enrollStep === 1) && (
-          <section className="space-y-4">
+          <section className={isEdit ? 'space-y-3' : 'space-y-4'}>
             {!isEdit && isPage && !useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
             {useSteps ? <h3 className={sectionTitleClass}>{t('modals.member.sectionMember')}</h3> : null}
+
+            {isEdit ? (
+              <div className="flex items-start gap-4">
+                {editPhotoAvatar}
+                <div className="min-w-0 flex-1 space-y-3">
+                  <div>
+                    <label className={modalFieldLabel}>
+                      {t('modals.member.name')}
+                      <RequiredMark />
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder={t('modals.member.namePlaceholder')}
+                      className={fc('name')}
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        clearFieldError(setLocalFieldErrors, 'name');
+                        markEnrollTouched();
+                      }}
+                      onBlur={handleNameBlur}
+                      aria-invalid={Boolean(fieldErrors.name)}
+                    />
+                    <FieldError message={fieldErrorMessage(fieldErrors, 'name')} />
+                  </div>
+                  <div>
+                    <label className={modalFieldLabel}>
+                      {t('modals.member.phone')}
+                      <RequiredMark />
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      inputMode="tel"
+                      autoComplete="tel"
+                      placeholder={t('modals.member.phonePlaceholder')}
+                      className={fc('phone')}
+                      value={phone}
+                      onChange={(e) => {
+                        const next = e.target.value;
+                        setPhone(next);
+                        markEnrollTouched();
+                        const trimmed = next.trim();
+                        if (!trimmed) {
+                          clearFieldError(setLocalFieldErrors, 'phone');
+                          return;
+                        }
+                        const result = validateRequiredEthiopianPhone(trimmed);
+                        if (result.ok) {
+                          clearFieldError(setLocalFieldErrors, 'phone');
+                        } else {
+                          showValidationError(result, setValidationError, t, { setFieldErrors: setLocalFieldErrors });
+                        }
+                      }}
+                      onBlur={handlePhoneBlur}
+                      aria-invalid={Boolean(fieldErrors.phone)}
+                    />
+                    <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
             <div>
               <label className={modalFieldLabel}>
                 {t('modals.member.name')}
@@ -782,6 +889,8 @@ export default function MemberModal({
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
               <p className="mt-1 text-xs text-app-muted">{t('modals.member.phoneHint')}</p>
             </div>
+              </>
+            )}
             {showBranchPicker && activeBranches.length > 0 && (
               useSteps ? (
                 <SearchableSelect
@@ -822,12 +931,12 @@ export default function MemberModal({
             {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
               <div>
                 <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
-                <p className="mt-1 rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text-strong">
+                <p className="mt-1 text-sm font-medium text-app-text-strong">
                   {member.branchName || activeBranches.find((b) => b.id === member.branchId)?.name || '—'}
                 </p>
               </div>
             )}
-            {photoBlock}
+            {!isEdit ? photoBlock : null}
           </section>
           )}
 
@@ -911,14 +1020,16 @@ export default function MemberModal({
           )}
 
           {isEdit && member && (
-            <div className="rounded-lg border border-app-border-subtle bg-app-surface px-3 py-2.5 text-sm text-app-text">
-              <p>
-                <span className="font-medium text-app-text-strong">{t('table.plan')}:</span>{' '}
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-y border-app-border-subtle py-3 text-sm">
+              <span className="font-medium text-app-text-strong">
                 {resolveMemberPlanLabel(member, plans, '—')}
-              </p>
-              <p className="mt-1">
-                <span className="font-medium text-app-text-strong">{t('modals.member.term')}:</span> {formatDisplayDate(member.startDate)} → {formatDisplayDate(member.endDate)}
-              </p>
+              </span>
+              <span className="text-app-muted" aria-hidden>
+                ·
+              </span>
+              <span className="text-app-muted">
+                {formatDisplayDate(member.startDate)} → {formatDisplayDate(member.endDate)}
+              </span>
             </div>
           )}
 
@@ -1079,7 +1190,7 @@ export default function MemberModal({
       onChangeCapture={markTouched}
       className="flex min-h-0 flex-1 flex-col"
     >
-      <div className={`${modalBody} space-y-4`}>
+      <div className={`${modalBody} ${isEdit ? 'space-y-3' : 'space-y-4'}`}>
         {displayError && (
           <div className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-500/10 dark:text-rose-300">
             {displayError}
@@ -1257,11 +1368,10 @@ export default function MemberModal({
   }
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="3xl" zIndexClass="z-[110]">
-      <div className={`${modalHeader} flex items-start justify-between gap-3`}>
+    <ResponsiveModal open={isOpen} onClose={onClose} size="lg" zIndexClass="z-[110]">
+      <div className={`${modalHeader} flex items-start justify-between gap-3 !py-4 sm:!py-4`}>
         <div className="min-w-0">
           <h2 className={modalTitle}>{title}</h2>
-          <p className="mt-1 text-sm text-app-muted">{subtitle}</p>
         </div>
         <button
           type="button"
