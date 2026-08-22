@@ -16,18 +16,12 @@ function roleSubtitle(role, t) {
   return t('profile.account');
 }
 
-function roleDotClass(role) {
-  if (isPlatformAdmin(role)) return 'bg-violet-500 dark:bg-violet-400';
-  if (isGymOwner(role)) return 'bg-sky-500 dark:bg-sky-400';
-  if (isGymStaff(role)) return 'bg-amber-500 dark:bg-amber-400';
-  return 'bg-app-muted';
-}
-
-function RoleLabel({ role, children, className = '' }) {
+function RoleLabel({ children, className = '' }) {
   return (
-    <span className={`inline-flex max-w-full items-center gap-2 truncate text-xs font-medium leading-tight text-app-muted ${className}`}>
-      <span className={`h-2 w-2 shrink-0 rounded-full ${roleDotClass(role)}`} aria-hidden />
-      <span className="truncate">{children}</span>
+    <span
+      className={`inline-flex max-w-full truncate text-[10px] font-semibold uppercase tracking-[0.12em] leading-tight text-app-muted ${className}`}
+    >
+      {children}
     </span>
   );
 }
@@ -126,7 +120,7 @@ export default function UserProfileMenu({ compact = false }) {
                 <div className="max-w-[140px] truncate text-sm font-semibold leading-tight text-app-text-strong">
                   {displayName}
                 </div>
-                <RoleLabel role={user?.role} className="mt-0.5 max-w-[140px]">
+                <RoleLabel className="mt-0.5 max-w-[140px]">
                   {subtitle}
                 </RoleLabel>
               </div>
@@ -147,7 +141,7 @@ export default function UserProfileMenu({ compact = false }) {
           >
             <div className="border-b border-app-border-subtle px-4 pb-3 pt-2.5">
               <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
-              <RoleLabel role={user?.role} className="mt-1">
+              <RoleLabel className="mt-1">
                 {subtitle}
               </RoleLabel>
               {user?.username ? (
