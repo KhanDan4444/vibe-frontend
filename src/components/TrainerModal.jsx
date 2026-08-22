@@ -152,7 +152,7 @@ export default function TrainerModal({
     (validationError || error) && !Object.keys(fieldErrors).length ? validationError || error : '';
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-center justify-between gap-3`}>
         <div className="min-w-0">
           <h2 className={modalTitle}>

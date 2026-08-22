@@ -153,7 +153,7 @@ export default function StaffModal({
   );
 
   return (
-    <ResponsiveModal open={isOpen} onClose={onClose} size="md" zIndexClass="z-[110]">
+    <ResponsiveModal open={isOpen} onClose={onClose} size="xl" zIndexClass="z-[110]">
       <div className={`${modalHeader} flex items-center justify-between gap-3 !py-3.5 sm:!py-4`}>
         <div className="min-w-0">
           <h2 className={modalTitle}>
