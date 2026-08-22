@@ -118,7 +118,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
         qrDataUrl: pass.qr_data_url,
         photoDataUrl: pass.member?.photo_data_url || null,
         labels: {
-          memberPass: t('pages.checkIn.memberPassTitle'),
+          checkInPass: t('publicPass.title'),
         },
       });
       onFlash?.({

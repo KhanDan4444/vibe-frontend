@@ -9,7 +9,6 @@ import { createPdfDoc } from './reportExportCore';
 const TEAL = [15, 118, 110];
 const INK = [15, 23, 42];
 const MUTED = [100, 116, 139];
-const FAINT = [148, 163, 184];
 const CARD_FILL = [255, 255, 255];
 const CARD_EDGE = [226, 232, 240];
 
@@ -20,7 +19,7 @@ const CARD_EDGE = [226, 232, 240];
  *   memberPhone?: string | null,
  *   qrDataUrl: string,
  *   photoDataUrl?: string | null,
- *   labels?: { memberPass?: string },
+ *   labels?: { checkInPass?: string },
  * }} opts
  */
 export async function downloadMemberPassPdf(opts) {
@@ -71,8 +70,15 @@ export async function downloadMemberPassPdf(opts) {
     const gymLines = doc.splitTextToSize(gym.toUpperCase(), cardW - pad * 2);
     const gymBlock = gymLines.slice(0, 2);
     doc.text(gymBlock, cx, y, { align: 'center', lineHeightFactor: 1.15 });
-    y += gymBlock.length * 5 + 5;
+    y += gymBlock.length * 5 + 3;
   }
+
+  // Subtitle — matches public pass page
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text(labels.checkInPass || 'Member Check-in Pass', cx, y, { align: 'center' });
+  y += 7;
 
   // Photo
   if (photoDataUrl) {
@@ -117,16 +123,7 @@ export async function downloadMemberPassPdf(opts) {
     doc.setFillColor(255, 255, 255);
     doc.roundedRect(qrX - 2, y - 2, qrSize + 4, qrSize + 4, 2, 2, 'F');
     doc.addImage(qrDataUrl, 'PNG', qrX, y, qrSize, qrSize);
-    y += qrSize + 6;
   }
-
-  // Footer label
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
-  doc.setTextColor(...FAINT);
-  doc.text(labels.memberPass || 'Member Pass', cx, Math.min(y, cardY + cardH - 5), {
-    align: 'center',
-  });
 
   const safeName = String(memberName || 'member')
     .replace(/[^\w\- ]+/g, '')
