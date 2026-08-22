@@ -103,6 +103,7 @@ export default function App() {
               <Route path="/register-gym" element={<RegisterGym />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/pass" element={<MemberPassPage />} />
+              <Route path="/p/:code" element={<MemberPassPage />} />
 
               <Route
                 path="/"

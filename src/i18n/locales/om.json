@@ -1804,7 +1804,7 @@
     }
   },
   "publicPass": {
-    "title": "Paasii galchuu kee",
+    "title": "Paasii galchuu miseensaa",
     "hint": "Galchuuf QR kana desk irratti agarsiisi.",
     "qrAlt": "QR galchuu {{name}}",
     "missingToken": "Liinkin paasii kana hin guutamne. Desk akka deebisee ergitu gaafadhu.",

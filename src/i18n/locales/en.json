@@ -1858,7 +1858,7 @@
     "dismissPending": "Hide notification — action still continues"
   },
   "publicPass": {
-    "title": "Your check-in pass",
+    "title": "Member Check-in Pass",
     "hint": "Show this QR at the front desk to check in.",
     "qrAlt": "Check-in QR for {{name}}",
     "missingToken": "This pass link is incomplete. Ask the desk to send it again.",

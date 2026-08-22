@@ -20,7 +20,7 @@ import {
 
 const PreferencesContext = createContext(null);
 
-const AUTH_PATHS = ['/login', '/register-gym', '/forgot-password', '/reset-password', '/pass'];
+const AUTH_PATHS = ['/login', '/register-gym', '/forgot-password', '/reset-password', '/pass', '/p'];
 
 function isAuthPath(pathname) {
   return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));

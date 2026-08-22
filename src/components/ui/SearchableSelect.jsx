@@ -49,12 +49,15 @@ export default function SearchableSelect({
     }
 
     const updatePosition = () => {
-      const rect = buttonRef.current.getBoundingClientRect();
+      const button = buttonRef.current;
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
       const width = rect.width;
       let left = rect.left;
       if (left + width > window.innerWidth - 8) {
         left = Math.max(8, window.innerWidth - width - 8);
       }
+      if (left < 8) left = 8;
 
       const gap = 4;
       const spaceBelow = window.innerHeight - rect.bottom - gap - 8;
@@ -62,19 +65,39 @@ export default function SearchableSelect({
       const openUp = spaceBelow < 160 && spaceAbove > spaceBelow;
       const available = Math.max(120, openUp ? spaceAbove : spaceBelow);
       const maxHeight = Math.min(MENU_MAX_HEIGHT, available);
-      const top = openUp ? rect.top - gap - maxHeight : rect.bottom + gap;
 
-      setPosition({ top, left, width, maxHeight, openUp });
+      // Prefer bottom-anchoring when opening up so short menus sit on the trigger
+      // (using top - maxHeight leaves a large gap when content is shorter than maxHeight).
+      if (openUp) {
+        setPosition({
+          left,
+          width,
+          maxHeight,
+          openUp: true,
+          bottom: window.innerHeight - rect.top + gap,
+        });
+      } else {
+        setPosition({
+          left,
+          width,
+          maxHeight,
+          openUp: false,
+          top: rect.bottom + gap,
+        });
+      }
     };
 
     updatePosition();
+    // Re-measure after paint in case fonts/layout settle.
+    const raf = window.requestAnimationFrame(updatePosition);
     window.addEventListener('resize', updatePosition);
     window.addEventListener('scroll', updatePosition, true);
     return () => {
+      window.cancelAnimationFrame(raf);
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
     };
-  }, [open]);
+  }, [open, filtered.length]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -145,10 +168,12 @@ export default function SearchableSelect({
               ref={menuRef}
               className="fixed z-[200] overflow-hidden rounded-lg border border-app-border-subtle bg-app-raised shadow-lg"
               style={{
-                top: position.top,
                 left: position.left,
                 width: position.width,
                 maxHeight: position.maxHeight,
+                ...(position.openUp
+                  ? { bottom: position.bottom, top: 'auto' }
+                  : { top: position.top, bottom: 'auto' }),
               }}
             >
               <div className="flex items-center gap-2 border-b border-app-border-subtle px-3 py-2">

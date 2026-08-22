@@ -1,22 +1,27 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { API_BASE_URL } from '../../config/api';
 
 /**
  * Public member pass page — opened from SMS link. No login required.
+ * Supports /p/:code (short) and legacy /pass?t=JWT.
  */
 export default function MemberPassPage() {
   const { t } = useTranslation();
+  const { code: routeCode } = useParams();
   const [params] = useSearchParams();
   const token = (params.get('t') || '').trim();
+  const code = String(routeCode || params.get('c') || '')
+    .trim()
+    .toLowerCase();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [pass, setPass] = useState(null);
 
   useEffect(() => {
-    if (!token) {
+    if (!code && !token) {
       setLoading(false);
       setError(t('publicPass.missingToken'));
       return undefined;
@@ -26,9 +31,10 @@ export default function MemberPassPage() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch(
-          `${API_BASE_URL}/api/public/member-pass?token=${encodeURIComponent(token)}`
-        );
+        const qs = code
+          ? `code=${encodeURIComponent(code)}`
+          : `token=${encodeURIComponent(token)}`;
+        const res = await fetch(`${API_BASE_URL}/api/public/member-pass?${qs}`);
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
         if (!res.ok) {
@@ -47,7 +53,7 @@ export default function MemberPassPage() {
     return () => {
       cancelled = true;
     };
-  }, [token, t]);
+  }, [code, token, t]);
 
   return (
     <div className="relative min-h-[100dvh] overflow-hidden bg-[#071018] text-white">
@@ -109,11 +115,6 @@ export default function MemberPassPage() {
               <p className="mt-5 text-center text-sm leading-relaxed text-white/55">
                 {t('publicPass.hint')}
               </p>
-              {pass.pass_version != null ? (
-                <p className="mt-3 text-center text-[11px] font-medium uppercase tracking-wide text-white/35">
-                  {t('pages.checkIn.passVersion', { version: pass.pass_version })}
-                </p>
-              ) : null}
             </div>
           ) : null}
         </div>
