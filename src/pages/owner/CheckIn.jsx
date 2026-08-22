@@ -627,34 +627,21 @@ export default function CheckIn() {
             ))}
           </div>
         ) : today.checkIns.length === 0 ? (
-          <div className="flex justify-center px-4 py-8 sm:py-10">
-            <div className="w-full max-w-sm text-center">
-              <p className="font-display text-sm font-semibold tracking-tight text-app-text">
-                {t('pages.checkIn.todayEmptyTitle')}
-              </p>
-              <p className="mt-1.5 text-xs leading-relaxed text-app-muted">
-                {t('pages.checkIn.todayEmpty')}
-              </p>
-              <ul className="pointer-events-none mt-6 space-y-2 opacity-[0.4]" aria-hidden>
-                {[0, 1, 2].map((i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-3 rounded-xl bg-app-bg/50 px-3 py-2.5"
-                  >
-                    <span className="h-9 w-9 shrink-0 rounded-full bg-app-border" />
-                    <span className="min-w-0 flex-1 space-y-2 text-left">
-                      <span className="block h-2.5 w-[55%] rounded-full bg-app-border" />
-                      <span className="block h-2 w-[35%] rounded-full bg-app-border" />
-                    </span>
-                    <span className="h-2.5 w-8 shrink-0 rounded-full bg-app-border" />
-                  </li>
-                ))}
-              </ul>
-              <p className="mt-4 text-[11px] text-app-muted">
-                {t('pages.checkIn.todayEmptyHint')}
-              </p>
-            </div>
-          </div>
+          <EmptyState
+            compact
+            tone="muted"
+            icon={ScanLine}
+            title={t('pages.checkIn.todayEmptyTitle')}
+            body={t('pages.checkIn.todayEmpty')}
+            action={
+              !readOnly ? (
+                <Button type="button" variant="secondary" size="sm" onClick={() => setScanOpen(true)}>
+                  <ScanLine className="h-4 w-4" />
+                  {t('pages.checkIn.scanAction')}
+                </Button>
+              ) : null
+            }
+          />
         ) : (
           <>
             <ul className="space-y-1 p-2 sm:p-3">
