@@ -66,7 +66,11 @@ export default function MemberPassPage() {
       />
       <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-md flex-col px-5 pb-10 pt-6">
         <div className="mb-8 flex items-center justify-between gap-3">
-          <p className="font-display text-lg font-semibold tracking-tight text-teal-200/90">ንቁ</p>
+          <img
+            src="/brand-lockup-mark.png?v=pass"
+            alt="ንቁ"
+            className="h-8 w-auto max-w-[8.75rem] bg-transparent object-contain object-left"
+          />
           <LanguageSwitcher />
         </div>
 
