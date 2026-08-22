@@ -19,7 +19,7 @@ function roleSubtitle(role, t) {
 function RoleLabel({ children, className = '' }) {
   return (
     <span
-      className={`inline-flex max-w-full truncate text-[10px] font-semibold uppercase tracking-[0.12em] leading-tight text-app-muted ${className}`}
+      className={`inline-flex max-w-full truncate text-[10px] font-bold uppercase tracking-[0.12em] leading-tight text-app-text-strong ${className}`}
     >
       {children}
     </span>
