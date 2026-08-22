@@ -86,10 +86,15 @@ export default function OwnerDashboard() {
     setRenewSaving(true);
     setRenewError('');
     try {
-      await renewMember(renewState.member.id, data);
+      const result = await renewMember(renewState.member.id, data);
       const name = renewState.member.name;
+      const phone = renewState.member.phone;
       setRenewState({ isOpen: false, member: null });
-      showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
+      if (phone && result && result.sms_sent === false) {
+        showFlash(flashFromKey(t, 'renewedSmsFailed', { variant: 'warning' }));
+      } else {
+        showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
+      }
     } catch (err) {
       setRenewError(err.message);
     } finally {

@@ -827,6 +827,7 @@
       "weeklyLimitReached": "Weekly visit limit reached",
       "weeklyLimitShort": "Limit reached",
       "todayTitle": "Checked in today",
+      "todayTimeLabel": "Time",
       "todayCount": "today",
       "todayMembers_one": "member today",
       "todayMembers_other": "members today",
@@ -1662,8 +1663,8 @@
       "subtitle": "{{name}}'s new term dates are updated."
     },
     "renewedSmsFailed": {
-      "title": "Renewed — SMS not sent",
-      "subtitle": "{{name}} was renewed, but the SMS failed{{detail}}."
+      "title": "Membership renewed",
+      "subtitle": "SMS message is not sent!"
     },
     "planChanged": {
       "title": "Plan updated",

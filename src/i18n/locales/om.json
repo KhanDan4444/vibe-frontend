@@ -812,6 +812,7 @@
       "weeklyLimitReached": "Daangaan torbee guuteera",
       "weeklyLimitShort": "Daangaan guuteera",
       "todayTitle": "Har'a galchaman",
+      "todayTimeLabel": "Yeroo",
       "todayCount": "har'a",
       "todayMembers_one": "miseensa har'a",
       "todayMembers_other": "miseensota har'a",
@@ -1632,8 +1633,8 @@
       "subtitle": "Guyyoonni yeroo haaraa {{name}} haaromfameera."
     },
     "renewedSmsFailed": {
-      "title": "Haaromfameera — SMS hin ergamne",
-      "subtitle": "{{name}} haaromfameera, garuu SMS hin milkoofne{{detail}}."
+      "title": "Miseensummaan haaromfameera",
+      "subtitle": "Ergaan SMS hin ergamne!"
     },
     "planChanged": {
       "title": "Karooraan haaromfameera",

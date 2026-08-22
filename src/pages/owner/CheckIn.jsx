@@ -615,8 +615,8 @@ export default function CheckIn() {
             </p>
           </div>
           {!todayLoading && today.total > 0 ? (
-            <span className="shrink-0 rounded-full border border-[color:var(--color-brand)]/25 bg-[color:var(--color-brand-soft)] px-2.5 py-1 text-[11px] font-semibold tabular-nums text-[color:var(--color-brand-text)]">
-              {t('pages.checkIn.todayMembers', { count: today.total })}
+            <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-app-text-strong">
+              {t('pages.checkIn.todayTimeLabel')}
             </span>
           ) : null}
         </div>

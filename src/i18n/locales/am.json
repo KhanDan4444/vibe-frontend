@@ -1215,6 +1215,7 @@
       "weeklyLimitReached": "ሳምንታዊ ገደብ ሞልቷል",
       "weeklyLimitShort": "ገደብ ሞልቷል",
       "todayTitle": "ዛሬ የገቡ",
+      "todayTimeLabel": "ሰዓት",
       "todayCount": "ዛሬ",
       "todayMembers_one": "አባል ዛሬ",
       "todayMembers_other": "አባላት ዛሬ",
@@ -1620,8 +1621,8 @@
       "subtitle": "አዲሱ የ{{name}} ጊዜ ገደብ ቀኖች ተዘምነዋል።"
     },
     "renewedSmsFailed": {
-      "title": "ታድሷል — SMS አልተላከም",
-      "subtitle": "{{name}} ታድሷል፣ ነገር ግን SMS አልተሳካም{{detail}}።"
+      "title": "አባልነት ተደሰቷል",
+      "subtitle": "የSMS መልእክት አልተላከም!"
     },
     "planChanged": {
       "title": "ዕቅድ ተዘምኗል",

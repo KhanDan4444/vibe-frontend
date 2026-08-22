@@ -398,15 +398,10 @@ export default function Members() {
       const result = await renewMember(renewState.member.id, data);
       const memberId = renewState.member.id;
       const name = renewState.member.name;
+      const phone = renewState.member.phone;
       setRenewState({ isOpen: false, member: null, error: '', fieldErrors: {} });
-      if (renewState.member.phone && result && result.sms_sent === false) {
-        const detail = result.sms_error ? `: ${result.sms_error}` : '';
-        showFlash(
-          flashFromKey(t, 'renewedSmsFailed', {
-            variant: 'warning',
-            subtitleParams: { name, detail },
-          })
-        );
+      if (phone && result && result.sms_sent === false) {
+        showFlash(flashFromKey(t, 'renewedSmsFailed', { variant: 'warning' }));
       } else {
         showFlash(flashFromKey(t, 'renewed', { subtitleParams: { name } }));
       }
