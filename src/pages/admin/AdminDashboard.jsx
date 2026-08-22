@@ -987,6 +987,7 @@ export default function AdminDashboard() {
                               <GymListRowActions
                                 gym={gym}
                                 saasPlans={saasPlans}
+                                onView={openGymDetail}
                                 onCollect={(g) => setCollectState({ isOpen: true, gym: g, error: '' })}
                                 onChangePlan={openChangePlanModal}
                                 onRenew={openRenewGymModal}
@@ -1084,6 +1085,7 @@ export default function AdminDashboard() {
                                 <GymListRowActions
                                   gym={gym}
                                   saasPlans={saasPlans}
+                                  onView={openGymDetail}
                                   onCollect={(g) => setCollectState({ isOpen: true, gym: g, error: '' })}
                                   onChangePlan={openChangePlanModal}
                                   onRenew={openRenewGymModal}
