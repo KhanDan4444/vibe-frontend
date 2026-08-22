@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, CheckCircle2, CloudOff, X, XCircle } from 'lucide-react';
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion';
@@ -229,19 +230,20 @@ function FlashToastItem({ toast, onDismiss }) {
   );
 }
 
-/** Top-right toast stack (Sonner-style). */
+/** Top-right toast stack (Sonner-style). Above modals so success is readable. */
 export default function FlashToaster({ toasts, onDismiss }) {
   if (!toasts.length) return null;
 
-  return (
+  return createPortal(
     <div
-      className="pointer-events-none fixed top-4 right-4 z-[70] flex w-[min(100vw-2rem,380px)] flex-col gap-2 safe-top"
+      className="pointer-events-none fixed top-4 right-4 z-[120] flex w-[min(100vw-2rem,380px)] flex-col gap-2 safe-top"
       aria-relevant="additions"
     >
       {toasts.map((toast) => (
         <FlashToastItem key={toast.id} toast={toast} onDismiss={onDismiss} />
       ))}
-    </div>
+    </div>,
+    document.body
   );
 }
 

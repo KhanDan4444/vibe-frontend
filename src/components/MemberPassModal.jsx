@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MessageSquare, Printer, QrCode, RefreshCw } from 'lucide-react';
+import { Download, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
 import MemberPhoto from './MemberPhoto';
@@ -15,11 +15,9 @@ import {
 } from '../services/memberService';
 import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
-import { formatDisplayDate } from '../utils/date';
-import { formatPlanDisplayName } from '../utils/formatPlanDisplayName';
 
 /**
- * Premium member QR pass modal — print card + SMS link + regenerate.
+ * Member QR pass modal — print card + SMS link + regenerate.
  */
 export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const { t } = useTranslation();
@@ -117,16 +115,10 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
         gymName: pass.gym_name,
         memberName: member.name,
         memberPhone: member.phone || pass.member?.phone,
-        branchName: pass.member?.branch_name || member.branchName || null,
-        planName: pass.member?.plan_name || member.planName || null,
-        endDate: pass.member?.end_date || member.endDate || null,
         qrDataUrl: pass.qr_data_url,
         photoDataUrl: pass.member?.photo_data_url || null,
-        passVersion: pass.pass_version,
         labels: {
-          validUntil: t('pages.checkIn.passValidUntil'),
           memberPass: t('pages.checkIn.memberPassTitle'),
-          passVersion: 'v{{version}}',
         },
       });
       onFlash?.({
@@ -209,80 +201,57 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             </div>
           ) : null}
 
-          <div className="mt-5 overflow-hidden rounded-2xl border border-app-border-subtle bg-app-raised shadow-sm">
-            <div className="flex items-center gap-3 bg-[color:var(--color-brand)] px-4 py-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-sm font-bold text-[color:var(--color-brand-text)]">
-                {(pass?.gym_name || member.name || 'V').trim().charAt(0).toUpperCase()}
-              </span>
+          <div className="mt-5 flex flex-col items-center overflow-hidden rounded-2xl border border-app-border-subtle bg-app-bg/60">
+            <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
+            <div className="flex w-full flex-col items-center px-5 py-6">
               {pass?.gym_name ? (
-                <p className="min-w-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+                <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
                   {pass.gym_name}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="px-5 py-5">
-              <div className="flex items-center gap-3">
-                {loading ? (
-                  <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
-                ) : photoDataUrl ? (
-                  <img
-                    src={photoDataUrl}
-                    alt=""
-                    className="h-14 w-14 rounded-2xl object-cover ring-2 ring-[color:var(--color-brand-soft)]"
-                  />
-                ) : (
-                  <MemberPhoto
-                    memberId={member.id}
-                    apiFetch={apiFetch}
-                    name={member.name}
-                    hasPhoto={hasPhoto}
-                    expandable={false}
-                    className="h-14 w-14 rounded-2xl object-cover"
-                    fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-lg font-bold text-[color:var(--color-brand-text)]"
-                  />
-                )}
-                <div className="min-w-0">
-                  <p className="font-display text-base font-semibold tracking-tight text-app-text-strong">
-                    {member.name}
-                  </p>
-                  {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
-                  {pass?.member?.branch_name ? (
-                    <p className="mt-0.5 text-xs text-app-muted">{pass.member.branch_name}</p>
-                  ) : null}
-                </div>
-              </div>
-
-              {(pass?.member?.plan_name || pass?.member?.end_date) && !loading ? (
-                <p className="mt-4 border-t border-app-border-subtle pt-3 text-center text-xs text-app-muted">
-                  {[
-                    pass.member.plan_name
-                      ? formatPlanDisplayName(pass.member.plan_name)
-                      : null,
-                    pass.member.end_date
-                      ? `${t('pages.checkIn.passValidUntil')} ${formatDisplayDate(pass.member.end_date)}`
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join('  ·  ')}
                 </p>
               ) : null}
 
               {loading ? (
-                <div className="mx-auto mt-4 h-[180px] w-[180px] animate-pulse rounded-2xl bg-app-border" />
+                <div className="h-14 w-14 animate-pulse rounded-2xl bg-app-border" />
+              ) : photoDataUrl ? (
+                <img
+                  src={photoDataUrl}
+                  alt=""
+                  className="h-14 w-14 rounded-2xl object-cover ring-1 ring-black/10"
+                />
+              ) : (
+                <MemberPhoto
+                  memberId={member.id}
+                  apiFetch={apiFetch}
+                  name={member.name}
+                  hasPhoto={hasPhoto}
+                  expandable={false}
+                  className="h-14 w-14 rounded-2xl object-cover"
+                  fallbackClassName="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-app-border text-lg font-bold text-app-text"
+                />
+              )}
+
+              <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
+                {member.name}
+              </p>
+              {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
+
+              {loading ? (
+                <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
               ) : pass?.qr_data_url ? (
                 <img
                   src={pass.qr_data_url}
                   alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
-                  className="mx-auto mt-4 h-[180px] w-[180px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                  className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
                 />
               ) : (
-                <div className="mx-auto mt-4 flex h-[180px] w-[180px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+                <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
                   —
                 </div>
               )}
 
-              <p className="mt-3 text-center text-[11px] text-app-muted">{t('pages.checkIn.memberPassTitle')}</p>
+              <p className="mt-3 text-center text-[11px] text-app-muted">
+                {t('pages.checkIn.memberPassTitle')}
+              </p>
             </div>
           </div>
 
@@ -296,7 +265,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               onClick={() => void handlePrint()}
               className="w-full"
             >
-              {!printing ? <Printer className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {!printing ? <Download className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
               {t('pages.checkIn.printPass')}
             </Button>
             <Button

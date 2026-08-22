@@ -855,7 +855,7 @@
       "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Bilbila yoo qabaatan liinkii paasii haaraa SMS dhaan ni ergina.",
       "regeneratePassConfirm": "QR haaromsii",
       "showPass": "QR agarsiisi",
-      "printPass": "Paasii maxxansi",
+      "printPass": "QR buusi",
       "smsPass": "Liinkii paasii deebisii ergi"
     },
     "team": {
@@ -1776,8 +1776,8 @@
     "undoActionLabel": "{{action}} — jijjiirama kana haqi",
     "dismissPending": "Beeksisa dhoksi — gochi itti fufa",
     "memberPassPrinted": {
-      "title": "Paasii maxxansaaf qophaa'e",
-      "subtitle": "PDF {{name}} buufameera."
+      "title": "QR buufameera",
+      "subtitle": "PDF {{name}} qabameera."
     },
     "memberPassRegenerated": {
       "title": "QR haaromfameera",

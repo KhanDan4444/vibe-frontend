@@ -455,7 +455,7 @@
     "checkInFailed": "Check-in failed",
     "loadMemberPass": "Failed to load member QR",
     "regeneratePass": "Failed to regenerate member QR",
-    "printMemberPass": "Failed to print member pass",
+    "printMemberPass": "Failed to download member pass",
     "sendMemberPassSms": "Failed to send pass SMS",
     "memberPassNoPhone": "Add a phone number before sending the pass by SMS.",
     "loadMemberReport": "Failed to load member report",
@@ -860,7 +860,7 @@
       "scanBody": "Point the camera at the member’s pass. We’ll check them in when it reads.",
       "scanStarting": "Starting camera…",
       "scanCameraError": "Could not open the camera. Check permissions and try again.",
-      "memberPassTitle": "Member pass",
+      "memberPassTitle": "Member Pass",
       "memberPassBody": "Show at the desk to check in. Renew keeps this QR; enroll/renew SMS already include the link.",
       "memberPassQrAlt": "Check-in QR for {{name}}",
       "passVersion": "Pass v{{version}}",
@@ -870,7 +870,7 @@
       "regeneratePassMessage": "The old QR for {{name}} will stop working immediately. If they have a phone, we'll SMS the new pass link.",
       "regeneratePassConfirm": "Regenerate QR",
       "showPass": "Show QR",
-      "printPass": "Print pass",
+      "printPass": "Download QR",
       "smsPass": "Resend pass link"
     },
     "team": {
@@ -1783,8 +1783,8 @@
       "subtitle": "Old codes for {{name}} no longer work. New pass link sent to {{phone}}."
     },
     "memberPassPrinted": {
-      "title": "Pass ready to print",
-      "subtitle": "PDF downloaded for {{name}}."
+      "title": "QR downloaded",
+      "subtitle": "PDF saved for {{name}}."
     },
     "memberPassSmsSent": {
       "title": "Pass link resent",

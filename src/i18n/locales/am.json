@@ -1255,7 +1255,7 @@
       "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። ስልክ ካላቸው አዲሱን የፓስ አገናኝ በSMS እንልካለን።",
       "regeneratePassConfirm": "QR እንደገና ፍጠር",
       "showPass": "QR አሳይ",
-      "printPass": "ፓስ አትም",
+      "printPass": "QR አውርድ",
       "smsPass": "የፓስ አገናኝ እንደገና ላክ"
     },
     "team": {
@@ -1764,8 +1764,8 @@
     "undoActionLabel": "{{action}} — ለውጡን ሰርዝ",
     "dismissPending": "ማሳወቂያውን ደብቅ — ተግባሩ እንደገና ይቀጥላል",
     "memberPassPrinted": {
-      "title": "ፓስ ለህትመት ዝግጁ",
-      "subtitle": "የ{{name}} PDF ወርዷል።"
+      "title": "QR ወርዷል",
+      "subtitle": "የ{{name}} PDF ተቀምጧል።"
     },
     "memberPassRegenerated": {
       "title": "QR እንደገና ተፈጥሯል",
