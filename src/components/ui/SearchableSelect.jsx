@@ -1,10 +1,14 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import RequiredMark from './RequiredMark';
 
+const MENU_EST_HEIGHT = 260;
+
 /**
  * Filterable single-select for growing option lists (branch, plan, etc.).
+ * Menu is portaled so it does not expand scrollable modal bodies.
  */
 export default function SearchableSelect({
   id,
@@ -22,9 +26,12 @@ export default function SearchableSelect({
   const autoId = useId();
   const fieldId = id || autoId;
   const rootRef = useRef(null);
+  const buttonRef = useRef(null);
+  const menuRef = useRef(null);
   const inputRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
+  const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 
   const selected = options.find((o) => String(o.value) === String(value));
   const filtered = useMemo(() => {
@@ -34,9 +41,38 @@ export default function SearchableSelect({
   }, [options, query]);
 
   useEffect(() => {
+    if (!open || !buttonRef.current) return undefined;
+
+    const updatePosition = () => {
+      const rect = buttonRef.current.getBoundingClientRect();
+      const width = rect.width;
+      let left = rect.left;
+      if (left + width > window.innerWidth - 8) {
+        left = Math.max(8, window.innerWidth - width - 8);
+      }
+
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const openUp = spaceNearBottom(spaceBelow, rect.top);
+      const top = openUp ? Math.max(8, rect.top - MENU_EST_HEIGHT - 4) : rect.bottom + 4;
+
+      setPosition({ top, left, width });
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (!open) return undefined;
     const onDoc = (e) => {
-      if (!rootRef.current?.contains(e.target)) setOpen(false);
+      const target = e.target;
+      if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) return;
+      setOpen(false);
     };
     const onKey = (e) => {
       if (e.key === 'Escape') setOpen(false);
@@ -59,6 +95,7 @@ export default function SearchableSelect({
         </label>
       ) : null}
       <button
+        ref={buttonRef}
         id={fieldId}
         type="button"
         disabled={disabled}
@@ -91,52 +128,63 @@ export default function SearchableSelect({
         />
       </button>
 
-      {open ? (
-        <div className="absolute left-0 right-0 z-30 mt-1 overflow-hidden rounded-lg border border-app-border-subtle bg-app-raised shadow-lg">
-          <div className="flex items-center gap-2 border-b border-app-border-subtle px-3 py-2">
-            <Search className="h-4 w-4 shrink-0 text-app-muted" />
-            <input
-              ref={inputRef}
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('common.search')}
-              className="w-full bg-transparent text-sm text-app-text-strong outline-none placeholder:text-app-muted"
-              aria-label={t('common.search')}
-            />
-          </div>
-          <ul role="listbox" className="max-h-52 overflow-y-auto py-1">
-            {filtered.length === 0 ? (
-              <li className="px-3 py-2.5 text-sm text-app-muted">{t('common.noResults')}</li>
-            ) : (
-              filtered.map((opt) => {
-                const active = String(opt.value) === String(value);
-                return (
-                  <li key={opt.value}>
-                    <button
-                      type="button"
-                      role="option"
-                      aria-selected={active}
-                      className={[
-                        'flex w-full px-3 py-2 text-left text-sm transition-colors',
-                        active
-                          ? 'bg-teal-700/10 font-medium text-teal-900 dark:text-teal-200'
-                          : 'text-app-text-strong hover:bg-app-surface',
-                      ].join(' ')}
-                      onClick={() => {
-                        onChange(String(opt.value));
-                        setOpen(false);
-                      }}
-                    >
-                      {opt.label}
-                    </button>
-                  </li>
-                );
-              })
-            )}
-          </ul>
-        </div>
-      ) : null}
+      {open
+        ? createPortal(
+            <div
+              ref={menuRef}
+              className="fixed z-[200] overflow-hidden rounded-lg border border-app-border-subtle bg-app-raised shadow-lg"
+              style={{ top: position.top, left: position.left, width: position.width }}
+            >
+              <div className="flex items-center gap-2 border-b border-app-border-subtle px-3 py-2">
+                <Search className="h-4 w-4 shrink-0 text-app-muted" />
+                <input
+                  ref={inputRef}
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t('common.search')}
+                  className="w-full bg-transparent text-sm text-app-text-strong outline-none placeholder:text-app-muted"
+                  aria-label={t('common.search')}
+                />
+              </div>
+              <ul role="listbox" className="max-h-52 overflow-y-auto py-1">
+                {filtered.length === 0 ? (
+                  <li className="px-3 py-2.5 text-sm text-app-muted">{t('common.noResults')}</li>
+                ) : (
+                  filtered.map((opt) => {
+                    const active = String(opt.value) === String(value);
+                    return (
+                      <li key={opt.value}>
+                        <button
+                          type="button"
+                          role="option"
+                          aria-selected={active}
+                          className={[
+                            'flex w-full px-3 py-2 text-left text-sm transition-colors',
+                            active
+                              ? 'bg-teal-700/10 font-medium text-teal-900 dark:text-teal-200'
+                              : 'text-app-text-strong hover:bg-app-surface',
+                          ].join(' ')}
+                          onClick={() => {
+                            onChange(String(opt.value));
+                            setOpen(false);
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      </li>
+                    );
+                  })
+                )}
+              </ul>
+            </div>,
+            document.body
+          )
+        : null}
     </div>
   );
+}
+
+function spaceNearBottom(spaceBelow, spaceAbove) {
+  return spaceBelow < MENU_EST_HEIGHT && spaceAbove > MENU_EST_HEIGHT;
 }

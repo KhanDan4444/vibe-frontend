@@ -11,7 +11,7 @@ export const PAYMENT_METHOD_COLORS = {
   Card: '#38bdf8', // sky
   'Bank Transfer': '#f59e0b', // amber
   Cash: '#14b8a6', // teal
-  'Tele Birr': '#a855f7', // violet
+  'Tele Birr': '#eab308', // gold (Telebirr-adjacent, distinct from Bank Transfer amber)
   Other: '#94a3b8', // slate
 };
 
