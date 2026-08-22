@@ -6,6 +6,13 @@
  */
 export function toDateString(date) {
   if (!date) return '—';
+  if (date instanceof Date) {
+    if (Number.isNaN(date.getTime())) return '—';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
   return String(date).split('T')[0];
 }
 

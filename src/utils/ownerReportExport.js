@@ -9,6 +9,7 @@ import {
   createPdfDoc,
   pdfTable,
   formatDate,
+  formatGeneratedAt,
   formatMoney,
   escapeCsv,
   reportTimestamp,
@@ -16,9 +17,29 @@ import {
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
   pdfStartNewPage,
+  PDF_BRAND,
 } from './reportExportCore';
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
 import { formatPlanDisplayName } from './formatPlanDisplayName';
+
+function reportTitle(meta, fallback) {
+  const name = String(meta?.gymName || '').trim();
+  return name || fallback;
+}
+
+function reportSubtitle(meta, reportLabel) {
+  const name = String(meta?.gymName || '').trim();
+  return name ? reportLabel : undefined;
+}
+
+function sectionLabel(doc, text, y) {
+  doc.setFontSize(11);
+  doc.setTextColor(...PDF_BRAND.muted);
+  doc.setFont('helvetica', 'bold');
+  doc.text(text, 14, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0);
+}
 
 function formatMemberStatus(m) {
   if (m.deleted_at) return exportText('status.former');
@@ -89,7 +110,7 @@ function revenueExportRow(p, meta = {}) {
 }
 
 function exportHeaderLines(meta, extra = []) {
-  const lines = [exportText('export.generated', { date: formatDate(new Date()) }), ...extra];
+  const lines = [exportText('export.generated', { date: formatGeneratedAt() }), ...extra];
   const branchLine = meta?.branchLabel && meta.branchLabel !== exportText('branch.allBranches')
     ? exportText('export.branchLine', { name: meta.branchLabel })
     : null;
@@ -97,21 +118,20 @@ function exportHeaderLines(meta, extra = []) {
   return lines;
 }
 
-const MEMBER_PDF_COLUMN_STYLES = {
-  0: { cellWidth: 12, halign: 'center' },
-  2: { cellWidth: 32 },
-  5: { halign: 'right', cellWidth: 24 },
-  6: { halign: 'right', cellWidth: 24 },
-  7: { halign: 'right', cellWidth: 24 },
-};
+function memberPdfColumnStyles(meta = {}) {
+  const startIdx = showBranchInExport(meta) ? 6 : 5;
+  return {
+    0: { cellWidth: 14, halign: 'center' },
+    [startIdx]: { halign: 'right' },
+    [startIdx + 1]: { halign: 'right' },
+  };
+}
 
 function revenuePdfColumnStyles(meta = {}) {
   const amountIdx = showBranchInExport(meta) ? 6 : 5;
   return {
-    0: { cellWidth: 12, halign: 'center' },
-    1: { cellWidth: 40 },
-    2: { cellWidth: 32 },
-    [amountIdx]: { halign: 'right', cellWidth: 28 },
+    0: { cellWidth: 14, halign: 'center' },
+    [amountIdx]: { halign: 'right' },
   };
 }
 
@@ -133,9 +153,11 @@ export async function downloadMembersPdf(members, meta = {}) {
   const sorted = sortMembersList(members, DEFAULT_EXPORT_SORT);
   const doc = await createPdfDoc();
   const filterLabel = meta.filterLabel || exportText('filters.allMembers');
+  const directoryLabel = exportText('export.memberDirectory');
 
   const startY = pdfHeader(doc, {
-    title: exportText('export.memberDirectory'),
+    title: reportTitle(meta, directoryLabel),
+    subtitle: reportSubtitle(meta, directoryLabel),
     lines: exportHeaderLines(meta, [
       exportText('export.filterMembersMeta', { filter: filterLabel, count: sorted.length }),
     ]),
@@ -147,10 +169,7 @@ export async function downloadMembersPdf(members, meta = {}) {
       memberExportColumns(meta),
       sorted.map((m) => memberExportRow(m, meta)),
     ),
-    styles: { fontSize: 9, cellPadding: 2.5 },
-    headStyles: { fillColor: [79, 70, 229] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
-    columnStyles: MEMBER_PDF_COLUMN_STYLES,
+    columnStyles: memberPdfColumnStyles(meta),
   });
 
   doc.save(`member-directory-${reportTimestamp()}.pdf`);
@@ -164,9 +183,11 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
   const sorted = sortOwnerPaymentsList(payments, DEFAULT_EXPORT_SORT);
   const doc = await createPdfDoc();
   const { periodLabel, summary } = meta;
+  const revenueLabel = exportText('export.gymRevenue');
 
   let startY = pdfHeader(doc, {
-    title: exportText('export.gymRevenue'),
+    title: reportTitle(meta, revenueLabel),
+    subtitle: reportSubtitle(meta, revenueLabel),
     lines: exportHeaderLines(meta, [
       periodLabel,
       exportText('export.revenueSummaryMeta', {
@@ -178,10 +199,7 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
 
   startY = pdfRevenueByMethodBlock(doc, startY, summary);
 
-  doc.setFontSize(10);
-  doc.setTextColor(60);
-  doc.text(exportText('export.transactions'), 14, startY);
-  doc.setTextColor(0);
+  sectionLabel(doc, exportText('export.transactions'), startY);
 
   pdfTable(doc, {
     startY: startY + 3,
@@ -189,9 +207,6 @@ export async function downloadOwnerRevenuePdf(payments, meta) {
       revenueExportColumns(meta),
       sorted.map((p) => revenueExportRow(p, meta)),
     ),
-    styles: { fontSize: 9, cellPadding: 2.5 },
-    headStyles: { fillColor: [16, 185, 129] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: revenuePdfColumnStyles(meta),
   });
 
@@ -214,7 +229,7 @@ export function fullOwnerReportToCsv(members, payments, meta = {}) {
   const branchNote = meta.branchLabel ? exportText('export.branchNote', { name: meta.branchLabel }) : '';
 
   return [
-    exportText('export.gymReportCsvHeader', { date: formatDate(new Date()) }),
+    exportText('export.gymReportCsvHeader', { date: formatGeneratedAt() }),
     exportText('export.gymReportCsvMeta', { members: memberFilterLabel, period: periodLabel, branch: branchNote }),
     '',
     exportText('export.memberDirectorySectionUpper'),
@@ -236,9 +251,11 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
   const sortedPayments = sortOwnerPaymentsList(payments, DEFAULT_EXPORT_SORT);
   const doc = await createPdfDoc();
   const { memberFilterLabel = exportText('filters.allMembers'), periodLabel = exportText('period.allTime'), summary } = meta;
+  const reportLabel = exportText('export.gymReport');
 
   const startY = pdfHeader(doc, {
-    title: exportText('export.gymReport'),
+    title: reportTitle(meta, reportLabel),
+    subtitle: reportSubtitle(meta, reportLabel),
     lines: exportHeaderLines(meta, [
       exportText('export.fullReportMembersRevenue', { members: memberFilterLabel, period: periodLabel }),
       exportText('export.fullReportSummary', {
@@ -249,10 +266,7 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
     ]),
   });
 
-  doc.setFontSize(11);
-  doc.setTextColor(60);
-  doc.text(exportText('export.memberDirectorySection'), 14, startY);
-  doc.setTextColor(0);
+  sectionLabel(doc, exportText('export.memberDirectorySection'), startY);
 
   pdfTable(doc, {
     startY: startY + 4,
@@ -261,26 +275,19 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
       sortedMembers.map((m) => memberExportRow(m, meta)),
     ),
     styles: { fontSize: 8, cellPadding: 2 },
-    headStyles: { fillColor: [79, 70, 229] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
-    columnStyles: MEMBER_PDF_COLUMN_STYLES,
+    columnStyles: memberPdfColumnStyles(meta),
   });
 
   const revenueTop = pdfStartNewPage(doc);
-  doc.setFontSize(11);
-  doc.setTextColor(60);
-  doc.text(exportText('charts.revenue'), 14, revenueTop);
+  sectionLabel(doc, exportText('charts.revenue'), revenueTop);
   doc.setFontSize(8);
-  doc.setTextColor(100);
+  doc.setTextColor(...PDF_BRAND.muted);
   doc.text(exportText('export.periodPayments', { period: periodLabel, count: sortedPayments.length }), 14, revenueTop + 5);
   doc.setTextColor(0);
 
   let y = pdfRevenueByMethodBlock(doc, revenueTop + 10, summary);
 
-  doc.setFontSize(10);
-  doc.setTextColor(60);
-  doc.text(exportText('export.transactions'), 14, y);
-  doc.setTextColor(0);
+  sectionLabel(doc, exportText('export.transactions'), y);
 
   pdfTable(doc, {
     startY: y + 3,
@@ -288,9 +295,6 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
       revenueExportColumns(meta),
       sortedPayments.map((p) => revenueExportRow(p, meta)),
     ),
-    styles: { fontSize: 9, cellPadding: 2.5 },
-    headStyles: { fillColor: [16, 185, 129] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: revenuePdfColumnStyles(meta),
   });
 

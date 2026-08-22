@@ -51,7 +51,7 @@ import ToolbarPicker from '../../components/ToolbarPicker';
 export default function OwnerReports() {
   const { t } = useTranslation();
   const { apiFetch } = useAuth();
-  const { summary, getBranchQueryParams, selectedBranchId, branches } = useGym();
+  const { summary, getBranchQueryParams, selectedBranchId, branches, gymName } = useGym();
   const memberReportGuard = useLatestRequestGuard();
 
   const [members, setMembers] = useState([]);
@@ -144,6 +144,7 @@ export default function OwnerReports() {
   }, [selectedBranchId, branches, t]);
 
   const exportMeta = {
+    gymName,
     memberFilterLabel: t('filters.allMembers'),
     periodLabel,
     summary: revenueSummary,

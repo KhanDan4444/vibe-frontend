@@ -9,6 +9,7 @@ import {
   createPdfDoc,
   pdfTable,
   formatDate,
+  formatGeneratedAt,
   formatMoney,
   escapeCsv,
   reportTimestamp,
@@ -16,8 +17,18 @@ import {
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
   pdfStartNewPage,
+  PDF_BRAND,
 } from './reportExportCore';
 import { sortGymsList, sortAdminPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
+
+function sectionLabel(doc, text, y) {
+  doc.setFontSize(11);
+  doc.setTextColor(...PDF_BRAND.muted);
+  doc.setFont('helvetica', 'bold');
+  doc.text(text, 14, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(0);
+}
 
 const GYM_EXPORT_COLUMNS = ['gym', 'ownerContact', 'activeMembers', 'saasPlan', 'status', 'licenseStart', 'licenseEnd'].map(exportColumn);
 
@@ -63,10 +74,10 @@ function gymExportRow(g) {
 }
 
 const GYM_PDF_COLUMN_STYLES = {
-  1: { cellWidth: 48 },
-  2: { halign: 'center', cellWidth: 20 },
-  5: { halign: 'right', cellWidth: 22 },
-  6: { halign: 'right', cellWidth: 22 },
+  1: { cellWidth: 52 },
+  2: { halign: 'center', cellWidth: 22 },
+  5: { halign: 'right' },
+  6: { halign: 'right' },
 };
 
 const REVENUE_EXPORT_COLUMNS = ['date', 'gym', 'method', 'amount'].map(exportColumn);
@@ -81,7 +92,7 @@ function revenueExportRow(p) {
 }
 
 const REVENUE_PDF_COLUMN_STYLES = {
-  3: { halign: 'right', cellWidth: 28 },
+  3: { halign: 'right' },
 };
 
 function buildGymSnapshot(gyms) {
@@ -119,7 +130,7 @@ export async function downloadGymsPdf(gyms, meta = {}) {
   const startY = pdfHeader(doc, {
     title: exportText('export.gymRegistry'),
     lines: [
-      exportText('export.gymReportMeta', { date: formatDate(new Date()), filter: filterLabel, count: snap.total }),
+      exportText('export.gymReportMeta', { date: formatGeneratedAt(), filter: filterLabel, count: snap.total }),
     ],
   });
 
@@ -127,9 +138,6 @@ export async function downloadGymsPdf(gyms, meta = {}) {
     startY,
     head: [GYM_EXPORT_COLUMNS],
     body: sorted.map(gymExportRow),
-    styles: { fontSize: 9, cellPadding: 2.5 },
-    headStyles: { fillColor: [79, 70, 229] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: GYM_PDF_COLUMN_STYLES,
   });
 
@@ -145,7 +153,7 @@ export async function downloadRevenuePdf(payments, meta) {
   let startY = pdfHeader(doc, {
     title: exportText('export.platformRevenue'),
     lines: [
-      exportText('export.adminRevenueMeta', { date: formatDate(new Date()), period: periodLabel }),
+      exportText('export.adminRevenueMeta', { date: formatGeneratedAt(), period: periodLabel }),
       exportText('export.revenueSummaryMetaGym', {
         total: formatMoney(summary?.total ?? 0),
         count: summary?.count ?? 0,
@@ -155,18 +163,12 @@ export async function downloadRevenuePdf(payments, meta) {
 
   startY = pdfRevenueByMethodBlock(doc, startY, summary);
 
-  doc.setFontSize(10);
-  doc.setTextColor(60);
-  doc.text(exportText('export.transactions'), 14, startY);
-  doc.setTextColor(0);
+  sectionLabel(doc, exportText('export.transactions'), startY);
 
   pdfTable(doc, {
     startY: startY + 3,
     head: [REVENUE_EXPORT_COLUMNS],
     body: sorted.map(revenueExportRow),
-    styles: { fontSize: 9, cellPadding: 2.5 },
-    headStyles: { fillColor: [16, 185, 129] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: REVENUE_PDF_COLUMN_STYLES,
   });
 
@@ -192,7 +194,7 @@ export function fullReportToCsv(gyms, payments, meta = {}) {
   const methodBlock = revenueByMethodCsvBlock(summary);
 
   return [
-    exportText('export.platformReportCsvHeader', { date: formatDate(new Date()) }),
+    exportText('export.platformReportCsvHeader', { date: formatGeneratedAt() }),
     exportText('export.platformReportCsvMeta', { gyms: gymFilterLabel, period: periodLabel }),
     '',
     exportText('export.gymDirectorySectionUpper'),
@@ -220,7 +222,7 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
     title: exportText('export.platformReport'),
     lines: [
       exportText('export.fullReportPdfMeta', {
-        date: formatDate(new Date()),
+        date: formatGeneratedAt(),
         gyms: gymFilterLabel,
         period: periodLabel,
       }),
@@ -232,44 +234,31 @@ export async function downloadFullReportPdf(gyms, payments, meta = {}) {
     ],
   });
 
-  doc.setFontSize(11);
-  doc.setTextColor(60);
-  doc.text(exportText('export.gymDirectorySection'), 14, startY);
-  doc.setTextColor(0);
+  sectionLabel(doc, exportText('export.gymDirectorySection'), startY);
 
   pdfTable(doc, {
     startY: startY + 4,
     head: [GYM_EXPORT_COLUMNS],
     body: sortedGyms.map(gymExportRow),
     styles: { fontSize: 8, cellPadding: 2 },
-    headStyles: { fillColor: [79, 70, 229] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: GYM_PDF_COLUMN_STYLES,
   });
 
   const revenueTop = pdfStartNewPage(doc);
-  doc.setFontSize(11);
-  doc.setTextColor(60);
-  doc.text(exportText('charts.revenue'), 14, revenueTop);
+  sectionLabel(doc, exportText('charts.revenue'), revenueTop);
   doc.setFontSize(8);
-  doc.setTextColor(100);
+  doc.setTextColor(...PDF_BRAND.muted);
   doc.text(exportText('export.periodPayments', { period: periodLabel, count: sortedPayments.length }), 14, revenueTop + 5);
   doc.setTextColor(0);
 
   let y = pdfRevenueByMethodBlock(doc, revenueTop + 10, summary);
 
-  doc.setFontSize(10);
-  doc.setTextColor(60);
-  doc.text(exportText('export.transactions'), 14, y);
-  doc.setTextColor(0);
+  sectionLabel(doc, exportText('export.transactions'), y);
 
   pdfTable(doc, {
     startY: y + 3,
     head: [REVENUE_EXPORT_COLUMNS],
     body: sortedPayments.map(revenueExportRow),
-    styles: { fontSize: 9, cellPadding: 2.5 },
-    headStyles: { fillColor: [16, 185, 129] },
-    alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: REVENUE_PDF_COLUMN_STYLES,
   });
 
