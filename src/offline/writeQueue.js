@@ -34,12 +34,15 @@ export function queueableJob(endpoint, options = {}) {
   return rule || null;
 }
 
-/** Photo payloads must not be queued — uploads require a live connection. */
+/** Photo / certification payloads must not be queued — uploads require a live connection. */
 export function bodyHasPhoto(body) {
   if (typeof body !== 'string') return false;
   try {
     const parsed = JSON.parse(body);
-    return typeof parsed?.photo === 'string' && parsed.photo.startsWith('data:');
+    const photo = typeof parsed?.photo === 'string' && parsed.photo.startsWith('data:');
+    const cert =
+      typeof parsed?.certification === 'string' && parsed.certification.startsWith('data:');
+    return Boolean(photo || cert);
   } catch {
     return false;
   }

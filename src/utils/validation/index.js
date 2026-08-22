@@ -28,6 +28,12 @@ export {
   ACCEPTED_MEMBER_PHOTO_TYPES,
 } from './photo';
 export {
+  validateTrainerCertificationFile,
+  readFileAsDataUrl,
+  MAX_TRAINER_CERT_BYTES,
+  ACCEPTED_TRAINER_CERT_TYPES,
+} from './certification';
+export {
   validateUsername,
   validateOptionalEmail,
   validateLoginIdentifier,

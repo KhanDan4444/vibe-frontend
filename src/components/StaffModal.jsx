@@ -50,9 +50,10 @@ export default function StaffModal({
   const defaultBranchId = String(
     activeBranches.find((b) => b.is_default)?.id ?? activeBranches[0]?.id ?? ''
   );
+  const showBranchPicker = activeBranches.length > 1;
   const branchOptions = activeBranches.map((branch) => ({
     value: String(branch.id),
-    label: branch.name,
+    label: branch.is_default ? `${branch.name}${t('branch.defaultSuffix')}` : branch.name,
   }));
 
   const isEdit = !!staff;
@@ -98,12 +99,13 @@ export default function StaffModal({
     if (saving) return;
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
+    const resolvedBranchId = branchId || defaultBranchId;
     const staffResult = validateStaffForm({
       name,
       username,
       email,
       password,
-      branchId,
+      branchId: resolvedBranchId,
       isEdit,
     });
     if (!showValidationError(staffResult, setValidationError, t, { setFieldErrors: setLocalFieldErrors })) return;
@@ -113,7 +115,7 @@ export default function StaffModal({
       name: name.trim(),
       username: username.trim().toLowerCase(),
       staff_role: staffRole,
-      branch_id: parseInt(branchId, 10),
+      branch_id: parseInt(resolvedBranchId, 10),
     };
     if (trimmedEmail) payload.email = trimmedEmail;
     else if (isEdit) payload.email = null;
@@ -159,20 +161,24 @@ export default function StaffModal({
           )}
 
           <section className="space-y-4">
-            <SearchableSelect
-              id="staff-branch"
-              label={t('modals.staff.branch')}
-              required
-              value={branchId}
-              options={branchOptions}
-              placeholder={t('common.select')}
-              error={Boolean(fieldErrors.branchId)}
-              onChange={(next) => {
-                setBranchId(String(next));
-                clearFieldError(setLocalFieldErrors, 'branchId');
-              }}
-            />
-            <FieldError message={fieldErrorMessage(fieldErrors, 'branchId')} />
+            {showBranchPicker ? (
+              <>
+                <SearchableSelect
+                  id="staff-branch"
+                  label={t('modals.staff.branch')}
+                  required
+                  value={branchId}
+                  options={branchOptions}
+                  placeholder={t('common.select')}
+                  error={Boolean(fieldErrors.branchId)}
+                  onChange={(next) => {
+                    setBranchId(String(next));
+                    clearFieldError(setLocalFieldErrors, 'branchId');
+                  }}
+                />
+                <FieldError message={fieldErrorMessage(fieldErrors, 'branchId')} />
+              </>
+            ) : null}
 
             <div>
               <p className="form-label">

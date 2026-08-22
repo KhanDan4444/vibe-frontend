@@ -132,6 +132,14 @@ export default function Team() {
     return trainers.filter((row) => String(row.branch_id) === String(selectedBranchId));
   }, [trainers, selectedBranchId]);
 
+  const defaultBranchName =
+    branches.find((b) => b.is_default)?.name ||
+    branches.find((b) => b.is_active !== false)?.name ||
+    branches[0]?.name ||
+    'Main';
+
+  const branchLabel = (name) => name || defaultBranchName;
+
   const searchNeedle = searchQuery.trim().toLowerCase();
 
   const displayedStaff = useMemo(() => {
@@ -527,7 +535,7 @@ export default function Team() {
                           <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
                         )}
                         <p className="mt-0.5 text-xs text-app-muted">
-                          {member.branch_name || t('pages.team.noBranch')}
+                          {branchLabel(member.branch_name)}
                         </p>
                         <span
                           className={`mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
@@ -579,7 +587,7 @@ export default function Team() {
                         <span className="truncate font-medium text-app-text-strong">{member.name}</span>
                       </div>
                     </td>
-                    <td className="truncate text-app-text">{member.branch_name || '—'}</td>
+                    <td className="truncate text-app-text">{branchLabel(member.branch_name)}</td>
                     <td className="truncate text-app-text">{member.email}</td>
                     <td className="truncate text-app-text">{member.username || '—'}</td>
                     <td>
@@ -675,7 +683,7 @@ export default function Team() {
                           <p className="mt-0.5 text-xs text-app-muted">{trainer.specialty}</p>
                         ) : null}
                         <p className="mt-0.5 text-xs text-app-muted">
-                          {trainer.branch_name || t('pages.team.noBranch')}
+                          {branchLabel(trainer.branch_name)}
                         </p>
                         <p className="mt-0.5 text-xs text-app-muted">
                           {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
@@ -723,7 +731,7 @@ export default function Team() {
                               </span>
                             </div>
                           </td>
-                          <td className="truncate text-app-text">{trainer.branch_name || '—'}</td>
+                          <td className="truncate text-app-text">{branchLabel(trainer.branch_name)}</td>
                           <td className="truncate font-mono text-sm text-app-muted">{trainer.phone || '—'}</td>
                           <td className="truncate text-app-text">{trainer.specialty || '—'}</td>
                           <td className="text-app-muted">
