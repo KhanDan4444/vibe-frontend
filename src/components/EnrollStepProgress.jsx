@@ -103,9 +103,9 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
             <div key={`${step.id}-label`} className="min-w-0 flex-1">
               <p
                 className={[
-                  'text-[11px] font-semibold leading-snug sm:text-xs',
+                  'text-[11px] font-medium leading-snug sm:text-xs',
                   labelAlign(index, total),
-                  active || unlocked ? 'text-app-text-strong' : 'text-app-muted',
+                  active ? 'text-app-muted' : 'text-app-muted/55',
                 ].join(' ')}
               >
                 {step.label}
