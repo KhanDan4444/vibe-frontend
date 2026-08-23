@@ -704,7 +704,7 @@ export default function Revenue() {
         isOpen={!!paymentToDelete}
         title={t('pages.revenue.deleteTitle')}
         message={t('pages.revenue.deleteMessage')}
-        confirmText={t('common.delete')}
+        confirmText={t('pages.revenue.deleteTransaction')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setPaymentToDelete(null)}
       />

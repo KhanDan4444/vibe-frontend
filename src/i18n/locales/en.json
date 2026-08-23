@@ -747,7 +747,7 @@
       "loading": "Loading payments…",
       "empty": "No payments in this period.",
       "deleteTitle": "Delete payment?",
-      "deleteMessage": "This cannot be undone.",
+      "deleteMessage": "Removes this transaction from revenue (correction only). If it was their only payment, they may show as unpaid. You can undo for a few seconds.",
       "paymentUpdated": "Payment updated.",
       "paymentRemoved": "Payment removed.",
       "periodRevenue": "{{period}} revenue",
@@ -1096,7 +1096,7 @@
       "stepOf": "Step {{current}} of {{total}}",
       "successTitle": "Member enrolled",
       "successDone": "Done",
-      "successPaid": "Payment recorded. They’re ready for the floor.",
+      "successPaid": "Payment recorded. They're on the members list.",
       "successSkip": "Marked unpaid — collect payment when they’re ready.",
       "smsFailedTitle": "SMS message is not sent!",
       "smsFailedBody": "The member is enrolled, but the phone message could not be delivered. You can resend the pass link from their profile.",
@@ -1713,11 +1713,11 @@
     },
     "paymentDeleted": {
       "title": "Payment removed",
-      "subtitle": "This payment was removed from revenue."
+      "subtitle": "This payment was removed from revenue as a correction."
     },
     "paymentDeletePending": {
       "title": "Removing payment…",
-      "subtitle": "This payment will be deleted unless you undo."
+      "subtitle": "Undo within a few seconds to keep this payment."
     },
     "paymentDeleteCancelled": {
       "title": "Delete cancelled",

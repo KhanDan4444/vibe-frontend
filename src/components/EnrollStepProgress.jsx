@@ -1,16 +1,24 @@
 /**
  * Light 3-step progress for enroll (and future longer forms).
- * Equal-width columns keep labels readable; visited steps stay clickable.
+ * First/last steps sit on the form edges; connectors are straight bars between circles.
  */
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
+
+function labelAlign(index, total) {
+  if (index === 0) return 'text-left';
+  if (index === total - 1) return 'text-right';
+  return 'text-center';
+}
 
 export default function EnrollStepProgress({ steps, current, maxReached = current, onSelect, label }) {
   const { t } = useTranslation();
   const furthest = Math.max(current, maxReached);
+  const total = steps.length;
 
   return (
-    <nav aria-label={label || t('modals.member.enrollProgress')} className="mb-1">
-      <ol className="flex w-full items-start">
+    <nav aria-label={label || t('modals.member.enrollProgress')} className="mb-1 w-full">
+      <div className="flex w-full items-center">
         {steps.map((step, index) => {
           const n = index + 1;
           const active = n === current;
@@ -18,20 +26,19 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
           const completed = n < current;
           const clickable = unlocked && !active && typeof onSelect === 'function';
           const locked = !unlocked;
-          const lineFilled = n < furthest;
-          const isLast = index === steps.length - 1;
+          const connectorOn = furthest >= n;
 
           return (
-            <li key={step.id} className="relative flex min-w-0 flex-1 flex-col items-center">
-              {!isLast ? (
+            <Fragment key={step.id}>
+              {index > 0 ? (
                 <div
-                  className="pointer-events-none absolute left-[calc(50%+1.35rem)] right-[calc(-50%+1.35rem)] top-5 z-0 h-0.5 overflow-hidden rounded-full bg-app-border-subtle"
+                  className="mx-2 h-0.5 min-w-0 flex-1 rounded-full bg-app-border-subtle sm:mx-3"
                   aria-hidden
                 >
                   <div
                     className={[
                       'h-full rounded-full bg-teal-600 transition-all duration-300 ease-out dark:bg-teal-500',
-                      lineFilled ? 'w-full' : 'w-0',
+                      connectorOn ? 'w-full' : 'w-0',
                     ].join(' ')}
                   />
                 </div>
@@ -43,12 +50,11 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
                 onClick={(e) => {
                   if (!clickable) return;
                   onSelect(n);
-                  // Pointer clicks: drop focus so Firefox doesn’t keep a sticky highlight.
                   if (e.detail > 0) e.currentTarget.blur();
                 }}
                 title={clickable ? t('modals.member.stepGoTo', { label: step.label }) : undefined}
                 className={[
-                  'group relative z-10 flex w-full min-w-0 flex-col items-center gap-1.5 px-1 py-1 outline-none',
+                  'group relative z-10 flex shrink-0 flex-col items-center outline-none',
                   clickable ? 'cursor-pointer' : locked ? 'cursor-not-allowed' : 'cursor-default',
                 ].join(' ')}
                 aria-current={active ? 'step' : undefined}
@@ -60,9 +66,10 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
                       : step.label
                 }
               >
+                {/* ~36–40px circle — under field height; progress chrome, not a control row */}
                 <span
                   className={[
-                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all',
+                    'flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-all sm:h-10 sm:w-10',
                     active
                       ? 'bg-teal-700 text-white ring-2 ring-teal-600/40 ring-offset-2 ring-offset-app-raised dark:bg-teal-600 dark:ring-teal-400/35'
                       : clickable
@@ -80,25 +87,33 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
                     n
                   )}
                 </span>
-                <span
-                  className={[
-                    'w-full text-center text-[11px] font-semibold leading-snug sm:text-xs',
-                    active
-                      ? 'text-app-text-strong'
-                      : clickable
-                        ? 'text-app-text-strong group-hover:underline group-hover:decoration-teal-600/60 group-hover:decoration-from-font group-hover:underline-offset-2'
-                        : unlocked
-                          ? 'text-app-text-strong'
-                          : 'text-app-muted',
-                  ].join(' ')}
-                >
-                  {step.label}
-                </span>
               </button>
-            </li>
+            </Fragment>
           );
         })}
-      </ol>
+      </div>
+
+      <div className="mt-2 flex w-full">
+        {steps.map((step, index) => {
+          const n = index + 1;
+          const active = n === current;
+          const unlocked = n <= furthest;
+
+          return (
+            <div key={`${step.id}-label`} className="min-w-0 flex-1">
+              <p
+                className={[
+                  'text-[11px] font-semibold leading-snug sm:text-xs',
+                  labelAlign(index, total),
+                  active || unlocked ? 'text-app-text-strong' : 'text-app-muted',
+                ].join(' ')}
+              >
+                {step.label}
+              </p>
+            </div>
+          );
+        })}
+      </div>
     </nav>
   );
 }

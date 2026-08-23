@@ -732,7 +732,7 @@
       "loading": "Kaffaltiiwwan fe'amaa jiru…",
       "empty": "Yeroo kana keessa kaffaltiin hin jiru.",
       "deleteTitle": "Kaffaltii haqamuu?",
-      "deleteMessage": "Kun deebi'uu hin danda'u.",
+      "deleteMessage": "Daldaala kana galii irraa haqa (sirreeffamaaf qofa). Yoo kaffaltii isaanii tokkicha ta'e akka hin kaffalleetti mul'achuu danda'a. Sekondii muraasa keessatti deebisuu dandeessa.",
       "paymentUpdated": "Kaffaltiin fooyya'eera.",
       "paymentRemoved": "Kaffaltiin haqameera.",
       "periodRevenue": "Galii yeroo {{period}}",
@@ -1073,7 +1073,7 @@
       "stepOf": "Tarkaanfii {{current}} keessaa {{total}}",
       "successTitle": "Miseensi galmaa'eera",
       "successDone": "Xumurameera",
-      "successPaid": "Kaffaltiin galmeeffameera. Tajaajilaaf qophaa'aa dha.",
+      "successPaid": "Kaffaltiin galmeeffameera. Tarree miseensotaa irratti jiru.",
       "successSkip": "Akka hin kaffalamneetti mallatteeffame — yeroo qophaa'an kaffaltii sassaabi.",
       "smsFailedTitle": "Ergaan SMS hin ergamne!",
       "smsFailedBody": "Miseensi galmaa'eera, garuu ergaan hin geenye. Liinkii paasii irraa profile isaani irraa deebisuu dandeessa.",
@@ -1683,11 +1683,11 @@
     },
     "paymentDeleted": {
       "title": "Kaffaltiin haqameera",
-      "subtitle": "Kaffaltiin kun galii irraa haqameera."
+      "subtitle": "Kaffaltiin kun akka sirreeffamaatti galii irraa haqameera."
     },
     "paymentDeletePending": {
       "title": "Kaffaltiin haquu jira…",
-      "subtitle": "Yoo hin deebi'in kaffaltiin kun ni haqama."
+      "subtitle": "Sekondii muraasa keessatti deebisuu dandeessa."
     },
     "paymentDeleteCancelled": {
       "title": "Haquun dhaabbateera",

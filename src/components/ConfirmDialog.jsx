@@ -8,6 +8,7 @@ import { modalTitle } from '../utils/surfaceClasses';
 
 /**
  * Accessible confirmation dialog (replaces window.confirm).
+ * Danger variant uses a soft icon well + solid rose CTA (not ghost text).
  */
 export default function ConfirmDialog({
   isOpen,
@@ -23,6 +24,7 @@ export default function ConfirmDialog({
   const resolvedConfirm = confirmText ?? t('common.confirm');
   const resolvedCancel = cancelText ?? t('common.cancel');
   const isDanger = type === 'danger';
+
   useEffect(() => {
     if (!isOpen) return undefined;
     const onKey = (e) => {
@@ -35,18 +37,20 @@ export default function ConfirmDialog({
   return (
     <ResponsiveModal open={isOpen} onClose={onCancel} size="md" zIndexClass="z-[100]" labelledBy="confirm-dialog-title">
       <div className={modalBody}>
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-3.5">
           {isDanger ? (
-            <AlertTriangle
-              className="mt-0.5 h-5 w-5 shrink-0 text-[color:var(--color-status-expired)]"
+            <span
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:bg-rose-400/15 dark:text-rose-300"
               aria-hidden
-            />
+            >
+              <AlertTriangle className="h-5 w-5" strokeWidth={2} />
+            </span>
           ) : null}
-          <div className="min-w-0 flex-1">
-            <h3 id="confirm-dialog-title" className={modalTitle}>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <h3 id="confirm-dialog-title" className={`${modalTitle} tracking-tight`}>
               {title}
             </h3>
-            <p className="mt-2 text-sm leading-relaxed text-app-muted">{message}</p>
+            <p className="mt-2.5 text-sm leading-relaxed text-app-muted">{message}</p>
           </div>
         </div>
       </div>
@@ -56,7 +60,7 @@ export default function ConfirmDialog({
         </Button>
         <Button
           type="button"
-          variant={isDanger ? 'dangerGhost' : 'primary'}
+          variant={isDanger ? 'danger' : 'primary'}
           onClick={onConfirm}
           className="w-full sm:w-auto"
         >
