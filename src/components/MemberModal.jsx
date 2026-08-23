@@ -469,7 +469,7 @@ export default function MemberModal({
   const computedEndDate =
     selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : '';
   const endDateValue = computedEndDate && computedEndDate !== '—' ? computedEndDate : '';
-  const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
+  const sectionTitleClass = 'text-sm font-semibold text-app-muted';
 
   const enrollSteps = [
     { id: 'member', label: t('modals.member.stepMember') },
