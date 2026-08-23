@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, ScanLine, Settings2, UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -40,6 +41,7 @@ const TODAY_PAGE_SIZE = 40;
 
 export default function CheckIn() {
   const { t } = useTranslation();
+  const location = useLocation();
   const { apiFetch, user } = useAuth();
   const { showFlash, readOnly, getBranchQueryParams, refreshSummary, branches, selectedBranchId } =
     useGym();
@@ -66,6 +68,18 @@ export default function CheckIn() {
   const [cardErrors, setCardErrors] = useState({});
   /** @type {Record<number, boolean>} */
   const [successIds, setSuccessIds] = useState({});
+
+  useEffect(() => {
+    const { q, memberId } = location.state || {};
+    const seed = typeof q === 'string' ? q.trim() : '';
+    if (!seed && memberId == null) return undefined;
+    if (seed) {
+      setQuery(seed);
+      setDebounced(seed);
+    }
+    window.history.replaceState({}, document.title);
+    return undefined;
+  }, [location.state]);
 
   useEffect(() => {
     const id = setTimeout(() => setDebounced(query.trim()), 280);

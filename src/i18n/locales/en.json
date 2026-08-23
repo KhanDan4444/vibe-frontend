@@ -848,6 +848,7 @@
       "forceMessage": "{{name}} is already at {{count}}/{{limit}} this week. Check in anyway?",
       "forceConfirm": "Check in anyway",
       "ringLabel": "This week",
+      "openCheckInFor": "Check in {{name}}",
       "ringUnit": "visits",
       "ringProgress": "{{count}} of {{limit}} visits",
       "ringUnlimited": "{{count}} visits (unlimited)",

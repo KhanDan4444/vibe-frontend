@@ -1,5 +1,6 @@
 // src/components/MemberDetailDrawer.jsx
 import React, { Suspense, useState, useEffect, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Pencil,
@@ -71,6 +72,7 @@ export default function MemberDetailDrawer({
   readOnly = false,
 }) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { showFlash } = useFlash();
   const friendlyDate = (value) => formatFriendlyDate(value, i18n.language);
@@ -415,6 +417,16 @@ export default function MemberDetailDrawer({
                   limit={visitSummary.visits_limit}
                   size={72}
                   weekStartsOn={visitSummary.week_starts_on || 'monday'}
+                  title={t('pages.checkIn.openCheckInFor', { name: member.name })}
+                  onClick={() => {
+                    onClose?.();
+                    navigate('/dashboard/check-in', {
+                      state: {
+                        memberId: member.id,
+                        q: member.phone || member.name || '',
+                      },
+                    });
+                  }}
                 />
                 <div className="min-w-0 flex-1">
                   <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">

@@ -36,6 +36,8 @@ export default function VisitRing({
   weekStartsOn = 'monday',
   celebrate = false,
   className = '',
+  onClick,
+  title,
 }) {
   const { t } = useTranslation();
   const capped = limit != null && limit > 0;
@@ -71,17 +73,12 @@ export default function VisitRing({
       : 'text-app-text-strong';
   const emptyDash = `${Math.round(emptyStroke * 1.2)} ${Math.round(emptyStroke * 0.65)}`;
 
-  return (
-    <div
-      className={`relative inline-flex shrink-0 items-center justify-center ${className}`}
-      style={{ width: size, height: size }}
-      role="img"
-      aria-label={
-        capped
-          ? t('pages.checkIn.ringProgress', { count: safeVisits, limit })
-          : t('pages.checkIn.ringUnlimited', { count: safeVisits })
-      }
-    >
+  const ariaLabel = capped
+    ? t('pages.checkIn.ringProgress', { count: safeVisits, limit })
+    : t('pages.checkIn.ringUnlimited', { count: safeVisits });
+
+  const content = (
+    <>
       <div
         className="pointer-events-none absolute rounded-full bg-app-bg dark:bg-[#0c0e12]"
         style={{ width: discSize, height: discSize }}
@@ -153,6 +150,30 @@ export default function VisitRing({
           <Check className="h-7 w-7" strokeWidth={2.75} />
         </div>
       ) : null}
+    </>
+  );
+
+  const shellClass = `relative inline-flex shrink-0 items-center justify-center ${className}`;
+  const shellStyle = { width: size, height: size };
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        title={title || ariaLabel}
+        aria-label={title || ariaLabel}
+        className={`${shellClass} cursor-pointer rounded-full transition-[transform,opacity] hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 active:scale-[0.97]`}
+        style={shellStyle}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={shellClass} style={shellStyle} role="img" aria-label={ariaLabel}>
+      {content}
     </div>
   );
 }

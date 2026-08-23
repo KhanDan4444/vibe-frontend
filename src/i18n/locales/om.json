@@ -833,6 +833,7 @@
       "forceMessage": "{{name}} amma {{count}}/{{limit}} ga'eera. Akka ta'etti galchi?",
       "forceConfirm": "Akka ta'etti galchi",
       "ringLabel": "Torbee kana",
+      "openCheckInFor": "{{name}} galchi",
       "ringUnit": "daawwannaa",
       "ringProgress": "Daawwannaa {{count}} keessaa {{limit}}",
       "ringUnlimited": "Daawwannaa {{count}} (daangaa malee)",
