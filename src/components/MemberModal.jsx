@@ -1322,7 +1322,7 @@ export default function MemberModal({
                   ) : null}
                   {enrollDone.trainerFee != null ? (
                     <div className="flex items-baseline justify-between gap-3 px-3.5 py-2.5">
-                      <dt className="shrink-0 text-app-muted">{t('modals.member.trainerFee')}</dt>
+                      <dt className="shrink-0 text-app-muted">{t('modals.member.trainerFeeDone')}</dt>
                       <dd className="font-medium text-app-text-strong">
                         {[
                           formatMoney(enrollDone.trainerFee),

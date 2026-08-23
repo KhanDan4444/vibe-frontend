@@ -565,7 +565,7 @@
     "source": "Source"
   },
   "actions": {
-    "enroll": "Enroll member",
+    "enroll": "Enroll Member",
     "addMember": "Add member",
     "collect": "Collect",
     "collectPayment": "Collect payment",
@@ -574,8 +574,8 @@
     "transfer": "Transfer",
     "addPlan": "Add plan",
     "createPlan": "Create plan",
-    "addBranch": "Add branch",
-    "addStaff": "Add staff",
+    "addBranch": "Add Branch",
+    "addStaff": "Add Staff",
     "goToPlans": "Go to plans",
     "enable": "Enable",
     "disable": "Disable",
@@ -639,7 +639,7 @@
       "formerTitle": "Former members",
       "searchFormerPlaceholder": "Search former members…",
       "removedOnDate": "Removed {{date}}",
-      "add": "Enroll member",
+      "add": "Enroll Member",
       "searchPlaceholder": "Search members…",
       "noPlansWarning": "No membership plans yet. Add at least one plan before you can enroll members.",
       "noPlansEmptyTitle": "Create a plan first",
@@ -782,9 +782,9 @@
       "statusLine": "{{count}} branches · {{active}} active · Default: {{default}}",
       "statusLineEmpty": "No branches yet",
       "searchPlaceholder": "Search by name, phone, or address…",
-      "add": "Add branch",
+      "add": "Add Branch",
       "empty": "No branches yet. Add your first location.",
-      "formAdd": "Add branch",
+      "formAdd": "Add Branch",
       "formEdit": "Edit branch",
       "nameLabel": "Branch name",
       "namePlaceholder": "e.g. Downtown",
@@ -809,7 +809,7 @@
         "active": "Active only",
         "inactive": "Inactive only"
       },
-      "createFirst": "Add branch"
+      "createFirst": "Add Branch"
     },
     "checkIn": {
       "title": "Check in",
@@ -878,7 +878,7 @@
     "team": {
       "title": "Staff",
       "subtitle": "People who sign in at the desk.",
-      "add": "Add staff",
+      "add": "Add Staff",
       "sectionTitle": "Staff accounts",
       "empty": "No staff accounts yet.",
       "noBranch": "No branch",
@@ -896,14 +896,14 @@
       "emptyBody": "Invite front desk staff so they can manage members at the desk.",
       "emptyBranchTitle": "No staff at this branch",
       "emptyBranchBody": "Switch to All branches, or assign staff to this location.",
-      "createFirst": "Add staff",
+      "createFirst": "Add Staff",
       "tabStaff": "Staff",
       "tabTrainers": "Trainers",
       "trainersTitle": "Trainers",
       "trainersSubtitle": "Personal trainers at your gym. No login — staff assign them to members.",
       "formerTrainersSubtitle": "Removed trainers. Restore to assign them again.",
-      "addTrainer": "Add trainer",
-      "createFirstTrainer": "Add trainer",
+      "addTrainer": "Add Trainer",
+      "createFirstTrainer": "Add Trainer",
       "emptyTrainersTitle": "No trainers yet",
       "emptyTrainersBody": "Register trainers so you can assign them at enroll and collect a trainer fee.",
       "emptyFormerTrainers": "No former trainers",
@@ -1065,7 +1065,7 @@
       "newPlanFallback": "new plan"
     },
     "member": {
-      "enrollTitle": "Enroll member",
+      "enrollTitle": "Enroll Member",
       "editTitle": "Edit member",
       "enrollSubtitle": "Add a new member and optionally collect payment.",
       "editSubtitle": "Update member details.",
@@ -1112,7 +1112,7 @@
       "unpaidWarning": "Member will be marked unpaid until payment is collected.",
       "photoTypeError": "Photo must be a JPEG, PNG, or WebP image.",
       "photoSizeError": "Photo must be 2 MB or smaller.",
-      "saveEnroll": "Enroll member",
+      "saveEnroll": "Enroll Member",
       "saveUpdate": "Save changes",
       "photoPreviewAlt": "Member preview",
       "removePhoto": "Remove photo",
@@ -1125,6 +1125,7 @@
       "noTrainer": "No trainer",
       "noTrainersYet": "No trainers yet. Add them under Team → Trainers.",
       "trainerFee": "Trainer fee (optional)",
+      "trainerFeeDone": "Trainer fee",
       "trainerFeeHint": "Does not count as membership payment. Leave blank if unpaid or included."
     },
     "payment": {
@@ -1210,13 +1211,13 @@
       "descriptionPlaceholder": "Optional description..."
     },
     "staff": {
-      "createTitle": "Add staff",
+      "createTitle": "Add Staff",
       "editTitle": "Edit staff",
       "subtitle": "Create a front desk login for this gym.",
       "signInSection": "Sign-in credentials",
       "role": "Role",
       "roleFrontDeskHint": "Handle members, renewals, and payments at the front desk.",
-      "name": "Name",
+      "name": "Full name",
       "email": "Email",
       "emailOptional": "Optional — for contact and password reset.",
       "username": "Username",
@@ -1233,10 +1234,10 @@
       "saveUpdate": "Save changes"
     },
     "trainer": {
-      "createTitle": "Add trainer",
+      "createTitle": "Add Trainer",
       "editTitle": "Edit trainer",
       "subtitle": "Trainers are employees with no login. Staff still check members in.",
-      "name": "Name",
+      "name": "Full name",
       "phone": "Phone",
       "phonePlaceholder": "09xxxxxxxx",
       "specialty": "Specialty",
@@ -1252,7 +1253,7 @@
       "certTypeError": "Certification must be a PDF, JPEG, PNG, or WebP file.",
       "certSizeError": "Certification must be 2 MB or smaller.",
       "certReadError": "Could not read the certification file.",
-      "saveCreate": "Add trainer",
+      "saveCreate": "Add Trainer",
       "saveUpdate": "Save changes"
     },
     "resetPassword": {
