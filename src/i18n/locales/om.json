@@ -519,7 +519,7 @@
     "label": "Damee"
   },
   "table": {
-    "name": "Maqaa",
+    "name": "Maqaa guutuu",
     "phone": "Bilbila",
     "plan": "Karoora",
     "status": "Haala",
@@ -1252,7 +1252,7 @@
       "backToGyms": "Gara jimootatti deebi'i",
       "registerAnother": "Kan biraa galmeessi",
       "gymName": "Maqaa jimii",
-      "ownerName": "Maqaa abbaa",
+      "ownerName": "Maqaa guutuu",
       "ownerEmail": "Imeelii abbaa",
       "ownerEmailHint": "Filannoo — qunnamtii fi jechama siriitii deebisuuf.",
       "username": "Maqaa fayyadamaa",
@@ -1429,7 +1429,7 @@
     "staffEmailDesc": "Imeeliin seensaa kee abbaa jimii keetiin bulchama.",
     "platformEmailDesc": "Imeeliin seensaa kee plaatfoormiin bulchama.",
     "gymName": "Maqaa jimii",
-    "yourName": "Maqaa kee",
+    "yourName": "Maqaa guutuu",
     "gymPhone": "Bilbila jimii",
     "optional": "Filannoo",
     "sectionGym": "Ibsa jimii",

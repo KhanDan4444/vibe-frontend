@@ -556,7 +556,7 @@ export default function Branches() {
                   <table className="admin-data-table owner-branches-table min-w-[780px]">
                     <thead>
                       <tr>
-                        <th>{t('table.name')}</th>
+                        <th>{t('pages.branches.nameLabel')}</th>
                         <th>{t('table.members')}</th>
                         <th>{t('pages.team.tabStaff')}</th>
                         <th>{t('table.status')}</th>

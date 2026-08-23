@@ -29,7 +29,7 @@
     "updating": "በማዘመን ላይ…",
     "username": "የተጠቃሚ ስም",
     "usernamePattern": "ከ3–30 ቁምፊዎች፦ ፊደላት፣ ቁጥሮች፣ ነጥቦች እና ከሰረዞች",
-    "yourName": "ስምዎ",
+    "yourName": "ሙሉ ስም",
     "passwordSuccessHero": "የይለፍ ቃል ተዘምኗል",
     "passwordSuccessBody": "አዲሱ የይለፍ ቃል ዝግጁ ነው። በሚቀጥለው ጊዜ ሲገቡ ይጠቀሙበት።",
     "profileSuccessBody": "የጂም መገለጫዎ ተቀምጧል።"
@@ -880,6 +880,7 @@
     },
     "registerGym": {
       "gymName": "የጂም ስም",
+      "ownerName": "ሙሉ ስም",
       "gymNamePlaceholder": "ለምሳሌ፦ Iron Grip Gym",
       "ownerNamePlaceholder": "ሙሉ ስም",
       "emailPlaceholder": "name@example.com",
@@ -1570,7 +1571,7 @@
     "member": "አባል",
     "members": "አባላት",
     "method": "ዘዴ",
-    "name": "ስም",
+    "name": "ሙሉ ስም",
     "owner": "ባለቤት",
     "phone": "ስልክ",
     "plan": "ዕቅድ",

@@ -531,7 +531,7 @@
     "label": "Branch"
   },
   "table": {
-    "name": "Name",
+    "name": "Full name",
     "phone": "Phone",
     "plan": "Plan",
     "trainer": "Trainer",
@@ -1281,7 +1281,7 @@
       "backToGyms": "Back to gyms",
       "registerAnother": "Register another",
       "gymName": "Gym name",
-      "ownerName": "Owner name",
+      "ownerName": "Full name",
       "ownerEmail": "Owner email",
       "ownerEmailHint": "Optional — for contact and password reset.",
       "username": "Username",
@@ -1458,7 +1458,7 @@
     "staffEmailDesc": "Your login email is managed by your gym owner.",
     "platformEmailDesc": "Your login email is managed by the platform.",
     "gymName": "Gym name",
-    "yourName": "Your name",
+    "yourName": "Full name",
     "gymPhone": "Gym phone",
     "optional": "Optional",
     "sectionGym": "Gym details",
