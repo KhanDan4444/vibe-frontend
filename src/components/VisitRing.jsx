@@ -80,7 +80,7 @@ export default function VisitRing({
   const content = (
     <>
       <div
-        className="pointer-events-none absolute rounded-full bg-app-bg dark:bg-[#0c0e12]"
+        className="pointer-events-none absolute rounded-full bg-app-bg dark:bg-[color:var(--color-app-input)]"
         style={{ width: discSize, height: discSize }}
         aria-hidden
       />

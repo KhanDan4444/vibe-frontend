@@ -619,6 +619,7 @@
       "expires": "Expires {{date}}",
       "customPlan": "Custom Plan",
       "noExpiring": "Excellent! No members are expired or due to expire within 3 days.",
+      "showMore": "Show more",
       "activePercent": "{{percent}}% active",
       "dueSoonHintCritical": "Critical",
       "dueSoonHintOk": "No immediate renewals required.",

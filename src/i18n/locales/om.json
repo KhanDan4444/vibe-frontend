@@ -604,6 +604,7 @@
       "expires": "Guyyaa {{date}} dhumata",
       "customPlan": "Karoora Kee",
       "noExpiring": "Akka malee gaarii! Miseensonni dhumatan ykn guyyaa 3 keessatti dhumuuf jiran hin jiran.",
+      "showMore": "Dabalataan agarsiisi",
       "activePercent": "{{percent}}% si'aawaa",
       "dueSoonHintCritical": "Daran Barbaachisaa",
       "dueSoonHintOk": "Haaromsi battalaa hin barbaachisu.",

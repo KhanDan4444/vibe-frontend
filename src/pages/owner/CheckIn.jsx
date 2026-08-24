@@ -190,8 +190,9 @@ export default function CheckIn() {
   const formatCheckInTime = (value) => {
     if (!value) return '—';
     return new Date(value).toLocaleTimeString([], {
-      hour: '2-digit',
+      hour: 'numeric',
       minute: '2-digit',
+      hour12: true,
     });
   };
 
@@ -686,7 +687,7 @@ export default function CheckIn() {
                       <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
                     ) : null}
                   </div>
-                <time className="shrink-0 font-display text-sm font-semibold tabular-nums tracking-tight text-app-text-strong">
+                <time className="shrink-0 font-display text-sm font-bold tabular-nums tracking-tight text-app-text-strong sm:text-base">
                   {formatCheckInTime(row.checked_in_at)}
                 </time>
                 </li>

@@ -26,6 +26,8 @@ import { lazyWithRetry } from '../../utils/lazyWithRetry';
 
 const OwnerRevenueChart = lazyWithRetry(() => import('../../components/OwnerRevenueChart'));
 
+const ATTENTION_PREVIEW = 5;
+
 export default function OwnerDashboard() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
@@ -74,7 +76,10 @@ export default function OwnerDashboard() {
   const checkedInToday = summary.checkedInToday ?? 0;
   const revenueTrend = summary.revenueTrendPercent ?? null;
 
-  const alertMembers = (summary.alertMembers || []).map((m) => mapMemberFromApi(m)).filter(Boolean);
+  const alertMembers = (summary.alertMembers || [])
+    .map((m) => mapMemberFromApi(m))
+    .filter(Boolean)
+    .slice(0, ATTENTION_PREVIEW);
 
   const chartData = (summary.revenueChart || []).map((r) => ({
     date: formatDisplayDate(r.date),
@@ -216,7 +221,7 @@ export default function OwnerDashboard() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => navigate('/dashboard/members', { state: { filter: 'Due Soon' } })}
+                  onClick={() => navigate('/dashboard/members', { state: { filter: 'Expired' } })}
                   className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-800 transition-colors hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15"
                 >
                   {t('common.viewAll')}

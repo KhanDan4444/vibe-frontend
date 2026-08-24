@@ -23,9 +23,9 @@
   --color-brand-soft: #d5f5f0;
   --color-brand-text: #115e59;
   /* Warm signature accent — identity only, not primary CTAs */
-  --color-accent-warm: #b45309;
-  --color-accent-warm-soft: rgb(180 83 9 / 0.12);
-  --color-accent-warm-text: #92400e;
+  --color-accent-warm: #d97706;
+  --color-accent-warm-soft: rgb(217 119 6 / 0.12);
+  --color-accent-warm-text: #b45309;
   /* Member / subscription status — aligned with mobile ThemeColors */
   --color-status-active: #059669;
   --color-status-due-soon: #0284c7;
@@ -77,9 +77,9 @@
     --color-brand-hover: #0d9488;
     --color-brand-soft: #d5f5f0;
     --color-brand-text: #115e59;
-    --color-accent-warm: #b45309;
-    --color-accent-warm-soft: rgb(180 83 9 / 0.12);
-    --color-accent-warm-text: #92400e;
+    --color-accent-warm: #d97706;
+    --color-accent-warm-soft: rgb(217 119 6 / 0.12);
+    --color-accent-warm-text: #b45309;
     --color-status-active: #059669;
     --color-status-due-soon: #0284c7;
     --color-status-expired: #e11d48;

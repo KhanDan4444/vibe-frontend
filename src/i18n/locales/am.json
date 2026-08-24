@@ -1327,6 +1327,7 @@
       "lastMonthCount": "ካለፈው ወር {{count}}",
       "newMembersThisMonth": "አዲስ አባላት (የዚህ ወር)",
       "noExpiring": "በጣም ጥሩ! በ3 ቀናት ውስጥ ጊዜያቸው የሚያበቃ ወይም የሚያልቁ አባላት የሉም።",
+      "showMore": "ተጨማሪ አሳይ",
       "noPaymentsMonth": "በዚህ ወር ምንም ክፍያ አልተመዘገበም።",
       "renewed": "{{name}} ታድሷል እና ክፍያው ተመዝግቧል።",
       "revenueThisMonth": "የዚህ ወር ገቢ",
