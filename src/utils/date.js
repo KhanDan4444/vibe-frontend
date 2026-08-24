@@ -127,6 +127,73 @@ export function todayString() {
   return formatLocalDate(new Date());
 }
 
+/**
+ * Local start of attendance week (matches API week_starts_on).
+ * @param {Date} [date]
+ * @param {'monday'|'sunday'} [weekStartsOn='monday']
+ */
+export function startOfAttendanceWeek(date = new Date(), weekStartsOn = 'monday') {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay();
+  const startDow = weekStartsOn === 'sunday' ? 0 : 1;
+  const diff = (day - startDow + 7) % 7;
+  d.setDate(d.getDate() - diff);
+  return d;
+}
+
+/**
+ * Inclusive from/to ISO dates for this or last attendance week.
+ * @param {'this'|'last'} which
+ * @param {'monday'|'sunday'} [weekStartsOn='monday']
+ */
+export function attendanceWeekRange(which, weekStartsOn = 'monday') {
+  let start = startOfAttendanceWeek(new Date(), weekStartsOn);
+  if (which === 'last') {
+    start = new Date(start);
+    start.setDate(start.getDate() - 7);
+  }
+  const end = new Date(start);
+  end.setDate(end.getDate() + 6);
+  return { from: formatLocalDate(start), to: formatLocalDate(end) };
+}
+
+/**
+ * Day header for attendance history: "Mon 18 Aug"
+ * @param {string|Date|null|undefined} date
+ * @param {string} [language='en']
+ */
+export function formatAttendanceDayLabel(date, language = 'en') {
+  if (!date || date === '—') return '—';
+  const parsed = parseLocalDate(date);
+  if (!parsed) return formatDisplayDate(date);
+  const locale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-GB';
+  try {
+    return parsed.toLocaleDateString(locale, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+    });
+  } catch {
+    return formatDisplayDate(date);
+  }
+}
+
+/**
+ * Group check-in rows by local calendar day (newest days first).
+ * @param {Array<{ checked_in_at?: string }>} checkIns
+ */
+export function groupCheckInsByDay(checkIns) {
+  const map = new Map();
+  for (const row of checkIns || []) {
+    const day = toDateString(row.checked_in_at);
+    if (!day || day === '—') continue;
+    if (!map.has(day)) map.set(day, []);
+    map.get(day).push(row);
+  }
+  return [...map.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+}
+
 /** Normalize to YYYY-MM-DD for bounds; returns undefined for empty or display placeholder. */
 export function normalizeCalendarIso(date) {
   if (!date || date === '—') return undefined;

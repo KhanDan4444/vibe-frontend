@@ -18,10 +18,10 @@ import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
-import { formatFriendlyDate } from '../utils/date';
+import { formatFriendlyDate, formatDisplayDate, groupCheckInsByDay, formatAttendanceDayLabel } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { getMemberPayments } from '../services/memberService';
-import { getMemberVisitSummary } from '../services/checkInService';
+import { getMemberVisitSummary, listCheckIns } from '../services/checkInService';
 import VisitRing from './VisitRing';
 import ConfirmDialog from './ConfirmDialog';
 import MemberPhoto from './MemberPhoto';
@@ -86,6 +86,7 @@ export default function MemberDetailDrawer({
   const [paymentsError, setPaymentsError] = useState('');
   const [showAllPayments, setShowAllPayments] = useState(false);
   const [visitSummary, setVisitSummary] = useState(null);
+  const [recentVisits, setRecentVisits] = useState([]);
 
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
@@ -134,6 +135,7 @@ export default function MemberDetailDrawer({
   useEffect(() => {
     setShowAllPayments(false);
     setVisitSummary(null);
+    setRecentVisits([]);
     setMemberPayments([]);
     setPaymentsError('');
   }, [member?.id]);
@@ -144,11 +146,19 @@ export default function MemberDetailDrawer({
     let idleId = 0;
     const run = async () => {
       try {
-        const res = await getMemberVisitSummary(apiFetch, member.id);
-        const data = await parseApiResponse(res);
-        if (!cancelled && res.ok) setVisitSummary(data);
+        const [sumRes, histRes] = await Promise.all([
+          getMemberVisitSummary(apiFetch, member.id),
+          listCheckIns(apiFetch, { member_id: member.id, limit: 8 }),
+        ]);
+        const sumData = await parseApiResponse(sumRes);
+        const histData = await parseApiResponse(histRes);
+        if (!cancelled && sumRes.ok) setVisitSummary(sumData);
+        if (!cancelled && histRes.ok) setRecentVisits(histData.checkIns || []);
       } catch {
-        if (!cancelled) setVisitSummary(null);
+        if (!cancelled) {
+          setVisitSummary(null);
+          setRecentVisits([]);
+        }
       }
     };
     if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
@@ -168,6 +178,8 @@ export default function MemberDetailDrawer({
       window.clearTimeout(t);
     };
   }, [member?.id, member?.deletedAt, apiFetch]);
+
+  const recentByDay = useMemo(() => groupCheckInsByDay(recentVisits), [recentVisits]);
 
   const planLabel = useMemo(
     () =>
@@ -468,6 +480,46 @@ export default function MemberDetailDrawer({
                   {t('drawer.showPass')}
                 </Button>
               </div>
+            ) : null}
+            {!isFormer && recentVisits.length > 0 ? (
+              <div className="mb-3 rounded-xl border border-app-border-subtle bg-app-bg/40 px-3.5 py-3">
+                <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                  {t('pages.checkIn.recentVisits')}
+                </p>
+                <div className="mt-2.5 space-y-3">
+                  {recentByDay.map(([day, rows]) => (
+                    <div key={day}>
+                      <div className="mb-1 flex items-baseline justify-between gap-2">
+                        <p className="text-[12px] font-semibold tracking-tight text-app-text-strong">
+                          {formatAttendanceDayLabel(day, i18n.language)}
+                        </p>
+                        <p className="text-[10px] font-medium text-app-muted">
+                          {t('pages.checkIn.dayVisitCount', { count: rows.length })}
+                        </p>
+                      </div>
+                      <ul className="space-y-1">
+                        {rows.map((row) => (
+                          <li
+                            key={row.id}
+                            className="flex items-center justify-between gap-3 rounded-lg px-1 py-1 text-xs"
+                          >
+                            <span className="text-app-muted">{formatDisplayDate(row.checked_in_at)}</span>
+                            <time className="font-display font-bold tabular-nums tracking-tight text-app-text-strong">
+                              {new Date(row.checked_in_at).toLocaleTimeString([], {
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true,
+                              })}
+                            </time>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : !isFormer && visitSummary ? (
+              <p className="mb-3 text-xs text-app-muted">{t('pages.checkIn.recentVisitsEmpty')}</p>
             ) : null}
             <SlidePanelCard>
               {member.branchName && (
