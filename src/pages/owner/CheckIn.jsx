@@ -340,9 +340,38 @@ export default function CheckIn() {
             data,
             passToken: token,
           });
+          setScanOpen(false);
           return;
         }
         if (!res.ok) {
+          if (data.code === 'ALREADY_TODAY') {
+            const memberId = data.member_id ?? data.member?.id;
+            if (memberId != null) {
+              setCardErrors((prev) => ({
+                ...prev,
+                [memberId]: {
+                  code: 'ALREADY_TODAY',
+                  message: t('pages.checkIn.alreadyToday'),
+                },
+              }));
+            }
+            showFlash({
+              title: t('pages.checkIn.alreadyToday'),
+              subtitle: data.member_name || data.member?.name || undefined,
+              variant: 'warning',
+            });
+            setScanOpen(false);
+            return;
+          }
+          if (data.code === 'WEEKLY_LIMIT') {
+            showFlash({
+              title: t('pages.checkIn.weeklyLimitReached'),
+              subtitle: data.member_name || data.member?.name || undefined,
+              variant: 'warning',
+            });
+            setScanOpen(false);
+            return;
+          }
           throw new Error(data.error || t('errors.checkInFailed'));
         }
         applyCheckInSuccess(data, data.member?.name || t('pages.checkIn.checkInAction'));
