@@ -8,7 +8,11 @@ export function AdminTableRowsSkeleton({ rows = 6, cols = 5 }) {
         <tr key={row}>
           {Array.from({ length: cols }).map((__, col) => (
             <td key={col}>
-              <div className={`app-skeleton h-4 ${col === 0 ? 'w-36' : col === cols - 1 ? 'ml-auto w-16' : 'w-24'}`} />
+              <div
+                className={`app-skeleton h-4 ${
+                  col === 0 ? 'w-36' : col === cols - 1 ? 'ml-auto w-16' : 'w-24'
+                }`}
+              />
             </td>
           ))}
         </tr>
@@ -17,6 +21,7 @@ export function AdminTableRowsSkeleton({ rows = 6, cols = 5 }) {
   );
 }
 
+/** Generic avatar list — prefer layout-specific skeletons when the real UI differs. */
 export function AdminListSkeleton({ rows = 5 }) {
   return (
     <div className="divide-y divide-app-border-subtle">
@@ -34,21 +39,225 @@ export function AdminListSkeleton({ rows = 5 }) {
   );
 }
 
+/** Check-in search: VisitRing | identity | right CTA */
+export function CheckInSearchSkeleton({ count = 2 }) {
+  return (
+    <div className="grid gap-3 lg:grid-cols-2" role="status" aria-label="Loading">
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className={`${cardSurface} flex items-center gap-4 p-4`}>
+          <div className="app-skeleton h-[92px] w-[92px] shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="app-skeleton h-4 w-36" />
+            <div className="app-skeleton h-3 w-28" />
+            <div className="app-skeleton h-5 w-16 rounded-full" />
+          </div>
+          <div className="app-skeleton h-9 w-[7.5rem] shrink-0 rounded-lg" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Check-in today list: photo | name | time */
+export function CheckInTodaySkeleton({ rows = 3 }) {
+  return (
+    <ul className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i} className="flex items-center gap-3 px-3.5 py-2.5 sm:px-4">
+          <div className="app-skeleton h-9 w-9 shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <div className="app-skeleton h-3.5 w-32" />
+            <div className="app-skeleton h-2.5 w-20" />
+          </div>
+          <div className="app-skeleton h-3.5 w-14 shrink-0" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Attendance history day list: day label + visit count + chevron */
+export function AttendanceDayListSkeleton({ rows = 4 }) {
+  return (
+    <ul className="space-y-2" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i}>
+          <div className="relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-app-border-subtle bg-app-card px-3.5 py-3.5">
+            <span className="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-full bg-[color:var(--color-brand)]/25" />
+            <div className="min-w-0 flex-1 space-y-2 pl-1.5">
+              <div className="app-skeleton h-3.5 w-28" />
+              <div className="app-skeleton h-3 w-16" />
+            </div>
+            <div className="app-skeleton h-4 w-4 shrink-0 rounded" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Plans: price-first card */
 export function PlanCardSkeleton() {
   return (
-    <div className={`flex flex-col justify-between p-6 ${cardSurface}`}>
-      <div className="space-y-3">
-        <div className="flex items-center gap-3">
-          <div className="app-skeleton h-11 w-11 rounded-lg" />
-          <div className="app-skeleton h-5 w-32" />
+    <div className={`relative p-5 ${cardSurface}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 space-y-2">
+          <div className="app-skeleton h-8 w-28" />
+          <div className="app-skeleton h-3 w-20" />
         </div>
-        <div className="app-skeleton h-3 w-full" />
-        <div className="app-skeleton h-3 w-48" />
+        <div className="app-skeleton h-8 w-8 shrink-0 rounded-lg" />
       </div>
-      <div className="mt-6 flex items-baseline justify-between border-t border-app-border-subtle pt-6 dark:border-app-border-subtle">
-        <div className="app-skeleton h-8 w-24" />
-        <div className="app-skeleton h-6 w-16 rounded-full" />
+      <div className="app-skeleton mt-4 h-4 w-40" />
+      <div className="app-skeleton mt-2 h-3 w-full max-w-[14rem]" />
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="app-skeleton h-6 w-16 rounded-md" />
+        <div className="app-skeleton h-3 w-24" />
       </div>
+    </div>
+  );
+}
+
+/** Revenue mobile payment card: text left, large amount right (no avatar) */
+export function PaymentCardSkeleton({ rows = 5 }) {
+  return (
+    <div className="space-y-3" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className={`${cardSurface} p-3.5`}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="app-skeleton h-4 w-36" />
+              <div className="app-skeleton h-3 w-40" />
+              <div className="flex items-center gap-2 pt-0.5">
+                <div className="app-skeleton h-2 w-2 rounded-full" />
+                <div className="app-skeleton h-5 w-16 rounded-md" />
+              </div>
+            </div>
+            <div className="app-skeleton h-6 w-20 shrink-0" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Activity mobile: timestamp + actor stack, no avatar */
+export function ActivityCardSkeleton({ rows = 5 }) {
+  return (
+    <div className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="space-y-2 p-4">
+          <div className="app-skeleton h-3 w-24" />
+          <div className="app-skeleton h-3.5 w-44" />
+          <div className="app-skeleton h-3 w-56" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Branches mobile: name + pills + meta, no avatar */
+export function BranchCardSkeleton({ rows = 4 }) {
+  return (
+    <div className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="space-y-3 p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="app-skeleton h-4 w-36" />
+            <div className="app-skeleton h-8 w-8 rounded-lg" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <div className="app-skeleton h-5 w-16 rounded-full" />
+            <div className="app-skeleton h-5 w-20 rounded-full" />
+          </div>
+          <div className="app-skeleton h-3 w-48" />
+          <div className="app-skeleton h-3 w-32" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Members mobile cards: photo | identity + status | actions row */
+export function MemberCardSkeleton({ rows = 6 }) {
+  return (
+    <div className="space-y-3" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className={`${cardSurface} p-4`}>
+          <div className="flex items-center gap-3">
+            <div className="app-skeleton h-10 w-10 shrink-0 rounded-full" />
+            <div className="min-w-0 flex-1 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="app-skeleton h-4 w-32" />
+                <div className="app-skeleton h-5 w-14 rounded-full" />
+              </div>
+              <div className="app-skeleton h-3 w-40" />
+              <div className="app-skeleton h-3 w-28" />
+            </div>
+          </div>
+          <div className="mt-3 flex gap-2 border-t border-app-border-subtle pt-3">
+            <div className="app-skeleton h-8 w-20 rounded-lg" />
+            <div className="app-skeleton h-8 w-8 rounded-lg" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Admin gym SMS cards: square icon | gym/owner/chip/meta */
+export function AdminGymMessageSkeleton({ rows = 5 }) {
+  return (
+    <div className="space-y-3" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className={`flex gap-3 p-4 ${cardSurface}`}>
+          <div className="app-skeleton mt-0.5 h-9 w-9 shrink-0 rounded-lg" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="app-skeleton h-4 w-36" />
+            <div className="app-skeleton h-3.5 w-28" />
+            <div className="app-skeleton h-5 w-16 rounded-full" />
+            <div className="app-skeleton h-3 w-44" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Messages mobile: photo + name/chip + preview */
+export function MessageListSkeleton({ rows = 5 }) {
+  return (
+    <div className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-start gap-3 p-4">
+          <div className="app-skeleton h-10 w-10 shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="app-skeleton h-3.5 w-28" />
+              <div className="app-skeleton h-5 w-14 rounded-full" />
+            </div>
+            <div className="app-skeleton h-3 w-full max-w-[16rem]" />
+            <div className="app-skeleton h-3 w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** Team mobile: avatar + name/status + overflow */
+export function TeamListSkeleton({ rows = 5 }) {
+  return (
+    <div className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3 p-4">
+          <div className="app-skeleton h-10 w-10 shrink-0 rounded-full" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="app-skeleton h-3.5 w-36" />
+            <div className="app-skeleton h-5 w-16 rounded-full" />
+          </div>
+          <div className="app-skeleton h-8 w-8 shrink-0 rounded-lg" />
+        </div>
+      ))}
     </div>
   );
 }

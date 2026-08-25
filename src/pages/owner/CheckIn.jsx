@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, ScanLine, Settings2, UserRound } from 'lucide-react';
+import { CheckCircle2, History, ScanLine, Settings2, UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -25,11 +25,15 @@ import UnpaidBadge from '../../components/UnpaidBadge';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ScanMemberQrModal from '../../components/ScanMemberQrModal';
+import {
+  CheckInSearchSkeleton,
+  CheckInTodaySkeleton,
+} from '../../components/LoadingSkeletons';
+import AttendanceHistoryModal from '../../components/AttendanceHistoryModal';
 import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, mutedText, panelTitle, renewActionBtn } from '../../utils/surfaceClasses';
 import { formatMemberStatusForDisplay, DISPLAY_STATUS } from '../../utils/memberStatus';
-import { formatDisplayDate, attendanceWeekRange, groupCheckInsByDay, formatAttendanceDayLabel, todayString } from '../../utils/date';
-import { ToolbarChip, ToolbarChipBar } from '../../components/ToolbarChip';
+import { todayString } from '../../utils/date';
 
 const CAP_OPTIONS = [
   { value: '', labelKey: 'pages.checkIn.capUnlimited' },
@@ -38,14 +42,13 @@ const CAP_OPTIONS = [
   { value: '6', labelKey: 'pages.checkIn.capDays', days: 6 },
 ];
 
-const HISTORY_PAGE_SIZE = 80;
-const HISTORY_MAX = 200;
+const TODAY_LIST_LIMIT = 200;
 
 export default function CheckIn() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const location = useLocation();
   const { apiFetch, user } = useAuth();
-  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, branches, selectedBranchId } =
+  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, selectedBranchId } =
     useGym();
   const owner = isGymOwner(user?.role);
 
@@ -56,11 +59,11 @@ export default function CheckIn() {
   const [canManage, setCanManage] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
-  const [weekScope, setWeekScope] = useState('this');
-  const [history, setHistory] = useState({ from: '', to: '', total: 0, checkIns: [] });
-  const [historyLimit, setHistoryLimit] = useState(HISTORY_PAGE_SIZE);
-  const [historyLoading, setHistoryLoading] = useState(true);
-  const [todaySnap, setTodaySnap] = useState({ total: 0, memberIds: [] });
+  const [todayRows, setTodayRows] = useState([]);
+  const [todayTotal, setTodayTotal] = useState(0);
+  const [todayLoading, setTodayLoading] = useState(true);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [todayPulse, setTodayPulse] = useState(false);
   const [checkingId, setCheckingId] = useState(null);
   const [forceTarget, setForceTarget] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -108,60 +111,36 @@ export default function CheckIn() {
     }
   }, [apiFetch]);
 
-  const loadHistory = useCallback(async () => {
-    setHistoryLoading(true);
+  const loadToday = useCallback(async () => {
+    setTodayLoading(true);
     try {
-      const weekStartsOn = settings?.week_starts_on || 'monday';
-      const { from, to } = attendanceWeekRange(weekScope, weekStartsOn);
       const branchParams = getBranchQueryParams();
-      const [histRes, todayRes] = await Promise.all([
-        listCheckIns(apiFetch, {
-          ...branchParams,
-          from,
-          to,
-          limit: historyLimit,
-        }),
-        listCheckIns(apiFetch, {
-          ...branchParams,
-          date: todayString(),
-          limit: 100,
-        }),
-      ]);
-      const histData = await parseApiResponse(histRes);
-      const todayData = await parseApiResponse(todayRes);
-      if (!histRes.ok) throw new Error(histData.error || t('errors.loadCheckIns'));
-      setHistory({
-        from: histData.from || from,
-        to: histData.to || to,
-        total: histData.total ?? 0,
-        checkIns: histData.checkIns || [],
+      const todayRes = await listCheckIns(apiFetch, {
+        ...branchParams,
+        date: todayString(),
+        limit: TODAY_LIST_LIMIT,
       });
-      if (todayRes.ok) {
-        setTodaySnap({
-          total: todayData.total ?? 0,
-          memberIds: (todayData.checkIns || []).map((row) => row.member_id),
-        });
-      }
+      const todayData = await parseApiResponse(todayRes);
+      if (!todayRes.ok) throw new Error(todayData.error || t('errors.loadCheckIns'));
+      setTodayRows(todayData.checkIns || []);
+      setTodayTotal(todayData.total ?? 0);
       setSearchError('');
     } catch (err) {
-      setHistory({ from: '', to: '', total: 0, checkIns: [] });
+      setTodayRows([]);
+      setTodayTotal(0);
       setSearchError(err.message);
     } finally {
-      setHistoryLoading(false);
+      setTodayLoading(false);
     }
-  }, [apiFetch, getBranchQueryParams, t, historyLimit, weekScope, settings?.week_starts_on]);
-
-  useEffect(() => {
-    setHistoryLimit(HISTORY_PAGE_SIZE);
-  }, [selectedBranchId, weekScope]);
+  }, [apiFetch, getBranchQueryParams, t]);
 
   useEffect(() => {
     void loadSettings();
   }, [loadSettings]);
 
   useEffect(() => {
-    void loadHistory();
-  }, [loadHistory]);
+    void loadToday();
+  }, [loadToday, selectedBranchId]);
 
   useEffect(() => {
     if (!debounced) {
@@ -208,13 +187,12 @@ export default function CheckIn() {
   }, [settings, t]);
 
   const alreadyTodayIds = useMemo(
-    () => new Set(todaySnap.memberIds || []),
-    [todaySnap.memberIds]
+    () => new Set(todayRows.map((row) => row.member_id)),
+    [todayRows]
   );
 
-  const showBranchOnToday = (branches?.length || 0) > 1;
-  const historyByDay = useMemo(() => groupCheckInsByDay(history.checkIns), [history.checkIns]);
-  const historyEmpty = !historyLoading && history.checkIns.length === 0;
+  const showBranchOnToday = selectedBranchId === 'all';
+  const todayEmpty = !todayLoading && todayRows.length === 0;
 
   const formatCheckInTime = (value) => {
     if (!value) return '—';
@@ -269,7 +247,7 @@ export default function CheckIn() {
         )
       );
     }
-    void loadHistory();
+    void loadToday();
     void refreshSummary?.();
   };
 
@@ -536,13 +514,13 @@ export default function CheckIn() {
             </div>
             <div className="flex shrink-0 items-center gap-2.5 self-center tabular-nums">
               <p className="font-display text-6xl font-semibold leading-none tracking-tight text-app-text-strong sm:text-7xl">
-                {historyLoading ? '—' : todaySnap.total}
+                {todayLoading ? '—' : todayTotal}
               </p>
               <div className="flex flex-col items-center justify-center">
                 <p className="whitespace-nowrap text-[11px] font-semibold uppercase tracking-wide text-app-muted">
-                  {historyLoading
+                  {todayLoading
                     ? '—'
-                    : t('pages.checkIn.todayMembersShort', { count: todaySnap.total })}
+                    : t('pages.checkIn.todayMembersShort', { count: todayTotal })}
                 </p>
                 <p className="mt-0.5 text-center text-[10px] font-semibold uppercase tracking-wide text-app-muted">
                   {t('pages.checkIn.todayCount')}
@@ -561,18 +539,14 @@ export default function CheckIn() {
       </div>
 
       {searchError ? (
-        <ErrorRetryBanner message={searchError} onRetry={() => void loadHistory()} />
+        <ErrorRetryBanner message={searchError} onRetry={() => void loadToday()} />
       ) : null}
 
       {/* Results only when searching — keep idle viewport clean */}
       {debounced ? (
         <div className="space-y-3">
           {searching ? (
-            <div className="grid gap-3 lg:grid-cols-2">
-              {[1, 2].map((i) => (
-                <div key={i} className={`${cardSurface} h-40 animate-pulse`} />
-              ))}
-            </div>
+            <CheckInSearchSkeleton count={2} />
           ) : results.length === 0 ? (
             <Card className="overflow-hidden">
               <EmptyState
@@ -679,146 +653,93 @@ export default function CheckIn() {
         </div>
       ) : null}
 
-      <Card className="overflow-hidden">
+      <Card
+        className={`overflow-hidden transition-[box-shadow,ring-color] duration-500 ${
+          todayPulse
+            ? 'ring-2 ring-[color:var(--color-brand)]/35 shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-brand)_8%,transparent)]'
+            : ''
+        }`}
+      >
         <div className="admin-panel-header">
-          <div className="min-w-0">
-            <h2 className={panelTitle}>{t('pages.checkIn.attendanceTitle')}</h2>
-            <p className="mt-0.5 text-xs text-app-muted">
-              {history.from && history.to
-                ? t('pages.checkIn.weekRangeSubtitle', {
-                    from: formatDisplayDate(history.from),
-                    to: formatDisplayDate(history.to),
-                  })
-                : '—'}
-            </p>
+          <div className="min-w-0 flex-1">
+            <h2 className={panelTitle}>{t('pages.checkIn.checkedInTodayTitle')}</h2>
           </div>
-        </div>
-        <div className="border-b border-app-border-subtle px-3 py-2.5 sm:px-4">
-          <ToolbarChipBar className="mb-0">
-            <ToolbarChip
-              label={t('pages.checkIn.weekThis')}
-              active={weekScope === 'this'}
-              onClick={() => setWeekScope('this')}
-            />
-            <ToolbarChip
-              label={t('pages.checkIn.weekLast')}
-              active={weekScope === 'last'}
-              onClick={() => setWeekScope('last')}
-            />
-          </ToolbarChipBar>
-        </div>
-        {historyLoading ? (
-          <div className="space-y-2 p-3 sm:p-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-14 animate-pulse rounded-xl bg-app-bg" />
-            ))}
-          </div>
-        ) : (
-          <div
-            key={weekScope}
-            className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
+          <button
+            type="button"
+            onClick={() => setHistoryOpen(true)}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-semibold text-app-muted transition-colors hover:bg-app-bg/70 hover:text-app-text-strong"
           >
-            {historyEmpty ? (
-              <EmptyState
-                compact
-                tone="muted"
-                icon={ScanLine}
+            <History className="h-4 w-4" aria-hidden />
+            {t('pages.checkIn.historyTitle')}
+          </button>
+        </div>
+        {todayLoading ? (
+          <CheckInTodaySkeleton rows={3} />
+        ) : todayEmpty ? (
+          <EmptyState
+            compact
+            tone="muted"
+            icon={ScanLine}
+            title={t('pages.checkIn.todayEmptyTitle')}
+            body={t('pages.checkIn.todayEmpty')}
+            action={
+              !readOnly ? (
+                <Button type="button" variant="secondary" size="sm" onClick={() => setScanOpen(true)}>
+                  <ScanLine className="h-4 w-4" />
+                  {t('pages.checkIn.scanAction')}
+                </Button>
+              ) : null
+            }
+          />
+        ) : (
+          <ul className="divide-y divide-app-border-subtle">
+            {todayRows.map((row) => (
+              <li
+                key={row.id}
+                className="flex items-center gap-3 px-3.5 py-2.5 transition-colors hover:bg-app-bg/60 sm:px-4"
                 title={
-                  weekScope === 'last'
-                    ? t('pages.checkIn.historyEmptyLastTitle')
-                    : t('pages.checkIn.todayEmptyTitle')
+                  row.checked_in_by_name
+                    ? t('pages.checkIn.checkedInBy', { name: row.checked_in_by_name })
+                    : undefined
                 }
-                body={
-                  weekScope === 'last'
-                    ? t('pages.checkIn.historyEmptyLast')
-                    : t('pages.checkIn.todayEmpty')
-                }
-                action={
-                  !readOnly && weekScope === 'this' ? (
-                    <Button type="button" variant="secondary" size="sm" onClick={() => setScanOpen(true)}>
-                      <ScanLine className="h-4 w-4" />
-                      {t('pages.checkIn.scanAction')}
-                    </Button>
-                  ) : null
-                }
-              />
-            ) : (
-              <>
-                <div className="space-y-4 p-2 sm:p-3">
-                  {historyByDay.map(([day, rows]) => (
-                    <div key={day}>
-                      <div className="mb-1.5 flex items-baseline justify-between gap-2 px-3">
-                        <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
-                          {formatAttendanceDayLabel(day, i18n.language)}
-                        </p>
-                        <p className="text-[11px] font-medium text-app-muted">
-                          {t('pages.checkIn.dayVisitCount', { count: rows.length })}
-                        </p>
-                      </div>
-                      <ul className="space-y-1">
-                        {rows.map((row) => (
-                          <li
-                            key={row.id}
-                            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-app-bg/60"
-                            title={
-                              row.checked_in_by_name
-                                ? t('pages.checkIn.checkedInBy', { name: row.checked_in_by_name })
-                                : undefined
-                            }
-                          >
-                            <MemberPhoto
-                              memberId={row.member_id}
-                              apiFetch={apiFetch}
-                              name={row.member_name}
-                              hasPhoto={Boolean(row.member_photo_url)}
-                              expandable={false}
-                              className="h-10 w-10 rounded-full object-cover"
-                              fallbackClassName="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text"
-                            />
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate font-display text-sm font-semibold tracking-tight text-app-text-strong sm:text-base">
-                                {row.member_name}
-                              </p>
-                              {showBranchOnToday && row.branch_name ? (
-                                <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
-                              ) : null}
-                            </div>
-                            <time className="shrink-0 font-display text-sm font-bold tabular-nums tracking-tight text-app-text-strong sm:text-base">
-                              {formatCheckInTime(row.checked_in_at)}
-                            </time>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+              >
+                <MemberPhoto
+                  memberId={row.member_id}
+                  apiFetch={apiFetch}
+                  name={row.member_name}
+                  hasPhoto={Boolean(row.member_photo_url)}
+                  expandable={false}
+                  className="h-9 w-9 rounded-full object-cover"
+                  fallbackClassName="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                    {row.member_name}
+                  </p>
+                  {showBranchOnToday && row.branch_name ? (
+                    <p className="mt-0.5 truncate text-[11px] text-app-muted">{row.branch_name}</p>
+                  ) : null}
                 </div>
-                {history.total > history.checkIns.length ? (
-                  <div className="border-t border-app-border px-3 py-3 sm:px-4">
-                    <p className="mb-2 text-center text-[11px] text-app-muted">
-                      {t('pages.checkIn.showingOf', {
-                        shown: history.checkIns.length,
-                        total: history.total,
-                      })}
-                    </p>
-                    {history.checkIns.length < HISTORY_MAX ? (
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="w-full"
-                        onClick={() =>
-                          setHistoryLimit((n) => Math.min(HISTORY_MAX, n + HISTORY_PAGE_SIZE))
-                        }
-                      >
-                        {t('pages.checkIn.showMore')}
-                      </Button>
-                    ) : null}
-                  </div>
-                ) : null}
-              </>
-            )}
-          </div>
+                <time className="shrink-0 font-display text-sm font-bold tabular-nums tracking-tight text-app-text-strong">
+                  {formatCheckInTime(row.checked_in_at)}
+                </time>
+              </li>
+            ))}
+          </ul>
         )}
       </Card>
+
+      <AttendanceHistoryModal
+        open={historyOpen}
+        onClose={() => {
+          setHistoryOpen(false);
+          setTodayPulse(true);
+          window.setTimeout(() => setTodayPulse(false), 780);
+        }}
+        weekStartsOn={settings?.week_starts_on || 'monday'}
+        getBranchQueryParams={getBranchQueryParams}
+        showBranch={showBranchOnToday}
+      />
 
       <ConfirmDialog
         isOpen={!!forceTarget}

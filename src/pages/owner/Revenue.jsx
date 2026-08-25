@@ -40,7 +40,7 @@ import RowMoreMenu from '../../components/RowMoreMenu';
 import ToolbarPicker from '../../components/ToolbarPicker';
 import SearchField from '../../components/SearchField';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { PaymentCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -539,9 +539,7 @@ export default function Revenue() {
 
       <div className="lg:hidden space-y-3">
         {listLoading ? (
-          <Card className="overflow-hidden">
-            <AdminListSkeleton rows={5} />
-          </Card>
+          <PaymentCardSkeleton rows={5} />
         ) : displayedPayments.length > 0 ? (
           displayedPayments.map((payment) => (
             <div key={payment.id} className={`${cardSurface} p-3.5`}>

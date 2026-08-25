@@ -159,6 +159,23 @@ export function attendanceWeekRange(which, weekStartsOn = 'monday') {
 }
 
 /**
+ * Local calendar day relative to today.
+ * @param {string|Date|null|undefined} date
+ * @returns {'today'|'yesterday'|null}
+ */
+export function attendanceDayRelative(date) {
+  const iso = toDateString(date);
+  if (!iso || iso === '—') return null;
+  const today = todayString();
+  if (iso === today) return 'today';
+  const y = new Date();
+  y.setHours(0, 0, 0, 0);
+  y.setDate(y.getDate() - 1);
+  if (iso === formatLocalDate(y)) return 'yesterday';
+  return null;
+}
+
+/**
  * Day header for attendance history: "Mon 18 Aug"
  * @param {string|Date|null|undefined} date
  * @param {string} [language='en']

@@ -27,7 +27,7 @@ import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import InitialsAvatar from '../../components/InitialsAvatar';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { TeamListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 function StaffRowActions({ member, readOnly, t, onEdit, onToggle }) {
   if (readOnly) return null;
@@ -488,7 +488,7 @@ export default function Team() {
           <>
             <div className="lg:hidden">
               <Card className="overflow-hidden">
-                <AdminListSkeleton rows={5} />
+                <TeamListSkeleton rows={5} />
               </Card>
             </div>
             <Card className="hidden overflow-hidden lg:block">
@@ -643,7 +643,7 @@ export default function Team() {
             </Card>
           ) : trainersLoading ? (
             <Card className="overflow-hidden">
-              <AdminListSkeleton rows={5} />
+              <TeamListSkeleton rows={5} />
             </Card>
           ) : displayedTrainers.length === 0 ? (
             <Card className="overflow-hidden">

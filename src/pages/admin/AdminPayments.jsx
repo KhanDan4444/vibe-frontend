@@ -37,7 +37,7 @@ import { getSaasPlans } from '../../services/saasPlanService';
 import { mapGymFromApi } from '../../utils/apiMappers';
 import { useTranslation } from 'react-i18next';
 import { translatePaymentMethod } from '../../i18n/helpers';
-import { AdminTableRowsSkeleton, AdminListSkeleton } from '../../components/LoadingSkeletons';
+import { PaymentCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
@@ -591,9 +591,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
 
       <div className="lg:hidden space-y-3">
         {initialLoading ? (
-          <Card className="overflow-hidden">
-            <AdminListSkeleton rows={6} />
-          </Card>
+          <PaymentCardSkeleton rows={6} />
         ) : filteredPayments.length > 0 ? (
           filteredPayments.map((payment) => (
             <div key={payment.id} className={`${cardSurface} p-3.5`}>

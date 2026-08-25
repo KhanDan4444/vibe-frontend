@@ -14,7 +14,7 @@ import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClass
 import Button from '../../components/ui/Button';
 import ToolbarPicker from '../../components/ToolbarPicker';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { AdminGymMessageSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 const COL_COUNT = 6;
@@ -171,9 +171,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
 
       <div className="lg:hidden space-y-3">
         {loading && items.length === 0 ? (
-          <div className={`overflow-hidden ${cardSurface}`}>
-            <AdminListSkeleton rows={5} />
-          </div>
+          <AdminGymMessageSkeleton rows={5} />
         ) : items.length > 0 ? (
           items.map((row) => (
             <div key={row.id} className={`flex gap-3 p-4 ${cardSurface}`}>

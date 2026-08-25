@@ -18,13 +18,14 @@ import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
-import { formatFriendlyDate, formatDisplayDate, groupCheckInsByDay, formatAttendanceDayLabel } from '../utils/date';
+import { formatFriendlyDate, formatDisplayDate, attendanceDayRelative, formatAttendanceDayLabel } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { getMemberPayments } from '../services/memberService';
 import { getMemberVisitSummary, listCheckIns } from '../services/checkInService';
 import VisitRing from './VisitRing';
 import ConfirmDialog from './ConfirmDialog';
 import MemberPhoto from './MemberPhoto';
+import MemberVisitHistoryModal from './MemberVisitHistoryModal';
 import Button from './ui/Button';
 import { formatMoney } from '../utils/formatMoney';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,7 @@ const MemberPassModal = React.lazy(() => import('./MemberPassModal'));
 const MemberModal = React.lazy(() => import('./MemberModal'));
 
 const PAYMENTS_PREVIEW = 3;
+const VISITS_PREVIEW = 3;
 
 export default function MemberDetailDrawer({
   member,
@@ -87,6 +89,7 @@ export default function MemberDetailDrawer({
   const [showAllPayments, setShowAllPayments] = useState(false);
   const [visitSummary, setVisitSummary] = useState(null);
   const [recentVisits, setRecentVisits] = useState([]);
+  const [visitHistoryOpen, setVisitHistoryOpen] = useState(false);
 
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
@@ -136,6 +139,7 @@ export default function MemberDetailDrawer({
     setShowAllPayments(false);
     setVisitSummary(null);
     setRecentVisits([]);
+    setVisitHistoryOpen(false);
     setMemberPayments([]);
     setPaymentsError('');
   }, [member?.id]);
@@ -148,7 +152,7 @@ export default function MemberDetailDrawer({
       try {
         const [sumRes, histRes] = await Promise.all([
           getMemberVisitSummary(apiFetch, member.id),
-          listCheckIns(apiFetch, { member_id: member.id, limit: 8 }),
+          listCheckIns(apiFetch, { member_id: member.id, limit: VISITS_PREVIEW + 1 }),
         ]);
         const sumData = await parseApiResponse(sumRes);
         const histData = await parseApiResponse(histRes);
@@ -179,7 +183,11 @@ export default function MemberDetailDrawer({
     };
   }, [member?.id, member?.deletedAt, apiFetch]);
 
-  const recentByDay = useMemo(() => groupCheckInsByDay(recentVisits), [recentVisits]);
+  const recentPreview = useMemo(
+    () => recentVisits.slice(0, VISITS_PREVIEW),
+    [recentVisits]
+  );
+  const recentHasMore = recentVisits.length > VISITS_PREVIEW;
 
   const planLabel = useMemo(
     () =>
@@ -481,42 +489,46 @@ export default function MemberDetailDrawer({
                 </Button>
               </div>
             ) : null}
-            {!isFormer && recentVisits.length > 0 ? (
+            {!isFormer && recentPreview.length > 0 ? (
               <div className="mb-3 rounded-xl border border-app-border-subtle bg-app-bg/40 px-3.5 py-3">
-                <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
-                  {t('pages.checkIn.recentVisits')}
-                </p>
-                <div className="mt-2.5 space-y-3">
-                  {recentByDay.map(([day, rows]) => (
-                    <div key={day}>
-                      <div className="mb-1 flex items-baseline justify-between gap-2">
-                        <p className="text-[12px] font-semibold tracking-tight text-app-text-strong">
-                          {formatAttendanceDayLabel(day, i18n.language)}
-                        </p>
-                        <p className="text-[10px] font-medium text-app-muted">
-                          {t('pages.checkIn.dayVisitCount', { count: rows.length })}
-                        </p>
-                      </div>
-                      <ul className="space-y-1">
-                        {rows.map((row) => (
-                          <li
-                            key={row.id}
-                            className="flex items-center justify-between gap-3 rounded-lg px-1 py-1 text-xs"
-                          >
-                            <span className="text-app-muted">{formatDisplayDate(row.checked_in_at)}</span>
-                            <time className="font-display font-bold tabular-nums tracking-tight text-app-text-strong">
-                              {new Date(row.checked_in_at).toLocaleTimeString([], {
-                                hour: 'numeric',
-                                minute: '2-digit',
-                                hour12: true,
-                              })}
-                            </time>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                    {t('pages.checkIn.recentVisits')}
+                  </p>
+                  {recentHasMore ? (
+                    <button
+                      type="button"
+                      onClick={() => setVisitHistoryOpen(true)}
+                      className="text-sm font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
+                    >
+                      {t('pages.checkIn.recentVisitsSeeAll')}
+                    </button>
+                  ) : null}
                 </div>
+                <ul className="mt-2 space-y-1">
+                  {recentPreview.map((row) => {
+                    const rel = attendanceDayRelative(row.checked_in_at);
+                    const day =
+                      rel === 'today'
+                        ? t('pages.checkIn.dayToday')
+                        : rel === 'yesterday'
+                          ? t('pages.checkIn.dayYesterday')
+                          : formatAttendanceDayLabel(row.checked_in_at, i18n.language);
+                    const time = new Date(row.checked_in_at).toLocaleTimeString([], {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                    });
+                    return (
+                      <li
+                        key={row.id}
+                        className="py-1 font-display text-sm font-semibold tracking-tight text-app-text-strong"
+                      >
+                        {day} · {time}
+                      </li>
+                    );
+                  })}
+                </ul>
               </div>
             ) : !isFormer && visitSummary ? (
               <p className="mb-3 text-xs text-app-muted">{t('pages.checkIn.recentVisitsEmpty')}</p>
@@ -693,6 +705,13 @@ export default function MemberDetailDrawer({
           />
         </Suspense>
       ) : null}
+
+      <MemberVisitHistoryModal
+        open={visitHistoryOpen}
+        onClose={() => setVisitHistoryOpen(false)}
+        memberId={member?.id}
+        memberName={member?.name}
+      />
     </>
   );
 }

@@ -23,7 +23,7 @@ import RowMoreMenu from '../../components/RowMoreMenu';
 import SearchField from '../../components/SearchField';
 import { ToolbarChip, ToolbarChipBar } from '../../components/ToolbarChip';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { BranchCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const DEFAULT_BADGE =
   'ml-2 inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-600/10 dark:text-teal-400 dark:border-teal-600/20';
@@ -449,7 +449,7 @@ export default function Branches() {
             <>
               <div className="lg:hidden">
                 <div className={`overflow-hidden ${cardSurface}`}>
-                  <AdminListSkeleton rows={4} />
+                  <BranchCardSkeleton rows={4} />
                 </div>
               </div>
               <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>

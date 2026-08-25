@@ -25,7 +25,7 @@ import ToolbarPicker from '../../components/ToolbarPicker';
 import { ToolbarChip, ToolbarChipBar } from '../../components/ToolbarChip';
 import SearchField from '../../components/SearchField';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { ActivityCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -230,7 +230,7 @@ export default function Activity() {
       <div className="lg:hidden space-y-3">
         {loading && items.length === 0 ? (
           <div className={`overflow-hidden ${cardSurface}`}>
-            <AdminListSkeleton rows={5} />
+            <ActivityCardSkeleton rows={5} />
           </div>
         ) : items.length > 0 ? (
           items.map((entry) => {

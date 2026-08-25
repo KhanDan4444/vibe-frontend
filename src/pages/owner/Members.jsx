@@ -41,7 +41,7 @@ import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo, restoreWithUndoFlash } from '../../utils/scheduleWithUndo';
 import { formatDisplayDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { MemberCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 import { adjustMemberFilterCounts } from '../../utils/memberFilterCounts';
 
 const UNPAID = 'Unpaid';
@@ -746,9 +746,7 @@ export default function Members() {
 
       <div className="lg:hidden space-y-3">
         {listLoading ? (
-          <Card className="overflow-hidden">
-            <AdminListSkeleton rows={6} />
-          </Card>
+          <MemberCardSkeleton rows={6} />
         ) : displayedMembers.length > 0 ? (
           displayedMembers.map((member) => {
             const planLabel = resolveMemberPlanLabel(

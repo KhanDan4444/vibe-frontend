@@ -23,7 +23,7 @@ import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClasses';
 import ToolbarPicker from '../../components/ToolbarPicker';
 import SearchField from '../../components/SearchField';
-import { AdminListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { MessageListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -166,7 +166,7 @@ export default function MemberMessages() {
       <div className="lg:hidden space-y-3">
         {loading && items.length === 0 ? (
           <div className={`overflow-hidden ${cardSurface}`}>
-            <AdminListSkeleton rows={5} />
+            <MessageListSkeleton rows={5} />
           </div>
         ) : items.length > 0 ? (
           items.map((row) => {
