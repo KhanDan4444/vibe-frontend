@@ -241,24 +241,19 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               {!printing ? <Download className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
               {t('pages.checkIn.printPass')}
             </Button>
-            <div className="min-w-0">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                disabled={busy || !phone}
-                loading={smsSending}
-                onClick={() => void handleSms()}
-                className="w-full"
-                title={!phone ? t('errors.memberPassNoPhone') : undefined}
-              >
-                {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
-                {t('pages.checkIn.smsPass')}
-              </Button>
-              <p className="mt-1.5 text-center text-[11px] leading-4 text-app-muted">
-                {t('pages.checkIn.smsPassHint')}
-              </p>
-            </div>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy || !phone}
+              loading={smsSending}
+              onClick={() => void handleSms()}
+              className="w-full"
+              title={!phone ? t('errors.memberPassNoPhone') : undefined}
+            >
+              {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {t('pages.checkIn.smsPass')}
+            </Button>
           </div>
         </div>
         <div className={`${modalFooter} !justify-between`}>
