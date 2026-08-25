@@ -79,3 +79,23 @@ export const ADMIN_SMS_TYPE_FILTER_OPTIONS = [
   { value: 'otp_forgot_password', labelKey: 'smsLog.otpTypes.forgotPassword' },
   { value: 'otp_gym_signup', labelKey: 'smsLog.otpTypes.gymSignup' },
 ];
+
+/** Lucide icon name for member SMS types (mobile card scan). */
+export function smsMessageTypeIcon(messageType) {
+  switch (messageType) {
+    case 'member_enrolled':
+      return 'UserPlus';
+    case 'member_due_soon':
+      return 'Clock';
+    case 'member_expires_today':
+      return 'Calendar';
+    case 'member_expired':
+      return 'AlertCircle';
+    case 'member_renewed':
+      return 'RefreshCw';
+    case 'member_pass_link':
+      return 'QrCode';
+    default:
+      return 'MessageSquare';
+  }
+}

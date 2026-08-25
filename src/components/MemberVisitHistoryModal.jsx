@@ -7,7 +7,7 @@ import { modalTitle, mutedText } from '../utils/surfaceClasses';
 import { listCheckIns } from '../services/checkInService';
 import { parseApiResponse } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { attendanceDayRelative, formatAttendanceDayLabel } from '../utils/date';
+import { attendanceDayRelative, formatAttendanceDayLabel, formatDisplayTime } from '../utils/date';
 
 const HISTORY_LIMIT = 50;
 
@@ -19,11 +19,7 @@ function formatVisitLine(checkedInAt, language, t) {
       : rel === 'yesterday'
         ? t('pages.checkIn.dayYesterday')
         : formatAttendanceDayLabel(checkedInAt, language);
-  const time = new Date(checkedInAt).toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
+  const time = formatDisplayTime(checkedInAt, language);
   return `${day} · ${time}`;
 }
 

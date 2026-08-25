@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { MessageSquare, RefreshCw } from 'lucide-react';
+import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -11,11 +11,12 @@ import PaginationControls from '../../components/PaginationControls';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
 import MemberPhoto from '../../components/MemberPhoto';
-import { formatDisplayDateTime } from '../../utils/date';
+import { formatLogTimestamp } from '../../utils/date';
 import {
   formatSmsMessageType,
   formatSmsMessagePreview,
   SMS_TYPE_FILTER_OPTIONS,
+  smsMessageTypeIcon,
 } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button';
@@ -37,8 +38,18 @@ const SMS_AVATAR =
 const SMS_AVATAR_FALLBACK =
   'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text';
 
+const SMS_TYPE_ICON = {
+  UserPlus,
+  Clock,
+  Calendar,
+  AlertCircle,
+  RefreshCw,
+  QrCode,
+  MessageSquare,
+};
+
 export default function MemberMessages() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { apiFetch, user } = useAuth();
   const { getBranchQueryParams, selectedBranchId, error: gymError, branches } = useGym();
@@ -165,52 +176,55 @@ export default function MemberMessages() {
         </div>
       </div>
 
-      <div className="lg:hidden space-y-3">
+      <div className="lg:hidden">
         {loading && items.length === 0 ? (
           <div className={`overflow-hidden ${cardSurface}`}>
             <MessageListSkeleton rows={5} />
           </div>
         ) : items.length > 0 ? (
-          items.map((row) => {
-            const preview = typeFiltered ? null : formatSmsMessagePreview(t, row.message_type);
-            return (
-              <button
-                key={row.id}
-                type="button"
-                onClick={() => openMember(row.member_id)}
-                className={`${cardSurface} flex w-full gap-3 p-4 text-left active:bg-app-surface/60`}
-              >
-                <MemberPhoto
-                  memberId={row.member_id}
-                  apiFetch={apiFetch}
-                  name={row.member_name}
-                  hasPhoto={Boolean(row.member_photo_url)}
-                  expandable={false}
-                  className={SMS_AVATAR}
-                  fallbackClassName={SMS_AVATAR_FALLBACK}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-app-text-strong">{row.member_name}</p>
-                  <p className="mt-1">
-                    <span className={chipClass}>
-                      {formatSmsMessageType(t, row.message_type)}
-                    </span>
-                  </p>
-                  {preview ? (
-                    <p className="mt-1.5 text-xs leading-snug text-app-muted">{preview}</p>
-                  ) : null}
-                  <p className="mt-1.5 text-xs text-app-muted">
-                    {row.recipient_phone || row.member_phone || '—'} · {formatDisplayDateTime(row.sent_at)}
-                  </p>
-                  {showBranchColumn && row.branch_name && (
-                    <span className="mt-2 inline-flex rounded-full bg-app-surface px-2 py-0.5 text-[10px] font-semibold text-app-text">
-                      {row.branch_name}
-                    </span>
-                  )}
+          <div className={`overflow-hidden ${cardSurface}`}>
+            {items.map((row, index) => {
+              const preview = typeFiltered ? null : formatSmsMessagePreview(t, row.message_type);
+              const iconKey = smsMessageTypeIcon(row.message_type);
+              const TypeIcon = SMS_TYPE_ICON[iconKey] || MessageSquare;
+              return (
+                <div key={row.id}>
+                  {index > 0 ? <div className="mx-3.5 border-t border-app-border-subtle sm:mx-4" /> : null}
+                  <button
+                    type="button"
+                    onClick={() => openMember(row.member_id)}
+                    className="block w-full px-3.5 py-2.5 text-left transition-colors active:bg-app-surface/60 sm:px-4"
+                  >
+                    <div className="flex gap-3">
+                      <div className="mt-0.5 flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-teal-500/10 text-teal-700 dark:bg-teal-400/10 dark:text-teal-300">
+                        <TypeIcon className="h-[17px] w-[17px]" strokeWidth={2} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="truncate text-sm font-semibold text-app-text-strong">{row.member_name}</p>
+                          <span className="shrink-0 text-xs font-medium tabular-nums text-app-muted">
+                            {formatLogTimestamp(row.sent_at, t, i18n.language)}
+                          </span>
+                        </div>
+                        <p className="mt-1">
+                          <span className={chipClass}>
+                            {formatSmsMessageType(t, row.message_type)}
+                          </span>
+                        </p>
+                        {preview ? (
+                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
+                        ) : null}
+                        <p className="mt-1.5 text-xs text-app-muted">
+                          {row.recipient_phone || row.member_phone || '—'}
+                          {showBranchColumn && row.branch_name ? ` · ${row.branch_name}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
                 </div>
-              </button>
-            );
-          })
+              );
+            })}
+          </div>
         ) : (
           <div className={cardSurface}>
             <EmptyState icon={MessageSquare} compact title={emptyTitle} body={emptyBody} />
@@ -273,7 +287,7 @@ export default function MemberMessages() {
                         <td className="text-app-muted">{row.branch_name || '—'}</td>
                       )}
                       <td className="whitespace-nowrap text-app-muted">
-                        {formatDisplayDateTime(row.sent_at)}
+                        {formatLogTimestamp(row.sent_at, t, i18n.language)}
                       </td>
                     </tr>
                   );

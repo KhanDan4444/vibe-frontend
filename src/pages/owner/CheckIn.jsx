@@ -33,7 +33,7 @@ import AttendanceHistoryModal from '../../components/AttendanceHistoryModal';
 import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, mutedText, panelTitle, renewActionBtn } from '../../utils/surfaceClasses';
 import { formatMemberStatusForDisplay, DISPLAY_STATUS } from '../../utils/memberStatus';
-import { todayString } from '../../utils/date';
+import { todayString, formatDisplayTime } from '../../utils/date';
 
 const CAP_OPTIONS = [
   { value: '', labelKey: 'pages.checkIn.capUnlimited' },
@@ -45,7 +45,7 @@ const CAP_OPTIONS = [
 const TODAY_LIST_LIMIT = 200;
 
 export default function CheckIn() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const { apiFetch, user } = useAuth();
   const { showFlash, readOnly, getBranchQueryParams, refreshSummary, selectedBranchId, branches } =
@@ -195,14 +195,7 @@ export default function CheckIn() {
     selectedBranchId === 'all' && branches.filter((b) => b.is_active !== false).length > 1;
   const todayEmpty = !todayLoading && todayRows.length === 0;
 
-  const formatCheckInTime = (value) => {
-    if (!value) return '—';
-    return new Date(value).toLocaleTimeString([], {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
+  const formatCheckInTime = (value) => formatDisplayTime(value, i18n.language);
 
   const cardErrorMessage = (code, fallback) => {
     if (code === 'ALREADY_TODAY') return t('pages.checkIn.alreadyToday');

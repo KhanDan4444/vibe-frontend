@@ -107,7 +107,7 @@ export function formatDate(dateStr) {
   return formatDisplayDate(dateStr);
 }
 
-/** Human-readable generated-at for report headers (dd-mm-yy HH:mm). */
+/** Human-readable generated-at for report headers (dd-mm-yy 11:34 am). */
 export function formatGeneratedAt(date = new Date()) {
   return formatDisplayDateTime(date);
 }

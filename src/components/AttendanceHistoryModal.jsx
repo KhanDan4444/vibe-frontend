@@ -15,17 +15,9 @@ import {
   attendanceWeekRange,
   formatAttendanceDayLabel,
   formatAttendanceWeekRangeLabel,
+  formatDisplayTime,
   groupCheckInsByDay,
 } from '../utils/date';
-
-function formatTime(value) {
-  if (!value) return '—';
-  return new Date(value).toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
 
 function dayLabel(day, language, t) {
   const rel = attendanceDayRelative(day);
@@ -260,7 +252,7 @@ export default function AttendanceHistoryModal({
                         ) : null}
                       </div>
                       <time className="shrink-0 text-[12px] font-medium tabular-nums text-app-muted">
-                        {formatTime(row.checked_in_at)}
+                        {formatDisplayTime(row.checked_in_at, i18n.language)}
                       </time>
                     </li>
                   ))}

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { ScrollText, RefreshCw } from 'lucide-react';
+import { ScrollText, RefreshCw, UserRound, Banknote, FileText, Users, Dumbbell, Circle } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getActivityLogs } from '../../services/activityService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -18,7 +18,7 @@ import {
   ACTION_FILTER_GROUPS,
 } from '../../utils/activityLabels';
 import { useTranslation } from 'react-i18next';
-import { formatDisplayDateTime } from '../../utils/date';
+import { formatLogTimestamp } from '../../utils/date';
 import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import ToolbarPicker from '../../components/ToolbarPicker';
@@ -41,6 +41,24 @@ const ROLE_CHIP_STAFF =
   'inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20';
 const ROLE_CHIP_MUTED =
   'inline-flex rounded-full border border-app-border-subtle bg-app-surface px-2 py-0.5 text-[10px] font-medium text-app-muted';
+
+function activityActionIcon(action) {
+  const prefix = String(action || '').split('.')[0];
+  switch (prefix) {
+    case 'member':
+      return UserRound;
+    case 'payment':
+      return Banknote;
+    case 'plan':
+      return FileText;
+    case 'staff':
+      return Users;
+    case 'trainer':
+      return Dumbbell;
+    default:
+      return Circle;
+  }
+}
 
 function openActivityTarget(entry, navigate) {
   const type = entry.entity_type;
@@ -75,7 +93,7 @@ function isRowClickable(entry) {
 }
 
 export default function Activity() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { apiFetch, user } = useAuth();
   const { getBranchQueryParams, selectedBranchId, error: gymError, branches } = useGym();
@@ -229,54 +247,70 @@ export default function Activity() {
         </div>
       </div>
 
-      <div className="lg:hidden space-y-3">
+      <div className="lg:hidden">
         {loading && items.length === 0 ? (
           <div className={`overflow-hidden ${cardSurface}`}>
             <ActivityCardSkeleton rows={5} />
           </div>
         ) : items.length > 0 ? (
-          items.map((entry) => {
-            const detailText = formatAuditDetails(entry);
-            const isStaff = entry.actor_role !== 'Gym Owner';
-            const clickable = isRowClickable(entry);
-            const content = (
-              <>
-                <p className="text-xs text-app-muted">{formatDisplayDateTime(entry.created_at)}</p>
-                <div className="mt-1 flex flex-wrap items-center gap-2">
-                  <span className="font-medium text-app-text-strong">{entry.actor_name}</span>
-                  <span className={roleChipClass(isStaff)}>
-                    {formatActorRole(entry.actor_role)}
-                  </span>
+          <div className={`overflow-hidden ${cardSurface}`}>
+            {items.map((entry, index) => {
+              const detailText = formatAuditDetails(entry);
+              const isStaff = entry.actor_role !== 'Gym Owner';
+              const clickable = isRowClickable(entry);
+              const ActionIcon = activityActionIcon(entry.action);
+              const row = (
+                <>
+                  <div className="flex gap-3 px-3.5 py-2.5 sm:px-4">
+                    <div className="mt-0.5 flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-teal-500/10 text-teal-700 dark:bg-teal-400/10 dark:text-teal-300">
+                      <ActionIcon className="h-[17px] w-[17px]" strokeWidth={2} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className={`text-sm font-semibold leading-snug ${actionFiltered ? 'text-app-muted' : 'text-app-text-strong'}`}>
+                          {formatAuditAction(entry.action)}
+                        </p>
+                        <span className="shrink-0 text-xs font-medium tabular-nums text-app-muted">
+                          {formatLogTimestamp(entry.created_at, t, i18n.language)}
+                        </span>
+                      </div>
+                      {entry.entity_label ? (
+                        <p className="mt-1 truncate text-sm text-app-text">{entry.entity_label}</p>
+                      ) : null}
+                      {detailText ? (
+                        <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-app-muted">{detailText}</p>
+                      ) : null}
+                      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-semibold text-app-muted">{entry.actor_name}</span>
+                        <span className={roleChipClass(isStaff)}>
+                          {formatActorRole(entry.actor_role)}
+                        </span>
+                        {showBranchColumn && entry.branch_name ? (
+                          <span className="text-xs text-app-muted">· {entry.branch_name}</span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              );
+              return (
+                <div key={entry.id}>
+                  {index > 0 ? <div className="mx-3.5 border-t border-app-border-subtle sm:mx-4" /> : null}
+                  {clickable ? (
+                    <button
+                      type="button"
+                      onClick={() => openActivityTarget(entry, navigate)}
+                      className="block w-full text-left transition-colors active:bg-app-surface/60"
+                    >
+                      {row}
+                    </button>
+                  ) : (
+                    row
+                  )}
                 </div>
-                {showBranchColumn && entry.branch_name ? (
-                  <p className="mt-1 text-xs text-app-muted">{entry.branch_name}</p>
-                ) : null}
-                <p className={`mt-2 text-sm font-medium ${actionFiltered ? 'text-app-muted' : 'text-app-text-strong'}`}>
-                  {formatAuditAction(entry.action)}
-                </p>
-                {entry.entity_label ? (
-                  <p className="mt-0.5 text-sm text-app-text">{entry.entity_label}</p>
-                ) : null}
-                {detailText ? (
-                  <p className="mt-1 text-xs text-app-muted">{detailText}</p>
-                ) : null}
-              </>
-            );
-            return clickable ? (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => openActivityTarget(entry, navigate)}
-                className={`${cardSurface} block w-full p-4 text-left active:bg-app-surface/60`}
-              >
-                {content}
-              </button>
-            ) : (
-              <div key={entry.id} className={`${cardSurface} p-4`}>
-                {content}
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         ) : (
           <div className={cardSurface}>
             <EmptyState icon={ScrollText} compact title={emptyTitle} body={emptyBody} />
@@ -312,7 +346,7 @@ export default function Activity() {
                       onClick={clickable ? () => openActivityTarget(entry, navigate) : undefined}
                     >
                       <td className="whitespace-nowrap text-app-muted">
-                        {formatDisplayDateTime(entry.created_at)}
+                        {formatLogTimestamp(entry.created_at, t, i18n.language)}
                       </td>
                       <td>
                         <div className="font-medium text-app-text-strong">{entry.actor_name}</div>

@@ -20,7 +20,7 @@ import { parseApiResponse } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
-import { formatFriendlyDate, formatDisplayDate, attendanceDayRelative, formatAttendanceDayLabel } from '../utils/date';
+import { formatFriendlyDate, formatDisplayDate, attendanceDayRelative, formatAttendanceDayLabel, formatDisplayTime } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { getMemberPayments } from '../services/memberService';
 import { getMemberVisitSummary, listCheckIns } from '../services/checkInService';
@@ -523,11 +523,7 @@ export default function MemberDetailDrawer({
                             : rel === 'yesterday'
                               ? t('pages.checkIn.dayYesterday')
                               : formatAttendanceDayLabel(row.checked_in_at, i18n.language);
-                        const time = new Date(row.checked_in_at).toLocaleTimeString([], {
-                          hour: 'numeric',
-                          minute: '2-digit',
-                          hour12: true,
-                        });
+                        const time = formatDisplayTime(row.checked_in_at, i18n.language);
                         return (
                           <li
                             key={row.id}

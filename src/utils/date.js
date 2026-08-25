@@ -76,20 +76,61 @@ export function formatRelativeDay(date, t, language = 'en') {
 }
 
 /**
- * User-facing date-time: dd-mm-yy HH:mm
+ * User-facing time: "11:34 am" (12-hour, lowercase meridiem).
  * @param {string|Date|null|undefined} value
+ * @param {string} [language='en']
  * @returns {string}
  */
-export function formatDisplayDateTime(value) {
+export function formatDisplayTime(value, language = 'en') {
+  if (!value) return '—';
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  const locale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-US';
+  try {
+    const raw = date.toLocaleTimeString(locale, {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    return raw.replace(/\s?(AM|PM)\s*$/i, (_, meridiem) => ` ${meridiem.toLowerCase()}`);
+  } catch {
+    const h = date.getHours();
+    const m = String(date.getMinutes()).padStart(2, '0');
+    const ap = h >= 12 ? 'pm' : 'am';
+    const h12 = h % 12 || 12;
+    return `${h12}:${m} ${ap}`;
+  }
+}
+
+/**
+ * User-facing date-time: dd-mm-yy 11:34 am
+ * @param {string|Date|null|undefined} value
+ * @param {string} [language='en']
+ * @returns {string}
+ */
+export function formatDisplayDateTime(value, language = 'en') {
   if (!value) return '—';
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return formatDisplayDate(value);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = String(date.getFullYear()).slice(-2);
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${day}-${month}-${year} ${hours}:${minutes}`;
+  return `${formatDisplayDate(date)} ${formatDisplayTime(date, language)}`;
+}
+
+/**
+ * Activity/log timestamps: "Today · 11:34 am" or "04-07-26 · 11:34 am".
+ * @param {string|Date|null|undefined} value
+ * @param {function} [t] i18n t
+ * @param {string} [language='en']
+ */
+export function formatLogTimestamp(value, t, language = 'en') {
+  if (!value) return '—';
+  const time = formatDisplayTime(value, language);
+  if (typeof t === 'function') {
+    const rel = formatRelativeDay(value, t, language);
+    if (rel) return `${rel} · ${time}`;
+  }
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return formatDisplayDate(value);
+  return `${formatDisplayDate(date)} · ${time}`;
 }
 
 /** @param {Date} d */
