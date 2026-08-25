@@ -11,6 +11,8 @@ import {
   Layers,
   Undo2,
   QrCode,
+  Clock3,
+  ChevronDown,
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
@@ -90,6 +92,7 @@ export default function MemberDetailDrawer({
   const [visitSummary, setVisitSummary] = useState(null);
   const [recentVisits, setRecentVisits] = useState([]);
   const [visitHistoryOpen, setVisitHistoryOpen] = useState(false);
+  const [recentVisitsOpen, setRecentVisitsOpen] = useState(false);
 
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
@@ -140,6 +143,7 @@ export default function MemberDetailDrawer({
     setVisitSummary(null);
     setRecentVisits([]);
     setVisitHistoryOpen(false);
+    setRecentVisitsOpen(false);
     setMemberPayments([]);
     setPaymentsError('');
   }, [member?.id]);
@@ -490,45 +494,61 @@ export default function MemberDetailDrawer({
               </div>
             ) : null}
             {!isFormer && recentPreview.length > 0 ? (
-              <div className="mb-3 rounded-xl border border-app-border-subtle bg-app-bg/40 px-3.5 py-3">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
+              <div className="mb-3">
+                <button
+                  type="button"
+                  onClick={() => setRecentVisitsOpen((open) => !open)}
+                  aria-expanded={recentVisitsOpen}
+                  className="flex w-full items-center gap-2 rounded-xl border border-app-border-subtle bg-app-bg/40 px-3.5 py-2.5 text-left transition-colors hover:bg-app-bg/70"
+                >
+                  <Clock3 className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />
+                  <span className="min-w-0 flex-1 font-display text-sm font-semibold tracking-tight text-app-text-strong">
                     {t('pages.checkIn.recentVisits')}
-                  </p>
-                  {recentHasMore ? (
-                    <button
-                      type="button"
-                      onClick={() => setVisitHistoryOpen(true)}
-                      className="text-sm font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
-                    >
-                      {t('pages.checkIn.recentVisitsSeeAll')}
-                    </button>
-                  ) : null}
-                </div>
-                <ul className="mt-2 space-y-1">
-                  {recentPreview.map((row) => {
-                    const rel = attendanceDayRelative(row.checked_in_at);
-                    const day =
-                      rel === 'today'
-                        ? t('pages.checkIn.dayToday')
-                        : rel === 'yesterday'
-                          ? t('pages.checkIn.dayYesterday')
-                          : formatAttendanceDayLabel(row.checked_in_at, i18n.language);
-                    const time = new Date(row.checked_in_at).toLocaleTimeString([], {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                      hour12: true,
-                    });
-                    return (
-                      <li
-                        key={row.id}
-                        className="py-1 font-display text-sm font-semibold tracking-tight text-app-text-strong"
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 text-app-muted transition-transform duration-200 ${
+                      recentVisitsOpen ? 'rotate-180' : ''
+                    }`}
+                    aria-hidden
+                  />
+                </button>
+                {recentVisitsOpen ? (
+                  <div className="mt-2 rounded-xl border border-app-border-subtle bg-app-bg/40 px-3.5 py-2.5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150">
+                    <ul className="space-y-0.5">
+                      {recentPreview.map((row) => {
+                        const rel = attendanceDayRelative(row.checked_in_at);
+                        const day =
+                          rel === 'today'
+                            ? t('pages.checkIn.dayToday')
+                            : rel === 'yesterday'
+                              ? t('pages.checkIn.dayYesterday')
+                              : formatAttendanceDayLabel(row.checked_in_at, i18n.language);
+                        const time = new Date(row.checked_in_at).toLocaleTimeString([], {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true,
+                        });
+                        return (
+                          <li
+                            key={row.id}
+                            className="py-1.5 font-display text-sm font-semibold tracking-tight text-app-text-strong"
+                          >
+                            {day} · {time}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {recentHasMore ? (
+                      <button
+                        type="button"
+                        onClick={() => setVisitHistoryOpen(true)}
+                        className="mt-1.5 w-full py-1.5 text-left text-sm font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
                       >
-                        {day} · {time}
-                      </li>
-                    );
-                  })}
-                </ul>
+                        {t('pages.checkIn.recentVisitsSeeAll')}
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
             ) : !isFormer && visitSummary ? (
               <p className="mb-3 text-xs text-app-muted">{t('pages.checkIn.recentVisitsEmpty')}</p>
