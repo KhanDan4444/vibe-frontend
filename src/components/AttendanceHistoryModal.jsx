@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
-import ToolbarChip, { ToolbarChipBar } from './ToolbarChip';
+import { ToolbarChip, ToolbarChipBar } from './ToolbarChip';
 import EmptyState from './EmptyState';
 import MemberPhoto from './MemberPhoto';
 import { AttendanceDayListSkeleton, CheckInTodaySkeleton } from './LoadingSkeletons';
