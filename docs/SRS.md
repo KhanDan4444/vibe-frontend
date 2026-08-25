@@ -99,7 +99,7 @@ The system consists of three deliverables:
 | **Membership Plan** | A product a gym sells to its members (name, duration in months, price). |
 | **Member** | An end customer of a gym (not a system user; members do not log in). |
 | **Term** | A member's current paid/unpaid membership period, from start date to end date. |
-| **Due soon** | A membership expiring within 3 days. |
+| **Due soon** | A membership expiring within 7 days. |
 | **Unpaid** | A member (or gym) whose current term has no recorded payment. |
 | **Read-only mode** | State in which a gym with a suspended license can view but not modify data. |
 | **Lockout** | State in which a gym with an expired license cannot access the portal. |
@@ -269,7 +269,7 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 |---|---|---|
 | FR-MEM-1 | Users shall enroll a member with name, phone, plan, start date, branch (owner-selectable when multi-branch; staff fixed to own branch), optional photo, and either an initial payment (amount, date, method) or an explicit "skip payment" leaving the term unpaid. | M |
 | FR-MEM-2 | The system shall compute the member's end date automatically from the plan duration and start date. | M |
-| FR-MEM-3 | The system shall derive member status: **active**, **due soon** (≤ 3 days to expiry), **expired**; and track **unpaid** (current term has no payment) independently. | M |
+| FR-MEM-3 | The system shall derive member status: **active**, **due soon** (≤ 7 days to expiry), **expired**; and track **unpaid** (current term has no payment) independently. Dashboard Needs attention shall surface due-soon members with ≤ 3 days remaining. Renew shall be available on the membership end date or after expiry. | M |
 | FR-MEM-4 | Member lists shall support text search, status filters (all/active/unpaid/due soon/expired), sorting, and pagination (infinite scroll on mobile). | M |
 | FR-MEM-5 | Member detail shall show photo, current status, plan, term dates, branch, and full payment history. | M |
 | FR-MEM-6 | Users shall renew a member (new term with plan, start date, payment amount/date/method). | M |
@@ -540,10 +540,12 @@ SmsLog                     (all outbound SMS; unique daily dedup index)
 
 | Status | Rule |
 |---|---|
-| Member **active** | Current date < end date − 3 days |
-| Member **due soon** | End date within 3 days |
+| Member **active** | Current date < end date − 7 days |
+| Member **due soon** | End date within 7 days |
 | Member **expired** | Current date > end date |
 | Member **unpaid** | Current term has no payment record |
+| Dashboard attention (due soon) | End date within 3 days (subset of due soon) |
+| Member renew | Allowed on end date or after expiry |
 | Gym **unpaid** | Current license term has no SaaS payment |
 | Gym **suspended** | Set by admin or business rule → read-only mode |
 | Gym **expired** | License end date passed (auto by daily job) → lockout |

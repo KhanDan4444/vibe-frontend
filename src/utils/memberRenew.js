@@ -22,12 +22,13 @@ export function defaultRenewStartDate(member) {
   return afterEnd > today ? afterEnd : today;
 }
 
-/** Due soon / expired members who have paid for the current term. */
+/** Renew on the end date or after expiry (not earlier in the due-soon window). */
 export function canRenewMember(member) {
-  if (!member || member.isUnpaid) return false;
-  return (
-    member.status === DISPLAY_STATUS.EXPIRED || member.status === DISPLAY_STATUS.DUE_SOON
-  );
+  if (!member || member.isUnpaid || member.is_unpaid) return false;
+  const raw = member.endDate ?? member.end_date;
+  if (!raw || raw === '—') return false;
+  const endDay = String(raw).split('T')[0];
+  return endDay <= todayString();
 }
 
 /** Active members — switch plan mid-term (paid) or before first payment (unpaid). */
