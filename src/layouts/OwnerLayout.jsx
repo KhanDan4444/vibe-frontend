@@ -38,6 +38,7 @@ import {
   SIDEBAR_LABEL_VISIBLE,
   SIDEBAR_LABEL_HIDDEN,
 } from '../hooks/useSidebarCollapsed';
+import { groupNotifications } from '../utils/notificationText';
 
 function OwnerRouteFallback() {
   return (
@@ -111,6 +112,16 @@ export default function OwnerLayout() {
   );
 
   const unreadCount = notifications.filter((n) => !readIds.includes(n.id)).length;
+  const attentionCount = useMemo(
+    () => groupNotifications(notifications).attention.length,
+    [notifications]
+  );
+  const notificationsSubtitle =
+    attentionCount > 0
+      ? t('notifications.openAttention', { count: attentionCount })
+      : unreadCount > 0
+        ? t('notifications.unread', { count: unreadCount })
+        : t('notifications.caughtUp');
 
   const menuSections = useMemo(() => {
     const primary = [
@@ -414,11 +425,7 @@ export default function OwnerLayout() {
         open={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
         title={t('notifications.title')}
-        subtitle={
-          unreadCount > 0
-            ? t('notifications.unread', { count: unreadCount })
-            : t('notifications.caughtUp')
-        }
+        subtitle={notificationsSubtitle}
         maxWidth="max-w-md"
         zIndexClass="z-50"
         bodyClassName={notifications.length > 0 ? '!px-0 !pt-2' : undefined}

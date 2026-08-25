@@ -20,6 +20,8 @@ import {
   stackTitle,
 } from '../utils/notificationText';
 
+const ACTIVITY_PREVIEW = 3;
+
 function kindIcon(kind, type) {
   if (kind === 'unpaid') return Wallet;
   if (kind === 'due_soon') return Clock;
@@ -85,12 +87,15 @@ function NotificationRow({
           onDismiss(item.id);
         }
       }}
-      className={`group relative flex gap-3 py-3.5 outline-none focus-visible:ring-1 focus-visible:ring-teal-500/40 ${nested ? 'px-4 pl-14 sm:px-6 sm:pl-16' : 'px-4 sm:px-6'} ${
-        !isRead ? 'bg-teal-600/5' : ''
-      }`}
+      className={`group relative flex gap-2.5 outline-none focus-visible:ring-1 focus-visible:ring-teal-500/40 ${
+        nested ? 'px-4 py-2 pl-14 sm:px-6 sm:pl-16' : 'px-4 py-3.5 sm:px-6'
+      } ${!isRead ? 'bg-teal-600/5' : ''}`}
     >
       {!isRead ? (
-        <span className="absolute bottom-3.5 left-0 top-3.5 w-0.5 rounded-full bg-teal-600" aria-hidden />
+        <span
+          className={`absolute left-0 w-0.5 rounded-full bg-teal-600 ${nested ? 'bottom-2 top-2' : 'bottom-3.5 top-3.5'}`}
+          aria-hidden
+        />
       ) : null}
 
       {nested ? null : (
@@ -108,33 +113,44 @@ function NotificationRow({
               {localized.eyebrow}
             </p>
           )}
-          <div className={`${nested || !localized.eyebrow ? '' : 'mt-0.5'} flex items-center gap-1.5`}>
-            <span className={`truncate text-[15px] tracking-tight text-app-text-strong ${isRead ? 'font-semibold' : 'font-bold'}`}>
+          <div className={`${nested || !localized.eyebrow ? '' : 'mt-0.5'} flex items-baseline gap-1.5`}>
+            <span
+              className={`min-w-0 truncate text-[15px] tracking-tight text-app-text-strong ${
+                isRead ? 'font-semibold' : 'font-bold'
+              } ${nested ? 'text-[14px]' : ''}`}
+            >
               {localized.title}
             </span>
+            {nested && localized.date ? (
+              <span className="shrink-0 text-[11px] text-app-muted">{localized.date}</span>
+            ) : null}
           </div>
           {showBranchBadge && item.branchName ? (
             <span className="mt-1 inline-flex rounded-full border border-teal-600/20 bg-teal-600/10 px-2 py-0.5 text-[10px] font-semibold text-teal-800 dark:text-teal-300">
               {item.branchName}
             </span>
           ) : null}
-          <p className="mt-0.5 text-[13px] leading-5 text-app-muted">{localized.message}</p>
+          {nested ? null : (
+            <p className="mt-0.5 text-[13px] leading-5 text-app-muted">{localized.message}</p>
+          )}
         </button>
         {action ? (
           <button
             type="button"
-            className={`mt-1.5 inline-flex min-h-9 items-center gap-1 text-[13px] font-semibold ${actionClass(action)}`}
+            className={`inline-flex items-center gap-1 font-semibold ${actionClass(action)} ${
+              nested ? 'mt-0.5 min-h-7 text-[12px]' : 'mt-1.5 min-h-9 text-[13px]'
+            }`}
             onClick={() => onAction(item, action)}
           >
-            <ActionIcon className="h-3.5 w-3.5" />
+            <ActionIcon className={nested ? 'h-3 w-3' : 'h-3.5 w-3.5'} />
             {action === 'payment' ? t('notifications.collectPayment') : t('notifications.renewNow')}
-            <ChevronRight className="h-3.5 w-3.5 opacity-70" />
+            <ChevronRight className={`opacity-70 ${nested ? 'h-3 w-3' : 'h-3.5 w-3.5'}`} />
           </button>
         ) : null}
       </div>
 
       <div className="flex shrink-0 flex-col items-end gap-2 pt-0.5">
-        {localized.date ? (
+        {!nested && localized.date ? (
           <span className="text-[11px] text-app-muted">{localized.date}</span>
         ) : null}
         <div className="flex items-center gap-0.5">
@@ -250,23 +266,30 @@ export default function NotificationInbox({
   onDismiss,
 }) {
   const { t } = useTranslation();
-  const [expanded, setExpanded] = useState(() => new Set());
+  const [expandedKey, setExpandedKey] = useState(null);
+  const [activityExpanded, setActivityExpanded] = useState(false);
   const { attention, activity } = groupNotifications(notifications);
+  const attentionGroups = stackNotificationGroups(attention);
+  const activityGroups = stackNotificationGroups(activity);
+  const activityVisible = activityExpanded
+    ? activityGroups
+    : activityGroups.slice(0, ACTIVITY_PREVIEW);
+  const activityHasMore = activityGroups.length > ACTIVITY_PREVIEW;
   const sections = [
-    { key: 'attention', label: t('notifications.section.attention'), items: attention },
-    { key: 'activity', label: t('notifications.section.activity'), items: activity },
-  ].filter((section) => section.items.length > 0);
+    { key: 'attention', label: t('notifications.section.attention'), groups: attentionGroups },
+    {
+      key: 'activity',
+      label: t('notifications.section.activity'),
+      groups: activityVisible,
+      totalCount: activityGroups.length,
+    },
+  ].filter((section) => (section.key === 'activity' ? activityGroups.length > 0 : section.groups.length > 0));
   const showHeaders = sections.length > 1;
   const uniqueBranches = new Set(notifications.map((item) => item.branchName).filter(Boolean));
   const showBadges = showBranchBadge && uniqueBranches.size > 1;
 
   const toggle = (key) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+    setExpandedKey((prev) => (prev === key ? null : key));
   };
 
   return (
@@ -274,16 +297,23 @@ export default function NotificationInbox({
       {sections.map((section) => (
         <div key={section.key}>
           {showHeaders ? (
-            <p className="px-4 pb-1 pt-4 text-[11px] font-semibold uppercase tracking-[0.06em] text-app-muted sm:px-6">
-              {section.label}
-            </p>
+            <div className="flex items-baseline justify-between gap-3 px-4 pb-1 pt-4 sm:px-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-app-muted">
+                {section.label}
+              </p>
+              {section.key === 'activity' && section.totalCount > 0 ? (
+                <p className="text-[11px] text-app-muted">
+                  {t('notifications.activityRecent', { count: section.totalCount })}
+                </p>
+              ) : null}
+            </div>
           ) : null}
           <div className="divide-y divide-app-border-subtle">
-            {stackNotificationGroups(section.items).map((group) => (
+            {section.groups.map((group) => (
               <KindStack
                 key={group.key}
                 group={group}
-                expanded={expanded.has(group.key)}
+                expanded={expandedKey === group.key}
                 onToggle={() => toggle(group.key)}
                 isRead={isRead}
                 readOnly={readOnly}
@@ -294,6 +324,15 @@ export default function NotificationInbox({
               />
             ))}
           </div>
+          {section.key === 'activity' && activityHasMore ? (
+            <button
+              type="button"
+              onClick={() => setActivityExpanded((v) => !v)}
+              className="w-full px-4 py-2.5 text-left text-[13px] font-semibold text-teal-700 hover:bg-app-surface dark:text-teal-300 sm:px-6"
+            >
+              {activityExpanded ? t('notifications.activityShowLess') : t('notifications.activityShowAll')}
+            </button>
+          ) : null}
         </div>
       ))}
     </div>
