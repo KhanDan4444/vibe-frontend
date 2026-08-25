@@ -138,6 +138,7 @@ export default function Team() {
     branches[0]?.name ||
     'Main';
 
+  const multiBranch = branches.filter((b) => b.is_active !== false).length > 1;
   const branchLabel = (name) => name || defaultBranchName;
 
   const searchNeedle = searchQuery.trim().toLowerCase();
@@ -534,9 +535,11 @@ export default function Team() {
                         {member.username && (
                           <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
                         )}
-                        <p className="mt-0.5 text-xs text-app-muted">
-                          {branchLabel(member.branch_name)}
-                        </p>
+                        {multiBranch ? (
+                          <p className="mt-0.5 text-xs text-app-muted">
+                            {branchLabel(member.branch_name)}
+                          </p>
+                        ) : null}
                         <span
                           className={`mt-2 inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
                             member.is_active
@@ -571,7 +574,7 @@ export default function Team() {
               <thead>
                 <tr>
                   <th>{t('table.name')}</th>
-                  <th>{t('table.branch')}</th>
+                  {multiBranch ? <th>{t('table.branch')}</th> : null}
                   <th>{t('table.email')}</th>
                   <th>{t('account.username')}</th>
                   <th>{t('table.status')}</th>
@@ -587,7 +590,9 @@ export default function Team() {
                         <span className="truncate font-medium text-app-text-strong">{member.name}</span>
                       </div>
                     </td>
-                    <td className="truncate text-app-text">{branchLabel(member.branch_name)}</td>
+                    {multiBranch ? (
+                      <td className="truncate text-app-text">{branchLabel(member.branch_name)}</td>
+                    ) : null}
                     <td className="truncate text-app-text">{member.email}</td>
                     <td className="truncate text-app-text">{member.username || '—'}</td>
                     <td>
@@ -682,9 +687,11 @@ export default function Team() {
                         {trainer.specialty ? (
                           <p className="mt-0.5 text-xs text-app-muted">{trainer.specialty}</p>
                         ) : null}
-                        <p className="mt-0.5 text-xs text-app-muted">
-                          {branchLabel(trainer.branch_name)}
-                        </p>
+                        {multiBranch ? (
+                          <p className="mt-0.5 text-xs text-app-muted">
+                            {branchLabel(trainer.branch_name)}
+                          </p>
+                        ) : null}
                         <p className="mt-0.5 text-xs text-app-muted">
                           {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
                         </p>
@@ -713,7 +720,7 @@ export default function Team() {
                     <thead>
                       <tr>
                         <th>{t('table.name')}</th>
-                        <th>{t('table.branch')}</th>
+                        {multiBranch ? <th>{t('table.branch')}</th> : null}
                         <th>{t('table.phone')}</th>
                         <th>{t('table.specialty')}</th>
                         <th>{t('table.members')}</th>
@@ -731,7 +738,9 @@ export default function Team() {
                               </span>
                             </div>
                           </td>
-                          <td className="truncate text-app-text">{branchLabel(trainer.branch_name)}</td>
+                          {multiBranch ? (
+                            <td className="truncate text-app-text">{branchLabel(trainer.branch_name)}</td>
+                          ) : null}
                           <td className="truncate font-mono text-sm text-app-muted">{trainer.phone || '—'}</td>
                           <td className="truncate text-app-text">{trainer.specialty || '—'}</td>
                           <td className="text-app-muted">

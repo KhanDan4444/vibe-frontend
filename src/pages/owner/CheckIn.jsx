@@ -48,7 +48,7 @@ export default function CheckIn() {
   const { t } = useTranslation();
   const location = useLocation();
   const { apiFetch, user } = useAuth();
-  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, selectedBranchId } =
+  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, selectedBranchId, branches } =
     useGym();
   const owner = isGymOwner(user?.role);
 
@@ -191,7 +191,8 @@ export default function CheckIn() {
     [todayRows]
   );
 
-  const showBranchOnToday = selectedBranchId === 'all';
+  const showBranchOnToday =
+    selectedBranchId === 'all' && branches.filter((b) => b.is_active !== false).length > 1;
   const todayEmpty = !todayLoading && todayRows.length === 0;
 
   const formatCheckInTime = (value) => {

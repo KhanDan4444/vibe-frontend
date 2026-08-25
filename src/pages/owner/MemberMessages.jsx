@@ -41,8 +41,10 @@ export default function MemberMessages() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { apiFetch, user } = useAuth();
-  const { getBranchQueryParams, selectedBranchId, error: gymError } = useGym();
-  const showBranchColumn = isGymOwner(user?.role) && selectedBranchId === 'all';
+  const { getBranchQueryParams, selectedBranchId, error: gymError, branches } = useGym();
+  const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
+  const showBranchColumn =
+    isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);

@@ -554,7 +554,7 @@ export default function MemberDetailDrawer({
               <p className="mb-3 text-xs text-app-muted">{t('pages.checkIn.recentVisitsEmpty')}</p>
             ) : null}
             <SlidePanelCard>
-              {member.branchName && (
+              {member.branchName && (branches.filter((b) => b.is_active !== false).length > 1) && (
                 <SlidePanelRow
                   label={t('table.branch')}
                   value={member.branchName}

@@ -446,7 +446,10 @@ export default function OwnerLayout() {
             notifications={notifications}
             isRead={(id) => readIds.includes(id)}
             readOnly={readOnly}
-            showBranchBadge={selectedBranchId === 'all'}
+            showBranchBadge={
+              selectedBranchId === 'all' &&
+              branches.filter((b) => b.is_active !== false).length > 1
+            }
             onOpen={(n) => openMemberFromNotification(n, 'view')}
             onAction={(n, action) => openMemberFromNotification(n, action)}
             onDismiss={deleteNotification}

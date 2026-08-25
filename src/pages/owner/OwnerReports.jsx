@@ -149,7 +149,8 @@ export default function OwnerReports() {
     periodLabel,
     summary: revenueSummary,
     branchLabel,
-    showBranchColumn: selectedBranchId === 'all',
+    showBranchColumn:
+      selectedBranchId === 'all' && branches.filter((b) => b.is_active !== false).length > 1,
   };
 
   const withExport = async (key, fn) => {

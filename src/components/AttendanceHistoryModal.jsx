@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
-import { ToolbarChip, ToolbarChipBar } from './ToolbarChip';
 import EmptyState from './EmptyState';
 import MemberPhoto from './MemberPhoto';
 import { AttendanceDayListSkeleton, CheckInTodaySkeleton } from './LoadingSkeletons';
@@ -15,7 +14,7 @@ import {
   attendanceDayRelative,
   attendanceWeekRange,
   formatAttendanceDayLabel,
-  formatDisplayDate,
+  formatAttendanceWeekRangeLabel,
   groupCheckInsByDay,
 } from '../utils/date';
 
@@ -33,6 +32,23 @@ function dayLabel(day, language, t) {
   if (rel === 'today') return t('pages.checkIn.dayToday');
   if (rel === 'yesterday') return t('pages.checkIn.dayYesterday');
   return formatAttendanceDayLabel(day, language);
+}
+
+function WeekScopeChip({ label, active, onClick }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`inline-flex min-h-8 items-center rounded-full border px-3 py-1 text-[13px] font-medium transition-colors ${
+        active
+          ? 'border-[color:var(--color-brand)] bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]'
+          : 'border-app-border-subtle bg-transparent text-app-muted hover:bg-app-surface hover:text-app-text'
+      }`}
+    >
+      {label}
+    </button>
+  );
 }
 
 /**
@@ -112,10 +128,11 @@ export default function AttendanceHistoryModal({
     ? dayLabel(selectedDay, i18n.language, t)
     : t('pages.checkIn.historyTitle');
 
-  const weekSubtitle = t('pages.checkIn.weekRangeSubtitle', {
-    from: formatDisplayDate(weekRange.from),
-    to: formatDisplayDate(weekRange.to),
-  });
+  const weekRangeLabel = formatAttendanceWeekRangeLabel(
+    weekRange.from,
+    weekRange.to,
+    i18n.language
+  );
 
   const backToDays = () => {
     setSelectedDay(null);
@@ -130,12 +147,22 @@ export default function AttendanceHistoryModal({
         setDayQuery('');
         onClose?.();
       }}
-      size="lg"
+      size="md"
       zIndexClass="z-[88]"
       labelledBy="attendance-history-title"
     >
       <div className={modalBody}>
         <div className="min-w-0">
+          {selectedDay ? (
+            <button
+              type="button"
+              onClick={backToDays}
+              className="mb-2 inline-flex items-center gap-0.5 text-[13px] font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {t('pages.checkIn.historyTitle')}
+            </button>
+          ) : null}
           <h3
             key={selectedDay || 'history'}
             id="attendance-history-title"
@@ -144,7 +171,12 @@ export default function AttendanceHistoryModal({
             {title}
           </h3>
           {!selectedDay ? (
-            <p className={`mt-1 text-sm ${mutedText}`}>{t('pages.checkIn.historyBody')}</p>
+            <div className={`mt-1 space-y-0.5 text-sm ${mutedText}`}>
+              <p>{t('pages.checkIn.historyBody')}</p>
+              <p className="font-medium tabular-nums tracking-tight text-app-muted">
+                {weekRangeLabel}
+              </p>
+            </div>
           ) : (
             <p className={`mt-1 text-sm ${mutedText}`}>
               {t('pages.checkIn.dayVisitCount', { count: selectedRows.length })}
@@ -156,32 +188,20 @@ export default function AttendanceHistoryModal({
           )}
         </div>
 
-        {selectedDay ? (
-          <button
-            type="button"
-            onClick={backToDays}
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {t('pages.checkIn.historyTitle')}
-          </button>
-        ) : (
-          <div className="mt-4 space-y-2.5">
-            <p className="text-xs font-medium text-app-muted">{weekSubtitle}</p>
-            <ToolbarChipBar className="mb-0">
-              <ToolbarChip
-                label={t('pages.checkIn.weekThis')}
-                active={weekScope === 'this'}
-                onClick={() => setWeekScope('this')}
-              />
-              <ToolbarChip
-                label={t('pages.checkIn.weekLast')}
-                active={weekScope === 'last'}
-                onClick={() => setWeekScope('last')}
-              />
-            </ToolbarChipBar>
+        {!selectedDay ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <WeekScopeChip
+              label={t('pages.checkIn.weekThis')}
+              active={weekScope === 'this'}
+              onClick={() => setWeekScope('this')}
+            />
+            <WeekScopeChip
+              label={t('pages.checkIn.weekLast')}
+              active={weekScope === 'last'}
+              onClick={() => setWeekScope('last')}
+            />
           </div>
-        )}
+        ) : null}
 
         <div className="mt-4">
           {loading ? (
@@ -193,9 +213,9 @@ export default function AttendanceHistoryModal({
           ) : selectedDay ? (
             <div
               key={`day-${selectedDay}`}
-              className="space-y-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-200"
+              className="space-y-2.5 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-200"
             >
-              <label className="flex items-center gap-2 rounded-xl border border-app-border-subtle bg-app-bg/60 px-3 py-2.5 transition-colors focus-within:border-[color:var(--color-brand)]/35 focus-within:bg-app-bg">
+              <label className="flex items-center gap-2 rounded-xl border border-app-border-subtle bg-app-bg/60 px-3 py-2 transition-colors focus-within:border-[color:var(--color-brand)]/35 focus-within:bg-app-bg">
                 <Search className="h-4 w-4 shrink-0 text-app-muted" aria-hidden />
                 <input
                   value={dayQuery}
@@ -220,7 +240,7 @@ export default function AttendanceHistoryModal({
                   {filteredRows.map((row) => (
                     <li
                       key={row.id}
-                      className="flex items-center gap-3 bg-app-card px-3.5 py-2.5 transition-colors hover:bg-app-bg/50"
+                      className="flex items-center gap-2.5 bg-app-card px-3 py-2 transition-colors hover:bg-app-bg/50"
                     >
                       <MemberPhoto
                         memberId={row.member_id}
@@ -228,18 +248,18 @@ export default function AttendanceHistoryModal({
                         name={row.member_name || '?'}
                         hasPhoto={Boolean(row.member_photo_url)}
                         expandable={false}
-                        className="h-9 w-9 rounded-full object-cover"
-                        fallbackClassName="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text"
+                        className="h-8 w-8 rounded-full object-cover"
+                        fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-app-border text-[11px] font-bold text-app-text"
                       />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold tracking-tight text-app-text-strong">
+                        <p className="truncate text-[13px] font-semibold tracking-tight text-app-text-strong">
                           {row.member_name || '—'}
                         </p>
                         {showBranch && row.branch_name ? (
                           <p className="truncate text-[11px] text-app-muted">{row.branch_name}</p>
                         ) : null}
                       </div>
-                      <time className="font-display text-sm font-bold tabular-nums tracking-tight text-app-text-strong">
+                      <time className="shrink-0 text-[12px] font-medium tabular-nums text-app-muted">
                         {formatTime(row.checked_in_at)}
                       </time>
                     </li>
@@ -270,7 +290,7 @@ export default function AttendanceHistoryModal({
           ) : (
             <ul
               key={`days-${weekScope}`}
-              className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
+              className="space-y-1.5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
             >
               {byDay.map(([day, rows]) => (
                 <li key={day}>
@@ -280,21 +300,24 @@ export default function AttendanceHistoryModal({
                       setSelectedDay(day);
                       setDayQuery('');
                     }}
-                    className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-app-border-subtle bg-app-card px-3.5 py-3.5 text-left transition-all hover:border-[color:var(--color-brand)]/25 hover:bg-[color:var(--color-brand-soft)]/35"
+                    className="group relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-app-border-subtle bg-app-card px-3 py-2.5 text-left transition-all hover:border-[color:var(--color-brand)]/25 hover:bg-[color:var(--color-brand-soft)]/35"
                   >
                     <span
-                      className="absolute bottom-2.5 left-0 top-2.5 w-[3px] rounded-full bg-[color:var(--color-brand)]/55 opacity-70 transition-opacity group-hover:opacity-100"
+                      className="absolute bottom-2 left-0 top-2 w-0.5 rounded-full bg-[color:var(--color-brand)]/50 opacity-70 transition-opacity group-hover:opacity-100"
                       aria-hidden
                     />
                     <div className="min-w-0 flex-1 pl-1.5">
-                      <p className="font-display text-sm font-semibold tracking-tight text-app-text-strong">
+                      <p className="font-display text-[13px] font-semibold tracking-tight text-app-text-strong">
                         {dayLabel(day, i18n.language, t)}
                       </p>
-                      <p className="mt-0.5 text-xs text-app-muted">
+                      <p className="mt-0.5 text-[11px] text-app-muted">
                         {t('pages.checkIn.dayVisitCount', { count: rows.length })}
                       </p>
                     </div>
-                    <ChevronRight className="h-4 w-4 shrink-0 text-app-muted transition-transform group-hover:translate-x-0.5" aria-hidden />
+                    <ChevronRight
+                      className="h-4 w-4 shrink-0 text-app-muted transition-transform group-hover:translate-x-0.5"
+                      aria-hidden
+                    />
                   </button>
                 </li>
               ))}

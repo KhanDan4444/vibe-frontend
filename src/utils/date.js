@@ -197,6 +197,38 @@ export function formatAttendanceDayLabel(date, language = 'en') {
 }
 
 /**
+ * Week range for History: "17–23 Aug" (same month) or "28 Jul – 3 Aug".
+ * Avoids dd-mm-yy digit soup that can look broken in the modal.
+ * @param {string|Date|null|undefined} from
+ * @param {string|Date|null|undefined} to
+ * @param {string} [language='en']
+ */
+export function formatAttendanceWeekRangeLabel(from, to, language = 'en') {
+  const a = parseLocalDate(from);
+  const b = parseLocalDate(to);
+  if (!a || !b) {
+    const left = formatDisplayDate(from);
+    const right = formatDisplayDate(to);
+    if (left === '—' && right === '—') return '—';
+    return `${left} – ${right}`;
+  }
+  const locale = language === 'am' ? 'am-ET' : language === 'om' ? 'om-ET' : 'en-GB';
+  try {
+    const sameMonth =
+      a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+    if (sameMonth) {
+      const end = b.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+      return `${a.getDate()}–${end}`;
+    }
+    const left = a.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+    const right = b.toLocaleDateString(locale, { day: 'numeric', month: 'short' });
+    return `${left} – ${right}`;
+  } catch {
+    return `${formatDisplayDate(from)} – ${formatDisplayDate(to)}`;
+  }
+}
+
+/**
  * Group check-in rows by local calendar day (newest days first).
  * @param {Array<{ checked_in_at?: string }>} checkIns
  */

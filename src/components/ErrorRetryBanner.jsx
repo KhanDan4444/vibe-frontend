@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from './ui/Button';
 
+const RETRY_MIN_BUSY_MS = 5000;
+
 /**
  * Error message + Retry with spinner while the retry request is in flight.
  * Keeps the banner visible (no content flash) during retry.
+ * Enforces a short minimum busy time so the spinner is visible even on instant failures.
  */
 export default function ErrorRetryBanner({ message, onRetry, className = '' }) {
   const { t } = useTranslation();
@@ -28,9 +31,14 @@ export default function ErrorRetryBanner({ message, onRetry, className = '' }) {
         onClick={() => {
           if (retrying) return;
           setRetrying(true);
-          void Promise.resolve(onRetry()).finally(() => {
-            setRetrying(false);
-          });
+          const started = Date.now();
+          void Promise.resolve(onRetry())
+            .catch(() => undefined)
+            .finally(async () => {
+              const wait = RETRY_MIN_BUSY_MS - (Date.now() - started);
+              if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+              setRetrying(false);
+            });
         }}
       >
         {t('common.retry')}

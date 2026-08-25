@@ -363,9 +363,10 @@ export default function MemberModal({
     const doneSummary = {
       name: base.name,
       phone: trimmedPhone,
-      branchName: selectedBranch
-        ? `${selectedBranch.name}${selectedBranch.is_default ? t('branch.defaultSuffix') : ''}`
-        : '',
+      branchName:
+        showBranchPicker && selectedBranch
+          ? `${selectedBranch.name}${selectedBranch.is_default ? t('branch.defaultSuffix') : ''}`
+          : '',
       planName: selectedPlan?.name || '',
       startDate,
       endDate: endDateIso && endDateIso !== '—' ? endDateIso : '',
@@ -933,7 +934,7 @@ export default function MemberModal({
               </div>
               )
             )}
-            {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && (
+            {isEdit && !showBranchPicker && (member?.branchName || member?.branchId) && activeBranches.length > 1 && (
               <div>
                 <label className={modalFieldLabel}>{t('modals.member.branch')}</label>
                 <p className="mt-1 text-sm font-medium text-app-text-strong">
