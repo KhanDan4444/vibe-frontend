@@ -719,6 +719,33 @@
     gap: 0.25rem;
   }
 
+  .owner-sms-table.admin-data-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .owner-sms-table .owner-sms-col-member {
+    width: 100%;
+  }
+
+  .owner-sms-table .owner-sms-col-phone {
+    width: 10.5rem;
+  }
+
+  .owner-sms-table .owner-sms-col-message {
+    width: 20rem;
+  }
+
+  .owner-sms-table .owner-sms-col-branch {
+    width: 9rem;
+  }
+
+  .owner-sms-table .owner-sms-col-sent {
+    width: 10rem;
+    white-space: nowrap;
+    text-align: right;
+  }
+
   .admin-panel-header {
     @apply flex items-center justify-between border-b border-app-border-subtle bg-app-surface/80 px-4 py-4 sm:px-6;
   }

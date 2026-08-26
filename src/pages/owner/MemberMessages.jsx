@@ -243,14 +243,21 @@ export default function MemberMessages() {
 
       <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
         <div className="overflow-x-auto">
-          <table className="admin-data-table min-w-[720px]">
+          <table className="admin-data-table owner-sms-table min-w-[720px]">
+            <colgroup>
+              <col className="owner-sms-col-member" />
+              <col className="owner-sms-col-phone" />
+              <col className="owner-sms-col-message" />
+              {showBranchColumn ? <col className="owner-sms-col-branch" /> : null}
+              <col className="owner-sms-col-sent" />
+            </colgroup>
             <thead>
               <tr>
-                <th>{t('table.member')}</th>
-                <th>{t('table.phone')}</th>
-                <th>{t('smsLog.messageType')}</th>
-                {showBranchColumn && <th>{t('table.branch')}</th>}
-                <th>{t('smsLog.sentAt')}</th>
+                <th className="owner-sms-col-member">{t('table.member')}</th>
+                <th className="owner-sms-col-phone">{t('table.phone')}</th>
+                <th className="owner-sms-col-message">{t('smsLog.messageType')}</th>
+                {showBranchColumn && <th className="owner-sms-col-branch">{t('table.branch')}</th>}
+                <th className="owner-sms-col-sent">{t('smsLog.sentAt')}</th>
               </tr>
             </thead>
             <tbody>
@@ -265,7 +272,7 @@ export default function MemberMessages() {
                       className={`cursor-pointer ${tableRowHover}`}
                       onClick={() => openMember(row.member_id)}
                     >
-                      <td>
+                      <td className="owner-sms-col-member">
                         <div className="flex min-w-0 items-center gap-3">
                           <MemberPhoto
                             memberId={row.member_id}
@@ -281,27 +288,23 @@ export default function MemberMessages() {
                           </span>
                         </div>
                       </td>
-                      <td className="text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
-                      <td>
-                        <div className="min-w-0 max-w-xs space-y-1">
-                          <span className={SENT_CHIP}>
-                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20">
-                              <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
-                            </span>
-                            {t('pages.memberMessages.sentBadge')}
-                          </span>
+                      <td className="owner-sms-col-phone text-app-muted">
+                        {row.recipient_phone || row.member_phone || '—'}
+                      </td>
+                      <td className="owner-sms-col-message">
+                        <div className="min-w-0 space-y-1">
                           <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
                           {preview ? (
-                            <p className="mt-1 text-xs leading-snug text-app-muted">{preview}</p>
+                            <p className="text-xs leading-snug text-app-muted">{preview}</p>
                           ) : null}
                         </div>
                       </td>
                       {showBranchColumn && (
-                        <td className="text-app-muted">{row.branch_name || '—'}</td>
+                        <td className="owner-sms-col-branch text-app-muted">{row.branch_name || '—'}</td>
                       )}
-                      <td className="whitespace-nowrap text-app-muted">
+                      <td className="owner-sms-col-sent tabular-nums text-app-muted">
                         {formatLogTimestamp(row.sent_at, t, i18n.language)}
                       </td>
                     </tr>
