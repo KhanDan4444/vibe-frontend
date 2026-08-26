@@ -206,7 +206,7 @@ export default function MemberMessages() {
                             <span className="text-xs font-medium tabular-nums text-app-muted">
                               {formatLogTimestamp(row.sent_at, t, i18n.language)}
                             </span>
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-emerald-600 dark:text-emerald-400">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-teal-700 dark:text-teal-300">
                               <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
                               {t('pages.memberMessages.sentBadge')}
                             </span>
@@ -293,12 +293,14 @@ export default function MemberMessages() {
                         <td className="owner-sms-col-branch text-app-muted">{row.branch_name || '—'}</td>
                       )}
                       <td className="owner-sms-col-sent">
-                        <div className="text-app-muted">
-                          {formatLogTimestamp(row.sent_at, t, i18n.language)}
-                        </div>
-                        <div className="mt-1 inline-flex items-center justify-end gap-1 text-[11px] font-bold lowercase text-emerald-600 dark:text-emerald-400">
-                          <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
-                          {t('pages.memberMessages.sentBadge')}
+                        <div className="flex flex-col items-start gap-1">
+                          <span className="text-app-muted">
+                            {formatLogTimestamp(row.sent_at, t, i18n.language)}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-teal-700 dark:text-teal-300">
+                            <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
+                            {t('pages.memberMessages.sentBadge')}
+                          </span>
                         </div>
                       </td>
                     </tr>
