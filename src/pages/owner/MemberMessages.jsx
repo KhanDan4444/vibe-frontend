@@ -247,7 +247,7 @@ export default function MemberMessages() {
                 <th>{t('table.phone')}</th>
                 <th>{t('smsLog.messageType')}</th>
                 {showBranchColumn && <th>{t('table.branch')}</th>}
-                <th>{t('smsLog.sentAt')}</th>
+                <th className="text-right">{t('smsLog.sentAt')}</th>
               </tr>
             </thead>
             <tbody>
