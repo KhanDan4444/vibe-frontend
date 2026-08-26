@@ -1,7 +1,7 @@
 // src/pages/auth/Login.jsx — cardless glass login matching mobile brand treatment
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Lock, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { getRememberMePreference } from '../../utils/authStorage';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
@@ -37,7 +37,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const inputBase =
-    'auth-login-input block w-full rounded-2xl border border-white/[0.14] bg-white/[0.055] px-4 py-3.5 text-base font-normal text-white placeholder:text-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/50 focus:bg-white/[0.08] focus:outline-none focus:ring-0';
+    'auth-login-input block w-full rounded-2xl border border-white/[0.14] bg-white/[0.055] py-3.5 pl-11 pr-4 text-base font-normal text-white placeholder:text-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/50 focus:bg-white/[0.08] focus:outline-none focus:ring-0';
+  const fieldIconClass = 'pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-teal-400';
 
   const focusFirstInvalid = (errors) => {
     requestAnimationFrame(() => {
@@ -131,21 +132,24 @@ export default function Login() {
               <label htmlFor="login-email" className="sr-only">
                 {t('auth.emailOrUsername')}
               </label>
-              <input
-                ref={emailRef}
-                id="login-email"
-                type="text"
-                autoComplete="username"
-                aria-invalid={Boolean(emailError)}
-                aria-describedby={emailError ? 'login-email-error' : undefined}
-                className={inputClass(inputBase, fieldErrors, 'email')}
-                placeholder={t('auth.emailOrUsername')}
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearFieldError(setFieldErrors, 'email');
-                }}
-              />
+              <div className="relative">
+                <User className={fieldIconClass} strokeWidth={2.35} aria-hidden />
+                <input
+                  ref={emailRef}
+                  id="login-email"
+                  type="text"
+                  autoComplete="username"
+                  aria-invalid={Boolean(emailError)}
+                  aria-describedby={emailError ? 'login-email-error' : undefined}
+                  className={inputClass(inputBase, fieldErrors, 'email')}
+                  placeholder={t('auth.emailOrUsername')}
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    clearFieldError(setFieldErrors, 'email');
+                  }}
+                />
+              </div>
               <FieldError id="login-email-error" message={emailError} className="text-sm text-rose-300" />
             </div>
             <div>
@@ -153,6 +157,7 @@ export default function Login() {
                 {t('auth.password')}
               </label>
               <div className="relative">
+                <Lock className={fieldIconClass} strokeWidth={2.35} aria-hidden />
                 <input
                   ref={passwordRef}
                   id="login-password"
