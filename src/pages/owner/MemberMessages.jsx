@@ -264,8 +264,10 @@ export default function MemberMessages() {
                       <td className="truncate font-mono text-sm text-app-muted">
                         {row.recipient_phone || row.member_phone || '—'}
                       </td>
-                      <td className={`font-medium ${typeFiltered ? 'text-app-muted' : 'text-app-text'}`}>
-                        {formatSmsMessageType(t, row.message_type)}
+                      <td>
+                        <span className={chipClass}>
+                          {formatSmsMessageType(t, row.message_type)}
+                        </span>
                       </td>
                       <td className="whitespace-nowrap text-app-muted">
                         {formatLogTimestamp(row.sent_at, t, i18n.language)}
