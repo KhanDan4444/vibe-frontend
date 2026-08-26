@@ -719,26 +719,35 @@
     gap: 0.25rem;
   }
 
+  .owner-sms-table.admin-data-table {
+    table-layout: auto;
+    width: max-content;
+    min-width: 100%;
+  }
+
   .owner-sms-table .owner-sms-col-member {
-    width: 22%;
+    min-width: 11rem;
   }
 
   .owner-sms-table .owner-sms-col-phone {
-    width: 16%;
+    white-space: nowrap;
+    min-width: 9rem;
   }
 
   .owner-sms-table .owner-sms-col-message {
-    width: auto;
+    min-width: 14rem;
+    max-width: 22rem;
   }
 
   .owner-sms-table .owner-sms-col-branch {
-    width: 14%;
+    min-width: 8rem;
   }
 
   .owner-sms-table .owner-sms-col-sent {
-    width: 10.5rem;
+    width: 1%;
     white-space: nowrap;
     text-align: right;
+    padding-left: 2rem;
   }
 
   .admin-panel-header {

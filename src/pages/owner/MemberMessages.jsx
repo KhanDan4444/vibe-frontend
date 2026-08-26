@@ -280,7 +280,7 @@ export default function MemberMessages() {
                       </td>
                       <td className="owner-sms-col-phone text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
                       <td className="owner-sms-col-message">
-                        <div className="min-w-0 max-w-xs space-y-1">
+                        <div className="min-w-0 space-y-1">
                           <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
