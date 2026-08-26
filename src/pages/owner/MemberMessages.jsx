@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, Check } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -32,6 +32,9 @@ const CHIP_ACTIVE =
   'inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300';
 const CHIP_MUTED =
   'inline-flex rounded-full bg-app-surface px-2.5 py-1 text-xs font-medium text-app-muted';
+
+const SENT_CHIP =
+  'inline-flex items-center gap-1.5 rounded-full border border-emerald-600/35 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-400/40 dark:bg-emerald-400/10 dark:text-emerald-400';
 
 const SMS_AVATAR =
   'h-9 w-9 rounded-full object-cover';
@@ -202,21 +205,21 @@ export default function MemberMessages() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2">
                           <p className="truncate text-sm font-semibold text-app-text-strong">{row.member_name}</p>
-                          <div className="flex shrink-0 flex-col items-end gap-1">
-                            <span className="text-xs font-medium tabular-nums text-app-muted">
-                              {formatLogTimestamp(row.sent_at, t, i18n.language)}
-                            </span>
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-teal-700 dark:text-teal-300">
-                              <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
-                              {t('pages.memberMessages.sentBadge')}
-                            </span>
-                          </div>
+                          <span className="shrink-0 text-xs font-medium tabular-nums text-app-muted">
+                            {formatLogTimestamp(row.sent_at, t, i18n.language)}
+                          </span>
                         </div>
-                        <p className="mt-1.5">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                          <span className={SENT_CHIP}>
+                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20">
+                              <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
+                            </span>
+                            {t('pages.memberMessages.sentBadge')}
+                          </span>
                           <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
-                        </p>
+                        </div>
                         {preview ? (
                           <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
                         ) : null}
@@ -240,21 +243,14 @@ export default function MemberMessages() {
 
       <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
         <div className="overflow-x-auto">
-          <table className="admin-data-table owner-sms-table min-w-[720px]">
-            <colgroup>
-              <col className="owner-sms-col-member" />
-              <col className="owner-sms-col-phone" />
-              <col className="owner-sms-col-message" />
-              {showBranchColumn ? <col className="owner-sms-col-branch" /> : null}
-              <col className="owner-sms-col-sent" />
-            </colgroup>
+          <table className="admin-data-table min-w-[720px]">
             <thead>
               <tr>
-                <th className="owner-sms-col-member">{t('table.member')}</th>
-                <th className="owner-sms-col-phone">{t('table.phone')}</th>
-                <th className="owner-sms-col-message">{t('smsLog.messageType')}</th>
-                {showBranchColumn && <th className="owner-sms-col-branch">{t('table.branch')}</th>}
-                <th className="owner-sms-col-sent">{t('smsLog.sentAt')}</th>
+                <th>{t('table.member')}</th>
+                <th>{t('table.phone')}</th>
+                <th>{t('smsLog.messageType')}</th>
+                {showBranchColumn && <th>{t('table.branch')}</th>}
+                <th>{t('smsLog.sentAt')}</th>
               </tr>
             </thead>
             <tbody>
@@ -269,7 +265,7 @@ export default function MemberMessages() {
                       className={`cursor-pointer ${tableRowHover}`}
                       onClick={() => openMember(row.member_id)}
                     >
-                      <td className="owner-sms-col-member">
+                      <td>
                         <div className="flex min-w-0 items-center gap-3">
                           <MemberPhoto
                             memberId={row.member_id}
@@ -285,9 +281,15 @@ export default function MemberMessages() {
                           </span>
                         </div>
                       </td>
-                      <td className="owner-sms-col-phone text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
-                      <td className="owner-sms-col-message">
-                        <div className="min-w-0 space-y-1">
+                      <td className="text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
+                      <td>
+                        <div className="min-w-0 max-w-xs space-y-1">
+                          <span className={SENT_CHIP}>
+                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20">
+                              <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
+                            </span>
+                            {t('pages.memberMessages.sentBadge')}
+                          </span>
                           <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
@@ -297,18 +299,10 @@ export default function MemberMessages() {
                         </div>
                       </td>
                       {showBranchColumn && (
-                        <td className="owner-sms-col-branch text-app-muted">{row.branch_name || '—'}</td>
+                        <td className="text-app-muted">{row.branch_name || '—'}</td>
                       )}
-                      <td className="owner-sms-col-sent">
-                        <div className="flex flex-col items-start gap-1">
-                          <span className="text-app-muted">
-                            {formatLogTimestamp(row.sent_at, t, i18n.language)}
-                          </span>
-                          <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-teal-700 dark:text-teal-300">
-                            <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
-                            {t('pages.memberMessages.sentBadge')}
-                          </span>
-                        </div>
+                      <td className="whitespace-nowrap text-app-muted">
+                        {formatLogTimestamp(row.sent_at, t, i18n.language)}
                       </td>
                     </tr>
                   );
