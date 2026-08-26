@@ -241,6 +241,13 @@ export default function MemberMessages() {
       <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
         <div className="overflow-x-auto">
           <table className="admin-data-table owner-sms-table min-w-[720px]">
+            <colgroup>
+              <col className="owner-sms-col-member" />
+              <col className="owner-sms-col-phone" />
+              <col className="owner-sms-col-message" />
+              {showBranchColumn ? <col className="owner-sms-col-branch" /> : null}
+              <col className="owner-sms-col-sent" />
+            </colgroup>
             <thead>
               <tr>
                 <th className="owner-sms-col-member">{t('table.member')}</th>
@@ -293,7 +300,7 @@ export default function MemberMessages() {
                         <td className="owner-sms-col-branch text-app-muted">{row.branch_name || '—'}</td>
                       )}
                       <td className="owner-sms-col-sent">
-                        <div className="flex flex-col items-end gap-1">
+                        <div className="flex flex-col items-start gap-1">
                           <span className="text-app-muted">
                             {formatLogTimestamp(row.sent_at, t, i18n.language)}
                           </span>

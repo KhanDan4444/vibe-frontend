@@ -724,26 +724,28 @@
     width: 100%;
   }
 
+  /* Member absorbs extra width so Message + Sent stay adjacent on the right. */
   .owner-sms-table .owner-sms-col-member {
-    width: 16%;
+    width: 100%;
   }
 
   .owner-sms-table .owner-sms-col-phone {
-    width: 13%;
+    width: 10.5rem;
   }
 
   .owner-sms-table .owner-sms-col-message {
-    /* Fills remaining width between phone and sent. */
+    width: 20rem;
   }
 
   .owner-sms-table .owner-sms-col-branch {
-    width: 12%;
+    width: 9rem;
   }
 
   .owner-sms-table .owner-sms-col-sent {
-    width: 10.5rem;
+    width: 9.5rem;
     white-space: nowrap;
-    text-align: right;
+    vertical-align: top;
+    padding-left: 1.25rem;
   }
 
   .admin-panel-header {
