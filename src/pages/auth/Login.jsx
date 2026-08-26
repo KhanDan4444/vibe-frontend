@@ -38,7 +38,7 @@ export default function Login() {
 
   const inputBase =
     'auth-login-input block w-full rounded-2xl border border-white/[0.14] bg-white/[0.055] py-3.5 pl-11 pr-4 text-base font-normal text-white placeholder:text-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/50 focus:bg-white/[0.08] focus:outline-none focus:ring-0';
-  const fieldIconClass = 'pointer-events-none absolute left-3.5 top-1/2 h-[19px] w-[19px] -translate-y-1/2 text-[#2dd4bf]';
+  const fieldIconClass = 'pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#5eead4]';
 
   const focusFirstInvalid = (errors) => {
     requestAnimationFrame(() => {
@@ -133,7 +133,7 @@ export default function Login() {
                 {t('auth.emailOrUsername')}
               </label>
               <div className="relative">
-                <User className={fieldIconClass} strokeWidth={2.75} aria-hidden />
+                <User className={fieldIconClass} strokeWidth={3} absoluteStrokeWidth aria-hidden />
                 <input
                   ref={emailRef}
                   id="login-email"
@@ -157,7 +157,7 @@ export default function Login() {
                 {t('auth.password')}
               </label>
               <div className="relative">
-                <Lock className={fieldIconClass} strokeWidth={2.75} aria-hidden />
+                <Lock className={fieldIconClass} strokeWidth={3} absoluteStrokeWidth aria-hidden />
                 <input
                   ref={passwordRef}
                   id="login-password"
