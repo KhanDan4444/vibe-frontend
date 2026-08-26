@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { ScrollText, RefreshCw, UserRound, Banknote, FileText, Users, PersonStanding, Circle } from 'lucide-react';
+import { ScrollText, RefreshCw, UserRound, Banknote, FileText, Users, PersonStanding, Circle, MessageSquare, QrCode, ScanLine, Settings } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getActivityLogs } from '../../services/activityService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -43,7 +43,10 @@ const ROLE_CHIP_MUTED =
   'inline-flex rounded-full border border-app-border-subtle bg-app-surface px-2 py-0.5 text-[10px] font-medium text-app-muted';
 
 function activityActionIcon(action) {
-  const prefix = String(action || '').split('.')[0];
+  const value = String(action || '');
+  if (value === 'member.pass_sms_sent') return MessageSquare;
+  if (value === 'member.pass_regenerated') return QrCode;
+  const prefix = value.split('.')[0];
   switch (prefix) {
     case 'member':
       return UserRound;
@@ -55,6 +58,10 @@ function activityActionIcon(action) {
       return Users;
     case 'trainer':
       return PersonStanding;
+    case 'check_in':
+      return ScanLine;
+    case 'attendance':
+      return Settings;
     default:
       return Circle;
   }

@@ -1049,7 +1049,9 @@
         "updated": "Updated member",
         "transferred": "Transferred member",
         "deleted": "Removed member",
-        "restored": "Restored member"
+        "restored": "Restored member",
+        "pass_regenerated": "Regenerated pass",
+        "pass_sms_sent": "Sent pass link"
       },
       "payment": {
         "recorded": "Recorded payment",
@@ -1070,6 +1072,12 @@
         "updated": "Updated trainer",
         "deleted": "Removed trainer",
         "restored": "Restored trainer"
+      },
+      "check_in": {
+        "recorded": "Recorded check-in"
+      },
+      "attendance": {
+        "settings_updated": "Updated attendance settings"
       }
     },
     "details": {

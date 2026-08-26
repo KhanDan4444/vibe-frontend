@@ -1032,7 +1032,9 @@
         "updated": "Miseensa haaromse",
         "transferred": "Miseensa ceesise",
         "deleted": "Miseensa haqee",
-        "restored": "Miseensa deebise"
+        "restored": "Miseensa deebise",
+        "pass_regenerated": "Pass haarawa uume",
+        "pass_sms_sent": "Linkii pass erge"
       },
       "payment": {
         "recorded": "Kaffaltii galmeesse",
@@ -1047,6 +1049,12 @@
       "staff": {
         "created": "Akkaantii hojjeetaa uume",
         "updated": "Akkaantii hojjeetaa haaromse"
+      },
+      "check_in": {
+        "recorded": "Galchii galmeesse"
+      },
+      "attendance": {
+        "settings_updated": "Qindaa'inna hirmaannaa haaromse"
       }
     },
     "details": {

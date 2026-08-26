@@ -25,6 +25,10 @@ const ACTION_KEYS = {
   'trainer.updated': 'activity.actions.trainer.updated',
   'trainer.deleted': 'activity.actions.trainer.deleted',
   'trainer.restored': 'activity.actions.trainer.restored',
+  'check_in.recorded': 'activity.actions.check_in.recorded',
+  'attendance.settings_updated': 'activity.actions.attendance.settings_updated',
+  'member.pass_regenerated': 'activity.actions.member.pass_regenerated',
+  'member.pass_sms_sent': 'activity.actions.member.pass_sms_sent',
 };
 
 /** Filter dropdown: categories + specific actions (optgroups in UI). */

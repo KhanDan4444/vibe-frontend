@@ -64,7 +64,9 @@
         "plan_changed": "የአባልነት ዕቅድ ተቀይሯል",
         "renewed": "አባልነት ታድሷል",
         "transferred": "አባል ተላልፏል",
-        "updated": "አባል ተዘምኗል"
+        "updated": "አባል ተዘምኗል",
+        "pass_regenerated": "ፓስ እንደገና ተፈጥሯል",
+        "pass_sms_sent": "የፓስ ሊንክ ተልኳል"
       },
       "payment": {
         "deleted": "ክፍያ ተሰርዟል",
@@ -79,6 +81,12 @@
       "staff": {
         "created": "የሰራተኛ መለያ ተፈጥሯል",
         "updated": "የሰራተኛ መለያ ተዘምኗል"
+      },
+      "check_in": {
+        "recorded": "መግቢያ ተመዝግቧል"
+      },
+      "attendance": {
+        "settings_updated": "የመገኘት ቅንብሮች ተዘምነዋል"
       }
     },
     "details": {

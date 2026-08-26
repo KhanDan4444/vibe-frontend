@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, Check } from 'lucide-react';
+import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, CheckCircle2 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -202,21 +202,21 @@ export default function MemberMessages() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2">
                           <p className="truncate text-sm font-semibold text-app-text-strong">{row.member_name}</p>
-                          <span className="shrink-0 text-xs font-medium tabular-nums text-app-muted">
-                            {formatLogTimestamp(row.sent_at, t, i18n.language)}
-                          </span>
-                        </div>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/35 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-400/40 dark:bg-emerald-400/10 dark:text-emerald-400">
-                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20">
-                              <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
+                          <div className="flex shrink-0 flex-col items-end gap-1">
+                            <span className="text-xs font-medium tabular-nums text-app-muted">
+                              {formatLogTimestamp(row.sent_at, t, i18n.language)}
                             </span>
-                            {t('pages.memberMessages.sentBadge')}
-                          </span>
+                            <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-emerald-600 dark:text-emerald-400">
+                              <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
+                              {t('pages.memberMessages.sentBadge')}
+                            </span>
+                          </div>
+                        </div>
+                        <p className="mt-1.5">
                           <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
-                        </div>
+                        </p>
                         {preview ? (
                           <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
                         ) : null}
@@ -281,12 +281,6 @@ export default function MemberMessages() {
                       <td className="text-app-muted">{row.recipient_phone || row.member_phone || '—'}</td>
                       <td>
                         <div className="min-w-0 max-w-xs space-y-1">
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-600/35 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-400/40 dark:bg-emerald-400/10 dark:text-emerald-400">
-                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20">
-                              <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
-                            </span>
-                            {t('pages.memberMessages.sentBadge')}
-                          </span>
                           <span className={chipClass}>
                             {formatSmsMessageType(t, row.message_type)}
                           </span>
@@ -298,8 +292,16 @@ export default function MemberMessages() {
                       {showBranchColumn && (
                         <td className="text-app-muted">{row.branch_name || '—'}</td>
                       )}
-                      <td className="whitespace-nowrap text-app-muted">
-                        {formatLogTimestamp(row.sent_at, t, i18n.language)}
+                      <td className="whitespace-nowrap">
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="text-app-muted">
+                            {formatLogTimestamp(row.sent_at, t, i18n.language)}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold lowercase text-emerald-600 dark:text-emerald-400">
+                            <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
+                            {t('pages.memberMessages.sentBadge')}
+                          </span>
+                        </div>
                       </td>
                     </tr>
                   );
