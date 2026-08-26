@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, Check } from 'lucide-react';
+import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, Check, CheckCircle2 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
-import MemberPhoto from '../../components/MemberPhoto';
 import { formatLogTimestamp } from '../../utils/date';
 import {
   formatSmsMessageType,
@@ -35,11 +34,6 @@ const CHIP_MUTED =
 
 const SENT_CHIP =
   'inline-flex items-center gap-1.5 rounded-full border border-emerald-600/35 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-400/40 dark:bg-emerald-400/10 dark:text-emerald-400';
-
-const SMS_AVATAR =
-  'h-9 w-9 rounded-full object-cover';
-const SMS_AVATAR_FALLBACK =
-  'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text';
 
 const SMS_TYPE_ICON = {
   UserPlus,
@@ -135,7 +129,7 @@ export default function MemberMessages() {
     : typeFiltered
       ? t('pages.memberMessages.emptyFilteredBody')
       : t('pages.memberMessages.emptyBody');
-  const colCount = showBranchColumn ? 5 : 4;
+  const colCount = 5;
 
   return (
     <div className="space-y-4 sm:space-y-5">
@@ -243,21 +237,14 @@ export default function MemberMessages() {
 
       <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
         <div className="overflow-x-auto">
-          <table className="admin-data-table owner-sms-table min-w-[720px]">
-            <colgroup>
-              <col className="owner-sms-col-member" />
-              <col className="owner-sms-col-phone" />
-              <col className="owner-sms-col-message" />
-              {showBranchColumn ? <col className="owner-sms-col-branch" /> : null}
-              <col className="owner-sms-col-sent" />
-            </colgroup>
+          <table className="admin-data-table min-w-[720px]">
             <thead>
               <tr>
-                <th className="owner-sms-col-member">{t('table.member')}</th>
-                <th className="owner-sms-col-phone">{t('table.phone')}</th>
-                <th className="owner-sms-col-message">{t('smsLog.messageType')}</th>
-                {showBranchColumn && <th className="owner-sms-col-branch">{t('table.branch')}</th>}
-                <th className="owner-sms-col-sent">{t('smsLog.sentAt')}</th>
+                <th>{t('table.member')}</th>
+                <th>{t('table.phone')}</th>
+                <th>{t('smsLog.messageType')}</th>
+                <th>{t('table.when')}</th>
+                <th>{t('table.status')}</th>
               </tr>
             </thead>
             <tbody>
@@ -265,47 +252,29 @@ export default function MemberMessages() {
                 <AdminTableRowsSkeleton rows={5} cols={colCount} />
               ) : items.length > 0 ? (
                 items.map((row) => {
-                  const preview = typeFiltered ? null : formatSmsMessagePreview(t, row.message_type);
                   return (
                     <tr
                       key={row.id}
                       className={`cursor-pointer ${tableRowHover}`}
                       onClick={() => openMember(row.member_id)}
                     >
-                      <td className="owner-sms-col-member">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <MemberPhoto
-                            memberId={row.member_id}
-                            apiFetch={apiFetch}
-                            name={row.member_name}
-                            hasPhoto={Boolean(row.member_photo_url)}
-                            expandable={false}
-                            className={SMS_AVATAR}
-                            fallbackClassName={SMS_AVATAR_FALLBACK}
-                          />
-                          <span className="truncate font-semibold text-app-text-strong">
-                            {row.member_name}
-                          </span>
-                        </div>
+                      <td className="truncate font-medium text-app-text-strong">
+                        {row.member_name}
                       </td>
-                      <td className="owner-sms-col-phone text-app-muted">
+                      <td className="truncate font-mono text-sm text-app-muted">
                         {row.recipient_phone || row.member_phone || '—'}
                       </td>
-                      <td className="owner-sms-col-message">
-                        <div className="min-w-0 space-y-1">
-                          <span className={chipClass}>
-                            {formatSmsMessageType(t, row.message_type)}
-                          </span>
-                          {preview ? (
-                            <p className="text-xs leading-snug text-app-muted">{preview}</p>
-                          ) : null}
-                        </div>
+                      <td className={`font-medium ${typeFiltered ? 'text-app-muted' : 'text-app-text'}`}>
+                        {formatSmsMessageType(t, row.message_type)}
                       </td>
-                      {showBranchColumn && (
-                        <td className="owner-sms-col-branch text-app-muted">{row.branch_name || '—'}</td>
-                      )}
-                      <td className="owner-sms-col-sent tabular-nums text-app-muted">
+                      <td className="whitespace-nowrap text-app-muted">
                         {formatLogTimestamp(row.sent_at, t, i18n.language)}
+                      </td>
+                      <td>
+                        <span className="inline-flex items-center gap-1 text-xs font-bold lowercase text-teal-700 dark:text-teal-300">
+                          <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
+                          {t('pages.memberMessages.sentBadge')}
+                        </span>
                       </td>
                     </tr>
                   );
