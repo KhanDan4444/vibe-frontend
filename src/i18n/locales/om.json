@@ -988,7 +988,8 @@
       "emptyFilteredTitle": "Gosa kanaaf ergaan hin jiru",
       "emptyFilteredBody": "Gosa biraa yaali, ykn gara Hundaatti deebi'i.",
       "emptySearchTitle": "Miseensi walsimatu hin jiru",
-      "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi."
+      "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi.",
+      "sentBadge": "Ergameera"
     },
     "adminGymMessages": {
       "title": "Galmee SMS Plaatfoormii",

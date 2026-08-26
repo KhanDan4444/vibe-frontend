@@ -1005,7 +1005,8 @@
       "emptyFilteredTitle": "No messages for this type",
       "emptyFilteredBody": "Try another message type, or switch back to All.",
       "emptySearchTitle": "No matching members",
-      "emptySearchBody": "Try a different name, or clear the search."
+      "emptySearchBody": "Try a different name, or clear the search.",
+      "sentBadge": "Sent"
     },
     "adminGymMessages": {
       "title": "Platform SMS",

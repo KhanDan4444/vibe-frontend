@@ -1158,7 +1158,8 @@
       "emptyFilteredTitle": "ለዚህ ዓይነት መልእክት የለም",
       "emptyFilteredBody": "ሌላ ዓይነት ይሞክሩ ወይም ወደ ሁሉም ይመለሱ።",
       "emptySearchTitle": "ተዛማጅ አባል የለም",
-      "emptySearchBody": "ሌላ ስም ይሞክሩ ወይም ፍለጋውን ያጽዱ።"
+      "emptySearchBody": "ሌላ ስም ይሞክሩ ወይም ፍለጋውን ያጽዱ።",
+      "sentBadge": "ተልኳል"
     },
     "adminGymMessages": {
       "title": "የመድረክ SMS መዝገብ",
