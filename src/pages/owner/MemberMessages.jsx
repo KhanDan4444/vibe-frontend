@@ -293,7 +293,7 @@ export default function MemberMessages() {
                         <td className="owner-sms-col-branch text-app-muted">{row.branch_name || '—'}</td>
                       )}
                       <td className="owner-sms-col-sent">
-                        <div className="flex flex-col items-start gap-1">
+                        <div className="flex flex-col items-end gap-1">
                           <span className="text-app-muted">
                             {formatLogTimestamp(row.sent_at, t, i18n.language)}
                           </span>
