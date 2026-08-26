@@ -39,7 +39,7 @@ import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { scheduleDeleteWithUndo, restoreWithUndoFlash } from '../../utils/scheduleWithUndo';
-import { formatDisplayDate } from '../../utils/date';
+import { formatDisplayDate, daysUntilDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { MemberCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 import { adjustMemberFilterCounts } from '../../utils/memberFilterCounts';
@@ -114,6 +114,17 @@ export default function Members() {
   const [error, setError] = useState('');
 
   const showingFormer = statusFilter === FORMER;
+  const showingDueSoon = statusFilter === DISPLAY_STATUS.DUE_SOON;
+
+  const formatMembershipDuration = (member) => {
+    if (showingDueSoon) {
+      const days = daysUntilDate(member.endDate);
+      if (days == null) return '—';
+      if (days <= 0) return t('pages.members.expiresToday');
+      return t('pages.members.daysLeft', { count: days });
+    }
+    return null;
+  };
   const chipCounts = useMemo(
     () =>
       adjustMemberFilterCounts(
@@ -790,7 +801,13 @@ export default function Members() {
                         ? t('pages.members.removedOnDate', {
                             date: formatDisplayDate(member.deletedAt),
                           })
-                        : (
+                        : showingDueSoon
+                          ? (
+                            <span className="font-semibold text-app-text">
+                              {formatMembershipDuration(member)}
+                            </span>
+                          )
+                          : (
                           <>
                             {formatDisplayDate(member.startDate)} →{' '}
                             <span className="font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
@@ -849,7 +866,11 @@ export default function Members() {
                 <th>{t('table.plan')}</th>
                 <th className="owner-members-col-trainer">{t('table.trainer')}</th>
                 <th className="owner-members-col-duration">
-                  {showingFormer ? t('pages.members.removedOn') : t('pages.members.durationRange')}
+                  {showingFormer
+                    ? t('pages.members.removedOn')
+                    : showingDueSoon
+                      ? t('pages.members.daysLeftHeader')
+                      : t('pages.members.durationRange')}
                 </th>
                 <th className="owner-members-col-status">{t('table.status')}</th>
                 <th className="owner-members-col-actions text-right">{t('table.actions')}</th>
@@ -901,6 +922,10 @@ export default function Members() {
                         {showingFormer ? (
                           <span className="whitespace-nowrap font-semibold text-app-text">
                             {formatDisplayDate(member.deletedAt)}
+                          </span>
+                        ) : showingDueSoon ? (
+                          <span className="whitespace-nowrap font-semibold text-app-text">
+                            {formatMembershipDuration(member)}
                           </span>
                         ) : (
                           <>

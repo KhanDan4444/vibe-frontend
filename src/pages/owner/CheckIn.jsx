@@ -63,7 +63,6 @@ export default function CheckIn() {
   const [todayTotal, setTodayTotal] = useState(0);
   const [todayLoading, setTodayLoading] = useState(true);
   const [historyOpen, setHistoryOpen] = useState(false);
-  const [todayPulse, setTodayPulse] = useState(false);
   const [checkingId, setCheckingId] = useState(null);
   const [forceTarget, setForceTarget] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -647,13 +646,7 @@ export default function CheckIn() {
         </div>
       ) : null}
 
-      <Card
-        className={`overflow-hidden transition-[box-shadow,ring-color] duration-500 ${
-          todayPulse
-            ? 'ring-2 ring-[color:var(--color-brand)]/35 shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-brand)_8%,transparent)]'
-            : ''
-        }`}
-      >
+      <Card className="overflow-hidden">
         <div className="admin-panel-header">
           <div className="min-w-0 flex-1">
             <h2 className={panelTitle}>{t('pages.checkIn.checkedInTodayTitle')}</h2>
@@ -725,11 +718,7 @@ export default function CheckIn() {
 
       <AttendanceHistoryModal
         open={historyOpen}
-        onClose={() => {
-          setHistoryOpen(false);
-          setTodayPulse(true);
-          window.setTimeout(() => setTodayPulse(false), 780);
-        }}
+        onClose={() => setHistoryOpen(false)}
         weekStartsOn={settings?.week_starts_on || 'monday'}
         getBranchQueryParams={getBranchQueryParams}
         showBranch={showBranchOnToday}

@@ -335,7 +335,7 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-SMS-1 | The system shall send automated SMS to members: due-soon reminder, expires-today notice, and expired notice, via the Afro Message provider. | M |
+| FR-SMS-1 | The system shall send automated SMS to members: due-soon reminder (**≤ 3 days** before end date), expires-today notice, and expired notice, via the Afro Message provider. The 7-day due-soon status chip remains for list filters and does not trigger SMS. | M |
 | FR-SMS-2 | The system shall send automated SMS to gym contacts about their license: due in 3 days, expires today, expired. | M |
 | FR-SMS-3 | SMS sending shall be deduplicated so a given notice type is sent at most once per day per recipient (unique daily log index). | M |
 | FR-SMS-4 | OTP SMS shall support gym signup verification and owner password reset. | M |
@@ -567,7 +567,7 @@ SmsLog                     (all outbound SMS; unique daily dedup index)
 
 | Job | Schedule | Actions |
 |---|---|---|
-| Expiry check | Daily 00:00 UTC + on API startup | Sync member statuses; expire members and gym licenses past end date; send due-soon / expires-today / expired SMS to members and gyms (deduplicated daily) |
+| Expiry check | Daily 00:00 UTC + on API startup | Sync member statuses; expire members and gym licenses past end date; send member SMS at ≤3 days left / expires today / expired, and gym license SMS (deduplicated) |
 
 ### 7.4 Error Codes (representative)
 

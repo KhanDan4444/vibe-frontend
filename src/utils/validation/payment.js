@@ -2,6 +2,7 @@ import { ok, fail } from './result';
 import { parseMoneyAmount } from './money';
 import { isNotFutureDate, isOnOrAfterDate } from './dates';
 import { todayString } from '../date';
+import { validateRenewPaymentDate as validateRenewPaymentDateRules } from '../paymentDateRules';
 
 /** @param {{ amount: string|number, paymentDate: string|null|undefined }} fields */
 export function validateRequiredPayment({ amount, paymentDate }) {
@@ -91,13 +92,19 @@ export function validateRenewPayment({
   if (!planId || !startDate || !paymentDate || Number.isNaN(parsed) || parsed <= 0) {
     return fail(requiredKey, 'planId');
   }
-  const afterStart = validatePaymentDateOnOrAfterStart({
-    paymentDate,
-    startDate,
-    key: 'validation.paymentDateAfterTermStart',
-  });
-  if (!afterStart.ok) return afterStart;
-  return validatePaymentDateNotFuture(paymentDate);
+  const dateCheck = validateRenewPaymentDateRules(paymentDate, startDate, todayString());
+  if (!dateCheck.ok) {
+    const prepaidBlocked =
+      startDate &&
+      paymentDate < startDate &&
+      startDate <= todayString();
+    return fail(
+      prepaidBlocked ? 'validation.paymentDateAfterTermStart' : 'validation.paymentDateNotFuture',
+      'paymentDate',
+      prepaidBlocked && startDate ? { date: startDate } : undefined
+    );
+  }
+  return ok();
 }
 
 /**

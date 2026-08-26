@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   validatePaymentDate,
+  validateRenewPaymentDate,
   boundsForPaymentOnTerm,
+  boundsForRenewPaymentOnTerm,
   boundsForTermStartWithPayment,
   clampIsoDate,
   clampPaymentToTerm,
@@ -24,6 +26,13 @@ describe('paymentDateRules', () => {
     const r = validatePaymentDate('2026-01-01', '2026-02-01', '2026-07-17');
     expect(r.ok).toBe(false);
     expect(r.error).toMatch(/term start/i);
+  });
+
+  it('accepts prepaid renew payment before a future start', () => {
+    expect(validateRenewPaymentDate('2026-08-26', '2026-08-27', '2026-08-26').ok).toBe(true);
+    expect(boundsForRenewPaymentOnTerm('2026-08-27', '2026-08-26')).toEqual({
+      max: '2026-08-26',
+    });
   });
 
   it('accepts payment on term start through today', () => {

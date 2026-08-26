@@ -12,7 +12,7 @@ import MemberPhoto from '../../components/MemberPhoto';
 import BranchComparisonTable from '../../components/BranchComparisonTable';
 import { canRenewMember } from '../../utils/memberRenew';
 import { mapMemberFromApi } from '../../utils/apiMappers';
-import { formatDisplayDate } from '../../utils/date';
+import { formatDisplayDate, daysUntilDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
@@ -27,6 +27,18 @@ import { lazyWithRetry } from '../../utils/lazyWithRetry';
 const OwnerRevenueChart = lazyWithRetry(() => import('../../components/OwnerRevenueChart'));
 
 const ATTENTION_PREVIEW = 5;
+
+function attentionEndLabel(member, t) {
+  const statusLower = String(member.status || '').toLowerCase();
+  const endDate = member.endDate;
+  if (statusLower === 'expired') {
+    return t('pages.dashboard.expiredOn', { date: formatDisplayDate(endDate) });
+  }
+  const days = daysUntilDate(endDate);
+  if (days == null) return formatDisplayDate(endDate);
+  if (days <= 0) return t('pages.dashboard.expiresToday');
+  return t('pages.dashboard.daysLeft', { count: days });
+}
 
 export default function OwnerDashboard() {
   const { t } = useTranslation();
@@ -254,7 +266,7 @@ export default function OwnerDashboard() {
                               <p className="truncate text-xs text-app-muted">
                                 {planLabel}
                                 {' · '}
-                                {formatDisplayDate(member.endDate)}
+                                {attentionEndLabel(member, t)}
                               </p>
                             </div>
                           </div>
@@ -320,7 +332,7 @@ export default function OwnerDashboard() {
                             <td className="truncate font-medium text-app-text">
                               {planLabel}
                             </td>
-                            <td className="whitespace-nowrap text-app-text">{formatDisplayDate(member.endDate)}</td>
+                            <td className="whitespace-nowrap text-app-text">{attentionEndLabel(member, t)}</td>
                             <td>
                               <StatusBadge status={member.status} />
                             </td>

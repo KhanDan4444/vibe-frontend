@@ -169,6 +169,19 @@ export function todayString() {
 }
 
 /**
+ * Whole calendar days from today to a date (local). Positive = future, 0 = today, negative = past.
+ * @param {string|Date|null|undefined} date
+ * @returns {number|null}
+ */
+export function daysUntilDate(date) {
+  const target = parseLocalDate(date);
+  if (!target) return null;
+  const today = parseLocalDate(todayString());
+  if (!today) return null;
+  return Math.round((target.getTime() - today.getTime()) / 86400000);
+}
+
+/**
  * Local start of attendance week (matches API week_starts_on).
  * @param {Date} [date]
  * @param {'monday'|'sunday'} [weekStartsOn='monday']

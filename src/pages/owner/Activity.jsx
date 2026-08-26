@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { ScrollText, RefreshCw, UserRound, Banknote, FileText, Users, Dumbbell, Circle } from 'lucide-react';
+import { ScrollText, RefreshCw, UserRound, Banknote, FileText, Users, PersonStanding, Circle } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getActivityLogs } from '../../services/activityService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -54,7 +54,7 @@ function activityActionIcon(action) {
     case 'staff':
       return Users;
     case 'trainer':
-      return Dumbbell;
+      return PersonStanding;
     default:
       return Circle;
   }

@@ -3,15 +3,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { todayString, formatDisplayDate, isDateRangeValid } from '../utils/date';
+import { todayString, formatDisplayDate, isDateRangeValid, daysUntilDate } from '../utils/date';
 import {
-  boundsForPaymentOnTerm,
+  boundsForRenewPaymentOnTerm,
   boundsForRenewStart,
-  clampPaymentToTerm,
+  clampRenewPaymentToTerm,
+  paymentDateForRenewTermStart,
 } from '../utils/datePickerBounds';
 import { validateRenewPayment, showValidationError, inputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors, FORM_INPUT_CLASS } from '../utils/validation';
 import FieldError from './FieldError';
 import { DateField } from './DateField';
+import MemberPhoto from './MemberPhoto';
+import StatusBadge from './StatusBadge';
 import { PAYMENT_METHOD_OPTIONS } from '../i18n/helpers.js';
 import { formatMoney } from '../utils/formatMoney';
 import { formatPlanDisplayName } from '../utils/formatPlanDisplayName';
@@ -24,7 +27,18 @@ import RequiredMark from './ui/RequiredMark';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
+import { useAuth } from '../context/AuthContext';
 
+function renewMemberEndLabel(member, t) {
+  const statusLower = String(member?.status || '').toLowerCase();
+  if (statusLower === 'expired' || member?.status === DISPLAY_STATUS.EXPIRED) {
+    return t('pages.dashboard.expiredOn', { date: formatDisplayDate(member.endDate) });
+  }
+  const days = daysUntilDate(member.endDate);
+  if (days == null) return formatDisplayDate(member.endDate);
+  if (days <= 0) return t('pages.dashboard.expiresToday');
+  return t('pages.dashboard.daysLeft', { count: days });
+}
 
 /**
  * Modal to renew an expired or due-soon member and record payment in one step.
@@ -40,6 +54,7 @@ export default function RenewModal({
   fieldErrors: externalFieldErrors = {},
 }) {
   const { t } = useTranslation();
+  const { apiFetch } = useAuth();
   const [planId, setPlanId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [amount, setAmount] = useState('');
@@ -54,9 +69,10 @@ export default function RenewModal({
   const initDefaults = useCallback(() => {
     if (!member) return;
     const defaultPlanId = member.planId || plans[0]?.id || '';
+    const nextStart = defaultRenewStartDate(member);
     setPlanId(String(defaultPlanId));
-    setStartDate(defaultRenewStartDate(member));
-    setPaymentDate(todayString());
+    setStartDate(nextStart);
+    setPaymentDate(paymentDateForRenewTermStart(nextStart));
     setMethod('Cash');
     setValidationError('');
     clearAllFieldErrors(setLocalFieldErrors);
@@ -82,14 +98,18 @@ export default function RenewModal({
 
   const selectedPlan = plans.find((p) => p.id === parseInt(planId, 10));
   const renewStartBounds = boundsForRenewStart(member);
-  const paymentBounds = boundsForPaymentOnTerm(startDate);
+  const paymentBounds = boundsForRenewPaymentOnTerm(startDate);
   const paymentRangeValid = isDateRangeValid(paymentBounds.min, paymentBounds.max);
   const today = todayString();
+  const prepaidRenew = Boolean(startDate && startDate > today);
   const minStartIso = defaultRenewStartDate(member);
   const canSetStartToToday = !paymentRangeValid && today >= minStartIso;
   const showEarlyRenewNote =
     canRenewMember(member) && member.status === DISPLAY_STATUS.DUE_SOON;
   const newEndDate = selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : null;
+  const planLabel =
+    formatPlanDisplayName(member.planName || selectedPlan?.name) || t('pages.dashboard.customPlan');
+  const memberMeta = `${planLabel} · ${renewMemberEndLabel(member, t)}`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,9 +150,6 @@ export default function RenewModal({
             <RefreshCw className="h-5 w-5 shrink-0 text-teal-700" />
             <h2 className={modalTitle}>{t('modals.renew.title')}</h2>
           </div>
-          <p className="mt-1 text-sm text-app-muted">
-            {t('modals.renew.subtitle', { name: member.name })}
-          </p>
         </div>
         <button
           type="button"
@@ -146,6 +163,23 @@ export default function RenewModal({
 
       <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
         <div className={`${modalBody} space-y-4`}>
+          <div className="flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-surface/40 px-3 py-2.5">
+            <MemberPhoto
+              memberId={member.id}
+              apiFetch={apiFetch}
+              name={member.name}
+              hasPhoto={Boolean(member.hasPhoto)}
+              expandable={false}
+              className="h-11 w-11 rounded-full object-cover"
+              fallbackClassName="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text"
+            />
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-semibold text-app-text-strong">{member.name}</p>
+              <p className="mt-0.5 truncate text-xs text-app-muted">{memberMeta}</p>
+            </div>
+            <StatusBadge status={member.status} />
+          </div>
+
           {showEarlyRenewNote && (
             <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
               {t('modals.billing.paidThroughRenewTerm', { date: formatDisplayDate(member.endDate) })}
@@ -197,7 +231,7 @@ export default function RenewModal({
                 value={startDate}
                 onChange={(v) => {
                   setStartDate(v);
-                  setPaymentDate(clampPaymentToTerm(v, paymentDate));
+                  setPaymentDate(clampRenewPaymentToTerm(v, paymentDate));
                 }}
               />
             </div>
@@ -221,12 +255,17 @@ export default function RenewModal({
                 })}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
+              {prepaidRenew ? (
+                <p className="mt-2 text-xs text-app-muted">
+                  {t('modals.renew.prepaidHint', { date: formatDisplayDate(startDate) })}
+                </p>
+              ) : null}
               {canSetStartToToday ? (
                 <button
                   type="button"
                   onClick={() => {
                     setStartDate(today);
-                    setPaymentDate(clampPaymentToTerm(today, paymentDate));
+                    setPaymentDate(clampRenewPaymentToTerm(today, paymentDate));
                   }}
                   className="mt-2 text-sm font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
                 >

@@ -912,7 +912,8 @@
       "termPreview": "የ{{duration}} ወር ቆይታ እስከ {{date}}",
       "title": "አባልነት ያድሱ",
       "unpaidWarning": "ለቀደመው የክፍያ ዘመን ምንም ክፍያ አልተመዘገበም።",
-      "useTodayAsStart": "ዛሬን እንደ መጀመሪያ ቀን ተጠቀም"
+      "useTodayAsStart": "ዛሬን እንደ መጀመሪያ ቀን ተጠቀም",
+      "prepaidHint": "ዛሬ ክፍያ መመዝገብ ይቻላል — አዲሱ ዘመን {{date}} ይጀምራል (ከአሁኑ መጨረሻ በኋላ)።"
     },
     "renewGym": {
       "licenseStartDate": "አዲስ የመጀመሪያ ቀን",
@@ -1353,6 +1354,10 @@
       "expiredHintAction": "ወዲያውኑ ትኩረት ይፈልጋል።",
       "expiredHintOk": "ሁሉም ነገር ተከናውኗል።",
       "expires": "የሚያልቀው {{date}}",
+      "expiredOn": "{{date}} አልቋል",
+      "expiresToday": "ዛሬ ያልቃል",
+      "daysLeft_one": "{{count}} ቀን ቀርቷል",
+      "daysLeft_other": "{{count}} ቀናት ቀርተዋል",
       "expiringSection": "በቅርብ ጊዜ የሚያልቁ እና ጊዜያቸው ያለፈባቸው አባላት",
       "expiringSectionHint": "አሁን እርምጃ የሚፈልጉ ማደሻዎች።",
       "lastMonthCount": "ካለፈው ወር {{count}}",
@@ -1378,6 +1383,10 @@
       "deleteTitle": "ከዝርዝር ይወገድ?",
       "deleteConfirm": "አስወግድ",
       "durationRange": "ቆይታ (መጀመሪያ - ማለቂያ)",
+      "daysLeftHeader": "የቀሩ ቀናት",
+      "daysLeft_one": "{{count}} ቀን ቀርቷል",
+      "daysLeft_other": "{{count}} ቀናት ቀርተዋል",
+      "expiresToday": "ዛሬ ያልቃል",
       "empty": "ምንም አባል አልተገኘም።",
       "enrolledPaid": "{{name}} ተመዝግቧል እና ክፍያው ተመዝግቧል።",
       "enrolledSkip": "{{name}} ተመዝግቧል (ክፍያ ተዘልሏል)።",
