@@ -1119,6 +1119,7 @@
       "smsFailedTitle": "Ergaan SMS hin ergamne!",
       "smsFailedBody": "Miseensi galmaa'eera, garuu ergaan hin geenye. Liinkii paasii irraa profile isaani irraa deebisuu dandeessa.",
       "smsFailedDetail": "Miseensi galmaa'eera, garuu SMS hin milkoofne: {{detail}}",
+      "smsSentTitle": "Ergaan ergameera",
       "enrollAnother": "Kan biraa galmeessi",
       "viewMembers": "Miseensota ilaali",
       "paymentSection": "Kaffaltii jalqabaa",

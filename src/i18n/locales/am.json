@@ -821,6 +821,7 @@
       "smsFailedTitle": "የSMS መልእክት አልተላከም!",
       "smsFailedBody": "አባሉ ተመዝግቧል፣ ነገር ግን መልእክቱ አልደረሰም። ከመገለጫቸው የፓስ አገናኝ እንደገና መላክ ይችላሉ።",
       "smsFailedDetail": "አባሉ ተመዝግቧል፣ ነገር ግን SMS አልተሳካም፦ {{detail}}",
+      "smsSentTitle": "መልእክቱ ተልኳል",
       "enrollAnother": "ሌላ አባል መዝግብ",
       "viewMembers": "አባላትን ይመልከቱ",
       "phone": "ስልክ",
