@@ -357,11 +357,16 @@ export default function Members() {
 
   useEffect(() => {
     const { memberId, action, filter } = location.state || {};
+    if (filter === DISPLAY_STATUS.ACTIVE) setStatusFilter(DISPLAY_STATUS.ACTIVE);
     if (filter === DISPLAY_STATUS.DUE_SOON) setStatusFilter(DISPLAY_STATUS.DUE_SOON);
     if (filter === DISPLAY_STATUS.EXPIRED) setStatusFilter(DISPLAY_STATUS.EXPIRED);
     if (filter === UNPAID) setStatusFilter(UNPAID);
     if (filter === NEW) setStatusFilter(NEW);
-    if (!memberId) return;
+    if (filter) setPage(1);
+    if (!memberId) {
+      if (filter) window.history.replaceState({}, document.title);
+      return;
+    }
 
     (async () => {
       const res = await getMember(apiFetch, memberId);

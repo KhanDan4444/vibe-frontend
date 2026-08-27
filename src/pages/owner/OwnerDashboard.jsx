@@ -11,6 +11,7 @@ import RenewModal from '../../components/RenewModal';
 import MemberPhoto from '../../components/MemberPhoto';
 import BranchComparisonTable from '../../components/BranchComparisonTable';
 import { canRenewMember } from '../../utils/memberRenew';
+import { DISPLAY_STATUS } from '../../utils/memberStatus';
 import { mapMemberFromApi } from '../../utils/apiMappers';
 import { formatDisplayDate, daysUntilDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
@@ -147,7 +148,7 @@ export default function OwnerDashboard() {
         ) : (
           <>
             <MetricCard
-              className="col-span-2 lg:col-span-2"
+              className="col-span-2 lg:col-span-2 cursor-pointer"
               variant="emphasis"
               label={t('metrics.activeMembers')}
               value={`${activeMembersCount}`}
@@ -156,22 +157,31 @@ export default function OwnerDashboard() {
               color="emerald"
               showProgressBar
               progress={totalMembersCount > 0 ? (activeMembersCount / totalMembersCount) * 100 : 0}
+              onClick={() =>
+                navigate('/dashboard/members', { state: { filter: DISPLAY_STATUS.ACTIVE } })
+              }
             />
             <MetricCard
-              className="lg:col-span-1"
+              className="lg:col-span-1 cursor-pointer"
               variant="dense"
               label={t('metrics.dueSoon')}
               value={dueSoonMembersCount}
               icon={AlertTriangle}
               color="sky"
+              onClick={() =>
+                navigate('/dashboard/members', { state: { filter: DISPLAY_STATUS.DUE_SOON } })
+              }
             />
             <MetricCard
-              className="lg:col-span-1"
+              className="lg:col-span-1 cursor-pointer"
               variant="dense"
               label={t('metrics.expired')}
               value={expiredMembersCount}
               icon={XCircle}
               color="rose"
+              onClick={() =>
+                navigate('/dashboard/members', { state: { filter: DISPLAY_STATUS.EXPIRED } })
+              }
             />
             <MetricCard
               className="lg:col-span-1 cursor-pointer"
@@ -186,7 +196,7 @@ export default function OwnerDashboard() {
               onClick={() => navigate('/dashboard/members', { state: { filter: 'New' } })}
             />
             <MetricCard
-              className="lg:col-span-1"
+              className="lg:col-span-1 cursor-pointer"
               variant="dense"
               label={t('pages.dashboard.thisMonthRevenue')}
               value={formatMoney(monthlyIncome)}
@@ -194,6 +204,7 @@ export default function OwnerDashboard() {
               color="teal"
               trend={revenueTrend}
               trendCaption={t('metrics.vsLastMonth')}
+              onClick={() => navigate('/dashboard/revenue')}
             />
           </>
         )}

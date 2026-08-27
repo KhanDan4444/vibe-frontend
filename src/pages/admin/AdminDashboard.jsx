@@ -183,6 +183,16 @@ export default function AdminDashboard() {
     }
   }, [statusFilter]);
 
+  useEffect(() => {
+    const filter = location.state?.filter;
+    if (!filter) return;
+    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, EXPIRED]);
+    if (!allowed.has(filter)) return;
+    setGymPage(1);
+    setStatusFilter(filter);
+    window.history.replaceState({}, document.title);
+  }, [location.state]);
+
   const showingFormer = adminSection === 'gyms' && statusFilter === FORMER;
   const displayedGyms = useMemo(() => sortGymsList(gyms, gymSort), [gyms, gymSort]);
 
@@ -626,7 +636,7 @@ export default function AdminDashboard() {
                 ) : (
                 <>
                 <MetricCard
-                  className="col-span-2"
+                  className="col-span-2 cursor-pointer"
                   variant="emphasis"
                   label={t('admin.activeGyms')}
                   value={activeGyms}
@@ -636,8 +646,14 @@ export default function AdminDashboard() {
                   color="emerald"
                   showProgressBar
                   progress={totalGyms > 0 ? (activeGyms / totalGyms) * 100 : 0}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter('active');
+                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: 'active' } });
+                  }}
                 />
                 <MetricCard
+                  className="cursor-pointer"
                   variant="dense"
                   label={t('metrics.dueSoon')}
                   value={dueSoonGyms}
@@ -645,8 +661,14 @@ export default function AdminDashboard() {
                   icon={AlertTriangle}
                   color="sky"
                   badge={dueSoonGyms > 0 ? t('metrics.critical') : null}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter(DUE_SOON);
+                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: DUE_SOON } });
+                  }}
                 />
                 <MetricCard
+                  className="cursor-pointer"
                   variant="dense"
                   label={t('admin.suspendedExpired')}
                   value={suspendedGyms}
@@ -654,8 +676,14 @@ export default function AdminDashboard() {
                   icon={X}
                   color="rose"
                   badge={suspendedGyms > 0 ? t('metrics.actionRequired') : null}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter(EXPIRED);
+                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: EXPIRED } });
+                  }}
                 />
                 <MetricCard
+                  className="cursor-pointer"
                   variant="dense"
                   label={t('admin.newGyms')}
                   value={platformMetrics?.newGymsThisMonth ?? 0}
@@ -663,8 +691,14 @@ export default function AdminDashboard() {
                   color="violet"
                   trend={platformMetrics?.newGymsTrendPercent ?? null}
                   trendCaption={platformMetrics?.newGymsDeltaLabel || t('metrics.vsLastMonth')}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter('All');
+                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: 'All' } });
+                  }}
                 />
                 <MetricCard
+                  className="cursor-pointer"
                   variant="dense"
                   label={t('admin.saasRevenue')}
                   value={formatMoneyShort(platformMetrics?.saasIncomeThisMonth ?? 0)}
@@ -672,8 +706,10 @@ export default function AdminDashboard() {
                   color="teal"
                   trend={platformMetrics?.saasRevenueTrendPercent ?? null}
                   trendCaption={t('metrics.vsLastMonth')}
+                  onClick={() => navigate(ADMIN_SECTION_PATH.payments)}
                 />
                 <MetricCard
+                  className="cursor-pointer"
                   variant="dense"
                   label={t('admin.estMrr')}
                   value={formatMoneyShort(estimatedMrc)}
@@ -681,6 +717,7 @@ export default function AdminDashboard() {
                   icon={TrendingUp}
                   color="teal"
                   showHintBelow
+                  onClick={() => navigate(ADMIN_SECTION_PATH.plans)}
                 />
                 </>
                 )}
