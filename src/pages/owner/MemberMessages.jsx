@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, Check, CheckCircle2 } from 'lucide-react';
+import { MessageSquare, RefreshCw, UserPlus, Clock, Calendar, AlertCircle, QrCode, CheckCircle2 } from 'lucide-react';
 import { parseApiResponse } from '../../utils/api';
 import { getMemberSmsLog } from '../../services/memberSmsService';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
@@ -16,6 +16,7 @@ import {
   formatSmsMessagePreview,
   SMS_TYPE_FILTER_OPTIONS,
   smsMessageTypeIcon,
+  smsMessageTypeChipClass,
 } from '../../utils/smsLogLabels';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button';
@@ -23,17 +24,9 @@ import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClasses';
 import ToolbarPicker from '../../components/ToolbarPicker';
 import SearchField from '../../components/SearchField';
-import { MessageListSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { MessageListSkeleton, SmsTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
-
-const CHIP_ACTIVE =
-  'inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300';
-const CHIP_MUTED =
-  'inline-flex rounded-full bg-app-surface px-2.5 py-1 text-xs font-medium text-app-muted';
-
-const SENT_CHIP =
-  'inline-flex items-center gap-1.5 rounded-full border border-emerald-600/35 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-400/40 dark:bg-emerald-400/10 dark:text-emerald-400';
 
 const SMS_TYPE_ICON = {
   UserPlus,
@@ -64,7 +57,6 @@ export default function MemberMessages() {
   const [error, setError] = useState('');
 
   const typeFiltered = typeFilter !== 'all';
-  const chipClass = typeFiltered ? CHIP_MUTED : CHIP_ACTIVE;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 300);
@@ -203,20 +195,20 @@ export default function MemberMessages() {
                             {formatLogTimestamp(row.sent_at, t, i18n.language)}
                           </span>
                         </div>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                          <span className={SENT_CHIP}>
-                            <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20">
-                              <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
+                        <div className="mt-1.5 flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <span className={smsMessageTypeChipClass(row.message_type, typeFiltered)}>
+                              {formatSmsMessageType(t, row.message_type)}
                             </span>
+                            {preview ? (
+                              <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
+                            ) : null}
+                          </div>
+                          <span className="mt-0.5 inline-flex shrink-0 items-center gap-1 text-[11px] font-bold lowercase text-teal-700 dark:text-teal-300">
+                            <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
                             {t('pages.memberMessages.sentBadge')}
                           </span>
-                          <span className={chipClass}>
-                            {formatSmsMessageType(t, row.message_type)}
-                          </span>
                         </div>
-                        {preview ? (
-                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
-                        ) : null}
                         <p className="mt-1.5 text-xs text-app-muted">
                           {row.recipient_phone || row.member_phone || '—'}
                           {showBranchColumn && row.branch_name ? ` · ${row.branch_name}` : ''}
@@ -249,7 +241,7 @@ export default function MemberMessages() {
             </thead>
             <tbody>
               {loading && items.length === 0 ? (
-                <AdminTableRowsSkeleton rows={5} cols={colCount} />
+                <SmsTableRowsSkeleton rows={5} />
               ) : items.length > 0 ? (
                 items.map((row) => {
                   return (
@@ -265,7 +257,7 @@ export default function MemberMessages() {
                         {row.recipient_phone || row.member_phone || '—'}
                       </td>
                       <td>
-                        <span className={chipClass}>
+                        <span className={smsMessageTypeChipClass(row.message_type, typeFiltered)}>
                           {formatSmsMessageType(t, row.message_type)}
                         </span>
                       </td>

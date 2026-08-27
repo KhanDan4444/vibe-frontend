@@ -99,3 +99,25 @@ export function smsMessageTypeIcon(messageType) {
       return 'MessageSquare';
   }
 }
+
+const CHIP_BASE = 'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold border';
+
+/** Badge colors for SMS types — due soon = blue, expired = red, rest = teal. */
+export function smsMessageTypeChipClass(messageType, muted = false) {
+  if (muted) {
+    return 'inline-flex rounded-full bg-app-surface px-2.5 py-1 text-xs font-medium text-app-muted border border-transparent';
+  }
+  switch (messageType) {
+    case 'member_due_soon':
+    case 'member_expires_today':
+      return `${CHIP_BASE} bg-[color:var(--color-status-due-soon)]/10 text-[color:var(--color-status-due-soon)] border-[color:var(--color-status-due-soon)]/20`;
+    case 'member_expired':
+      return `${CHIP_BASE} bg-[color:var(--color-status-expired)]/10 text-[color:var(--color-status-expired)] border-[color:var(--color-status-expired)]/20`;
+    case 'member_enrolled':
+    case 'member_renewed':
+    case 'member_pass_link':
+      return `${CHIP_BASE} bg-[color:var(--color-status-active)]/10 text-[color:var(--color-status-active)] border-[color:var(--color-status-active)]/20`;
+    default:
+      return `${CHIP_BASE} bg-teal-50 text-teal-700 border-teal-100 dark:bg-teal-600/15 dark:text-teal-300 dark:border-teal-600/20`;
+  }
+}

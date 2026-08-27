@@ -223,24 +223,66 @@ export function AdminGymMessageSkeleton({ rows = 5 }) {
   );
 }
 
-/** Messages mobile: photo + name/chip + preview */
+/** Messages mobile: type icon | name+time | badge+sent | phone */
 export function MessageListSkeleton({ rows = 5 }) {
   return (
-    <div className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+    <div role="status" aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-start gap-3 p-4">
-          <div className="app-skeleton h-10 w-10 shrink-0 rounded-full" />
-          <div className="min-w-0 flex-1 space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="app-skeleton h-3.5 w-28" />
-              <div className="app-skeleton h-5 w-14 rounded-full" />
+        <div key={i}>
+          {i > 0 ? <div className="mx-3.5 border-t border-app-border-subtle sm:mx-4" /> : null}
+          <div className="flex gap-3 px-3.5 py-2.5 sm:px-4">
+            <div className="app-skeleton mt-0.5 h-[34px] w-[34px] shrink-0 rounded-[10px]" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <div className="app-skeleton h-3.5 w-28" />
+                <div className="app-skeleton h-3 w-24 shrink-0" />
+              </div>
+              <div className="mt-1.5 flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <div className="app-skeleton h-5 w-28 rounded-full" />
+                  <div className="app-skeleton h-3 w-40 max-w-full" />
+                </div>
+                <div className="mt-0.5 flex shrink-0 items-center gap-1">
+                  <div className="app-skeleton h-[15px] w-[15px] rounded-full" />
+                  <div className="app-skeleton h-3 w-8" />
+                </div>
+              </div>
+              <div className="app-skeleton mt-1.5 h-3 w-32" />
             </div>
-            <div className="app-skeleton h-3 w-full max-w-[16rem]" />
-            <div className="app-skeleton h-3 w-24" />
           </div>
         </div>
       ))}
     </div>
+  );
+}
+
+/** Messages desktop table: Member · Phone · Message type · When · Status */
+export function SmsTableRowsSkeleton({ rows = 5 }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, row) => (
+        <tr key={row}>
+          <td>
+            <div className="app-skeleton h-4 w-28" />
+          </td>
+          <td>
+            <div className="app-skeleton h-3.5 w-32" />
+          </td>
+          <td>
+            <div className="app-skeleton h-5 w-28 rounded-full" />
+          </td>
+          <td>
+            <div className="app-skeleton h-3.5 w-28" />
+          </td>
+          <td>
+            <div className="inline-flex items-center gap-1">
+              <div className="app-skeleton h-[15px] w-[15px] rounded-full" />
+              <div className="app-skeleton h-3 w-8" />
+            </div>
+          </td>
+        </tr>
+      ))}
+    </>
   );
 }
 
