@@ -25,6 +25,8 @@ export function adjustMemberFilterCounts(base, { pendingDeletes = [], pendingRes
     unpaid: base.unpaid ?? 0,
     dueSoon: base.dueSoon ?? 0,
     expired: base.expired ?? 0,
+    // Not exclusive with status chips — keep dashboard month count as-is.
+    new: base.new ?? 0,
     former: base.former ?? 0,
   };
 

@@ -17,6 +17,7 @@ const PROGRESS_COLOR = {
   sky: 'bg-[color:var(--color-status-due-soon)]',
   violet: 'bg-[color:var(--color-status-unpaid)]',
   amber: 'bg-[color:var(--color-status-trialing)]',
+  cream: 'bg-[color:var(--color-status-new)]',
   slate: 'bg-app-muted',
 };
 
@@ -34,6 +35,8 @@ const BADGE_COLOR = {
     'bg-[color:var(--color-status-unpaid)]/10 text-[color:var(--color-status-unpaid)] border-[color:var(--color-status-unpaid)]/20',
   amber:
     'bg-[color:var(--color-status-trialing)]/10 text-[color:var(--color-status-trialing)] border-[color:var(--color-status-trialing)]/20',
+  cream:
+    'bg-[color:var(--color-status-new)]/15 text-[color:var(--color-status-new)] border-[color:var(--color-status-new)]/25',
   slate: 'bg-app-surface text-app-muted border-app-border-subtle',
 };
 
@@ -47,6 +50,7 @@ const ICON_COLOR = {
   indigo: 'text-brand',
   violet: 'text-[color:var(--color-status-unpaid)]',
   amber: 'text-[color:var(--color-status-trialing)]',
+  cream: 'text-[color:var(--color-status-new)]',
   slate: 'text-app-muted',
 };
 
@@ -168,7 +172,7 @@ export default function MetricCard({
       )}
 
       {!badge && !showProgressBar && !showHintBelow && hint && (
-        <p className={`mt-1.5 text-xs ${hintColor || mutedText}`}>{hint}</p>
+        <p className={`mt-1 ${hintColor || `text-xs ${mutedText}`}`}>{hint}</p>
       )}
 
       {showProgressBar && (

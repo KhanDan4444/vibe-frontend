@@ -490,6 +490,8 @@
     "dueSoon": "Due soon",
     "expired": "Expired",
     "active": "Active",
+    "newMember_one": "New member",
+    "newMember_other": "New members",
     "allMembers": "All members",
     "activeOnly": "Active only",
     "expiredOnly": "Expired only",
@@ -610,6 +612,9 @@
     "critical": "Critical",
     "actionRequired": "Action Required",
     "newMembers": "New members",
+    "newMember_one": "New member",
+    "newMember_other": "New members",
+    "thisMonthCaption": "This Month",
     "revenue": "Revenue",
     "periodRevenue": "{{period}} revenue"
   },

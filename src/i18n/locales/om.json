@@ -478,6 +478,8 @@
     "dueSoon": "Dhiyeenyatti kan dhumu",
     "expired": "Kan dhumate",
     "active": "Si'aawaa",
+    "newMember_one": "Miseensa haaraa",
+    "newMember_other": "Miseensota haaraa",
     "allMembers": "Miseensota hunda",
     "activeOnly": "Si'aawaa qofa",
     "expiredOnly": "Kan dhumate qofa",
@@ -595,6 +597,9 @@
     "critical": "Daran Barbaachisaa",
     "actionRequired": "Tarkaanfii Barbaada",
     "newMembers": "Miseensota Haaraa",
+    "newMember_one": "Miseensa haaraa",
+    "newMember_other": "Miseensota haaraa",
+    "thisMonthCaption": "Ji'a kana",
     "revenue": "Galii",
     "periodRevenue": "Galii yeroo {{period}}"
   },

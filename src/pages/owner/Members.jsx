@@ -45,6 +45,7 @@ import { MemberCardSkeleton, AdminTableRowsSkeleton } from '../../components/Loa
 import { adjustMemberFilterCounts } from '../../utils/memberFilterCounts';
 
 const UNPAID = 'Unpaid';
+const NEW = 'New';
 const FORMER = 'Former';
 const MEMBER_FILTER_STORAGE_KEY = 'vibe.members.statusFilter';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -56,6 +57,7 @@ function statusFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
   if (statusFilter === DISPLAY_STATUS.DUE_SOON) return { filter: 'due_soon' };
   if (statusFilter === DISPLAY_STATUS.EXPIRED) return { filter: 'expired' };
+  if (statusFilter === NEW) return { filter: 'new' };
   if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
 }
@@ -67,6 +69,7 @@ function readSavedMemberFilter() {
       'All',
       FORMER,
       UNPAID,
+      NEW,
       DISPLAY_STATUS.ACTIVE,
       DISPLAY_STATUS.DUE_SOON,
       DISPLAY_STATUS.EXPIRED,
@@ -134,6 +137,7 @@ export default function Members() {
           unpaid: summary.unpaidCount ?? 0,
           dueSoon: summary.dueSoonMembers ?? 0,
           expired: summary.expiredMembers ?? 0,
+          new: summary.newMembersThisMonth ?? 0,
           former: archivedTotal,
         },
         {
@@ -147,6 +151,7 @@ export default function Members() {
       summary.unpaidCount,
       summary.dueSoonMembers,
       summary.expiredMembers,
+      summary.newMembersThisMonth,
       total,
       archivedTotal,
       members,
@@ -158,6 +163,7 @@ export default function Members() {
   const dueSoonCount = chipCounts.dueSoon;
   const expiredCount = chipCounts.expired;
   const unpaidCount = chipCounts.unpaid;
+  const newMembersCount = chipCounts.new ?? summary.newMembersThisMonth ?? 0;
   const activeMembersCount = chipCounts.active;
   const totalMembers = chipCounts.all;
   const formerCount = chipCounts.former;
@@ -354,6 +360,7 @@ export default function Members() {
     if (filter === DISPLAY_STATUS.DUE_SOON) setStatusFilter(DISPLAY_STATUS.DUE_SOON);
     if (filter === DISPLAY_STATUS.EXPIRED) setStatusFilter(DISPLAY_STATUS.EXPIRED);
     if (filter === UNPAID) setStatusFilter(UNPAID);
+    if (filter === NEW) setStatusFilter(NEW);
     if (!memberId) return;
 
     (async () => {
@@ -736,6 +743,16 @@ export default function Members() {
               onClick={() => {
                 setPage(1);
                 setStatusFilter(DISPLAY_STATUS.EXPIRED);
+              }}
+            />
+            <FilterChip
+              variant="new"
+              label={t('filters.newMember', { count: newMembersCount })}
+              count={newMembersCount}
+              active={statusFilter === NEW}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(NEW);
               }}
             />
             <>

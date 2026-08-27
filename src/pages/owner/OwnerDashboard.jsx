@@ -3,7 +3,7 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Users, AlertTriangle, XCircle, TrendingUp, RefreshCw, ClipboardCheck } from 'lucide-react';
+import { Users, AlertTriangle, XCircle, UserPlus, TrendingUp, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import StatusBadge from '../../components/StatusBadge';
@@ -85,7 +85,8 @@ export default function OwnerDashboard() {
   const expiredMembersCount = summary.expiredMembers ?? 0;
   const totalMembersCount = summary.totalMembers ?? 0;
   const monthlyIncome = summary.monthlyIncome ?? 0;
-  const checkedInToday = summary.checkedInToday ?? 0;
+  const newMembersThisMonth = summary.newMembersThisMonth ?? 0;
+  const newMembersTrend = summary.newMembersTrendPercent ?? null;
   const revenueTrend = summary.revenueTrendPercent ?? null;
 
   const alertMembers = (summary.alertMembers || [])
@@ -175,11 +176,14 @@ export default function OwnerDashboard() {
             <MetricCard
               className="lg:col-span-1 cursor-pointer"
               variant="dense"
-              label={t('metrics.checkedInToday')}
-              value={checkedInToday}
-              icon={ClipboardCheck}
-              color="amber"
-              onClick={() => navigate('/dashboard/check-in')}
+              label={t('metrics.newMember', { count: newMembersThisMonth })}
+              value={newMembersThisMonth}
+              icon={UserPlus}
+              color="cream"
+              trend={newMembersTrend}
+              hint={t('metrics.thisMonthCaption')}
+              hintColor="text-[10px] font-medium leading-tight text-[color:var(--color-status-new)]"
+              onClick={() => navigate('/dashboard/members', { state: { filter: 'New' } })}
             />
             <MetricCard
               className="lg:col-span-1"

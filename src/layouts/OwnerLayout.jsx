@@ -104,7 +104,6 @@ export default function OwnerLayout() {
 
   const dueSoonCount = summary.dueSoonMembers ?? 0;
   const expiredCount = summary.expiredMembers ?? 0;
-  const unpaidCount = summary.unpaidCount ?? 0;
 
   const notifications = useMemo(
     () => (summary.notifications || []).filter((n) => !dismissedIds.includes(n.id)),
@@ -180,8 +179,8 @@ export default function OwnerLayout() {
     const Icon = item.icon;
     const active = location.pathname === item.path;
     const label = t(item.nameKey);
-    const showAttentionBadge = item.nameKey === 'nav.members' && (dueSoonCount + expiredCount + unpaidCount) > 0;
-    const attentionTotal = dueSoonCount + expiredCount + unpaidCount;
+    const showAttentionBadge = item.nameKey === 'nav.members' && (dueSoonCount + expiredCount) > 0;
+    const attentionTotal = dueSoonCount + expiredCount;
     const link = (
       <Link
         to={item.path}

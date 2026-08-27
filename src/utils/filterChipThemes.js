@@ -52,6 +52,17 @@ export const FILTER_CHIP_THEMES = {
     badgeInactive:
       'bg-[color:var(--color-status-expired)]/15 text-[color:var(--color-status-expired)]',
   },
+  new: {
+    /* Soft parchment — whitish cream, not bright */
+    dot: 'bg-[#c4b8a8] dark:bg-[#c9c0b2]',
+    active:
+      'bg-[#efeae1] border-[#d4cdc0] text-[#6e675c] dark:bg-[#2e2b26] dark:border-[#6a6358] dark:text-[#d8d0c4]',
+    inactive:
+      'bg-app-raised border-[#d8d2c6]/80 text-[#8a8276] hover:bg-[#f5f1ea] dark:border-[#6a6358]/45 dark:text-[#b8b0a4] dark:hover:bg-[#2e2b26]/75',
+    badgeActive: 'bg-[#a39888] text-white dark:bg-[#c9c0b2] dark:text-[#1c1a17]',
+    badgeInactive:
+      'bg-[#efeae1] text-[#6e675c] dark:bg-[#3a3630] dark:text-[#d8d0c4]',
+  },
   former: {
     dot: 'bg-[color:var(--color-status-former)]',
     active:

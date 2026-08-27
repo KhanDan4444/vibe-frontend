@@ -204,7 +204,7 @@ export default function MemberMessages() {
                               <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
                             ) : null}
                           </div>
-                          <span className="mt-0.5 inline-flex shrink-0 items-center gap-1 text-[11px] font-bold lowercase text-teal-700 dark:text-teal-300">
+                          <span className="mt-0.5 inline-flex shrink-0 items-center gap-1 text-[11px] font-bold lowercase text-emerald-600 dark:text-emerald-400">
                             <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
                             {t('pages.memberMessages.sentBadge')}
                           </span>
@@ -265,7 +265,7 @@ export default function MemberMessages() {
                         {formatLogTimestamp(row.sent_at, t, i18n.language)}
                       </td>
                       <td>
-                        <span className="inline-flex items-center gap-1 text-xs font-bold lowercase text-teal-700 dark:text-teal-300">
+                        <span className="inline-flex items-center gap-1 text-xs font-bold lowercase text-emerald-600 dark:text-emerald-400">
                           <CheckCircle2 className="h-[15px] w-[15px]" strokeWidth={2.5} aria-hidden />
                           {t('pages.memberMessages.sentBadge')}
                         </span>
