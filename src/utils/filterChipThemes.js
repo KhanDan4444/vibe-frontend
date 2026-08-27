@@ -4,8 +4,9 @@
  */
 export const FILTER_CHIP_THEMES = {
   all: {
-    dot: 'bg-app-muted/60',
-    active: 'bg-app-surface border-app-border text-app-text-strong',
+    dot: 'bg-app-muted',
+    active:
+      'bg-app-muted/20 border-app-muted text-app-text-strong',
     inactive:
       'bg-app-raised border-app-border text-app-muted hover:bg-app-surface/80 hover:text-app-text',
     badgeActive: 'bg-app-muted text-white',
