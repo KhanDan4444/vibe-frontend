@@ -214,13 +214,15 @@ export function pdfHeader(doc, {
   doc.setFont('helvetica', 'bold');
   doc.text(title, 14, y);
   doc.setFont('helvetica', 'normal');
-  y += 6;
+  y += 7;
 
   if (subtitle) {
-    doc.setFontSize(10);
-    doc.setTextColor(...PDF_BRAND.muted);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...PDF_BRAND.teal);
     doc.text(subtitle, 14, y);
-    y += 5;
+    doc.setFont('helvetica', 'normal');
+    y += 7;
   }
 
   doc.setFontSize(9);
@@ -276,12 +278,50 @@ export function pdfRevenueByMethodBlock(doc, startY, summary) {
 }
 
 /**
- * PDF section: plans in use with share bars (members or gyms).
+ * Summary stat cards (Total / Plans / Active / …) — matches mobile report PDF.
  * @param {import('jspdf').jsPDF} doc
- * @param {Array<{ name: string, count: number }>} planEntries
- * @param {{ title?: string, totalLabel?: string }} [labels]
+ * @param {number} startY
+ * @param {Array<{ label: string, value: number|string }>} cards
+ * @returns {number} y after the block
  */
-export function pdfPlansUsedBlock(doc, startY, planEntries, labels = {}) {
+export function pdfStatCards(doc, startY, cards) {
+  if (!cards?.length) return startY;
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const left = 14;
+  const right = 14;
+  const gap = 3.5;
+  const usable = pageW - left - right;
+  const cardW = (usable - gap * (cards.length - 1)) / cards.length;
+  const cardH = 16;
+  let x = left;
+
+  cards.forEach((card) => {
+    doc.setDrawColor(...PDF_BRAND.line);
+    doc.setFillColor(...PDF_BRAND.stripe);
+    if (typeof doc.roundedRect === 'function') {
+      doc.roundedRect(x, startY, cardW, cardH, 1.5, 1.5, 'FD');
+    } else {
+      doc.rect(x, startY, cardW, cardH, 'FD');
+    }
+
+    doc.setFontSize(7);
+    doc.setTextColor(...PDF_BRAND.muted);
+    doc.setFont('helvetica', 'normal');
+    doc.text(String(card.label || '').toUpperCase(), x + 3, startY + 5);
+
+    doc.setFontSize(12);
+    doc.setTextColor(...PDF_BRAND.text);
+    doc.setFont('helvetica', 'bold');
+    doc.text(String(card.value ?? 0), x + 3, startY + 12);
+    doc.setFont('helvetica', 'normal');
+
+    x += cardW + gap;
+  });
+
+  doc.setTextColor(0);
+  return startY + cardH + 6;
+}
   if (!planEntries?.length) return startY;
 
   const entityTotal = planEntries.reduce((s, e) => s + e.count, 0);

@@ -46,6 +46,7 @@ import { adjustMemberFilterCounts } from '../../utils/memberFilterCounts';
 
 const UNPAID = 'Unpaid';
 const NEW = 'New';
+const NO_VISIT = 'No visit';
 const FORMER = 'Former';
 const MEMBER_FILTER_STORAGE_KEY = 'vibe.members.statusFilter';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -58,6 +59,7 @@ function statusFilterToQuery(statusFilter) {
   if (statusFilter === DISPLAY_STATUS.DUE_SOON) return { filter: 'due_soon' };
   if (statusFilter === DISPLAY_STATUS.EXPIRED) return { filter: 'expired' };
   if (statusFilter === NEW) return { filter: 'new' };
+  if (statusFilter === NO_VISIT) return { filter: 'inactive_week' };
   if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
 }
@@ -65,11 +67,14 @@ function statusFilterToQuery(statusFilter) {
 function readSavedMemberFilter() {
   try {
     const saved = sessionStorage.getItem(MEMBER_FILTER_STORAGE_KEY);
+    // Migrate older chip labels used as storage ids.
+    if (saved === 'Quiet' || saved === 'At risk') return NO_VISIT;
     const allowed = new Set([
       'All',
       FORMER,
       UNPAID,
       NEW,
+      NO_VISIT,
       DISPLAY_STATUS.ACTIVE,
       DISPLAY_STATUS.DUE_SOON,
       DISPLAY_STATUS.EXPIRED,
@@ -118,6 +123,7 @@ export default function Members() {
 
   const showingFormer = statusFilter === FORMER;
   const showingDueSoon = statusFilter === DISPLAY_STATUS.DUE_SOON;
+  const showingNoVisit = statusFilter === NO_VISIT;
 
   const formatMembershipDuration = (member) => {
     if (showingDueSoon) {
@@ -128,6 +134,14 @@ export default function Members() {
     }
     return null;
   };
+
+  const formatDidntCome = (member) => {
+    const days = member.daysWithoutVisit;
+    if (days == null || Number.isNaN(days)) return '—';
+    return t('pages.members.didntCome', { count: Math.max(0, days) });
+  };
+
+  const tableColCount = (showBranchColumn ? 8 : 7) + (showingNoVisit ? 1 : 0);
   const chipCounts = useMemo(
     () =>
       adjustMemberFilterCounts(
@@ -138,6 +152,7 @@ export default function Members() {
           dueSoon: summary.dueSoonMembers ?? 0,
           expired: summary.expiredMembers ?? 0,
           new: summary.newMembersThisMonth ?? 0,
+          inactiveWeek: summary.inactiveMembersThisWeek ?? 0,
           former: archivedTotal,
         },
         {
@@ -152,6 +167,7 @@ export default function Members() {
       summary.dueSoonMembers,
       summary.expiredMembers,
       summary.newMembersThisMonth,
+      summary.inactiveMembersThisWeek,
       total,
       archivedTotal,
       members,
@@ -164,6 +180,7 @@ export default function Members() {
   const expiredCount = chipCounts.expired;
   const unpaidCount = chipCounts.unpaid;
   const newMembersCount = chipCounts.new ?? summary.newMembersThisMonth ?? 0;
+  const noVisitCount = chipCounts.inactiveWeek ?? summary.inactiveMembersThisWeek ?? 0;
   const activeMembersCount = chipCounts.active;
   const totalMembers = chipCounts.all;
   const formerCount = chipCounts.former;
@@ -362,6 +379,7 @@ export default function Members() {
     if (filter === DISPLAY_STATUS.EXPIRED) setStatusFilter(DISPLAY_STATUS.EXPIRED);
     if (filter === UNPAID) setStatusFilter(UNPAID);
     if (filter === NEW) setStatusFilter(NEW);
+    if (filter === NO_VISIT || filter === 'Quiet' || filter === 'At risk') setStatusFilter(NO_VISIT);
     if (filter) setPage(1);
     if (!memberId) {
       if (filter) window.history.replaceState({}, document.title);
@@ -760,6 +778,16 @@ export default function Members() {
                 setStatusFilter(NEW);
               }}
             />
+            <FilterChip
+              variant="inactive_week"
+              label={t('filters.noVisit')}
+              count={noVisitCount}
+              active={statusFilter === NO_VISIT}
+              onClick={() => {
+                setPage(1);
+                setStatusFilter(NO_VISIT);
+              }}
+            />
             <>
                 <span className="filter-chip-archive-rule" aria-hidden />
                 <FilterChip
@@ -833,6 +861,14 @@ export default function Members() {
                           <>
                             {formatDisplayDate(member.startDate)} →{' '}
                             <span className="font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
+                            {showingNoVisit ? (
+                              <>
+                                {' · '}
+                                <span className="font-semibold text-app-text">
+                                  {formatDidntCome(member)}
+                                </span>
+                              </>
+                            ) : null}
                           </>
                         )}
                     </p>
@@ -894,13 +930,16 @@ export default function Members() {
                       ? t('pages.members.daysLeftHeader')
                       : t('pages.members.durationRange')}
                 </th>
+                {showingNoVisit && (
+                  <th className="owner-members-col-didnt-come">{t('pages.members.didntComeHeader')}</th>
+                )}
                 <th className="owner-members-col-status">{t('table.status')}</th>
                 <th className="owner-members-col-actions text-right">{t('table.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {listLoading ? (
-                <AdminTableRowsSkeleton rows={6} cols={showBranchColumn ? 8 : 7} />
+                <AdminTableRowsSkeleton rows={6} cols={tableColCount} />
               ) : displayedMembers.length > 0 ? (
                 displayedMembers.map((member) => {
                   const planLabel = resolveMemberPlanLabel(
@@ -957,6 +996,13 @@ export default function Members() {
                           </>
                         )}
                       </td>
+                      {showingNoVisit && (
+                        <td className="owner-members-col-didnt-come">
+                          <span className="whitespace-nowrap font-semibold text-app-text">
+                            {formatDidntCome(member)}
+                          </span>
+                        </td>
+                      )}
                       <td className="owner-members-col-status">
                         <div>
                           <StatusBadge status={showingFormer ? 'Former' : member.status} />
@@ -992,7 +1038,7 @@ export default function Members() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={showBranchColumn ? 8 : 7} className="p-0">
+                  <td colSpan={tableColCount} className="p-0">
                     <EmptyState
                       icon={emptyIcon}
                       compact

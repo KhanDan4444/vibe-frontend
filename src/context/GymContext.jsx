@@ -29,6 +29,7 @@ const EMPTY_SUMMARY = {
   newMembersLastMonth: 0,
   newMembersTrendPercent: null,
   newMembersDeltaLabel: null,
+  inactiveMembersThisWeek: 0,
   alertMembers: [],
   revenueChart: [],
   notifications: [],

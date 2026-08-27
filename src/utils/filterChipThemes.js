@@ -63,6 +63,15 @@ export const FILTER_CHIP_THEMES = {
     badgeInactive:
       'bg-[#efeae1] text-[#6e675c] dark:bg-[#3a3630] dark:text-[#d8d0c4]',
   },
+  inactive_week: {
+    dot: 'bg-app-muted',
+    active:
+      'bg-app-muted/20 border-app-muted text-app-text-strong',
+    inactive:
+      'bg-app-raised border-app-border text-app-muted hover:bg-app-surface/80 hover:text-app-text',
+    badgeActive: 'bg-app-muted text-white',
+    badgeInactive: 'bg-app-surface text-app-muted',
+  },
   former: {
     dot: 'bg-[color:var(--color-status-former)]',
     active:

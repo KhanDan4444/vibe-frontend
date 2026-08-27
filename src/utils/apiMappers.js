@@ -21,6 +21,10 @@ export function mapMemberFromApi(m) {
     deletedAt: m.deleted_at || null,
     trainerId: m.trainer_id || null,
     trainerName: m.trainer_name || null,
+    daysWithoutVisit:
+      m.days_without_visit == null || m.days_without_visit === ''
+        ? null
+        : Number(m.days_without_visit),
   };
 }
 

@@ -704,6 +704,11 @@
     min-width: 12rem;
   }
 
+  .owner-members-table .owner-members-col-didnt-come {
+    white-space: nowrap;
+    min-width: 7rem;
+  }
+
   .owner-members-table .owner-members-col-status {
     white-space: nowrap;
     min-width: 6.5rem;

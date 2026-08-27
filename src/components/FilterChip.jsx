@@ -2,7 +2,7 @@ import { FILTER_CHIP_THEMES } from '../utils/filterChipThemes';
 
 /**
  * Mobile-style status filter chip: colored dot, label, and count badge.
- * @param {'all'|'active'|'unpaid'|'due_soon'|'expired'|'new'|'former'} variant
+ * @param {'all'|'active'|'unpaid'|'due_soon'|'expired'|'new'|'inactive_week'|'former'} variant
  */
 export function FilterChip({ variant = 'all', label, count, active = false, onClick }) {
   const theme = FILTER_CHIP_THEMES[variant] || FILTER_CHIP_THEMES.all;

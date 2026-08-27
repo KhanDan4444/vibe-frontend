@@ -17,6 +17,7 @@ import {
   revenueByMethodCsvBlock,
   pdfRevenueByMethodBlock,
   pdfPlansUsedBlock,
+  pdfStatCards,
   pdfStartNewPage,
   pdfApplyPageChrome,
   pdfStatusDidParseCell,
@@ -24,6 +25,7 @@ import {
 } from './reportExportCore';
 import { sortMembersList, sortOwnerPaymentsList, DEFAULT_EXPORT_SORT } from './listSort';
 import { formatPlanDisplayName } from './formatPlanDisplayName';
+import { toDateString, todayString } from './date';
 
 function reportTitle(meta, fallback) {
   const name = String(meta?.gymName || '').trim();
@@ -70,6 +72,39 @@ function plansUsedEntries(members) {
   return [...counts.entries()]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+}
+
+/** Active = valid term and paid. Unpaid is separate (not counted as active). */
+function memberStatusCounts(members) {
+  let active = 0;
+  let unpaid = 0;
+  let former = 0;
+  let newMembers = 0;
+  const monthKey = todayString().slice(0, 7);
+  for (const m of members) {
+    if (m.deleted_at) {
+      former += 1;
+      continue;
+    }
+    const start = toDateString(m.start_date);
+    if (start && start !== '—' && start.slice(0, 7) === monthKey) newMembers += 1;
+    const s = (m.status || '').toLowerCase();
+    if (m.is_unpaid) unpaid += 1;
+    if (s === 'active' && !m.is_unpaid) active += 1;
+  }
+  return { active, unpaid, former, newMembers, total: members.length };
+}
+
+function gymReportStatCards(members, planCount) {
+  const counts = memberStatusCounts(members);
+  return [
+    { label: exportText('export.statTotal'), value: counts.total },
+    { label: exportText('export.statPlans'), value: planCount },
+    { label: exportText('export.statActive'), value: counts.active },
+    { label: exportText('export.statUnpaid'), value: counts.unpaid },
+    { label: exportText('export.statFormer'), value: counts.former },
+    { label: exportText('export.statNew'), value: counts.newMembers },
+  ];
 }
 
 function formatMemberStatus(m) {
@@ -320,6 +355,8 @@ export async function downloadFullOwnerReportPdf(members, payments, meta = {}) {
       }),
     ]),
   ));
+
+  startY = pdfStatCards(doc, startY, gymReportStatCards(sortedMembers, plans.length));
 
   startY = pdfPlansUsedBlock(doc, startY, plans);
 
