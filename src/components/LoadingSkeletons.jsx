@@ -168,15 +168,12 @@ export function ActivityCardSkeleton({ rows = 5 }) {
   );
 }
 
-/** Activity desktop: When · Who (name+chip) · Branch? · Action · Target · Details */
+/** Activity desktop: Who (name+chip) · Branch? · Action · Target · Details · When */
 export function ActivityTableRowsSkeleton({ rows = 5, showBranchColumn = false }) {
   return (
     <>
       {Array.from({ length: rows }).map((_, row) => (
         <tr key={row}>
-          <td>
-            <div className="app-skeleton h-3.5 w-28" />
-          </td>
           <td>
             <div className="space-y-1.5">
               <div className="app-skeleton h-4 w-32" />
@@ -196,6 +193,9 @@ export function ActivityTableRowsSkeleton({ rows = 5, showBranchColumn = false }
           </td>
           <td>
             <div className="app-skeleton h-3.5 w-full max-w-[12rem]" />
+          </td>
+          <td>
+            <div className="app-skeleton h-3.5 w-28" />
           </td>
         </tr>
       ))}

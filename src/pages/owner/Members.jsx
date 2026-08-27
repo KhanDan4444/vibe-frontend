@@ -141,7 +141,6 @@ export default function Members() {
     return t('pages.members.didntCome', { count: Math.max(0, days) });
   };
 
-  const tableColCount = (showBranchColumn ? 8 : 7) + (showingNoVisit ? 1 : 0);
   const chipCounts = useMemo(
     () =>
       adjustMemberFilterCounts(
@@ -187,6 +186,7 @@ export default function Members() {
   const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
   const showBranchColumn =
     isGymOwner(user?.role) && selectedBranchId === 'all' && activeBranchCount > 1;
+  const tableColCount = (showBranchColumn ? 8 : 7) + (showingNoVisit ? 1 : 0);
   const showTransfer =
     isGymOwner(user?.role) && activeBranchCount > 1 && (!readOnly || branchReadOnly);
   const canDeleteMembers = isGymOwner(user?.role);

@@ -332,12 +332,12 @@ export default function Activity() {
           <table className="admin-data-table min-w-[720px]">
             <thead>
               <tr>
-                <th>{t('table.when')}</th>
                 <th>{t('table.who')}</th>
                 {showBranchColumn ? <th>{t('table.branch')}</th> : null}
                 <th>{t('table.action')}</th>
                 <th>{t('table.target')}</th>
                 <th>{t('table.details')}</th>
+                <th>{t('table.when')}</th>
               </tr>
             </thead>
             <tbody>
@@ -354,9 +354,6 @@ export default function Activity() {
                       className={clickable ? `cursor-pointer ${tableRowHover}` : tableRowHover}
                       onClick={clickable ? () => openActivityTarget(entry, navigate) : undefined}
                     >
-                      <td className="whitespace-nowrap text-app-muted">
-                        {formatLogTimestamp(entry.created_at, t, i18n.language)}
-                      </td>
                       <td>
                         <div className="font-medium text-app-text-strong">{entry.actor_name}</div>
                         <span className={`mt-0.5 ${roleChipClass(isStaff)}`}>
@@ -374,6 +371,9 @@ export default function Activity() {
                       </td>
                       <td className="truncate text-app-muted">
                         {detailText || '—'}
+                      </td>
+                      <td className="whitespace-nowrap text-app-muted">
+                        {formatLogTimestamp(entry.created_at, t, i18n.language)}
                       </td>
                     </tr>
                   );
