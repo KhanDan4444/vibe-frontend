@@ -159,7 +159,7 @@ export function aggregateMembersByStatus(members) {
 
 /**
  * Exclusive member buckets for a single overview donut.
- * Priority: Expired → Due Soon → Unpaid → Active (each member counted once).
+ * Priority: Former → Expired → Due Soon → Unpaid → Active (each member once).
  */
 export function aggregateMembersOverview(members) {
   const counts = {

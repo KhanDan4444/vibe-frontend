@@ -91,7 +91,7 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
         </ResponsiveContainer>
       </div>
 
-      <ul className="mt-2.5 flex max-h-[5.5rem] shrink-0 flex-col gap-1.5 overflow-y-auto px-0.5">
+      <ul className="mt-2.5 flex max-h-[8.5rem] shrink-0 flex-col gap-1.5 overflow-y-auto px-0.5">
         {rows.map((entry, i) => {
           const active = activeIndex === i;
           return (

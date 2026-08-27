@@ -140,18 +140,66 @@ export function PaymentCardSkeleton({ rows = 5 }) {
   );
 }
 
-/** Activity mobile: timestamp + actor stack, no avatar */
+/** Activity mobile: action icon | action+time | target | details | actor+chip */
 export function ActivityCardSkeleton({ rows = 5 }) {
   return (
-    <div className="divide-y divide-app-border-subtle" role="status" aria-label="Loading">
+    <div role="status" aria-label="Loading">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="space-y-2 p-4">
-          <div className="app-skeleton h-3 w-24" />
-          <div className="app-skeleton h-3.5 w-44" />
-          <div className="app-skeleton h-3 w-56" />
+        <div key={i}>
+          {i > 0 ? <div className="mx-3.5 border-t border-app-border-subtle sm:mx-4" /> : null}
+          <div className="flex gap-3 px-3.5 py-2.5 sm:px-4">
+            <div className="app-skeleton mt-0.5 h-[34px] w-[34px] shrink-0 rounded-[10px]" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <div className="app-skeleton h-3.5 w-36" />
+                <div className="app-skeleton h-3 w-24 shrink-0" />
+              </div>
+              <div className="app-skeleton mt-1 h-3.5 w-40 max-w-full" />
+              <div className="app-skeleton mt-0.5 h-3 w-52 max-w-full" />
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                <div className="app-skeleton h-3 w-28" />
+                <div className="app-skeleton h-5 w-16 rounded-full" />
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </div>
+  );
+}
+
+/** Activity desktop: When · Who (name+chip) · Branch? · Action · Target · Details */
+export function ActivityTableRowsSkeleton({ rows = 5, showBranchColumn = false }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, row) => (
+        <tr key={row}>
+          <td>
+            <div className="app-skeleton h-3.5 w-28" />
+          </td>
+          <td>
+            <div className="space-y-1.5">
+              <div className="app-skeleton h-4 w-32" />
+              <div className="app-skeleton h-5 w-16 rounded-full" />
+            </div>
+          </td>
+          {showBranchColumn ? (
+            <td>
+              <div className="app-skeleton h-3.5 w-20" />
+            </td>
+          ) : null}
+          <td>
+            <div className="app-skeleton h-4 w-36" />
+          </td>
+          <td>
+            <div className="app-skeleton h-3.5 w-28" />
+          </td>
+          <td>
+            <div className="app-skeleton h-3.5 w-full max-w-[12rem]" />
+          </td>
+        </tr>
+      ))}
+    </>
   );
 }
 

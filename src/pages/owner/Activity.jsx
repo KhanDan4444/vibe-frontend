@@ -25,7 +25,7 @@ import ToolbarPicker from '../../components/ToolbarPicker';
 import { ToolbarChip, ToolbarChipBar } from '../../components/ToolbarChip';
 import SearchField from '../../components/SearchField';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
-import { ActivityCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
+import { ActivityCardSkeleton, ActivityTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
@@ -192,7 +192,9 @@ export default function Activity() {
       ? t('pages.activity.emptyFilteredBody')
       : t('pages.activity.emptyBody');
 
-  const showBranchColumn = showBranchColumnPref && items.some((entry) => entry.branch_name);
+  const showBranchColumn =
+    showBranchColumnPref
+    && (loading && items.length === 0 ? true : items.some((entry) => entry.branch_name));
   const colCount = showBranchColumn ? 6 : 5;
 
   const roleChipClass = (isStaff) => {
@@ -340,7 +342,7 @@ export default function Activity() {
             </thead>
             <tbody>
               {loading && items.length === 0 ? (
-                <AdminTableRowsSkeleton rows={5} cols={colCount} />
+                <ActivityTableRowsSkeleton rows={5} showBranchColumn={showBranchColumn} />
               ) : items.length > 0 ? (
                 items.map((entry) => {
                   const detailText = formatAuditDetails(entry);
