@@ -322,6 +322,14 @@ export function pdfStatCards(doc, startY, cards) {
   doc.setTextColor(0);
   return startY + cardH + 6;
 }
+
+/**
+ * PDF section: plans in use with share bars (members or gyms).
+ * @param {import('jspdf').jsPDF} doc
+ * @param {Array<{ name: string, count: number }>} planEntries
+ * @param {{ title?: string, totalLabel?: string }} [labels]
+ */
+export function pdfPlansUsedBlock(doc, startY, planEntries, labels = {}) {
   if (!planEntries?.length) return startY;
 
   const entityTotal = planEntries.reduce((s, e) => s + e.count, 0);
