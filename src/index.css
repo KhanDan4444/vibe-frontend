@@ -650,6 +650,10 @@
     text-align: left;
   }
 
+  .owner-dashboard-alert-table th:nth-child(5) .owner-dashboard-action-slot {
+    transform: translateX(-0.375rem);
+  }
+
   .owner-dashboard-alert-table td:nth-child(3) .app-skeleton,
   .owner-dashboard-alert-table td:nth-child(4) .app-skeleton {
     display: inline-block;
