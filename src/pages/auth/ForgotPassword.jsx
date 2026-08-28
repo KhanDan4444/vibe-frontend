@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { requestForgotPasswordOtp, resetPasswordWithOtp } from '../../services/authService';
@@ -12,6 +12,7 @@ import {
   fieldErrorMessage,
   clearFieldError,
   clearAllFieldErrors,
+  normalizeEthiopianPhone,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
@@ -19,25 +20,30 @@ import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
 import AuthCtaButton from '../../components/auth/AuthCtaButton';
+import AuthOtpField from '../../components/auth/AuthOtpField';
 import PasswordRule from '../../components/auth/PasswordRule';
+import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
 
 export default function ForgotPassword() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState('username');
   const [identifier, setIdentifier] = useState('');
+  const [otpDestinationPhone, setOtpDestinationPhone] = useState('');
   const [sessionId, setSessionId] = useState('');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [showLengthRule, setShowLengthRule] = useState(false);
   const [showMatchRule, setShowMatchRule] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [showSupportOption, setShowSupportOption] = useState(false);
   const [resetDone, setResetDone] = useState(false);
+  const { cooldown, startCooldown, canResend } = useOtpResendCooldown();
+  const otpRequestInFlight = useRef(false);
 
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
@@ -45,23 +51,59 @@ export default function ForgotPassword() {
   const onReset = step === 'reset';
   const lengthOk = password.length >= 8;
   const matchOk = confirm.length > 0 && confirm === password;
+  const stepSubtitle = onReset ? t('auth.forgotResetSubtitle') : t('auth.forgotSubtitle');
+
+  const resetToIdentifier = () => {
+    setStep('username');
+    setCode('');
+    setPassword('');
+    setConfirm('');
+    setError('');
+    setOtpDestinationPhone('');
+    setShowLengthRule(false);
+    setShowMatchRule(false);
+    clearAllFieldErrors(setFieldErrors);
+  };
 
   const handleRequestOtp = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (otpRequestInFlight.current || loading) return;
     setError('');
-    setMessage('');
     clearAllFieldErrors(setFieldErrors);
     if (!showValidationError(validateForgotIdentifier(identifier), setError, t, { setFieldErrors })) return;
+    otpRequestInFlight.current = true;
     setLoading(true);
     try {
       const data = await requestForgotPasswordOtp(identifier);
       setSessionId(data.sessionId);
+      setOtpDestinationPhone(normalizeEthiopianPhone(identifier.trim()) || '');
       setStep('reset');
-      setMessage(data.message || t('auth.otpSent'));
+      startCooldown();
     } catch (err) {
       setError(err.message);
     } finally {
+      otpRequestInFlight.current = false;
       setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!canResend || resendLoading || loading || otpRequestInFlight.current) return;
+    setError('');
+    clearFieldError(setFieldErrors, 'code');
+    otpRequestInFlight.current = true;
+    setResendLoading(true);
+    try {
+      const data = await requestForgotPasswordOtp(identifier);
+      setSessionId(data.sessionId);
+      setOtpDestinationPhone(normalizeEthiopianPhone(identifier.trim()) || '');
+      startCooldown();
+      setCode('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      otpRequestInFlight.current = false;
+      setResendLoading(false);
     }
   };
 
@@ -110,20 +152,13 @@ export default function ForgotPassword() {
           />
           <div>
             <h2 className="auth-title">{t('auth.forgotTitle')}</h2>
-            <p className="auth-subtitle">{t('auth.forgotSubtitle')}</p>
-            <p className="mt-1.5 text-xs text-white/40">{t('auth.forgotAdminHint')}</p>
+            <p className="auth-subtitle">{stepSubtitle}</p>
           </div>
         </div>
 
         {bannerError && (
           <div className="auth-banner-error" role="alert">
             {bannerError}
-          </div>
-        )}
-        {message && onReset && (
-          <div className="auth-banner-success" role="status">
-            {message}
-            {import.meta.env.DEV && <p className="auth-hint mt-2">{t('auth.otpDevHint')}</p>}
           </div>
         )}
 
@@ -164,25 +199,31 @@ export default function ForgotPassword() {
           </form>
         ) : (
           <form className="space-y-5" onSubmit={handleReset} noValidate>
-            <div>
-              <label htmlFor="forgot-code" className="auth-label">
-                {t('auth.otpCode')}
-                <RequiredMark />
-              </label>
-              <input
-                id="forgot-code"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value.trim());
-                  clearFieldError(setFieldErrors, 'code');
-                }}
-                className={fc('code')}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'code')} className="text-sm text-rose-300" />
-            </div>
+            <AuthOtpField
+              id="forgot-code"
+              label={t('auth.otpCode')}
+              phone={otpDestinationPhone}
+              destinationFallback={t('auth.otpSentRegisteredPhone')}
+              value={code}
+              onChange={(next) => {
+                setCode(next);
+                clearFieldError(setFieldErrors, 'code');
+              }}
+              inputClassName={fc('code')}
+              hasFieldError={Boolean(fieldErrorMessage(fieldErrors, 'code'))}
+              fieldError={fieldErrorMessage(fieldErrors, 'code')}
+              devHint={import.meta.env.DEV ? t('auth.otpDevHint') : undefined}
+              cooldown={cooldown}
+              canResend={canResend}
+              resendLoading={resendLoading}
+              onResend={handleResendOtp}
+              onChangePhone={resetToIdentifier}
+              changePhoneLabel={t('auth.forgotChangeIdentifier')}
+            />
+
+            <hr className="auth-form-step-divider" />
+            <p className="auth-section-title">{t('auth.forgotPasswordSection')}</p>
+
             <div>
               <label htmlFor="forgot-password" className="auth-label">
                 {t('auth.newPassword')}
@@ -238,53 +279,31 @@ export default function ForgotPassword() {
                 className="text-sm text-rose-300"
               />
             </div>
-            <AuthCtaButton
-              loading={loading}
-              disabled={!sessionId}
-              busyLabel={t('auth.saving')}
-            >
+            <AuthCtaButton loading={loading} disabled={!sessionId} busyLabel={t('auth.saving')}>
               {t('auth.updatePassword')}
             </AuthCtaButton>
-            <p className="text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setStep('username');
-                  setCode('');
-                  setPassword('');
-                  setConfirm('');
-                  setMessage('');
-                  setError('');
-                  setShowLengthRule(false);
-                  setShowMatchRule(false);
-                  clearAllFieldErrors(setFieldErrors);
-                }}
-                className="auth-text-btn"
-              >
-                {t('auth.resendOtp')}
-              </button>
-            </p>
           </form>
         )}
 
-        <div className="space-y-3 rounded-2xl border border-white/[0.1] bg-white/[0.04] p-4">
-          <p>
-            <button
-              type="button"
-              onClick={() => setShowSupportOption((show) => !show)}
-              className="auth-text-btn"
-            >
+        {showSupportOption ? (
+          <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/50">
+            <p className="font-semibold tracking-tight text-white/85">{t('auth.supportResetTitle')}</p>
+            <p>{t('auth.supportResetBody')}</p>
+            <p>{t('auth.supportResetAfter')}</p>
+            <p className="pt-1 text-xs text-white/40">{t('auth.forgotAdminHint')}</p>
+            <p className="text-center pt-1">
+              <button type="button" onClick={() => setShowSupportOption(false)} className="auth-text-btn">
+                {t('common.close')}
+              </button>
+            </p>
+          </div>
+        ) : (
+          <p className="text-center">
+            <button type="button" onClick={() => setShowSupportOption(true)} className="auth-text-btn">
               {t('auth.tryOtherOption')}
             </button>
           </p>
-          {showSupportOption && (
-            <div className="space-y-2 text-sm text-white/50">
-              <p className="font-semibold tracking-tight text-white/85">{t('auth.supportResetTitle')}</p>
-              <p>{t('auth.supportResetBody')}</p>
-              <p>{t('auth.supportResetAfter')}</p>
-            </div>
-          )}
-        </div>
+        )}
 
         <p className="text-center text-sm text-white/55">
           <Link to="/login" className="auth-link">

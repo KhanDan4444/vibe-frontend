@@ -12,6 +12,7 @@ export default function AuthOtpField({
   id,
   label,
   phone,
+  destinationFallback,
   value,
   onChange,
   fieldError,
@@ -32,6 +33,10 @@ export default function AuthOtpField({
   const errorId = useId();
   const hintId = useId();
   const maskedPhone = maskPhoneForDisplay(phone);
+  const hasPhoneDestination = Boolean(String(phone ?? '').trim());
+  const destinationDisplay = hasPhoneDestination
+    ? maskedPhone
+    : destinationFallback || t('auth.otpSentRegisteredPhone');
   const digits = value.replace(/\D/g, '').slice(0, OTP_SLOT_COUNT);
 
   const describedBy = [destinationId, hasFieldError && fieldError ? errorId : null, devHint ? hintId : null]
@@ -59,7 +64,7 @@ export default function AuthOtpField({
           <MessageCircle className="auth-otp-destination-icon" aria-hidden />
           <span>
             {t('auth.otpSentPrefix')}{' '}
-            <span className="auth-otp-destination-phone">{maskedPhone}</span>
+            <span className="auth-otp-destination-phone">{destinationDisplay}</span>
           </span>
         </p>
 

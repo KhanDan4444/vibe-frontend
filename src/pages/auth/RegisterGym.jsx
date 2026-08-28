@@ -28,6 +28,13 @@ const STEPS = ['phone', 'gym', 'account'];
 const SIGNUP_TRIAL_DAYS = 30;
 const SIGNUP_STEP_LABEL_KEYS = ['auth.signupStepVerify', 'auth.signupStepGym', 'auth.signupStepAccount'];
 
+function formatSignupLocation(city, address) {
+  const cityLabel = city?.trim();
+  const addressLabel = address?.trim();
+  if (cityLabel && addressLabel) return `${cityLabel}, ${addressLabel}`;
+  return cityLabel || addressLabel || '';
+}
+
 export default function RegisterGym() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -165,7 +172,10 @@ export default function RegisterGym() {
       setRegisterDone({
         gymName: gymName.trim(),
         username: username.trim().toLowerCase(),
+        ownerName: ownerName.trim(),
+        location: formatSignupLocation(city, address),
         phone: normalizeEthiopianPhone(phone.trim()) || phone.trim(),
+        email: trimmedEmail || undefined,
         trialEndDate: data.subscription?.end_date,
         trialDays,
       });
@@ -179,7 +189,10 @@ export default function RegisterGym() {
   if (registerDone) {
     const rows = [
       { label: t('auth.accountUsername'), value: `@${registerDone.username}` },
+      registerDone.ownerName ? { label: t('auth.accountOwnerName'), value: registerDone.ownerName } : null,
       registerDone.phone ? { label: t('auth.accountPhone'), value: registerDone.phone } : null,
+      registerDone.email ? { label: t('auth.accountEmail'), value: registerDone.email } : null,
+      registerDone.location ? { label: t('auth.accountLocation'), value: registerDone.location } : null,
       registerDone.trialEndDate
         ? {
             label: t('auth.accountTrialEnds'),
