@@ -27,18 +27,49 @@ export default function AuthFormShell({ children }) {
   );
 }
 
-/** Quiet step dots for multi-step auth flows (0-based active index). */
-export function AuthStepDots({ activeIndex = 0, steps = 2 }) {
+/**
+ * Step progress for multi-step auth flows (0-based active index).
+ * @param {number} activeIndex
+ * @param {number} steps
+ * @param {string[]} [stepLabels] Screen-reader labels per step
+ * @param {string} [progressLabel] Announced label for the step group
+ */
+export function AuthStepDots({ activeIndex = 0, steps = 2, stepLabels = [], progressLabel }) {
+  const safeIndex = Math.min(Math.max(activeIndex, 0), Math.max(steps - 1, 0));
+
   return (
-    <div className="flex items-center justify-center gap-2" aria-hidden>
-      {Array.from({ length: steps }, (_, i) => (
-        <span
-          key={i}
-          className={`h-1.5 rounded-full transition-all ${
-            i === activeIndex ? 'w-8 bg-[#0f766e]' : 'w-3 bg-white/20'
-          }`}
-        />
-      ))}
-    </div>
+    <nav className="auth-step-dots" aria-label={progressLabel || undefined}>
+      <ol className="auth-step-dots-list">
+        {Array.from({ length: steps }, (_, i) => {
+          const state = i < safeIndex ? 'complete' : i === safeIndex ? 'current' : 'upcoming';
+          const label = stepLabels[i] || `Step ${i + 1} of ${steps}`;
+
+          return (
+            <li
+              key={i}
+              className="auth-step-dot-item"
+              aria-current={state === 'current' ? 'step' : undefined}
+              aria-label={label}
+            >
+              <span
+                className={[
+                  'auth-step-dot-pill',
+                  state === 'current'
+                    ? 'auth-step-dot-pill-active'
+                    : state === 'complete'
+                      ? 'auth-step-dot-pill-complete'
+                      : 'auth-step-dot-pill-idle',
+                ].join(' ')}
+                aria-hidden
+              />
+              <span className="sr-only">
+                {label}
+                {state === 'current' ? ' (current step)' : state === 'complete' ? ' (completed)' : ''}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
   );
 }

@@ -26,6 +26,7 @@ import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
 
 const STEPS = ['phone', 'gym', 'account'];
 const SIGNUP_TRIAL_DAYS = 30;
+const SIGNUP_STEP_LABEL_KEYS = ['auth.signupStepVerify', 'auth.signupStepGym', 'auth.signupStepAccount'];
 
 export default function RegisterGym() {
   const { t } = useTranslation();
@@ -60,12 +61,8 @@ export default function RegisterGym() {
   const matchOk = confirm.length > 0 && confirm === password;
   const stepIndex = Math.max(0, STEPS.indexOf(step));
 
-  const stepSubtitle =
-    step === 'phone'
-      ? t('auth.signupStepVerify')
-      : step === 'gym'
-        ? t('auth.signupStepGym')
-        : t('auth.signupStepAccount');
+  const signupStepLabels = SIGNUP_STEP_LABEL_KEYS.map((key) => t(key));
+  const stepSubtitle = signupStepLabels[stepIndex] || signupStepLabels[0];
 
   const handleRequestOtp = async (e) => {
     if (e) e.preventDefault();
@@ -212,7 +209,12 @@ export default function RegisterGym() {
     <AuthScreen>
       <AuthFormShell>
         <div className="space-y-3 text-center">
-          <AuthStepDots activeIndex={stepIndex} steps={3} />
+          <AuthStepDots
+            activeIndex={stepIndex}
+            steps={STEPS.length}
+            stepLabels={signupStepLabels}
+            progressLabel={t('auth.signupStepProgress', { current: stepIndex + 1, total: STEPS.length })}
+          />
           <div>
             <h2 className="auth-title">{t('auth.signupTitle')}</h2>
             <p className="auth-subtitle">{stepSubtitle}</p>
@@ -248,7 +250,6 @@ export default function RegisterGym() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} className="text-sm text-rose-300" />
               <p className="auth-hint">{t('auth.signupPhoneHint')}</p>
             </div>
-            <p className="auth-hint">{t('auth.signupTrialNote', { days: SIGNUP_TRIAL_DAYS })}</p>
             <AuthCtaButton loading={loading} busyLabel={t('auth.sending')}>
               {t('auth.sendOtp')}
             </AuthCtaButton>
@@ -344,7 +345,6 @@ export default function RegisterGym() {
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'address')} className="text-sm text-rose-300" />
             </div>
-            <p className="auth-hint">{t('auth.signupTrialNote', { days: SIGNUP_TRIAL_DAYS })}</p>
             <button type="submit" className="auth-cta-btn">
               {t('common.continue')}
             </button>
@@ -353,6 +353,9 @@ export default function RegisterGym() {
 
         {step === 'account' && (
           <form className="space-y-5" onSubmit={handleComplete} noValidate>
+            <hr className="auth-form-step-divider" />
+            <p className="auth-section-title">{t('auth.signupSectionAccount')}</p>
+
             <div>
               <label htmlFor="signup-owner" className="auth-label">
                 {t('modals.registerGym.ownerName')}
@@ -390,6 +393,7 @@ export default function RegisterGym() {
                 placeholder={t('modals.registerGym.usernamePlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'username')} className="text-sm text-rose-300" />
+              <p className="auth-hint">{t('auth.signupUsernameHint')}</p>
             </div>
             <div>
               <label htmlFor="signup-email" className="auth-label">
@@ -408,6 +412,7 @@ export default function RegisterGym() {
                 placeholder={t('modals.registerGym.emailPlaceholder')}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'email')} className="text-sm text-rose-300" />
+              <p className="auth-hint">{t('auth.signupEmailHint')}</p>
             </div>
             <div>
               <label htmlFor="signup-password" className="auth-label">

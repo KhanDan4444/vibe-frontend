@@ -1,4 +1,4 @@
-import { useId, useRef } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import FieldError from '../FieldError';
@@ -27,9 +27,24 @@ export default function AuthOtpField({
 }) {
   const { t } = useTranslation();
   const inputRef = useRef(null);
+  const slotsWrapRef = useRef(null);
+  const destinationId = useId();
+  const errorId = useId();
   const hintId = useId();
   const maskedPhone = maskPhoneForDisplay(phone);
   const digits = value.replace(/\D/g, '').slice(0, OTP_SLOT_COUNT);
+
+  const describedBy = [destinationId, hasFieldError && fieldError ? errorId : null, devHint ? hintId : null]
+    .filter(Boolean)
+    .join(' ');
+
+  useEffect(() => {
+    if (!hasFieldError || !slotsWrapRef.current) return;
+    const el = slotsWrapRef.current;
+    el.classList.remove('auth-otp-slots-shake');
+    void el.offsetWidth;
+    el.classList.add('auth-otp-slots-shake');
+  }, [hasFieldError, fieldError]);
 
   const focusInput = () => inputRef.current?.focus();
 
@@ -40,7 +55,7 @@ export default function AuthOtpField({
           {label}
           <RequiredMark />
         </label>
-        <p className="auth-otp-destination" role="status">
+        <p id={destinationId} className="auth-otp-destination" role="status">
           <MessageCircle className="auth-otp-destination-icon" aria-hidden />
           <span>
             {t('auth.otpSentPrefix')}{' '}
@@ -49,6 +64,7 @@ export default function AuthOtpField({
         </p>
 
         <div
+          ref={slotsWrapRef}
           className={`auth-otp-slots-wrap${hasFieldError ? ' auth-otp-slots-wrap-error' : ''}`}
           onClick={focusInput}
           onKeyDown={(e) => {
@@ -86,11 +102,13 @@ export default function AuthOtpField({
             type="text"
             inputMode="numeric"
             autoComplete="one-time-code"
+            maxLength={OTP_SLOT_COUNT}
             value={digits}
             onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, OTP_SLOT_COUNT))}
             className={`${inputClassName} auth-otp-input-overlay`}
-            aria-invalid={hasFieldError}
-            aria-describedby={devHint ? hintId : undefined}
+            aria-label={t('auth.otpInputAriaLabel', { count: digits.length, total: OTP_SLOT_COUNT })}
+            aria-invalid={hasFieldError || undefined}
+            aria-describedby={describedBy || undefined}
           />
         </div>
 
@@ -99,7 +117,7 @@ export default function AuthOtpField({
             {devHint}
           </p>
         ) : null}
-        <FieldError message={fieldError} className="text-sm text-rose-300" />
+        <FieldError id={errorId} message={fieldError} className="text-sm text-rose-300" />
         <p className="auth-otp-actions">
           {canResend ? (
             <button type="button" className="auth-text-btn auth-otp-action-btn" onClick={onResend} disabled={resendLoading}>

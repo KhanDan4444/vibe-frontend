@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { cardSurface, tableRowHover, panelTitle } from '../../utils/surfaceClasses';
 import Button from '../../components/ui/Button';
 import ToolbarPicker from '../../components/ToolbarPicker';
+import SearchField from '../../components/SearchField';
 import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminGymMessageSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
@@ -33,12 +34,20 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
   const [totalPages, setTotalPages] = useState(1);
   const [typeFilter, setTypeFilter] = useState('all');
   const [gymFilter, setGymFilter] = useState('all');
+  const [phoneQuery, setPhoneQuery] = useState('');
+  const [debouncedPhone, setDebouncedPhone] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedPhone(phoneQuery.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [phoneQuery]);
+
   const typeFiltered = typeFilter !== 'all';
   const gymFiltered = gymFilter !== 'all';
-  const hasActiveFilter = typeFiltered || gymFiltered;
+  const phoneFiltered = Boolean(debouncedPhone);
+  const hasActiveFilter = typeFiltered || gymFiltered || phoneFiltered;
   const chipClass = typeFiltered ? CHIP_MUTED : CHIP_ACTIVE;
 
   const loadMessages = useCallback(async () => {
@@ -50,6 +59,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
         limit: PAGE_SIZE,
         type: typeFilter,
         gym_id: gymFilter,
+        phone: debouncedPhone,
       });
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(data.error || t('pages.adminGymMessages.loadError'));
@@ -64,7 +74,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, page, typeFilter, gymFilter, t]);
+  }, [apiFetch, page, typeFilter, gymFilter, debouncedPhone, t]);
 
   useEffect(() => {
     loadMessages();
@@ -72,7 +82,7 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
 
   useEffect(() => {
     setPage(1);
-  }, [typeFilter, gymFilter]);
+  }, [typeFilter, gymFilter, debouncedPhone]);
 
   useEffect(() => {
     onBootingChange?.(loading && items.length === 0);
@@ -111,7 +121,8 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
     const gym = gyms.find((g) => String(g.id) === String(gymFilter));
     return gym?.name || t('table.gym');
   }, [gymFiltered, gymFilter, gyms, t]);
-  const filterLabel = [gymFilterLabel, typeFilterLabel].filter(Boolean).join(' · ');
+  const phoneFilterLabel = phoneFiltered ? debouncedPhone : null;
+  const filterLabel = [gymFilterLabel, phoneFilterLabel, typeFilterLabel].filter(Boolean).join(' · ');
   const statusLine = total > 0
     ? t('pages.adminGymMessages.statusLine', { count: total, filter: filterLabel })
     : t('pages.adminGymMessages.statusLineEmpty');
@@ -147,6 +158,13 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
             <p className="mt-0.5 text-xs text-app-muted">{t('pages.adminGymMessages.subtitle')}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+            <SearchField
+              value={phoneQuery}
+              onChange={setPhoneQuery}
+              placeholder={t('smsLog.phoneFilterPlaceholder')}
+              label={t('smsLog.phoneFilterLabel')}
+              className="sm:max-w-xs"
+            />
             <ToolbarPicker
               value={gymFilter}
               onChange={setGymFilter}

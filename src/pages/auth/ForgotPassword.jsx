@@ -103,7 +103,11 @@ export default function ForgotPassword() {
     <AuthScreen>
       <AuthFormShell>
         <div className="space-y-3 text-center">
-          <AuthStepDots activeIndex={onReset ? 1 : 0} />
+          <AuthStepDots
+            activeIndex={onReset ? 1 : 0}
+            stepLabels={[t('auth.forgotStepRequest'), t('auth.forgotStepReset')]}
+            progressLabel={t('auth.forgotStepProgress', { current: onReset ? 2 : 1, total: 2 })}
+          />
           <div>
             <h2 className="auth-title">{t('auth.forgotTitle')}</h2>
             <p className="auth-subtitle">{t('auth.forgotSubtitle')}</p>

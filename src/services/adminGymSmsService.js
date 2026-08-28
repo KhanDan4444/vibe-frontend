@@ -8,6 +8,9 @@ export function getAdminGymSmsLog(apiFetch, params = {}) {
   if (params.gym_id && params.gym_id !== 'all') {
     search.set('gym_id', String(params.gym_id));
   }
+  if (params.phone?.trim()) {
+    search.set('phone', params.phone.trim());
+  }
   const qs = search.toString();
   return apiFetch(`/admin/gym-sms${qs ? `?${qs}` : ''}`);
 }
