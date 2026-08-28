@@ -620,17 +620,19 @@
 
   .owner-dashboard-alert-table th:nth-child(3),
   .owner-dashboard-alert-table td:nth-child(3) {
-    width: 16%;
+    width: 20%;
+    padding-right: 1.25rem;
   }
 
   .owner-dashboard-alert-table th:nth-child(4),
   .owner-dashboard-alert-table td:nth-child(4) {
-    width: 16%;
+    width: 14%;
+    padding-left: 0.25rem;
   }
 
   .owner-dashboard-alert-table th:nth-child(5),
   .owner-dashboard-alert-table td:nth-child(5) {
-    width: 24%;
+    width: 22%;
   }
 
   .owner-team-table th:nth-child(1),
