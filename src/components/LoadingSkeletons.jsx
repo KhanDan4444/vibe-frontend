@@ -361,21 +361,23 @@ export function OwnerDashboardAlertRowsSkeleton({ rows = 5 }) {
           <td>
             <div className="flex min-w-0 items-center gap-3">
               <div className="app-skeleton h-8 w-8 shrink-0 rounded-full" />
-              <div className="app-skeleton h-4 w-32 max-w-full" />
+              <div className="app-skeleton h-4 w-40 max-w-full" />
             </div>
           </td>
           <td>
             <div className="app-skeleton inline-block h-3.5 w-28 max-w-full" />
           </td>
           <td className="whitespace-nowrap">
-            <div className="app-skeleton inline-block h-3.5 w-[8.75rem] max-w-full" />
+            <div className="app-skeleton inline-block h-3.5 w-20 max-w-full" />
           </td>
           <td className="overflow-hidden">
             <div className="app-skeleton inline-block h-5 max-w-full w-[4.75rem] rounded-full" />
           </td>
           <td>
             <div className="admin-row-actions">
-              <div className="owner-dashboard-renew-slot app-skeleton h-8 rounded-lg" />
+              <div className="owner-dashboard-renew-slot">
+                <div className="app-skeleton h-8 w-[5.5rem] rounded-lg" />
+              </div>
             </div>
           </td>
         </tr>
