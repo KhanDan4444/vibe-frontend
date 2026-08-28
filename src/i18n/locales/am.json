@@ -1379,6 +1379,7 @@
       "expiredHintOk": "ሁሉም ነገር ተከናውኗል።",
       "expires": "የሚያልቀው {{date}}",
       "expiredOn": "{{date}} አልቋል",
+      "expiredOnColumn": "ያለቀበት ቀን",
       "expiresToday": "ዛሬ ያልቃል",
       "daysLeft_one": "{{count}} ቀን ቀርቷል",
       "daysLeft_other": "{{count}} ቀናት ቀርተዋል",

@@ -617,6 +617,7 @@
       "addMemberFab": "Miseensa Galmeessi",
       "expires": "Guyyaa {{date}} dhumata",
       "expiredOn": "{{date}} dhumateera",
+      "expiredOnColumn": "Guyyaa dhumate",
       "expiresToday": "Har'a dhumata",
       "daysLeft_one": "{{count}} guyyaa hafaa",
       "daysLeft_other": "{{count}} guyyoota hafan",

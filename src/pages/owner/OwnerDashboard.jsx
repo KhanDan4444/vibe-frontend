@@ -47,6 +47,10 @@ function attentionEndLabel(member, t) {
   return t('pages.dashboard.daysLeft', { count: days });
 }
 
+function attentionEndDate(member) {
+  return formatDisplayDate(member.endDate) || '—';
+}
+
 export default function OwnerDashboard() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
@@ -272,7 +276,7 @@ export default function OwnerDashboard() {
                       <tr>
                         <th>{t('table.member')}</th>
                         <th>{t('table.plan')}</th>
-                        <th>{t('table.expiry')}</th>
+                        <th>{t('pages.dashboard.expiredOnColumn')}</th>
                         <th>{t('table.status')}</th>
                         <th>
                           <div className="admin-row-actions">
@@ -386,7 +390,7 @@ export default function OwnerDashboard() {
                       <tr>
                         <th>{t('table.member')}</th>
                         <th>{t('table.plan')}</th>
-                        <th>{t('table.expiry')}</th>
+                        <th>{t('pages.dashboard.expiredOnColumn')}</th>
                         <th>{t('table.status')}</th>
                         <th>
                           <div className="admin-row-actions">
@@ -425,8 +429,11 @@ export default function OwnerDashboard() {
                               </div>
                             </td>
                             <td className="truncate font-medium text-app-text">{planLabel}</td>
-                            <td className="max-w-0 truncate whitespace-nowrap text-app-text" title={attentionEndLabel(member, t)}>
-                              {attentionEndLabel(member, t)}
+                            <td
+                              className="max-w-0 truncate whitespace-nowrap text-app-text"
+                              title={attentionEndLabel(member, t)}
+                            >
+                              {attentionEndDate(member)}
                             </td>
                             <td className="overflow-hidden">
                               <StatusBadge status={member.status} />

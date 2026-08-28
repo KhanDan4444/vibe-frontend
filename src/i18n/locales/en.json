@@ -632,6 +632,7 @@
       "addMemberFab": "Add new member",
       "expires": "Expires {{date}}",
       "expiredOn": "Expired on {{date}}",
+      "expiredOnColumn": "Expired on",
       "expiresToday": "Expires today",
       "daysLeft_one": "{{count}} day left",
       "daysLeft_other": "{{count}} days left",

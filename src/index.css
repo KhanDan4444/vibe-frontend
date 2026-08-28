@@ -615,18 +615,19 @@
 
   .owner-dashboard-alert-table th:nth-child(1),
   .owner-dashboard-alert-table td:nth-child(1) {
-    width: 26%;
+    width: 32%;
+    min-width: 10rem;
   }
 
   .owner-dashboard-alert-table th:nth-child(2),
   .owner-dashboard-alert-table td:nth-child(2) {
-    width: 18%;
+    width: 16%;
   }
 
   .owner-dashboard-alert-table th:nth-child(3),
   .owner-dashboard-alert-table td:nth-child(3) {
-    width: 22%;
-    min-width: 8.5rem;
+    width: 18%;
+    min-width: 6.5rem;
     padding-right: 1.25rem;
   }
 
