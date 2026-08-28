@@ -428,7 +428,7 @@ export default function OwnerDashboard() {
                             <td className="max-w-0 truncate whitespace-nowrap text-app-text" title={attentionEndLabel(member, t)}>
                               {attentionEndLabel(member, t)}
                             </td>
-                            <td>
+                            <td className="overflow-hidden">
                               <StatusBadge status={member.status} />
                             </td>
                             <td>
@@ -441,7 +441,7 @@ export default function OwnerDashboard() {
                                         e.stopPropagation();
                                         setRenewState({ isOpen: true, member });
                                       }}
-                                      className={`${renewActionBtn} w-full justify-center`}
+                                      className={renewActionBtn}
                                     >
                                       <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
                                     </button>

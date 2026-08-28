@@ -370,8 +370,8 @@ export function OwnerDashboardAlertRowsSkeleton({ rows = 5 }) {
           <td className="whitespace-nowrap">
             <div className="app-skeleton inline-block h-3.5 w-[8.75rem] max-w-full" />
           </td>
-          <td>
-            <div className="app-skeleton inline-block h-5 w-[4.75rem] rounded-full" />
+          <td className="overflow-hidden">
+            <div className="app-skeleton inline-block h-5 max-w-full w-[4.75rem] rounded-full" />
           </td>
           <td>
             <div className="admin-row-actions">
