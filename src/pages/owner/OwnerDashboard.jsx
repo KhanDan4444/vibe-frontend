@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback, startTransition, Suspense } fr
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
-import { Users, AlertTriangle, XCircle, UserPlus, TrendingUp, RefreshCw } from 'lucide-react';
+import { Users, AlertTriangle, XCircle, UserPlus, TrendingUp, RefreshCw, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import {
@@ -54,7 +54,7 @@ function attentionEndDate(member) {
 export default function OwnerDashboard() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
-  const { summary, plans, renewMember, updateMember, showFlash, readOnly, selectedBranchId, branches, gymBooting, gymName } = useGym();
+  const { summary, plans, renewMember, updateMember, showFlash, readOnly, selectedBranchId, branches, gymBooting, gymName, isTrial, trialDaysLeft, trialEndDate } = useGym();
   const navigate = useNavigate();
 
   const [selectedMember, setSelectedMember] = useState(null);
@@ -177,6 +177,32 @@ export default function OwnerDashboard() {
           </p>
         </div>
       )}
+
+      {isTrial && !readOnly && trialDaysLeft != null && trialDaysLeft >= 0 ? (
+        <div className="relative overflow-hidden rounded-2xl border border-teal-300/70 bg-gradient-to-br from-teal-50 via-teal-50/80 to-emerald-50/40 px-4 py-3.5 shadow-sm dark:border-teal-700/50 dark:from-teal-950/80 dark:via-teal-950/70 dark:to-emerald-950/50 dark:shadow-none">
+          <div className="absolute bottom-2.5 left-0 top-2.5 w-1 rounded-full bg-teal-600 dark:bg-teal-400" aria-hidden />
+          <div className="flex items-start gap-3 pl-2">
+            <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-teal-300/80 bg-teal-100/80 dark:border-teal-700/60 dark:bg-teal-900/50">
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-teal-200/70 dark:bg-teal-800/60">
+                <Sparkles className="h-4 w-4 text-teal-700 dark:text-teal-300" aria-hidden />
+              </div>
+            </div>
+            <div className="min-w-0 pt-0.5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-teal-700 dark:text-teal-400">
+                {t('alerts.trialEyebrow')}
+              </p>
+              <p className="mt-0.5 text-sm font-semibold tracking-tight text-teal-950 dark:text-teal-50">
+                {t('alerts.trialTitle', { count: trialDaysLeft })}
+              </p>
+              <p className="mt-1 text-sm leading-relaxed text-teal-900/80 dark:text-teal-100/80">
+                {t('alerts.trialBody', {
+                  date: trialEndDate ? formatDisplayDate(trialEndDate) : '',
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
         {gymBooting ? (

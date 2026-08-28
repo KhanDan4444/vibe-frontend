@@ -36,6 +36,14 @@ export function formatPhoneForInput(phone) {
   return `0${normalized.slice(4)}`;
 }
 
+/** Mask local Ethiopian mobile for OTP confirmation copy — e.g. 0912 ••• 678 */
+export function maskPhoneForDisplay(input) {
+  const local = formatPhoneForInput(normalizeEthiopianPhone(input) || input);
+  if (!local || local.length < 7) return local || '•••';
+  if (local.length >= 10) return `${local.slice(0, 4)} ••• ${local.slice(-3)}`;
+  return `${local.slice(0, 3)} ••• ${local.slice(-2)}`;
+}
+
 /** @param {string|null|undefined} input */
 export function validateRequiredEthiopianPhone(input) {
   const trimmed = String(input ?? '').trim();

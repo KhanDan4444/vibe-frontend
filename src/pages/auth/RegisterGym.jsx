@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  getPublicSaasPlans,
-  requestGymSignupOtp,
-  completeGymSignup,
-} from '../../services/authService';
+import { requestGymSignupOtp, completeGymSignup } from '../../services/authService';
 import {
   validateRequiredEthiopianPhone,
   validateGymSignupGymStep,
@@ -21,37 +17,41 @@ import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
-import AuthSelect from '../../components/auth/AuthSelect';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
 import AuthCtaButton from '../../components/auth/AuthCtaButton';
+import AuthOtpField from '../../components/auth/AuthOtpField';
 import PasswordRule from '../../components/auth/PasswordRule';
-import { formatMoney } from '../../utils/formatMoney';
+import { formatDisplayDate } from '../../utils/date';
+import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
 
 const STEPS = ['phone', 'gym', 'account'];
+const SIGNUP_TRIAL_DAYS = 30;
 
 export default function RegisterGym() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [step, setStep] = useState('phone');
-  const [plans, setPlans] = useState([]);
-  const [plansLoading, setPlansLoading] = useState(true);
   const [sessionId, setSessionId] = useState('');
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [gymName, setGymName] = useState('');
+  const [city, setCity] = useState('');
+  const [address, setAddress] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [saasPlanId, setSaasPlanId] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [showLengthRule, setShowLengthRule] = useState(false);
   const [showMatchRule, setShowMatchRule] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [resendLoading, setResendLoading] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState('');
   const [registerDone, setRegisterDone] = useState(null);
+  const { cooldown, startCooldown, canResend } = useOtpResendCooldown();
+  const otpRequestInFlight = useRef(false);
 
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
@@ -67,41 +67,45 @@ export default function RegisterGym() {
         ? t('auth.signupStepGym')
         : t('auth.signupStepAccount');
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const list = await getPublicSaasPlans();
-        if (!cancelled) {
-          setPlans(list);
-          if (list.length > 0) setSaasPlanId(String(list[0].id));
-        }
-      } catch (err) {
-        if (!cancelled) setError(err.message);
-      } finally {
-        if (!cancelled) setPlansLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const handleRequestOtp = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+    if (otpRequestInFlight.current || loading) return;
     setError('');
     clearAllFieldErrors(setFieldErrors);
     if (!showValidationError(validateRequiredEthiopianPhone(phone), setError, t, { setFieldErrors })) return;
+    otpRequestInFlight.current = true;
     setLoading(true);
     try {
       const data = await requestGymSignupOtp(phone);
       setSessionId(data.sessionId);
-      setMessage(data.message || t('auth.otpSent'));
+      setVerifiedPhone(normalizeEthiopianPhone(phone.trim()) || phone.trim());
+      startCooldown();
       setStep('gym');
     } catch (err) {
       setError(err.message);
     } finally {
+      otpRequestInFlight.current = false;
       setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (!canResend || resendLoading || loading || otpRequestInFlight.current) return;
+    setError('');
+    clearAllFieldErrors(setFieldErrors);
+    otpRequestInFlight.current = true;
+    setResendLoading(true);
+    try {
+      const data = await requestGymSignupOtp(phone);
+      setSessionId(data.sessionId);
+      setVerifiedPhone(normalizeEthiopianPhone(phone.trim()) || phone.trim());
+      startCooldown();
+      setCode('');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      otpRequestInFlight.current = false;
+      setResendLoading(false);
     }
   };
 
@@ -110,7 +114,7 @@ export default function RegisterGym() {
     setError('');
     clearAllFieldErrors(setFieldErrors);
     if (
-      !showValidationError(validateGymSignupGymStep({ code, gymName, saasPlanId }), setError, t, {
+      !showValidationError(validateGymSignupGymStep({ code, gymName, city, address }), setError, t, {
         setFieldErrors,
       })
     ) {
@@ -134,7 +138,7 @@ export default function RegisterGym() {
       return;
     }
     if (
-      !showValidationError(validateGymSignupGymStep({ code, gymName, saasPlanId }), setError, t, {
+      !showValidationError(validateGymSignupGymStep({ code, gymName, city, address }), setError, t, {
         setFieldErrors,
       })
     ) {
@@ -148,22 +152,25 @@ export default function RegisterGym() {
         sessionId,
         code: code.trim(),
         gym_name: gymName.trim(),
+        city: city.trim(),
         owner_name: ownerName.trim(),
         username: username.trim().toLowerCase(),
         password,
-        phone: phone.trim(),
-        saas_plan_id: parseInt(saasPlanId, 10),
+        phone: verifiedPhone || normalizeEthiopianPhone(phone.trim()) || phone.trim(),
       };
       const trimmedEmail = email.trim().toLowerCase();
       if (trimmedEmail) payload.email = trimmedEmail;
+      const trimmedAddress = address.trim();
+      if (trimmedAddress) payload.address = trimmedAddress;
 
-      await completeGymSignup(payload);
-      const planName = plans.find((p) => String(p.id) === saasPlanId)?.name;
+      const data = await completeGymSignup(payload);
+      const trialDays = data.subscription?.trial_days ?? SIGNUP_TRIAL_DAYS;
       setRegisterDone({
         gymName: gymName.trim(),
         username: username.trim().toLowerCase(),
         phone: normalizeEthiopianPhone(phone.trim()) || phone.trim(),
-        planName,
+        trialEndDate: data.subscription?.end_date,
+        trialDays,
       });
     } catch (err) {
       setError(err.message);
@@ -176,7 +183,12 @@ export default function RegisterGym() {
     const rows = [
       { label: t('auth.accountUsername'), value: `@${registerDone.username}` },
       registerDone.phone ? { label: t('auth.accountPhone'), value: registerDone.phone } : null,
-      registerDone.planName ? { label: t('auth.accountPlan'), value: registerDone.planName } : null,
+      registerDone.trialEndDate
+        ? {
+            label: t('auth.accountTrialEnds'),
+            value: formatDisplayDate(registerDone.trialEndDate),
+          }
+        : null,
     ].filter(Boolean);
 
     return (
@@ -187,35 +199,10 @@ export default function RegisterGym() {
             hero={registerDone.gymName}
             body={t('auth.signupSuccessBody')}
             rows={rows}
-            hint={t('auth.signupSuccessHint')}
+            hint={t('auth.signupSuccessHint', { days: registerDone.trialDays ?? SIGNUP_TRIAL_DAYS })}
             ctaLabel={t('auth.signIn')}
             onCta={() => navigate('/login', { replace: true })}
           />
-        </AuthFormShell>
-      </AuthScreen>
-    );
-  }
-
-  if (plansLoading) {
-    return (
-      <AuthScreen>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#0f766e] border-t-transparent" />
-        </div>
-      </AuthScreen>
-    );
-  }
-
-  if (plans.length === 0) {
-    return (
-      <AuthScreen>
-        <AuthFormShell>
-          <p className="text-center text-sm text-white/75">{t('auth.signupUnavailable')}</p>
-          <p className="text-center">
-            <Link to="/login" className="auth-link">
-              {t('auth.backToSignIn')}
-            </Link>
-          </p>
         </AuthFormShell>
       </AuthScreen>
     );
@@ -235,12 +222,6 @@ export default function RegisterGym() {
         {bannerError && (
           <div className="auth-banner-error" role="alert">
             {bannerError}
-          </div>
-        )}
-        {message && step === 'gym' && (
-          <div className="auth-banner-success" role="status">
-            {message}
-            {import.meta.env.DEV && <p className="auth-hint mt-2">{t('auth.otpDevHint')}</p>}
           </div>
         )}
 
@@ -267,6 +248,7 @@ export default function RegisterGym() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} className="text-sm text-rose-300" />
               <p className="auth-hint">{t('auth.signupPhoneHint')}</p>
             </div>
+            <p className="auth-hint">{t('auth.signupTrialNote', { days: SIGNUP_TRIAL_DAYS })}</p>
             <AuthCtaButton loading={loading} busyLabel={t('auth.sending')}>
               {t('auth.sendOtp')}
             </AuthCtaButton>
@@ -275,27 +257,36 @@ export default function RegisterGym() {
 
         {step === 'gym' && (
           <form className="space-y-5" onSubmit={handleGymContinue} noValidate>
-            <div>
-              <label htmlFor="signup-code" className="auth-label">
-                {t('auth.otpCode')}
-                <RequiredMark />
-              </label>
-              <input
-                id="signup-code"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                value={code}
-                onChange={(e) => {
-                  setCode(e.target.value.trim());
-                  clearFieldError(setFieldErrors, 'code');
-                }}
-                className={fc('code')}
-                placeholder={t('modals.registerGym.otpPlaceholder')}
-                aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'code'))}
-              />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'code')} className="text-sm text-rose-300" />
-            </div>
+            <AuthOtpField
+              id="signup-code"
+              label={t('auth.otpCode')}
+              phone={verifiedPhone || phone}
+              value={code}
+              onChange={(next) => {
+                setCode(next);
+                clearFieldError(setFieldErrors, 'code');
+              }}
+              inputClassName={fc('code')}
+              hasFieldError={Boolean(fieldErrorMessage(fieldErrors, 'code'))}
+              fieldError={fieldErrorMessage(fieldErrors, 'code')}
+              placeholder={undefined}
+              devHint={import.meta.env.DEV ? t('auth.otpDevHint') : undefined}
+              cooldown={cooldown}
+              canResend={canResend}
+              resendLoading={resendLoading}
+              onResend={handleResendOtp}
+              onChangePhone={() => {
+                setStep('phone');
+                setCode('');
+                setError('');
+                clearAllFieldErrors(setFieldErrors);
+              }}
+              changePhoneLabel={t('auth.changePhone')}
+            />
+
+            <hr className="auth-form-step-divider" />
+            <p className="auth-section-title">{t('auth.signupSectionGym')}</p>
+
             <div>
               <label htmlFor="signup-gym" className="auth-label">
                 {t('modals.registerGym.gymName')}
@@ -315,44 +306,48 @@ export default function RegisterGym() {
               <FieldError message={fieldErrorMessage(fieldErrors, 'gymName')} className="text-sm text-rose-300" />
             </div>
             <div>
-              <label htmlFor="signup-plan" className="auth-label">
-                {t('table.plan')}
+              <label htmlFor="signup-city" className="auth-label">
+                {t('modals.registerGym.gymCity')}
                 <RequiredMark />
               </label>
-              <AuthSelect
-                id="signup-plan"
-                value={saasPlanId}
-                onChange={(next) => {
-                  setSaasPlanId(next);
-                  clearFieldError(setFieldErrors, 'saasPlanId');
+              <input
+                id="signup-city"
+                type="text"
+                autoComplete="address-level2"
+                value={city}
+                onChange={(e) => {
+                  setCity(e.target.value);
+                  clearFieldError(setFieldErrors, 'city');
                 }}
-                options={plans.map((p) => ({
-                  value: String(p.id),
-                  label: `${p.name} — ${formatMoney(p.price)} / ${p.duration}mo`,
-                }))}
-                error={Boolean(fieldErrorMessage(fieldErrors, 'saasPlanId'))}
-                aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'saasPlanId'))}
+                className={fc('city')}
+                placeholder={t('modals.registerGym.gymCityPlaceholder')}
+                aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'city'))}
               />
-              <FieldError message={fieldErrorMessage(fieldErrors, 'saasPlanId')} className="text-sm text-rose-300" />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'city')} className="text-sm text-rose-300" />
             </div>
+            <div>
+              <label htmlFor="signup-address" className="auth-label">
+                {t('modals.registerGym.gymAddress')} ({t('account.optional')})
+              </label>
+              <input
+                id="signup-address"
+                type="text"
+                autoComplete="street-address"
+                value={address}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  clearFieldError(setFieldErrors, 'address');
+                }}
+                className={fc('address')}
+                placeholder={t('modals.registerGym.gymAddressPlaceholder')}
+                aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'address'))}
+              />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'address')} className="text-sm text-rose-300" />
+            </div>
+            <p className="auth-hint">{t('auth.signupTrialNote', { days: SIGNUP_TRIAL_DAYS })}</p>
             <button type="submit" className="auth-cta-btn">
               {t('common.continue')}
             </button>
-            <p className="text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setStep('phone');
-                  setCode('');
-                  setError('');
-                  setMessage('');
-                  clearAllFieldErrors(setFieldErrors);
-                }}
-                className="auth-text-btn"
-              >
-                {t('auth.resendOtp')}
-              </button>
-            </p>
           </form>
         )}
 
@@ -471,7 +466,7 @@ export default function RegisterGym() {
                 className="text-sm text-rose-300"
               />
             </div>
-            <p className="auth-hint">{t('auth.signupPaymentNote')}</p>
+            <p className="auth-hint">{t('auth.signupTrialNote', { days: SIGNUP_TRIAL_DAYS })}</p>
             <AuthCtaButton loading={loading} busyLabel={t('auth.processing')}>
               {t('auth.createGymAccount')}
             </AuthCtaButton>

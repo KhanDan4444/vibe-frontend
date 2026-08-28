@@ -5,6 +5,23 @@ import { validateUsername, validateOptionalEmail, validateOtpCode } from './auth
 import { validatePassword, validatePasswordMatch } from './passwords';
 import { validateRequiredPayment, validatePaymentDateNotFuture } from './payment';
 
+export const MAX_GYM_CITY_LENGTH = 100;
+export const MAX_GYM_ADDRESS_LENGTH = 500;
+
+export function validateRequiredCity(city) {
+  const trimmed = String(city ?? '').trim();
+  if (!trimmed) return fail('validation.cityRequired', 'city');
+  if (trimmed.length > MAX_GYM_CITY_LENGTH) return fail('validation.cityTooLong', 'city');
+  return ok();
+}
+
+export function validateOptionalGymAddress(address) {
+  if (address && address.trim().length > MAX_GYM_ADDRESS_LENGTH) {
+    return fail('validation.addressTooLong', 'address');
+  }
+  return ok();
+}
+
 /**
  * @param {{
  *   gymName: string,
@@ -37,14 +54,15 @@ export function validateGymSignupDetails({
 }
 
 /**
- * Register step: OTP + gym name + plan (before owner account fields).
- * @param {{ code: string, gymName: string, saasPlanId?: string|number|null }} fields
+ * Register step: OTP + gym name + location (before owner account fields).
+ * @param {{ code: string, gymName: string, city: string, address?: string }} fields
  */
-export function validateGymSignupGymStep({ code, gymName, saasPlanId }) {
+export function validateGymSignupGymStep({ code, gymName, city, address }) {
   return firstFailure(
     validateOtpCode(code),
     validateRequiredName(gymName, { field: 'gymName' }),
-    saasPlanId ? ok() : fail('validation.selectSaasPlan', 'saasPlanId')
+    validateRequiredCity(city),
+    validateOptionalGymAddress(address)
   );
 }
 

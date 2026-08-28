@@ -9,6 +9,7 @@ import {
   AlertCircle,
   DollarSign,
   RefreshCw,
+  Sparkles,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { parseApiResponse } from '../../utils/api';
@@ -60,6 +61,7 @@ import PageHeader from '../../components/PageHeader';
 
 const UNPAID = 'Unpaid';
 const DUE_SOON = 'Due Soon';
+const TRIAL_ENDING = 'Trial ending';
 const EXPIRED = 'Expired';
 const FORMER = 'Former';
 const GYM_FILTER_STORAGE_KEY = 'vibe.admin.gyms.statusFilter';
@@ -68,6 +70,7 @@ const GYM_PAGE_SIZE = DEFAULT_PAGE_SIZE;
 function gymFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
   if (statusFilter === DUE_SOON) return { filter: 'due_soon' };
+  if (statusFilter === TRIAL_ENDING) return { filter: 'trial_ending' };
   if (statusFilter === EXPIRED) return { filter: 'expired' };
   if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
@@ -76,7 +79,7 @@ function gymFilterToQuery(statusFilter) {
 function readSavedGymFilter() {
   try {
     const saved = sessionStorage.getItem(GYM_FILTER_STORAGE_KEY);
-    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, EXPIRED]);
+    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, TRIAL_ENDING, EXPIRED]);
     if (allowed.has(saved)) return saved;
   } catch {
     /* ignore */
@@ -106,7 +109,7 @@ export default function AdminDashboard() {
   const [gymTotal, setGymTotal] = useState(0);
   const [gymTotalPages, setGymTotalPages] = useState(1);
   const [gymCounts, setGymCounts] = useState({
-    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0,
+    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0, trialEnding: 0,
   });
 
   const [saasPayments, setSaasPayments] = useState([]);
@@ -186,7 +189,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const filter = location.state?.filter;
     if (!filter) return;
-    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, EXPIRED]);
+    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, TRIAL_ENDING, EXPIRED]);
     if (!allowed.has(filter)) return;
     setGymPage(1);
     setStatusFilter(filter);
@@ -575,6 +578,7 @@ export default function AdminDashboard() {
   const unpaidCount = gymCounts.unpaid ?? platformMetrics?.unpaidCatchUpGyms ?? 0;
   const totalGymsCount = gymCounts.all ?? platformMetrics?.totalGyms ?? gymTotal;
   const dueSoonFilterCount = gymCounts.dueSoon ?? platformMetrics?.dueSoonGyms ?? 0;
+  const trialEndingFilterCount = gymCounts.trialEnding ?? platformMetrics?.trialEndingGyms ?? 0;
   const expiredLicenseCount = (gymCounts.expired ?? 0) + (gymCounts.suspended ?? 0);
   const dashboardBooting = platformMetrics === null;
   const gymsBooting = loading && gyms.length === 0;
@@ -650,6 +654,21 @@ export default function AdminDashboard() {
                     setGymPage(1);
                     setStatusFilter('active');
                     navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: 'active' } });
+                  }}
+                />
+                <MetricCard
+                  className="cursor-pointer"
+                  variant="dense"
+                  label={t('admin.trialEndingGyms')}
+                  value={platformMetrics?.trialEndingGyms ?? trialEndingFilterCount}
+                  hint={trialEndingFilterCount > 0 ? t('admin.trialEndingHint') : null}
+                  icon={Sparkles}
+                  color="amber"
+                  badge={trialEndingFilterCount > 0 ? t('metrics.critical') : null}
+                  onClick={() => {
+                    setGymPage(1);
+                    setStatusFilter(TRIAL_ENDING);
+                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: TRIAL_ENDING } });
                   }}
                 />
                 <MetricCard
@@ -929,6 +948,16 @@ export default function AdminDashboard() {
                     onClick={() => {
                       setGymPage(1);
                       setStatusFilter(DUE_SOON);
+                    }}
+                  />
+                  <FilterChip
+                    variant="trial_ending"
+                    label={t('filters.trialEnding')}
+                    count={trialEndingFilterCount}
+                    active={statusFilter === TRIAL_ENDING}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(TRIAL_ENDING);
                     }}
                   />
                   <FilterChip

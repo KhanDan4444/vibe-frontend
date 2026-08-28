@@ -24,6 +24,9 @@ const GYM_LICENSE_TYPE_KEYS = {
   gym_license_expires_today: 'smsLog.gymTypes.expiresToday',
   gym_license_expired: 'smsLog.gymTypes.expired',
   gym_license_renewed: 'smsLog.gymTypes.renewed',
+  gym_trial_due_in_3_days: 'smsLog.gymTypes.trialDueIn3Days',
+  gym_trial_expires_today: 'smsLog.gymTypes.trialExpiresToday',
+  gym_trial_expired: 'smsLog.gymTypes.trialExpired',
 };
 
 const OTP_TYPE_KEYS = {
@@ -72,6 +75,9 @@ export const GYM_SMS_TYPE_FILTER_OPTIONS = [
   { value: 'gym_license_expires_today', labelKey: 'smsLog.gymTypes.expiresToday' },
   { value: 'gym_license_expired', labelKey: 'smsLog.gymTypes.expired' },
   { value: 'gym_license_renewed', labelKey: 'smsLog.gymTypes.renewed' },
+  { value: 'gym_trial_due_in_3_days', labelKey: 'smsLog.gymTypes.trialDueIn3Days' },
+  { value: 'gym_trial_expires_today', labelKey: 'smsLog.gymTypes.trialExpiresToday' },
+  { value: 'gym_trial_expired', labelKey: 'smsLog.gymTypes.trialExpired' },
 ];
 
 export const ADMIN_SMS_TYPE_FILTER_OPTIONS = [

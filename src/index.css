@@ -438,6 +438,152 @@
     color: #99f6e4;
   }
 
+  .auth-otp-panel {
+    margin-bottom: 0.25rem;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background-color: rgb(255 255 255 / 0.03);
+    padding: 1rem 1rem 0.875rem;
+  }
+
+  .auth-otp-block {
+    margin-bottom: 0;
+  }
+
+  .auth-otp-label {
+    margin-bottom: 0;
+  }
+
+  .auth-otp-destination {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4375rem;
+    margin-top: 0.375rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    color: rgb(226 232 240 / 0.52);
+  }
+
+  .auth-otp-destination-phone {
+    font-weight: 600;
+    color: rgb(153 246 228 / 0.92);
+    letter-spacing: 0.02em;
+  }
+
+  .auth-otp-destination-icon {
+    margin-top: 0.0625rem;
+    height: 0.875rem;
+    width: 0.875rem;
+    flex-shrink: 0;
+    color: rgb(153 246 228 / 0.75);
+  }
+
+  .auth-otp-slots-wrap {
+    position: relative;
+    cursor: text;
+  }
+
+  .auth-otp-slots-wrap-error .auth-otp-slot {
+    border-color: rgb(251 113 133 / 0.55);
+  }
+
+  .auth-otp-slots {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(0.3125rem, 1.8vw, 0.4375rem);
+  }
+
+  .auth-otp-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    min-height: 2.75rem;
+    max-height: 3rem;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background-color: rgb(255 255 255 / 0.055);
+    font-size: clamp(1.0625rem, 4vw, 1.1875rem);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: #ffffff;
+    transition: border-color 150ms ease, background-color 150ms ease;
+  }
+
+  .auth-otp-slot-filled {
+    border-color: rgb(255 255 255 / 0.2);
+    background-color: rgb(255 255 255 / 0.08);
+  }
+
+  .auth-otp-slot-active {
+    border-color: rgb(94 234 212 / 0.48);
+    background-color: rgb(255 255 255 / 0.08);
+  }
+
+  .auth-otp-input-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    caret-color: transparent;
+    opacity: 0.001;
+    font-size: 1rem;
+  }
+
+  .auth-otp-input-overlay:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .auth-otp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem 0.4375rem;
+    margin-top: 0.75rem;
+    padding-top: 0.625rem;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .auth-otp-action-btn {
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .auth-otp-cooldown {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: rgb(226 232 240 / 0.52);
+  }
+
+  .auth-otp-actions-sep {
+    color: rgb(255 255 255 / 0.2);
+    font-size: 0.8125rem;
+    user-select: none;
+  }
+
+  .auth-form-step-divider {
+    height: 1px;
+    border: 0;
+    margin: 0.25rem 0 0.125rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.12) 20%,
+      rgb(255 255 255 / 0.12) 80%,
+      transparent
+    );
+  }
+
   .auth-section-title {
     font-size: 0.75rem;
     font-weight: 600;

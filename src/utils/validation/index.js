@@ -3,6 +3,7 @@ export {
   normalizeEthiopianPhone,
   isValidEthiopianPhone,
   formatPhoneForInput,
+  maskPhoneForDisplay,
   validateRequiredEthiopianPhone,
   validateOptionalEthiopianPhone,
 } from './phone';

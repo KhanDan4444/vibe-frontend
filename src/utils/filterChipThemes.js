@@ -42,6 +42,16 @@ export const FILTER_CHIP_THEMES = {
     badgeInactive:
       'bg-[color:var(--color-status-due-soon)]/15 text-[color:var(--color-status-due-soon)]',
   },
+  trial_ending: {
+    dot: 'bg-[color:var(--color-status-trialing)]',
+    active:
+      'bg-[color:var(--color-status-trialing)]/15 border-[color:var(--color-status-trialing)] text-[color:var(--color-status-trialing)]',
+    inactive:
+      'bg-app-raised border-[color:var(--color-status-trialing)]/35 text-[color:var(--color-status-trialing)] hover:bg-[color:var(--color-status-trialing)]/10',
+    badgeActive: 'bg-[color:var(--color-status-trialing)] text-white',
+    badgeInactive:
+      'bg-[color:var(--color-status-trialing)]/15 text-[color:var(--color-status-trialing)]',
+  },
   expired: {
     dot: 'bg-[color:var(--color-status-expired)]',
     active:

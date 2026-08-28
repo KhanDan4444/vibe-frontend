@@ -228,13 +228,21 @@ export const GymProvider = ({ children }) => {
 
       setSummary({ ...EMPTY_SUMMARY, ...dashboardData });
 
-      if (dashboardData.subscriptionStatus || dashboardData.readOnly !== undefined) {
+      if (
+        dashboardData.subscriptionStatus ||
+        dashboardData.readOnly !== undefined ||
+        dashboardData.isTrial !== undefined
+      ) {
         setSubscription((prev) => ({
           ...(prev || {}),
           gymName: prev?.gymName,
           status: dashboardData.subscriptionStatus ?? prev?.status ?? 'active',
           readOnly: dashboardData.readOnly ?? prev?.readOnly ?? false,
           accessDenied: false,
+          isTrial: dashboardData.isTrial ?? prev?.isTrial ?? false,
+          trialEndDate: dashboardData.trialEndDate ?? prev?.trialEndDate,
+          trialDaysLeft:
+            dashboardData.trialDaysLeft ?? prev?.trialDaysLeft,
         }));
       }
     } catch (err) {
@@ -566,6 +574,9 @@ export const GymProvider = ({ children }) => {
       readOnly,
       subscriptionStatus: subscription?.status ?? 'active',
       gymName: subscription?.gymName,
+      isTrial: subscription?.isTrial ?? false,
+      trialDaysLeft: subscription?.trialDaysLeft,
+      trialEndDate: subscription?.trialEndDate,
       branches,
       selectedBranchId,
       setSelectedBranchId,
@@ -601,6 +612,9 @@ export const GymProvider = ({ children }) => {
       readOnly,
       subscription?.status,
       subscription?.gymName,
+      subscription?.isTrial,
+      subscription?.trialDaysLeft,
+      subscription?.trialEndDate,
       branches,
       selectedBranchId,
       setSelectedBranchId,
