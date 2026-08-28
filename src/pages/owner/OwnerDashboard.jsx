@@ -425,7 +425,7 @@ export default function OwnerDashboard() {
                               </div>
                             </td>
                             <td className="truncate font-medium text-app-text">{planLabel}</td>
-                            <td className="whitespace-nowrap text-app-text">
+                            <td className="max-w-0 truncate whitespace-nowrap text-app-text" title={attentionEndLabel(member, t)}>
                               {attentionEndLabel(member, t)}
                             </td>
                             <td>

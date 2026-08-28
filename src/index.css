@@ -645,10 +645,13 @@
   }
 
   .owner-dashboard-renew-slot {
-    display: block;
-    width: 5.875rem;
+    display: inline-block;
+    min-width: 7rem;
+    width: max-content;
+    max-width: 100%;
     flex-shrink: 0;
     text-align: left;
+    white-space: nowrap;
   }
 
   .owner-dashboard-alert-table td:nth-child(3) .app-skeleton,
