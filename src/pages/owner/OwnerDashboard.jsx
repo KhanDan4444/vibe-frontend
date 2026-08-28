@@ -6,6 +6,10 @@ import { isGymOwner } from '../../utils/roles';
 import { Users, AlertTriangle, XCircle, UserPlus, TrendingUp, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
+import {
+  OwnerDashboardAlertMobileSkeleton,
+  OwnerDashboardAlertRowsSkeleton,
+} from '../../components/LoadingSkeletons';
 import StatusBadge from '../../components/StatusBadge';
 import RenewModal from '../../components/RenewModal';
 import MemberPhoto from '../../components/MemberPhoto';
@@ -20,7 +24,7 @@ import { getBranchComparison } from '../../services/dashboardService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { headingText, mutedText, panelQuiet, tableRowHover, renewActionBtn, sectionTitle } from '../../utils/surfaceClasses';
+import { headingText, mutedText, tableRowHover, renewActionBtn, sectionTitle } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
 import PageHeader from '../../components/PageHeader';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
@@ -217,24 +221,38 @@ export default function OwnerDashboard() {
       <div className="grid gap-6 md:grid-cols-5">
         {gymBooting ? (
           <>
-            <div className={`md:col-span-3 overflow-hidden p-6 ${panelQuiet}`}>
-              <div className="app-skeleton mb-6 h-5 w-48" />
-              <div className="space-y-4">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className="app-skeleton h-8 w-8 shrink-0 rounded-full" />
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className="app-skeleton h-4 w-32" />
-                      <div className="app-skeleton h-3 w-24" />
-                    </div>
-                  </div>
-                ))}
+            <Card className="app-attention-panel md:col-span-3 overflow-hidden">
+              <div className="admin-panel-header">
+                <div className="min-w-0 flex-1 space-y-2">
+                  <div className="app-skeleton h-4 w-56 max-w-full" />
+                  <div className="app-skeleton h-3 w-44 max-w-full" />
+                </div>
+                <div className="app-skeleton h-9 w-20 shrink-0 rounded-md" />
               </div>
-            </div>
-            <div className={`md:col-span-2 p-4 sm:p-6 ${panelQuiet}`}>
-              <div className="app-skeleton mb-4 h-5 w-40" />
-              <div className="app-skeleton min-h-[200px] w-full sm:min-h-[250px]" />
-            </div>
+              <div className="lg:hidden">
+                <OwnerDashboardAlertMobileSkeleton rows={ATTENTION_PREVIEW} />
+              </div>
+              <div className="hidden overflow-x-auto lg:block">
+                <table className="admin-data-table owner-dashboard-alert-table min-w-[720px]">
+                  <thead>
+                    <tr>
+                      <th>{t('table.member')}</th>
+                      <th>{t('table.plan')}</th>
+                      <th>{t('table.expiry')}</th>
+                      <th>{t('table.status')}</th>
+                      <th className="text-right">{t('table.action')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <OwnerDashboardAlertRowsSkeleton rows={ATTENTION_PREVIEW} />
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+            <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
+              <div className="app-skeleton mb-3 h-4 w-40 sm:mb-4" />
+              <div className="app-skeleton min-h-[200px] w-full flex-1 rounded-xl sm:min-h-[240px]" />
+            </Card>
           </>
         ) : (
           <>

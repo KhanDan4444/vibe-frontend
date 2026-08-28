@@ -622,19 +622,25 @@
   .owner-dashboard-alert-table td:nth-child(3) {
     width: 21%;
     min-width: 9.5rem;
-    padding-right: 1.5rem;
+    padding-right: 2rem;
   }
 
   .owner-dashboard-alert-table th:nth-child(4),
   .owner-dashboard-alert-table td:nth-child(4) {
     width: 13%;
-    padding-left: 0.5rem;
+    padding-left: 1rem;
     white-space: nowrap;
   }
 
   .owner-dashboard-alert-table th:nth-child(5),
   .owner-dashboard-alert-table td:nth-child(5) {
     width: 22%;
+  }
+
+  .owner-dashboard-alert-table td:nth-child(3) .app-skeleton,
+  .owner-dashboard-alert-table td:nth-child(4) .app-skeleton {
+    display: inline-block;
+    vertical-align: middle;
   }
 
   .owner-team-table th:nth-child(1),

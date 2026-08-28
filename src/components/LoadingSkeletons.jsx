@@ -352,6 +352,63 @@ export function TeamListSkeleton({ rows = 5 }) {
   );
 }
 
+/** Owner dashboard alert table: Member · Plan · Expiry · Status · Action */
+export function OwnerDashboardAlertRowsSkeleton({ rows = 5 }) {
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, row) => (
+        <tr key={row}>
+          <td>
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="app-skeleton h-8 w-8 shrink-0 rounded-full" />
+              <div className="app-skeleton h-4 w-32 max-w-full" />
+            </div>
+          </td>
+          <td>
+            <div className="app-skeleton inline-block h-3.5 w-28 max-w-full" />
+          </td>
+          <td className="whitespace-nowrap">
+            <div className="app-skeleton inline-block h-3.5 w-[8.75rem] max-w-full" />
+          </td>
+          <td>
+            <div className="app-skeleton inline-block h-5 w-[4.75rem] rounded-full" />
+          </td>
+          <td>
+            <div className="admin-row-actions">
+              <div className="app-skeleton h-8 w-[5.5rem] rounded-lg" />
+            </div>
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+}
+
+/** Owner dashboard alert list — mobile rows with avatar, meta, badge, renew. */
+export function OwnerDashboardAlertMobileSkeleton({ rows = 5 }) {
+  return (
+    <div className="divide-y divide-app-border-subtle">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center justify-between gap-3 px-4 py-3.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2.5">
+              <div className="app-skeleton h-9 w-9 shrink-0 rounded-full" />
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <div className="app-skeleton h-4 w-32 max-w-full" />
+                <div className="app-skeleton h-3 w-44 max-w-full" />
+              </div>
+            </div>
+            <div className="mt-1.5 pl-11">
+              <div className="app-skeleton h-5 w-16 rounded-full" />
+            </div>
+          </div>
+          <div className="app-skeleton h-8 w-20 shrink-0 rounded-lg" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ChartPanelSkeleton({ tall = false }) {
   return (
     <div className={`p-6 ${cardSurface}`}>

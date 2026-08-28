@@ -201,11 +201,26 @@ export default function MetricCard({
 
 export function MetricCardSkeleton({ variant = 'default', className = '' }) {
   const isHero = variant === 'emphasis';
+  const isDense = variant === 'dense';
+  const cardClass = isHero
+    ? 'app-metric-hero p-5 sm:p-6'
+    : isDense
+      ? 'app-metric-dense p-3.5 sm:p-4'
+      : 'app-card-lift p-4 sm:p-5';
+
   return (
-    <Card quiet={!isHero} className={`relative ${isHero ? 'p-6' : 'p-5'} ${className}`}>
-      <div className="app-skeleton h-3 w-24" />
-      <div className={`app-skeleton mt-3 ${isHero ? 'h-12 w-28' : 'h-8 w-20'}`} />
-      <div className="app-skeleton mt-2 h-3 w-32" />
+    <Card quiet={!isHero} className={`relative ${cardClass} ${className}`}>
+      <div className="flex items-start justify-between gap-2 min-w-0">
+        <div className={`app-skeleton ${isHero ? 'h-3.5 w-28' : 'h-3 w-[4.5rem]'}`} />
+        <div className={`app-skeleton shrink-0 rounded-sm ${isDense ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
+      </div>
+      <div className={`flex flex-wrap items-baseline gap-x-2 gap-y-1 ${isHero ? 'mt-3' : 'mt-1.5 sm:mt-2'}`}>
+        <div className={`app-skeleton ${isHero ? 'h-10 w-14 sm:h-12 sm:w-16' : 'h-7 w-10 sm:h-8'}`} />
+        {isHero ? <div className="app-skeleton h-6 w-10 sm:h-7 sm:w-12" /> : null}
+      </div>
+      {isHero ? (
+        <div className="app-skeleton mt-4 h-1.5 w-full rounded-full" />
+      ) : null}
     </Card>
   );
 }
