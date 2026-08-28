@@ -1,5 +1,5 @@
 // src/pages/owner/OwnerDashboard.jsx
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, startTransition, Suspense } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -12,6 +12,7 @@ import {
 } from '../../components/LoadingSkeletons';
 import StatusBadge from '../../components/StatusBadge';
 import RenewModal from '../../components/RenewModal';
+import MemberDetailDrawer from '../../components/MemberDetailDrawer';
 import MemberPhoto from '../../components/MemberPhoto';
 import BranchComparisonTable from '../../components/BranchComparisonTable';
 import { canRenewMember } from '../../utils/memberRenew';
@@ -21,6 +22,7 @@ import { formatDisplayDate, daysUntilDate } from '../../utils/date';
 import { resolveMemberPlanLabel } from '../../utils/formatPlanDisplayName';
 import { parseApiResponse } from '../../utils/api';
 import { getBranchComparison } from '../../services/dashboardService';
+import { getMember } from '../../services/memberService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
@@ -48,9 +50,10 @@ function attentionEndLabel(member, t) {
 export default function OwnerDashboard() {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
-  const { summary, plans, renewMember, showFlash, readOnly, selectedBranchId, branches, gymBooting, gymName } = useGym();
+  const { summary, plans, renewMember, updateMember, showFlash, readOnly, selectedBranchId, branches, gymBooting, gymName } = useGym();
   const navigate = useNavigate();
 
+  const [selectedMember, setSelectedMember] = useState(null);
   const [renewState, setRenewState] = useState({ isOpen: false, member: null });
   const [renewSaving, setRenewSaving] = useState(false);
   const [renewError, setRenewError] = useState('');
@@ -98,6 +101,36 @@ export default function OwnerDashboard() {
     .map((m) => mapMemberFromApi(m))
     .filter(Boolean)
     .slice(0, ATTENTION_PREVIEW);
+
+  const showAttentionPanel = gymBooting || alertMembers.length > 0;
+  const attentionViewAllFilter =
+    dueSoonMembersCount > 0 ? DISPLAY_STATUS.DUE_SOON : DISPLAY_STATUS.EXPIRED;
+  const showBranchPicker =
+    isGymOwner(user?.role) &&
+    selectedBranchId === 'all' &&
+    branches.filter((b) => b.is_active !== false).length > 1;
+
+  const openAlertMember = useCallback(
+    (member) => {
+      const openedId = member.id;
+      setSelectedMember(member);
+      void (async () => {
+        try {
+          const res = await getMember(apiFetch, openedId);
+          const data = await parseApiResponse(res);
+          if (!res.ok) return;
+          startTransition(() => {
+            setSelectedMember((current) =>
+              current?.id === openedId ? mapMemberFromApi(data) : current,
+            );
+          });
+        } catch {
+          /* keep list row data */
+        }
+      })();
+    },
+    [apiFetch],
+  );
 
   const chartData = (summary.revenueChart || []).map((r) => ({
     date: formatDisplayDate(r.date),
@@ -219,74 +252,88 @@ export default function OwnerDashboard() {
       )}
 
       <div className="grid gap-6 md:grid-cols-5">
-        {gymBooting ? (
-          <>
-            <Card className="app-attention-panel md:col-span-3 overflow-hidden">
-              <div className="admin-panel-header">
-                <div className="min-w-0 flex-1 space-y-2">
-                  <div className="app-skeleton h-4 w-56 max-w-full" />
-                  <div className="app-skeleton h-3 w-44 max-w-full" />
+        {showAttentionPanel ? (
+          gymBooting ? (
+            <>
+              <Card className="app-attention-panel md:col-span-3 overflow-hidden">
+                <div className="admin-panel-header">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="app-skeleton h-4 w-56 max-w-full" />
+                    <div className="app-skeleton h-3 w-44 max-w-full" />
+                  </div>
+                  <div className="app-skeleton h-9 w-20 shrink-0 rounded-md" />
                 </div>
-                <div className="app-skeleton h-9 w-20 shrink-0 rounded-md" />
-              </div>
-              <div className="lg:hidden">
-                <OwnerDashboardAlertMobileSkeleton rows={ATTENTION_PREVIEW} />
-              </div>
-              <div className="hidden overflow-x-auto lg:block">
-                <table className="admin-data-table owner-dashboard-alert-table min-w-[720px]">
-                  <thead>
-                    <tr>
-                      <th>{t('table.member')}</th>
-                      <th>{t('table.plan')}</th>
-                      <th>{t('table.expiry')}</th>
-                      <th>{t('table.status')}</th>
-                      <th>
-                        <div className="admin-row-actions">
-                          <span className="owner-dashboard-renew-slot">{t('table.action')}</span>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <OwnerDashboardAlertRowsSkeleton rows={ATTENTION_PREVIEW} />
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-            <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
-              <div className="app-skeleton mb-3 h-4 w-40 sm:mb-4" />
-              <div className="app-skeleton min-h-[200px] w-full flex-1 rounded-xl sm:min-h-[240px]" />
-            </Card>
-          </>
-        ) : (
-          <>
-            <Card className="app-attention-panel md:col-span-3 overflow-hidden">
-              <div className="admin-panel-header">
-                <div className="min-w-0">
-                  <h2 className={sectionTitle}>
-                    {t('pages.dashboard.expiringSection')}
-                  </h2>
-                  <p className={`mt-0.5 text-xs sm:text-sm ${mutedText}`}>{t('pages.dashboard.expiringSectionHint')}</p>
+                <div className="lg:hidden">
+                  <OwnerDashboardAlertMobileSkeleton rows={ATTENTION_PREVIEW} />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => navigate('/dashboard/members', { state: { filter: 'Expired' } })}
-                  className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-800 transition-colors hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15"
-                >
-                  {t('common.viewAll')}
-                </button>
-              </div>
+                <div className="hidden overflow-x-auto lg:block">
+                  <table className="admin-data-table owner-dashboard-alert-table min-w-[680px]">
+                    <thead>
+                      <tr>
+                        <th>{t('table.member')}</th>
+                        <th>{t('table.plan')}</th>
+                        <th>{t('table.expiry')}</th>
+                        <th>{t('table.status')}</th>
+                        <th>
+                          <div className="admin-row-actions">
+                            <span className="owner-dashboard-renew-slot">{t('table.action')}</span>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <OwnerDashboardAlertRowsSkeleton rows={ATTENTION_PREVIEW} />
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+              <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
+                <div className="app-skeleton mb-3 h-4 w-40 sm:mb-4" />
+                <div className="app-skeleton min-h-[200px] w-full flex-1 rounded-xl sm:min-h-[240px]" />
+              </Card>
+            </>
+          ) : (
+            <>
+              <Card className="app-attention-panel md:col-span-3 overflow-hidden">
+                <div className="admin-panel-header">
+                  <div className="min-w-0">
+                    <h2 className={sectionTitle}>{t('pages.dashboard.expiringSection')}</h2>
+                    <p className={`mt-0.5 text-xs sm:text-sm ${mutedText}`}>
+                      {t('pages.dashboard.expiringSectionHint')}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate('/dashboard/members', { state: { filter: attentionViewAllFilter } })
+                    }
+                    className="min-h-9 shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold text-teal-800 transition-colors hover:bg-teal-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/30 dark:text-teal-300 dark:hover:bg-teal-600/15"
+                  >
+                    {t('common.viewAll')}
+                  </button>
+                </div>
 
-              <div className="lg:hidden divide-y divide-app-border-subtle">
-                {alertMembers.length > 0 ? (
-                  alertMembers.map((member) => {
+                <div className="lg:hidden divide-y divide-app-border-subtle">
+                  {alertMembers.map((member) => {
                     const planLabel = resolveMemberPlanLabel(
                       member,
                       plans,
                       t('pages.dashboard.customPlan'),
                     );
                     return (
-                      <div key={member.id} className="flex items-center justify-between gap-3 px-4 py-3.5">
+                      <div
+                        key={member.id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => openAlertMember(member)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openAlertMember(member);
+                          }
+                        }}
+                        className={`flex cursor-pointer items-center justify-between gap-3 px-4 py-3.5 ${tableRowHover}`}
+                      >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2.5">
                             <MemberPhoto
@@ -299,7 +346,9 @@ export default function OwnerDashboard() {
                               fallbackClassName="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text"
                             />
                             <div className="min-w-0">
-                              <span className="block truncate font-semibold text-app-text-strong">{member.name}</span>
+                              <span className="block truncate font-semibold text-app-text-strong">
+                                {member.name}
+                              </span>
                               <p className="truncate text-xs text-app-muted">
                                 {planLabel}
                                 {' · '}
@@ -315,7 +364,10 @@ export default function OwnerDashboard() {
                           <div className="admin-row-actions shrink-0">
                             <button
                               type="button"
-                              onClick={() => setRenewState({ isOpen: true, member })}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setRenewState({ isOpen: true, member });
+                              }}
                               className={renewActionBtn}
                               title={t('actions.renew')}
                             >
@@ -325,37 +377,37 @@ export default function OwnerDashboard() {
                         )}
                       </div>
                     );
-                  })
-                ) : (
-                  <p className="admin-panel-empty px-4">{t('pages.dashboard.noExpiring')}</p>
-                )}
-              </div>
+                  })}
+                </div>
 
-              <div className="hidden overflow-x-auto lg:block">
-                <table className="admin-data-table owner-dashboard-alert-table min-w-[720px]">
-                  <thead>
-                    <tr>
-                      <th>{t('table.member')}</th>
-                      <th>{t('table.plan')}</th>
-                      <th>{t('table.expiry')}</th>
-                      <th>{t('table.status')}</th>
-                      <th>
-                        <div className="admin-row-actions">
-                          <span className="owner-dashboard-renew-slot">{t('table.action')}</span>
-                        </div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {alertMembers.length > 0 ? (
-                      alertMembers.map((member) => {
+                <div className="hidden overflow-x-auto lg:block">
+                  <table className="admin-data-table owner-dashboard-alert-table min-w-[680px]">
+                    <thead>
+                      <tr>
+                        <th>{t('table.member')}</th>
+                        <th>{t('table.plan')}</th>
+                        <th>{t('table.expiry')}</th>
+                        <th>{t('table.status')}</th>
+                        <th>
+                          <div className="admin-row-actions">
+                            <span className="owner-dashboard-renew-slot">{t('table.action')}</span>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {alertMembers.map((member) => {
                         const planLabel = resolveMemberPlanLabel(
                           member,
                           plans,
                           t('pages.dashboard.customPlan'),
                         );
                         return (
-                          <tr key={member.id} className={tableRowHover}>
+                          <tr
+                            key={member.id}
+                            className={`cursor-pointer ${tableRowHover}`}
+                            onClick={() => openAlertMember(member)}
+                          >
                             <td>
                               <div className="flex min-w-0 items-center gap-3">
                                 <MemberPhoto
@@ -367,13 +419,15 @@ export default function OwnerDashboard() {
                                   className="h-8 w-8 rounded-full object-cover"
                                   fallbackClassName="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-app-border text-xs font-bold text-app-text"
                                 />
-                                <span className="truncate font-semibold text-app-text-strong">{member.name}</span>
+                                <span className="truncate font-semibold text-app-text-strong">
+                                  {member.name}
+                                </span>
                               </div>
                             </td>
-                            <td className="truncate font-medium text-app-text">
-                              {planLabel}
+                            <td className="truncate font-medium text-app-text">{planLabel}</td>
+                            <td className="whitespace-nowrap text-app-text">
+                              {attentionEndLabel(member, t)}
                             </td>
-                            <td className="whitespace-nowrap text-app-text">{attentionEndLabel(member, t)}</td>
                             <td>
                               <StatusBadge status={member.status} />
                             </td>
@@ -383,7 +437,10 @@ export default function OwnerDashboard() {
                                   <div className="owner-dashboard-renew-slot">
                                     <button
                                       type="button"
-                                      onClick={() => setRenewState({ isOpen: true, member })}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setRenewState({ isOpen: true, member });
+                                      }}
                                       className={`${renewActionBtn} w-full justify-center`}
                                     >
                                       <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
@@ -394,38 +451,69 @@ export default function OwnerDashboard() {
                             </td>
                           </tr>
                         );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan="5" className="admin-panel-empty">
-                          {t('pages.dashboard.noExpiring')}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
 
-            <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
-              <h2 className={`mb-3 sm:mb-4 ${sectionTitle}`}>
-                {t('pages.dashboard.revenueThisMonth')}
-              </h2>
-              <div className="min-h-[200px] flex-1 sm:min-h-[240px]">
-                <Suspense
-                  fallback={
-                    <div className="flex h-full items-center justify-center text-sm text-app-muted">
-                      {t('common.loading')}
-                    </div>
-                  }
-                >
-                  <OwnerRevenueChart chartData={chartData} />
-                </Suspense>
-              </div>
-            </Card>
-          </>
+              <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
+                <h2 className={`mb-3 sm:mb-4 ${sectionTitle}`}>
+                  {t('pages.dashboard.revenueThisMonth')}
+                </h2>
+                <div className="min-h-[200px] flex-1 sm:min-h-[240px]">
+                  <Suspense
+                    fallback={
+                      <div className="flex h-full items-center justify-center text-sm text-app-muted">
+                        {t('common.loading')}
+                      </div>
+                    }
+                  >
+                    <OwnerRevenueChart chartData={chartData} />
+                  </Suspense>
+                </div>
+              </Card>
+            </>
+          )
+        ) : (
+          <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-5">
+            <h2 className={`mb-3 sm:mb-4 ${sectionTitle}`}>
+              {t('pages.dashboard.revenueThisMonth')}
+            </h2>
+            <div className="min-h-[200px] flex-1 sm:min-h-[240px]">
+              <Suspense
+                fallback={
+                  <div className="flex h-full items-center justify-center text-sm text-app-muted">
+                    {t('common.loading')}
+                  </div>
+                }
+              >
+                <OwnerRevenueChart chartData={chartData} />
+              </Suspense>
+            </div>
+          </Card>
         )}
       </div>
+
+      {selectedMember ? (
+        <MemberDetailDrawer
+          member={selectedMember}
+          plans={plans}
+          apiFetch={apiFetch}
+          branches={branches}
+          showBranchPicker={showBranchPicker}
+          onClose={() => setSelectedMember(null)}
+          onUpdate={async (id, data) => {
+            await updateMember(id, data);
+            showFlash(flashFromKey(t, 'contactUpdated'));
+            const res = await getMember(apiFetch, id);
+            const fresh = await parseApiResponse(res);
+            if (res.ok) setSelectedMember(mapMemberFromApi(fresh));
+          }}
+          onRenew={(member) => setRenewState({ isOpen: true, member })}
+          readOnly={readOnly}
+        />
+      ) : null}
 
       <RenewModal
         isOpen={renewState.isOpen}
