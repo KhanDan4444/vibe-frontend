@@ -644,14 +644,11 @@
     justify-content: flex-end;
   }
 
-  .owner-dashboard-alert-table .owner-dashboard-action-slot {
-    display: inline-block;
-    min-width: 5.5rem;
+  .owner-dashboard-renew-slot {
+    display: block;
+    width: 6.25rem;
+    flex-shrink: 0;
     text-align: left;
-  }
-
-  .owner-dashboard-alert-table th:nth-child(5) .owner-dashboard-action-slot {
-    transform: translateX(-0.375rem);
   }
 
   .owner-dashboard-alert-table td:nth-child(3) .app-skeleton,

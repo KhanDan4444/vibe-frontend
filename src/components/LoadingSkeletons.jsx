@@ -375,7 +375,7 @@ export function OwnerDashboardAlertRowsSkeleton({ rows = 5 }) {
           </td>
           <td>
             <div className="admin-row-actions">
-              <div className="app-skeleton h-8 w-[5.5rem] rounded-lg" />
+              <div className="owner-dashboard-renew-slot app-skeleton h-8 rounded-lg" />
             </div>
           </td>
         </tr>

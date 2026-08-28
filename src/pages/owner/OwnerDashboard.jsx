@@ -242,7 +242,7 @@ export default function OwnerDashboard() {
                       <th>{t('table.status')}</th>
                       <th>
                         <div className="admin-row-actions">
-                          <span className="owner-dashboard-action-slot">{t('table.action')}</span>
+                          <span className="owner-dashboard-renew-slot">{t('table.action')}</span>
                         </div>
                       </th>
                     </tr>
@@ -341,7 +341,7 @@ export default function OwnerDashboard() {
                       <th>{t('table.status')}</th>
                       <th>
                         <div className="admin-row-actions">
-                          <span className="owner-dashboard-action-slot">{t('table.action')}</span>
+                          <span className="owner-dashboard-renew-slot">{t('table.action')}</span>
                         </div>
                       </th>
                     </tr>
@@ -380,13 +380,15 @@ export default function OwnerDashboard() {
                             <td>
                               <div className="admin-row-actions">
                                 {!readOnly && canRenewMember(member) && (
-                                  <button
-                                    type="button"
-                                    onClick={() => setRenewState({ isOpen: true, member })}
-                                    className={renewActionBtn}
-                                  >
-                                    <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
-                                  </button>
+                                  <div className="owner-dashboard-renew-slot">
+                                    <button
+                                      type="button"
+                                      onClick={() => setRenewState({ isOpen: true, member })}
+                                      className={`${renewActionBtn} w-full justify-center`}
+                                    >
+                                      <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
+                                    </button>
+                                  </div>
                                 )}
                               </div>
                             </td>
