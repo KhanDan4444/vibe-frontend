@@ -629,12 +629,14 @@
   .owner-dashboard-alert-table td:nth-child(4) {
     width: 13%;
     padding-left: 1rem;
+    padding-right: 2rem;
     white-space: nowrap;
   }
 
   .owner-dashboard-alert-table th:nth-child(5),
   .owner-dashboard-alert-table td:nth-child(5) {
     width: 22%;
+    padding-left: 1rem;
   }
 
   .owner-dashboard-alert-table td:nth-child(5) .admin-row-actions {
