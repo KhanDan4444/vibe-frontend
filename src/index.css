@@ -637,6 +637,10 @@
     width: 22%;
   }
 
+  .owner-dashboard-alert-table td:nth-child(5) .admin-row-actions {
+    justify-content: flex-start;
+  }
+
   .owner-dashboard-alert-table td:nth-child(3) .app-skeleton,
   .owner-dashboard-alert-table td:nth-child(4) .app-skeleton {
     display: inline-block;

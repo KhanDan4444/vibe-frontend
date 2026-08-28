@@ -240,7 +240,7 @@ export default function OwnerDashboard() {
                       <th>{t('table.plan')}</th>
                       <th>{t('table.expiry')}</th>
                       <th>{t('table.status')}</th>
-                      <th className="text-right">{t('table.action')}</th>
+                      <th>{t('table.action')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -335,7 +335,7 @@ export default function OwnerDashboard() {
                       <th>{t('table.plan')}</th>
                       <th>{t('table.expiry')}</th>
                       <th>{t('table.status')}</th>
-                      <th className="text-right">{t('table.action')}</th>
+                      <th>{t('table.action')}</th>
                     </tr>
                   </thead>
                   <tbody>
