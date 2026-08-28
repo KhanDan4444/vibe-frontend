@@ -89,10 +89,6 @@ export const iconActionDanger =
 export const renewActionBtn =
   'inline-flex items-center gap-1 rounded-lg bg-[#0f766e] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#0d9488] cursor-pointer dark:bg-teal-600 dark:hover:bg-teal-500';
 
-/** Tighter renew CTA for dense dashboard alert rows. */
-export const renewActionBtnCompact =
-  'inline-flex items-center gap-0.5 rounded-md bg-[#0f766e] px-2 py-1 text-[11px] font-semibold leading-none text-white hover:bg-[#0d9488] cursor-pointer dark:bg-teal-600 dark:hover:bg-teal-500';
-
 /** Solid collect CTA — amber for unpaid / at-risk payment rows. */
 export const collectActionBtn =
   'inline-flex items-center gap-1 rounded-lg bg-amber-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-amber-500 cursor-pointer dark:bg-amber-600 dark:hover:bg-amber-500';
