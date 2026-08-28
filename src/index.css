@@ -639,12 +639,15 @@
     padding-left: 1rem;
   }
 
-  .owner-dashboard-alert-table th:nth-child(5) {
-    text-align: right;
-  }
-
+  .owner-dashboard-alert-table th:nth-child(5) .admin-row-actions,
   .owner-dashboard-alert-table td:nth-child(5) .admin-row-actions {
     justify-content: flex-end;
+  }
+
+  .owner-dashboard-alert-table .owner-dashboard-action-slot {
+    display: inline-block;
+    min-width: 5.5rem;
+    text-align: left;
   }
 
   .owner-dashboard-alert-table td:nth-child(3) .app-skeleton,
