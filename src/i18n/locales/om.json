@@ -41,7 +41,7 @@
     "forgotAdminHint": "Hojjettoonni deeggarsaa abbaa jimii isaanii qunnamuu qabu. Bulchaan sirnaa kaffaltii saas jecha iccitii abbaa jimii konsoolii bulchiinsaa irraa haaromsuu danda'a.",
     "forgotUsernamePlaceholder": "Maqaa fayyadamaa keessan",
     "forgotIdentifierLabel": "Maqaa fayyadamaa ykn lakkoofsa bilbilaa",
-    "forgotIdentifierPlaceholder": "danzol ykn 0912345678",
+    "forgotIdentifierPlaceholder": "maqaa fayyadamaa",
     "forgotIdentifierHint": "Maqaa fayyadamaa seensaa keessan, ykn bilbila jimii galmaa'e (09… ykn +251…) fayyadamaa.",
     "forgotResetSubtitle": "Koodii ergame galchaa jecha iccitii haaraa filadhu.",
     "forgotPasswordSection": "Jecha iccitii haaraa",
@@ -111,6 +111,7 @@
     "invalidResetLink": "Liiinkii haaromsaa sirrii miti. Fuula seensaa irraa kan haaraa gaafadhu.",
     "passwordMinLength": "Jechi iccitii yhemmoo Arfiilee 8 ta'uu qaba.",
     "sending": "Ergamaa jira…",
+    "verifying": "Mirkaneessaa jira…",
     "saving": "Olkaa'amaa jira…",
     "checkEmailReset": "Liiinkii haaromsaaf imeelii keessan sakatta'aa.",
     "email": "Imeelii"

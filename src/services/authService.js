@@ -55,6 +55,14 @@ export async function requestGymSignupOtp(phone) {
   return postJson('/auth/gym-signup/request-otp', { phone: phone.trim() });
 }
 
+export async function verifyGymSignupOtp({ sessionId, code, phone }) {
+  return postJson('/auth/gym-signup/verify-otp', {
+    sessionId,
+    code: code.trim(),
+    phone: normalizeEthiopianPhone(phone.trim()) || phone.trim(),
+  });
+}
+
 export async function completeGymSignup(payload) {
   return postJson('/auth/gym-signup/complete', payload);
 }

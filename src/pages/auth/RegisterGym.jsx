@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { requestGymSignupOtp, completeGymSignup } from '../../services/authService';
+import { requestGymSignupOtp, verifyGymSignupOtp, completeGymSignup } from '../../services/authService';
 import {
   validateRequiredEthiopianPhone,
   validateGymSignupGymStep,
@@ -57,6 +57,7 @@ export default function RegisterGym() {
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState('');
+  const [otpVerified, setOtpVerified] = useState(false);
   const [registerDone, setRegisterDone] = useState(null);
   const { cooldown, startCooldown, canResend } = useOtpResendCooldown();
   const otpRequestInFlight = useRef(false);
@@ -84,6 +85,7 @@ export default function RegisterGym() {
       setSessionId(data.sessionId);
       setVerifiedPhone(normalizeEthiopianPhone(phone.trim()) || phone.trim());
       startCooldown();
+      setOtpVerified(false);
       setStep('gym');
     } catch (err) {
       setError(err.message);
@@ -105,6 +107,7 @@ export default function RegisterGym() {
       setVerifiedPhone(normalizeEthiopianPhone(phone.trim()) || phone.trim());
       startCooldown();
       setCode('');
+      setOtpVerified(false);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -113,7 +116,7 @@ export default function RegisterGym() {
     }
   };
 
-  const handleGymContinue = (e) => {
+  const handleGymContinue = async (e) => {
     e.preventDefault();
     setError('');
     clearAllFieldErrors(setFieldErrors);
@@ -124,7 +127,18 @@ export default function RegisterGym() {
     ) {
       return;
     }
-    setStep('account');
+    const phoneForSession = verifiedPhone || normalizeEthiopianPhone(phone.trim()) || phone.trim();
+    setLoading(true);
+    try {
+      await verifyGymSignupOtp({ sessionId, code, phone: phoneForSession });
+      setOtpVerified(true);
+      setStep('account');
+    } catch (err) {
+      setOtpVerified(false);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleComplete = async (e) => {
@@ -132,22 +146,21 @@ export default function RegisterGym() {
     setError('');
     clearAllFieldErrors(setFieldErrors);
     if (
-      !showValidationError(
-        validateGymSignupAccountStep({ ownerName, username, email, password, confirm }),
-        setError,
-        t,
-        { setFieldErrors }
-      )
-    ) {
-      return;
-    }
-    if (
-      !showValidationError(validateGymSignupGymStep({ code, gymName, city, address }), setError, t, {
+      !showValidationError(validateGymSignupAccountStep({ ownerName, username, email, password, confirm }), setError, t, {
         setFieldErrors,
       })
     ) {
-      setStep('gym');
       return;
+    }
+    if (!otpVerified) {
+      if (
+        !showValidationError(validateGymSignupGymStep({ code, gymName, city, address }), setError, t, {
+          setFieldErrors,
+        })
+      ) {
+        setStep('gym');
+        return;
+      }
     }
 
     setLoading(true);
@@ -278,6 +291,7 @@ export default function RegisterGym() {
               value={code}
               onChange={(next) => {
                 setCode(next);
+                setOtpVerified(false);
                 clearFieldError(setFieldErrors, 'code');
               }}
               inputClassName={fc('code')}
@@ -292,6 +306,7 @@ export default function RegisterGym() {
               onChangePhone={() => {
                 setStep('phone');
                 setCode('');
+                setOtpVerified(false);
                 setError('');
                 clearAllFieldErrors(setFieldErrors);
               }}
@@ -358,9 +373,9 @@ export default function RegisterGym() {
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'address')} className="text-sm text-rose-300" />
             </div>
-            <button type="submit" className="auth-cta-btn">
+            <AuthCtaButton loading={loading} busyLabel={t('auth.verifying')}>
               {t('common.continue')}
-            </button>
+            </AuthCtaButton>
           </form>
         )}
 
@@ -493,6 +508,7 @@ export default function RegisterGym() {
                 type="button"
                 onClick={() => {
                   setStep('gym');
+                  setOtpVerified(false);
                   setError('');
                   clearAllFieldErrors(setFieldErrors);
                 }}
