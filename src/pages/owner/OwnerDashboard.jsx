@@ -26,7 +26,7 @@ import { getMember } from '../../services/memberService';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
 import { formatMoney } from '../../utils/formatMoney';
-import { headingText, mutedText, tableRowHover, renewActionBtn, sectionTitle } from '../../utils/surfaceClasses';
+import { headingText, mutedText, tableRowHover, renewActionBtnCompact, sectionTitle } from '../../utils/surfaceClasses';
 import Card from '../../components/ui/Card';
 import PageHeader from '../../components/PageHeader';
 import { lazyWithRetry } from '../../utils/lazyWithRetry';
@@ -368,10 +368,10 @@ export default function OwnerDashboard() {
                                 e.stopPropagation();
                                 setRenewState({ isOpen: true, member });
                               }}
-                              className={renewActionBtn}
+                              className={renewActionBtnCompact}
                               title={t('actions.renew')}
                             >
-                              <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
+                              <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                             </button>
                           </div>
                         )}
@@ -441,9 +441,9 @@ export default function OwnerDashboard() {
                                         e.stopPropagation();
                                         setRenewState({ isOpen: true, member });
                                       }}
-                                      className={`${renewActionBtn} w-full justify-center`}
+                                      className={`${renewActionBtnCompact} w-full justify-center`}
                                     >
-                                      <RefreshCw className="h-3.5 w-3.5" /> {t('actions.renew')}
+                                      <RefreshCw className="h-3 w-3" /> {t('actions.renew')}
                                     </button>
                                   </div>
                                 )}
