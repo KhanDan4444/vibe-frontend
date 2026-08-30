@@ -7,7 +7,9 @@ import Button from './ui/Button';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 import { modalTitle, mutedText } from '../utils/surfaceClasses';
 import { parseApiResponse, formatApiError } from '../utils/api';
+import { mapMemberFromApi } from '../utils/apiMappers';
 import {
+  getMember,
   getMemberPass,
   regenerateMemberPass,
   sendMemberPassSms,
@@ -19,7 +21,7 @@ import { isGymOwner } from '../utils/roles';
 /**
  * Member QR pass modal — print card + SMS link + regenerate.
  */
-export default function MemberPassModal({ open, member, onClose, onFlash }) {
+export default function MemberPassModal({ open, member, onClose, onFlash, onMemberUpdated }) {
   const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
   const owner = isGymOwner(user?.role);
@@ -32,8 +34,30 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const [smsSending, setSmsSending] = useState(false);
   const [telegramLinking, setTelegramLinking] = useState(false);
   const [telegramLink, setTelegramLink] = useState(null);
+  const [liveMember, setLiveMember] = useState(member);
 
-  const telegramLinked = Boolean(member?.telegram_chat_id);
+  const refreshMember = useCallback(async () => {
+    if (!member?.id) return null;
+    try {
+      const res = await getMember(apiFetch, member.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok || !data) return null;
+      const mapped = mapMemberFromApi(data);
+      if (mapped) {
+        setLiveMember(mapped);
+        onMemberUpdated?.(mapped);
+      }
+      return mapped;
+    } catch {
+      return null;
+    }
+  }, [apiFetch, member?.id, onMemberUpdated]);
+
+  useEffect(() => {
+    setLiveMember(member);
+  }, [member]);
+
+  const telegramLinked = Boolean(liveMember?.telegramChatId);
   const canSendPass = telegramLinked;
 
   const loadPass = useCallback(async () => {
@@ -59,6 +83,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
       return undefined;
     }
     if (!member?.id) return undefined;
+    void refreshMember();
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -81,7 +106,23 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
     return () => {
       cancelled = true;
     };
-  }, [open, member?.id, apiFetch, t]);
+  }, [open, member?.id, apiFetch, t, refreshMember]);
+
+  useEffect(() => {
+    if (!open || telegramLinked || !telegramLink) return undefined;
+    const timer = setInterval(() => {
+      void refreshMember().then((mapped) => {
+        if (mapped?.telegramChatId) {
+          setTelegramLink(null);
+          onFlash?.({
+            title: t('pages.checkIn.telegramLinked'),
+            variant: 'success',
+          });
+        }
+      });
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [open, telegramLinked, telegramLink, refreshMember, onFlash, t]);
 
   const handleRegenerate = async () => {
     if (!member?.id || regenerating) return;

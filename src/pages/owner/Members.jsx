@@ -1123,6 +1123,7 @@ export default function Members() {
         showPhotoUpload
         paymentsRefreshKey={paymentsRefreshKey}
         onClose={() => setSelectedMember(null)}
+        onMemberRefresh={setSelectedMember}
         onUpdate={handleUpdateFromDrawer}
         onDelete={handleDrawerDelete}
         onRenew={openRenewModal}

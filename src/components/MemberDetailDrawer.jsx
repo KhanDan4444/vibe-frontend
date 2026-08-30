@@ -75,6 +75,7 @@ export default function MemberDetailDrawer({
   canRestore = false,
   onRestore,
   readOnly = false,
+  onMemberRefresh,
 }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -715,6 +716,9 @@ export default function MemberDetailDrawer({
             member={member}
             onClose={() => setIsPassOpen(false)}
             onFlash={showFlash}
+            onMemberUpdated={(updated) => {
+              if (updated?.id === member?.id) onMemberRefresh?.(updated);
+            }}
           />
         </Suspense>
       ) : null}

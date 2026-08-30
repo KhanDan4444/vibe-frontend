@@ -25,6 +25,7 @@ export function mapMemberFromApi(m) {
       m.days_without_visit == null || m.days_without_visit === ''
         ? null
         : Number(m.days_without_visit),
+    telegramChatId: m.telegram_chat_id || null,
   };
 }
 
