@@ -174,7 +174,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
           void handleTelegramLinked(telegramSetupFromSendPassRef.current);
         }
       });
-    }, 2500);
+    }, 5000);
     return () => clearInterval(timer);
   }, [open, telegramLinked, telegramLink, refreshMember, handleTelegramLinked]);
 
