@@ -491,7 +491,8 @@
     "updateStaff": "Akkaawuntii hojjettootaa haaromsuu hin milkoofne",
     "loadMembers": "Miseensota fe'uun hin milkoofne",
     "loadMemberReport": "Gabaasa miseensaa fe'uun hin milkoofne",
-    "loadRevenueReport": "Gabaasa galii fe'uun hin milkoofne"
+    "loadRevenueReport": "Gabaasa galii fe'uun hin milkoofne",
+    "memberPassNoTelegram": "Liinkii paasii erguu dura paasii miseensaa kana irratti Telegram wal qabsiisi."
   },
   "pagination": {
     "showing": "{{from}}–{{to}} kan {{total}} irraa argarsiisaa jira",
@@ -939,13 +940,13 @@
       "scanCameraError": "Kaameeraa banuu hin dandeenye. Hayyama mirkaneessi.",
       "memberPassTitle": "Paasii miseensaa",
       "memberPassBody": "Desk irratti agarsiisi. Haaromsuun QR kana eega.",
-      "smsPassHint": "Liinkin paasii SMS galmeessuu fi haaromsuu wajjin dursee ergama.",
+      "smsPassHint": "Telegram yoo wal qabsiifame liinkin paasii ergaa galmeessuu fi haaromsuu keessatti ni jira.",
       "memberPassQrAlt": "QR galchuu {{name}}",
       "passVersion": "Paasii v{{version}}",
       "passValidUntil": "Hanga",
       "regeneratePass": "QR haaromsii",
       "regeneratePassTitle": "QR miseensaa haaromsuu?",
-      "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Bilbila yoo qabaatan liinkii paasii haaraa SMS dhaan ni ergina.",
+      "regeneratePassMessage": "QR durii {{name}} ammas hojjachuu dhaaba. Telegram yoo wal qabsiifame liinkii paasii haaraa achi ni ergina.",
       "regeneratePassConfirm": "QR haaromsii",
       "showPass": "QR agarsiisi",
       "printPass": "QR buusi",

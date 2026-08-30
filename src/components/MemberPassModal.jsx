@@ -31,9 +31,10 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const [printing, setPrinting] = useState(false);
   const [smsSending, setSmsSending] = useState(false);
   const [telegramLinking, setTelegramLinking] = useState(false);
+  const [telegramLink, setTelegramLink] = useState(null);
 
   const telegramLinked = Boolean(member?.telegram_chat_id);
-  const canSendPass = Boolean(member?.phone || member?.telegram_chat_id);
+  const canSendPass = telegramLinked;
 
   const loadPass = useCallback(async () => {
     if (!member?.id) return;
@@ -53,7 +54,11 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   }, [apiFetch, member?.id, t]);
 
   useEffect(() => {
-    if (!open || !member?.id) return undefined;
+    if (!open) {
+      setTelegramLink(null);
+      return undefined;
+    }
+    if (!member?.id) return undefined;
     let cancelled = false;
     (async () => {
       setLoading(true);
@@ -139,7 +144,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const handleSms = async () => {
     if (!member?.id || smsSending) return;
     if (!canSendPass) {
-      onFlash?.({ title: t('errors.memberPassNoPhone'), variant: 'danger' });
+      onFlash?.({ title: t('errors.memberPassNoTelegram'), variant: 'danger' });
       return;
     }
     setSmsSending(true);
@@ -172,23 +177,37 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
       const res = await createMemberTelegramLink(apiFetch, member.id);
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramLinkFailed'));
-      if (data.link) {
-        try {
-          await navigator.clipboard.writeText(data.link);
-        } catch {
-          /* clipboard optional */
-        }
-        window.open(data.link, '_blank', 'noopener,noreferrer');
+      if (data.already_linked) {
+        onFlash?.({
+          title: t('pages.checkIn.telegramLinked'),
+          variant: 'success',
+        });
+        return;
       }
-      onFlash?.({
-        title: t('pages.checkIn.telegramLink'),
-        subtitle: t('pages.checkIn.telegramLinkCopied'),
-        variant: 'success',
-      });
+      if (data.link) {
+        setTelegramLink({
+          link: data.link,
+          qr_data_url: data.qr_data_url || null,
+          expires_in_seconds: data.expires_in_seconds,
+        });
+      }
     } catch (err) {
       onFlash?.({ title: err.message || t('pages.checkIn.telegramLinkFailed'), variant: 'danger' });
     } finally {
       setTelegramLinking(false);
+    }
+  };
+
+  const handleCopyTelegramLink = async () => {
+    if (!telegramLink?.link) return;
+    try {
+      await navigator.clipboard.writeText(telegramLink.link);
+      onFlash?.({
+        title: t('pages.checkIn.telegramLinkCopied'),
+        variant: 'success',
+      });
+    } catch {
+      onFlash?.({ title: t('pages.checkIn.telegramLinkCopyFailed'), variant: 'danger' });
     }
   };
 
@@ -284,7 +303,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               loading={smsSending}
               onClick={() => void handleSms()}
               className="w-full"
-              title={!canSendPass ? t('errors.memberPassNoPhone') : undefined}
+              title={!canSendPass ? t('errors.memberPassNoTelegram') : undefined}
             >
               {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
               {t('pages.checkIn.smsPass')}
@@ -295,6 +314,53 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
             <p className="mt-3 text-center text-xs font-medium text-sky-600 dark:text-sky-300">
               {t('pages.checkIn.telegramLinked')}
             </p>
+          ) : telegramLink ? (
+            <div className="mt-4 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-4">
+              <p className="text-center text-sm font-medium text-app-text-strong">
+                {t('pages.checkIn.telegramLinkDeskTitle')}
+              </p>
+              <p className="mt-1 text-center text-xs leading-relaxed text-app-muted">
+                {t('pages.checkIn.telegramLinkDeskHint')}
+              </p>
+              {telegramLink.qr_data_url ? (
+                <img
+                  src={telegramLink.qr_data_url}
+                  alt={t('pages.checkIn.telegramLinkQrAlt', { name: member.name })}
+                  className="mx-auto mt-4 h-[180px] w-[180px] rounded-xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                />
+              ) : null}
+              <p className="mt-3 break-all rounded-lg bg-app-bg/80 px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-app-muted">
+                {telegramLink.link}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Button type="button" variant="secondary" size="sm" onClick={() => void handleCopyTelegramLink()}>
+                  {t('pages.checkIn.telegramLinkCopy')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => window.open(telegramLink.link, '_blank', 'noopener,noreferrer')}
+                >
+                  {t('pages.checkIn.telegramLinkOpenHere')}
+                </Button>
+              </div>
+              {telegramLink.expires_in_seconds ? (
+                <p className="mt-2 text-center text-[11px] text-app-muted">
+                  {t('pages.checkIn.telegramLinkExpires', {
+                    minutes: Math.max(1, Math.round(telegramLink.expires_in_seconds / 60)),
+                  })}
+                </p>
+              ) : null}
+              <button
+                type="button"
+                className="mt-3 w-full text-center text-xs font-medium text-sky-600 hover:text-sky-500 dark:text-sky-300"
+                onClick={() => void handleTelegramLink()}
+                disabled={telegramLinking}
+              >
+                {t('pages.checkIn.telegramLinkRefresh')}
+              </button>
+            </div>
           ) : (
             <Button
               type="button"

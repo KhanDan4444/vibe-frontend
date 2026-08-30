@@ -470,7 +470,8 @@
     "updateStaff": "የሰራተኛ መለያ ማዘመን አልተሳካም",
     "loadMembers": "አባላትን መጫን አልተሳካም",
     "loadMemberReport": "የአባል ሪፖርት መጫን አልተሳካም",
-    "loadRevenueReport": "የገቢ ሪፖርት መጫን አልተሳካም"
+    "loadRevenueReport": "የገቢ ሪፖርት መጫን አልተሳካም",
+    "memberPassNoTelegram": "የፓስ አገናኝ ከመላክዎ በፊት በዚህ አባል ፓስ ላይ ቴሌግራም ያገናኙ።"
   },
   "drawer": {
     "alertPaidChangeOrRenew": "እስከ {{date}} ተከፍሏል። በጊዜያት መካከል ለመቀየር \"ዕቅድ ቀይር\"ን ይጠቀሙ፣ ወይም ጊዜው ሲያልቅ ያድሱ።",
@@ -1354,13 +1355,13 @@
       "scanCameraError": "ካሜራ መክፈት አልተቻለም። ፈቃዶችን ያረጋግጡ።",
       "memberPassTitle": "የአባል ፓስ",
       "memberPassBody": "በዴስክ አሳዩ። ማደስ ይህን QR ይጠብቃል።",
-      "smsPassHint": "የፓስ አገናኝ በምዝገባና ማደስ SMS አስቀድሞ ይላካል።",
+      "smsPassHint": "ቴሌግራም ከተገናኘ በኋላ የፓስ አገናኝ በምዝገባና ማደስ መልእክት ይካተታል።",
       "memberPassQrAlt": "የ{{name}} የመግቢያ QR",
       "passVersion": "ፓስ v{{version}}",
       "passValidUntil": "የሚያበቃበት",
       "regeneratePass": "QR እንደገና ፍጠር",
       "regeneratePassTitle": "የአባል QR እንደገና ይፈጠር?",
-      "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። ስልክ ካላቸው አዲሱን የፓስ አገናኝ በSMS እንልካለን።",
+      "regeneratePassMessage": "የ{{name}} የድሮ QR ወዲያውኑ አይሰራም። ቴሌግራም ከተገናኘ አዲሱን የፓስ አገናኝ እንልካለን።",
       "regeneratePassConfirm": "QR እንደገና ፍጠር",
       "showPass": "QR አሳይ",
       "printPass": "QR አውርድ",
