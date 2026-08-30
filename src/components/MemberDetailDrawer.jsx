@@ -716,9 +716,7 @@ export default function MemberDetailDrawer({
             member={member}
             onClose={() => setIsPassOpen(false)}
             onFlash={showFlash}
-            onMemberUpdated={(updated) => {
-              if (updated?.id === member?.id) onMemberRefresh?.(updated);
-            }}
+            onMemberUpdated={onMemberRefresh}
           />
         </Suspense>
       ) : null}

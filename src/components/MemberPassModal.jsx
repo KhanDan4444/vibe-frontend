@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Download, MessageSquare, QrCode, RefreshCw, Send } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
@@ -35,6 +35,8 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const [telegramLinking, setTelegramLinking] = useState(false);
   const [telegramLink, setTelegramLink] = useState(null);
   const [liveMember, setLiveMember] = useState(member);
+  const onMemberUpdatedRef = useRef(onMemberUpdated);
+  onMemberUpdatedRef.current = onMemberUpdated;
 
   const refreshMember = useCallback(async () => {
     if (!member?.id) return null;
@@ -45,16 +47,20 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       const mapped = mapMemberFromApi(data);
       if (mapped) {
         setLiveMember(mapped);
-        onMemberUpdated?.(mapped);
+        onMemberUpdatedRef.current?.(mapped);
       }
       return mapped;
     } catch {
       return null;
     }
-  }, [apiFetch, member?.id, onMemberUpdated]);
+  }, [apiFetch, member?.id]);
 
   useEffect(() => {
-    setLiveMember(member);
+    if (!member) return;
+    setLiveMember((prev) => ({
+      ...member,
+      telegramChatId: member.telegramChatId ?? prev?.telegramChatId ?? null,
+    }));
   }, [member]);
 
   const telegramLinked = Boolean(liveMember?.telegramChatId);
@@ -80,6 +86,8 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   useEffect(() => {
     if (!open) {
       setTelegramLink(null);
+      setPass(null);
+      setError('');
       return undefined;
     }
     if (!member?.id) return undefined;
@@ -106,7 +114,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
     return () => {
       cancelled = true;
     };
-  }, [open, member?.id, apiFetch, t, refreshMember]);
+  }, [open, member?.id, apiFetch, t]);
 
   useEffect(() => {
     if (!open || telegramLinked || !telegramLink) return undefined;
@@ -219,6 +227,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramLinkFailed'));
       if (data.already_linked) {
+        await refreshMember();
         onFlash?.({
           title: t('pages.checkIn.telegramLinked'),
           variant: 'success',
@@ -340,7 +349,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               type="button"
               variant="secondary"
               size="sm"
-              disabled={busy || !canSendPass}
+              disabled={smsSending || !canSendPass}
               loading={smsSending}
               onClick={() => void handleSms()}
               className="w-full"
