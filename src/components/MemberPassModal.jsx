@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, MessageSquare, QrCode, RefreshCw, Send } from 'lucide-react';
+import { Download, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
 import Button from './ui/Button';
@@ -35,6 +35,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const [telegramLinking, setTelegramLinking] = useState(false);
   const [telegramLink, setTelegramLink] = useState(null);
   const [liveMember, setLiveMember] = useState(member);
+  const [activeTab, setActiveTab] = useState('pass');
   const onMemberUpdatedRef = useRef(onMemberUpdated);
   onMemberUpdatedRef.current = onMemberUpdated;
 
@@ -88,6 +89,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       setTelegramLink(null);
       setPass(null);
       setError('');
+      setActiveTab('pass');
       return undefined;
     }
     if (!member?.id) return undefined;
@@ -122,6 +124,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       void refreshMember().then((mapped) => {
         if (mapped?.telegramChatId) {
           setTelegramLink(null);
+          setActiveTab('pass');
           onFlash?.({
             title: t('pages.checkIn.telegramLinked'),
             variant: 'success',
@@ -193,7 +196,8 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const handleSms = async () => {
     if (!member?.id || smsSending) return;
     if (!canSendPass) {
-      onFlash?.({ title: t('errors.memberPassNoTelegram'), variant: 'danger' });
+      setActiveTab('telegram');
+      if (!telegramLink) void handleTelegramLink();
       return;
     }
     setSmsSending(true);
@@ -221,6 +225,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
 
   const handleTelegramLink = async () => {
     if (!member?.id || telegramLinking || telegramLinked) return;
+    setActiveTab('telegram');
     setTelegramLinking(true);
     try {
       const res = await createMemberTelegramLink(apiFetch, member.id);
@@ -299,131 +304,180 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
             </div>
           ) : null}
 
-          <div className="mt-5 flex flex-col items-center overflow-hidden rounded-2xl border border-app-border-subtle bg-app-bg/60">
-            <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
-            <div className="flex w-full flex-col items-center px-5 py-6">
-              {pass?.gym_name ? (
-                <p className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
-                  {pass.gym_name}
-                </p>
-              ) : null}
-              <p className="mt-2 text-center text-sm font-medium text-app-muted">
-                {t('publicPass.title')}
-              </p>
-
-              <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
-                {member.name}
-              </p>
-              {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
-
-              {loading ? (
-                <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
-              ) : pass?.qr_data_url ? (
-                <img
-                  src={pass.qr_data_url}
-                  alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
-                  className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
-                />
-              ) : (
-                <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
-                  —
-                </div>
-              )}
+          {!telegramLinked ? (
+            <div
+              className="mt-5 grid grid-cols-2 gap-1 rounded-xl border border-app-border-subtle bg-app-bg/40 p-1"
+              role="tablist"
+              aria-label={t('pages.checkIn.memberPassTabsLabel')}
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'pass'}
+                onClick={() => setActiveTab('pass')}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                  activeTab === 'pass'
+                    ? 'bg-app-surface text-app-text-strong shadow-sm'
+                    : 'text-app-muted hover:text-app-text-strong'
+                }`}
+              >
+                {t('pages.checkIn.passTab')}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'telegram'}
+                onClick={() => {
+                  setActiveTab('telegram');
+                  if (!telegramLink) void handleTelegramLink();
+                }}
+                className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                  activeTab === 'telegram'
+                    ? 'bg-app-surface text-app-text-strong shadow-sm'
+                    : 'text-app-muted hover:text-app-text-strong'
+                }`}
+              >
+                {t('pages.checkIn.telegramTab')}
+              </button>
             </div>
-          </div>
+          ) : null}
 
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={busy || !pass?.qr_data_url}
-              loading={printing}
-              onClick={() => void handlePrint()}
-              className="w-full"
-            >
-              {!printing ? <Download className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
-              {t('pages.checkIn.printPass')}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={smsSending || !canSendPass}
-              loading={smsSending}
-              onClick={() => void handleSms()}
-              className="w-full"
-              title={!canSendPass ? t('errors.memberPassNoTelegram') : undefined}
-            >
-              {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
-              {t('pages.checkIn.smsPass')}
-            </Button>
-          </div>
+          {activeTab === 'pass' || telegramLinked ? (
+            <>
+              <div className="mt-5 flex flex-col items-center overflow-hidden rounded-2xl border border-app-border-subtle bg-app-bg/60">
+                <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
+                <div className="flex w-full flex-col items-center px-5 py-6">
+                  {pass?.gym_name ? (
+                    <p className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
+                      {pass.gym_name}
+                    </p>
+                  ) : null}
+                  <p className="mt-2 text-center text-sm font-medium text-app-muted">
+                    {t('publicPass.title')}
+                  </p>
 
-          {telegramLinked ? (
-            <p className="mt-3 text-center text-xs font-medium text-sky-600 dark:text-sky-300">
-              {t('pages.checkIn.telegramLinked')}
-            </p>
-          ) : telegramLink ? (
-            <div className="mt-4 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-4">
+                  <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
+                    {member.name}
+                  </p>
+                  {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
+
+                  {loading ? (
+                    <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
+                  ) : pass?.qr_data_url ? (
+                    <img
+                      src={pass.qr_data_url}
+                      alt={t('pages.checkIn.memberPassQrAlt', { name: member.name })}
+                      className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                    />
+                  ) : (
+                    <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+                      —
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={busy || !pass?.qr_data_url}
+                  loading={printing}
+                  onClick={() => void handlePrint()}
+                  className="w-full"
+                >
+                  {!printing ? <Download className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+                  {t('pages.checkIn.printPass')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={smsSending}
+                  loading={smsSending}
+                  onClick={() => void handleSms()}
+                  className="w-full"
+                  title={!canSendPass ? t('pages.checkIn.sendPassNeedsTelegram') : undefined}
+                >
+                  {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+                  {t('pages.checkIn.smsPass')}
+                </Button>
+              </div>
+
+              {telegramLinked ? (
+                <p className="mt-3 text-center text-xs font-medium text-sky-600 dark:text-sky-300">
+                  {t('pages.checkIn.telegramLinked')}
+                </p>
+              ) : (
+                <p className="mt-3 text-center text-xs text-app-muted">
+                  {t('pages.checkIn.sendPassNeedsTelegram')}{' '}
+                  <button
+                    type="button"
+                    className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
+                    onClick={() => {
+                      setActiveTab('telegram');
+                      if (!telegramLink) void handleTelegramLink();
+                    }}
+                  >
+                    {t('pages.checkIn.telegramTab')}
+                  </button>
+                </p>
+              )}
+            </>
+          ) : (
+            <div className="mt-5 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-5">
               <p className="text-center text-sm font-medium text-app-text-strong">
                 {t('pages.checkIn.telegramLinkDeskTitle')}
               </p>
               <p className="mt-1 text-center text-xs leading-relaxed text-app-muted">
                 {t('pages.checkIn.telegramLinkDeskHint')}
               </p>
-              {telegramLink.qr_data_url ? (
+              {telegramLinking && !telegramLink ? (
+                <div className="mx-auto mt-6 h-[200px] w-[200px] animate-pulse rounded-xl bg-app-border" />
+              ) : telegramLink?.qr_data_url ? (
                 <img
                   src={telegramLink.qr_data_url}
                   alt={t('pages.checkIn.telegramLinkQrAlt', { name: member.name })}
-                  className="mx-auto mt-4 h-[180px] w-[180px] rounded-xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+                  className="mx-auto mt-6 h-[200px] w-[200px] rounded-xl bg-white p-2 shadow-sm ring-1 ring-black/5"
                 />
               ) : null}
-              <p className="mt-3 break-all rounded-lg bg-app-bg/80 px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-app-muted">
-                {telegramLink.link}
-              </p>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <Button type="button" variant="secondary" size="sm" onClick={() => void handleCopyTelegramLink()}>
-                  {t('pages.checkIn.telegramLinkCopy')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => window.open(telegramLink.link, '_blank', 'noopener,noreferrer')}
-                >
-                  {t('pages.checkIn.telegramLinkOpenHere')}
-                </Button>
-              </div>
-              {telegramLink.expires_in_seconds ? (
-                <p className="mt-2 text-center text-[11px] text-app-muted">
-                  {t('pages.checkIn.telegramLinkExpires', {
-                    minutes: Math.max(1, Math.round(telegramLink.expires_in_seconds / 60)),
-                  })}
-                </p>
+              {telegramLink?.link ? (
+                <>
+                  <p className="mt-4 break-all rounded-lg bg-app-bg/80 px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-app-muted">
+                    {telegramLink.link}
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    <Button type="button" variant="secondary" size="sm" onClick={() => void handleCopyTelegramLink()}>
+                      {t('pages.checkIn.telegramLinkCopy')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => window.open(telegramLink.link, '_blank', 'noopener,noreferrer')}
+                    >
+                      {t('pages.checkIn.telegramLinkOpenHere')}
+                    </Button>
+                  </div>
+                  {telegramLink.expires_in_seconds ? (
+                    <p className="mt-2 text-center text-[11px] text-app-muted">
+                      {t('pages.checkIn.telegramLinkExpires', {
+                        minutes: Math.max(1, Math.round(telegramLink.expires_in_seconds / 60)),
+                      })}
+                    </p>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="mt-3 w-full text-center text-xs font-medium text-sky-600 hover:text-sky-500 dark:text-sky-300"
+                    onClick={() => void handleTelegramLink()}
+                    disabled={telegramLinking}
+                  >
+                    {t('pages.checkIn.telegramLinkRefresh')}
+                  </button>
+                </>
               ) : null}
-              <button
-                type="button"
-                className="mt-3 w-full text-center text-xs font-medium text-sky-600 hover:text-sky-500 dark:text-sky-300"
-                onClick={() => void handleTelegramLink()}
-                disabled={telegramLinking}
-              >
-                {t('pages.checkIn.telegramLinkRefresh')}
-              </button>
             </div>
-          ) : (
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={busy}
-              loading={telegramLinking}
-              onClick={() => void handleTelegramLink()}
-              className="mt-3 w-full"
-            >
-              {!telegramLinking ? <Send className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
-              {t('pages.checkIn.telegramLink')}
-            </Button>
           )}
         </div>
         <div className={`${modalFooter} !justify-between`}>
