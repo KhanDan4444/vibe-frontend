@@ -58,6 +58,24 @@ export function CheckInSearchSkeleton({ count = 2 }) {
   );
 }
 
+/** Member drawer subscription row: VisitRing | labels | Show QR */
+export function MemberDrawerVisitCardSkeleton() {
+  return (
+    <div
+      className="mb-3 flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5"
+      role="status"
+      aria-label="Loading"
+    >
+      <div className="app-skeleton h-[72px] w-[72px] shrink-0 rounded-full" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <div className="app-skeleton h-3.5 w-24" />
+        <div className="app-skeleton h-3 w-32" />
+      </div>
+      <div className="app-skeleton h-8 w-[5.5rem] shrink-0 rounded-lg" />
+    </div>
+  );
+}
+
 /** Check-in today list: photo | name | time */
 export function CheckInTodaySkeleton({ rows = 3 }) {
   return (

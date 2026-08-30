@@ -26,6 +26,7 @@ import { effectiveVisitsLimit } from '../utils/attendanceCap';
 import { getMemberPayments } from '../services/memberService';
 import { getMemberVisitSummary, listCheckIns } from '../services/checkInService';
 import VisitRing from './VisitRing';
+import { MemberDrawerVisitCardSkeleton } from './LoadingSkeletons';
 import ConfirmDialog from './ConfirmDialog';
 import MemberPhoto from './MemberPhoto';
 import MemberVisitHistoryModal from './MemberVisitHistoryModal';
@@ -92,6 +93,7 @@ export default function MemberDetailDrawer({
   const [paymentsError, setPaymentsError] = useState('');
   const [showAllPayments, setShowAllPayments] = useState(false);
   const [visitSummary, setVisitSummary] = useState(null);
+  const [visitSummaryLoading, setVisitSummaryLoading] = useState(true);
   const [recentVisits, setRecentVisits] = useState([]);
   const [visitHistoryOpen, setVisitHistoryOpen] = useState(false);
   const [recentVisitsOpen, setRecentVisitsOpen] = useState(false);
@@ -143,6 +145,7 @@ export default function MemberDetailDrawer({
   useEffect(() => {
     setShowAllPayments(false);
     setVisitSummary(null);
+    setVisitSummaryLoading(true);
     setRecentVisits([]);
     setVisitHistoryOpen(false);
     setRecentVisitsOpen(false);
@@ -151,9 +154,12 @@ export default function MemberDetailDrawer({
   }, [member?.id]);
 
   useEffect(() => {
-    if (!member?.id || !apiFetch || member.deletedAt) return undefined;
+    if (!member?.id || !apiFetch || member.deletedAt) {
+      setVisitSummaryLoading(false);
+      return undefined;
+    }
     let cancelled = false;
-    let idleId = 0;
+    setVisitSummaryLoading(true);
     const run = async () => {
       try {
         const [sumRes, histRes] = await Promise.all([
@@ -169,23 +175,13 @@ export default function MemberDetailDrawer({
           setVisitSummary(null);
           setRecentVisits([]);
         }
+      } finally {
+        if (!cancelled) setVisitSummaryLoading(false);
       }
     };
-    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
-      idleId = window.requestIdleCallback(() => {
-        void run();
-      }, { timeout: 400 });
-      return () => {
-        cancelled = true;
-        window.cancelIdleCallback(idleId);
-      };
-    }
-    const t = window.setTimeout(() => {
-      void run();
-    }, 80);
+    void run();
     return () => {
       cancelled = true;
-      window.clearTimeout(t);
     };
   }, [member?.id, member?.deletedAt, apiFetch]);
 
@@ -436,7 +432,9 @@ export default function MemberDetailDrawer({
           />
 
           <SlidePanelSection title={t('drawer.subscription')}>
-            {visitSummary && !isFormer ? (
+            {!isFormer && visitSummaryLoading ? (
+              <MemberDrawerVisitCardSkeleton />
+            ) : visitSummary ? (
               <div className="mb-3 flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
                 <VisitRing
                   visits={visitSummary.visits_this_week ?? 0}
@@ -478,7 +476,7 @@ export default function MemberDetailDrawer({
                   </Button>
                 ) : null}
               </div>
-            ) : canShowPass && !isFormer ? (
+            ) : canShowPass ? (
               <div className="mb-3">
                 <Button
                   type="button"
