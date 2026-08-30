@@ -35,7 +35,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const [telegramLinking, setTelegramLinking] = useState(false);
   const [telegramLink, setTelegramLink] = useState(null);
   const [liveMember, setLiveMember] = useState(member);
-  const [activeTab, setActiveTab] = useState('pass');
+  const [showTelegramSetup, setShowTelegramSetup] = useState(false);
   const onMemberUpdatedRef = useRef(onMemberUpdated);
   onMemberUpdatedRef.current = onMemberUpdated;
 
@@ -89,7 +89,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       setTelegramLink(null);
       setPass(null);
       setError('');
-      setActiveTab('pass');
+      setShowTelegramSetup(false);
       return undefined;
     }
     if (!member?.id) return undefined;
@@ -124,7 +124,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       void refreshMember().then((mapped) => {
         if (mapped?.telegramChatId) {
           setTelegramLink(null);
-          setActiveTab('pass');
+          setShowTelegramSetup(false);
           onFlash?.({
             title: t('pages.checkIn.telegramLinked'),
             variant: 'success',
@@ -196,7 +196,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const handleSms = async () => {
     if (!member?.id || smsSending) return;
     if (!canSendPass) {
-      setActiveTab('telegram');
+      setShowTelegramSetup(true);
       if (!telegramLink) void handleTelegramLink();
       return;
     }
@@ -225,13 +225,14 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
 
   const handleTelegramLink = async () => {
     if (!member?.id || telegramLinking || telegramLinked) return;
-    setActiveTab('telegram');
+    setShowTelegramSetup(true);
     setTelegramLinking(true);
     try {
       const res = await createMemberTelegramLink(apiFetch, member.id);
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramLinkFailed'));
       if (data.already_linked) {
+        setShowTelegramSetup(false);
         await refreshMember();
         onFlash?.({
           title: t('pages.checkIn.telegramLinked'),
@@ -270,6 +271,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
 
   const busy = loading || regenerating || printing || smsSending || telegramLinking;
   const phone = member.phone || pass?.member?.phone || null;
+  const onPassView = telegramLinked || !showTelegramSetup;
 
   return (
     <>
@@ -304,45 +306,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
             </div>
           ) : null}
 
-          {!telegramLinked ? (
-            <div
-              className="mt-5 grid grid-cols-2 gap-1 rounded-xl border border-app-border-subtle bg-app-bg/40 p-1"
-              role="tablist"
-              aria-label={t('pages.checkIn.memberPassTabsLabel')}
-            >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'pass'}
-                onClick={() => setActiveTab('pass')}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                  activeTab === 'pass'
-                    ? 'bg-app-surface text-app-text-strong shadow-sm'
-                    : 'text-app-muted hover:text-app-text-strong'
-                }`}
-              >
-                {t('pages.checkIn.passTab')}
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={activeTab === 'telegram'}
-                onClick={() => {
-                  setActiveTab('telegram');
-                  if (!telegramLink) void handleTelegramLink();
-                }}
-                className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
-                  activeTab === 'telegram'
-                    ? 'bg-app-surface text-app-text-strong shadow-sm'
-                    : 'text-app-muted hover:text-app-text-strong'
-                }`}
-              >
-                {t('pages.checkIn.telegramTab')}
-              </button>
-            </div>
-          ) : null}
-
-          {activeTab === 'pass' || telegramLinked ? (
+          {onPassView ? (
             <>
               <div className="mt-5 flex flex-col items-center overflow-hidden rounded-2xl border border-app-border-subtle bg-app-bg/60">
                 <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
@@ -411,22 +375,28 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                 </p>
               ) : (
                 <p className="mt-3 text-center text-xs text-app-muted">
-                  {t('pages.checkIn.sendPassNeedsTelegram')}{' '}
                   <button
                     type="button"
                     className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
                     onClick={() => {
-                      setActiveTab('telegram');
+                      setShowTelegramSetup(true);
                       if (!telegramLink) void handleTelegramLink();
                     }}
                   >
-                    {t('pages.checkIn.telegramTab')}
+                    {t('pages.checkIn.telegramLink')}
                   </button>
                 </p>
               )}
             </>
           ) : (
             <div className="mt-5 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-5">
+              <button
+                type="button"
+                className="mb-4 text-xs font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
+                onClick={() => setShowTelegramSetup(false)}
+              >
+                ← {t('pages.checkIn.backToPass')}
+              </button>
               <p className="text-center text-sm font-medium text-app-text-strong">
                 {t('pages.checkIn.telegramLinkDeskTitle')}
               </p>
