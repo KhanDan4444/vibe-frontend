@@ -36,8 +36,55 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const [telegramLink, setTelegramLink] = useState(null);
   const [liveMember, setLiveMember] = useState(member);
   const [showTelegramSetup, setShowTelegramSetup] = useState(false);
+  const [telegramSetupFromSendPass, setTelegramSetupFromSendPass] = useState(false);
   const onMemberUpdatedRef = useRef(onMemberUpdated);
+  const telegramSetupFromSendPassRef = useRef(false);
   onMemberUpdatedRef.current = onMemberUpdated;
+  telegramSetupFromSendPassRef.current = telegramSetupFromSendPass;
+
+  const sendPassLink = useCallback(async () => {
+    if (!member?.id) return false;
+    setSmsSending(true);
+    try {
+      const res = await sendMemberPassSms(apiFetch, member.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(formatApiError(data) || data.error || t('errors.sendMemberPassSms'));
+      const viaTelegram = data.channel === 'telegram';
+      onFlash?.({
+        title: t('flash.memberPassSmsSent.title'),
+        subtitle: viaTelegram
+          ? t('flash.memberPassTelegramSent.subtitle', { name: member.name })
+          : t('flash.memberPassSmsSent.subtitle', {
+              name: member.name,
+              phone: data.phone || member.phone,
+            }),
+        variant: 'success',
+      });
+      return true;
+    } catch (err) {
+      onFlash?.({ title: err.message, variant: 'danger' });
+      return false;
+    } finally {
+      setSmsSending(false);
+    }
+  }, [apiFetch, member?.id, member?.name, member?.phone, onFlash, t]);
+
+  const handleTelegramLinked = useCallback(
+    async (fromSendPass) => {
+      setTelegramLink(null);
+      setShowTelegramSetup(false);
+      setTelegramSetupFromSendPass(false);
+      if (fromSendPass) {
+        await sendPassLink();
+        return;
+      }
+      onFlash?.({
+        title: t('pages.checkIn.telegramLinked'),
+        variant: 'success',
+      });
+    },
+    [onFlash, sendPassLink, t]
+  );
 
   const refreshMember = useCallback(async () => {
     if (!member?.id) return null;
@@ -90,6 +137,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       setPass(null);
       setError('');
       setShowTelegramSetup(false);
+      setTelegramSetupFromSendPass(false);
       return undefined;
     }
     if (!member?.id) return undefined;
@@ -123,17 +171,12 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
     const timer = setInterval(() => {
       void refreshMember().then((mapped) => {
         if (mapped?.telegramChatId) {
-          setTelegramLink(null);
-          setShowTelegramSetup(false);
-          onFlash?.({
-            title: t('pages.checkIn.telegramLinked'),
-            variant: 'success',
-          });
+          void handleTelegramLinked(telegramSetupFromSendPassRef.current);
         }
       });
     }, 2500);
     return () => clearInterval(timer);
-  }, [open, telegramLinked, telegramLink, refreshMember, onFlash, t]);
+  }, [open, telegramLinked, telegramLink, refreshMember, handleTelegramLinked]);
 
   const handleRegenerate = async () => {
     if (!member?.id || regenerating) return;
@@ -196,31 +239,12 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const handleSms = async () => {
     if (!member?.id || smsSending) return;
     if (!canSendPass) {
+      setTelegramSetupFromSendPass(true);
       setShowTelegramSetup(true);
       if (!telegramLink) void handleTelegramLink();
       return;
     }
-    setSmsSending(true);
-    try {
-      const res = await sendMemberPassSms(apiFetch, member.id);
-      const data = await parseApiResponse(res);
-      if (!res.ok) throw new Error(formatApiError(data) || data.error || t('errors.sendMemberPassSms'));
-      const viaTelegram = data.channel === 'telegram';
-      onFlash?.({
-        title: t('flash.memberPassSmsSent.title'),
-        subtitle: viaTelegram
-          ? t('flash.memberPassTelegramSent.subtitle', { name: member.name })
-          : t('flash.memberPassSmsSent.subtitle', {
-              name: member.name,
-              phone: data.phone || member.phone,
-            }),
-        variant: 'success',
-      });
-    } catch (err) {
-      onFlash?.({ title: err.message, variant: 'danger' });
-    } finally {
-      setSmsSending(false);
-    }
+    await sendPassLink();
   };
 
   const handleTelegramLink = async () => {
@@ -232,12 +256,8 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramLinkFailed'));
       if (data.already_linked) {
-        setShowTelegramSetup(false);
         await refreshMember();
-        onFlash?.({
-          title: t('pages.checkIn.telegramLinked'),
-          variant: 'success',
-        });
+        await handleTelegramLinked(telegramSetupFromSendPassRef.current);
         return;
       }
       if (data.link) {
@@ -379,6 +399,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                     type="button"
                     className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
                     onClick={() => {
+                      setTelegramSetupFromSendPass(false);
                       setShowTelegramSetup(true);
                       if (!telegramLink) void handleTelegramLink();
                     }}
@@ -393,10 +414,18 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               <button
                 type="button"
                 className="mb-4 text-xs font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
-                onClick={() => setShowTelegramSetup(false)}
+                onClick={() => {
+                  setShowTelegramSetup(false);
+                  setTelegramSetupFromSendPass(false);
+                }}
               >
                 ← {t('pages.checkIn.backToPass')}
               </button>
+              {telegramSetupFromSendPass ? (
+                <p className="mb-4 rounded-lg border border-sky-500/25 bg-sky-500/10 px-3 py-2 text-center text-xs leading-relaxed text-sky-700 dark:text-sky-200">
+                  {t('pages.checkIn.telegramLinkThenSendPass')}
+                </p>
+              ) : null}
               <p className="text-center text-sm font-medium text-app-text-strong">
                 {t('pages.checkIn.telegramLinkDeskTitle')}
               </p>

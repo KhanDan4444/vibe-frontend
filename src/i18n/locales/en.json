@@ -970,6 +970,7 @@
       "memberPassTabsLabel": "Pass options",
       "sendPassNeedsTelegram": "Link Telegram first to send the pass link.",
       "backToPass": "Back to check-in pass",
+      "telegramLinkThenSendPass": "Link Telegram on the member's phone — we'll send the pass link automatically.",
       "telegramLink": "Link Telegram",
       "telegramLinked": "Linked on Telegram",
       "telegramLinkDeskTitle": "Member scans to link Telegram",

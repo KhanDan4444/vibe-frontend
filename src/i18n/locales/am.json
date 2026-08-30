@@ -1371,6 +1371,7 @@
       "memberPassTabsLabel": "የፓስ አማራጮች",
       "sendPassNeedsTelegram": "የፓስ አገናኝ ከመላክዎ በፊት ቴሌግራም ያገናኙ።",
       "backToPass": "ወደ የመግቢያ ፓስ ተመለስ",
+      "telegramLinkThenSendPass": "በአባሉ ስልክ ላይ ቴሌግራም ያገናኙ — ከተገናኘ በኋላ የፓስ አገናኙን በራስ-ሰር እንልካለን።",
       "telegramLink": "ቴሌግራም አገናኝ",
       "telegramLinked": "በቴሌግራም ተገናኝቷል",
       "telegramLinkCopied": "የቴሌግራም አገናኝ ተنسخ። በአባሉ ስልክ ይክፈቱ።",
