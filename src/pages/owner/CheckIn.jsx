@@ -32,11 +32,12 @@ import {
 import AttendanceHistoryModal from '../../components/AttendanceHistoryModal';
 import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, mutedText, panelTitle, renewActionBtn } from '../../utils/surfaceClasses';
+import { effectiveVisitsLimit, effectiveVisitsPerWeek, WEEKLY_VISIT_CAP_DEFAULT } from '../../utils/attendanceCap';
 import { formatMemberStatusForDisplay, DISPLAY_STATUS } from '../../utils/memberStatus';
 import { todayString, formatDisplayTime } from '../../utils/date';
 
 const CAP_OPTIONS = [
-  { value: '', labelKey: 'pages.checkIn.capUnlimited' },
+  { value: String(WEEKLY_VISIT_CAP_DEFAULT), labelKey: 'pages.checkIn.capDays', days: WEEKLY_VISIT_CAP_DEFAULT },
   { value: '4', labelKey: 'pages.checkIn.capDays', days: 4 },
   { value: '5', labelKey: 'pages.checkIn.capDays', days: 5 },
   { value: '6', labelKey: 'pages.checkIn.capDays', days: 6 },
@@ -181,8 +182,9 @@ export default function CheckIn() {
 
   const capChipLabel = useMemo(() => {
     if (!settings) return null;
-    if (settings.visits_per_week == null) return t('pages.checkIn.capChipUnlimited');
-    return t('pages.checkIn.capChipDays', { count: settings.visits_per_week });
+    return t('pages.checkIn.capChipDays', {
+      count: effectiveVisitsPerWeek(settings.visits_per_week),
+    });
   }, [settings, t]);
 
   const alreadyTodayIds = useMemo(
@@ -362,7 +364,7 @@ export default function CheckIn() {
     if (!canManage || savingSettings) return;
     setSavingSettings(true);
     try {
-      const visits_per_week = raw === '' ? null : parseInt(raw, 10);
+      const visits_per_week = parseInt(raw, 10);
       const res = await updateAttendanceSettings(apiFetch, { visits_per_week });
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error);
@@ -377,8 +379,7 @@ export default function CheckIn() {
     }
   };
 
-  const capValue =
-    settings?.visits_per_week == null ? '' : String(settings.visits_per_week);
+  const capValue = String(effectiveVisitsPerWeek(settings?.visits_per_week));
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -580,9 +581,8 @@ export default function CheckIn() {
                     <div className="relative shrink-0 pb-1.5 pr-1.5">
                       <VisitRing
                         visits={member.visits_this_week ?? 0}
-                        limit={member.visits_limit}
-                        size={92}
-                        stroke={6.5}
+                        limit={effectiveVisitsLimit(member.visits_limit, settings?.visits_per_week)}
+                        size={72}
                         weekStartsOn={settings?.week_starts_on || 'monday'}
                         celebrate={justCheckedIn}
                       />

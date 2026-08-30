@@ -22,6 +22,7 @@ import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
 import { formatFriendlyDate, formatDisplayDate, attendanceDayRelative, formatAttendanceDayLabel, formatDisplayTime } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
+import { effectiveVisitsLimit } from '../utils/attendanceCap';
 import { getMemberPayments } from '../services/memberService';
 import { getMemberVisitSummary, listCheckIns } from '../services/checkInService';
 import VisitRing from './VisitRing';
@@ -438,7 +439,7 @@ export default function MemberDetailDrawer({
               <div className="mb-3 flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
                 <VisitRing
                   visits={visitSummary.visits_this_week ?? 0}
-                  limit={visitSummary.visits_limit}
+                  limit={effectiveVisitsLimit(visitSummary.visits_limit)}
                   size={72}
                   weekStartsOn={visitSummary.week_starts_on || 'monday'}
                   title={t('pages.checkIn.openCheckInFor', { name: member.name })}
@@ -457,14 +458,10 @@ export default function MemberDetailDrawer({
                     {t('pages.checkIn.ringLabel')}
                   </p>
                   <p className="mt-0.5 text-xs leading-relaxed text-app-muted">
-                    {visitSummary.visits_limit != null
-                      ? t('pages.checkIn.ringProgress', {
-                          count: visitSummary.visits_this_week,
-                          limit: visitSummary.visits_limit,
-                        })
-                      : t('pages.checkIn.ringUnlimited', {
-                          count: visitSummary.visits_this_week,
-                        })}
+                    {t('pages.checkIn.ringProgress', {
+                      count: visitSummary.visits_this_week,
+                      limit: effectiveVisitsLimit(visitSummary.visits_limit),
+                    })}
                   </p>
                 </div>
                 {canShowPass ? (

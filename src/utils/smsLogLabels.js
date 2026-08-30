@@ -1,5 +1,29 @@
 /** i18n labels for SMS log message types. */
 
+const MESSAGE_CHANNEL_KEYS = {
+  sms: 'smsLog.channels.sms',
+  telegram: 'smsLog.channels.telegram',
+};
+
+export function formatMessageChannel(t, channel) {
+  const key = MESSAGE_CHANNEL_KEYS[String(channel || 'sms').toLowerCase()];
+  return key ? t(key) : String(channel || 'sms');
+}
+
+export function messageChannelChipClass(channel) {
+  const base = 'inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide border';
+  if (channel === 'telegram') {
+    return `${base} bg-sky-500/10 text-sky-700 border-sky-500/25 dark:bg-sky-400/10 dark:text-sky-300 dark:border-sky-400/25`;
+  }
+  return `${base} bg-teal-500/10 text-teal-700 border-teal-500/25 dark:bg-teal-400/10 dark:text-teal-300 dark:border-teal-400/25`;
+}
+
+export const MESSAGE_CHANNEL_FILTER_OPTIONS = [
+  { value: 'all', labelKey: 'filters.all' },
+  { value: 'sms', labelKey: 'smsLog.channels.sms' },
+  { value: 'telegram', labelKey: 'smsLog.channels.telegram' },
+];
+
 const MEMBER_TYPE_KEYS = {
   member_due_soon: 'smsLog.types.dueSoon',
   member_expires_today: 'smsLog.types.expiresToday',

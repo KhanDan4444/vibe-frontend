@@ -20,6 +20,9 @@ export const regenerateMemberPass = (apiFetch, id) =>
 export const sendMemberPassSms = (apiFetch, id) =>
   apiFetch(`/members/${id}/pass/sms`, { method: 'POST' });
 
+export const createMemberTelegramLink = (apiFetch, id) =>
+  apiFetch(`/members/${id}/telegram/link-token`, { method: 'POST' });
+
 export const enrollMember = (apiFetch, payload) =>
   apiFetch('/members/enroll', {
     method: 'POST',

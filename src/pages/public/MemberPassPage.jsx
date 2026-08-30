@@ -4,6 +4,52 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { API_BASE_URL } from '../../config/api';
 
+function TelegramLinkButton({ code, token, t }) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const requestLink = async () => {
+    if (loading) return;
+    setLoading(true);
+    setError('');
+    try {
+      const qs = code
+        ? `code=${encodeURIComponent(code)}`
+        : token
+          ? `token=${encodeURIComponent(token)}`
+          : '';
+      const res = await fetch(`${API_BASE_URL}/api/public/member-pass/telegram-link?${qs}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || t('publicPass.loadFailed'));
+      if (data.already_linked) return;
+      if (data.link) {
+        window.open(data.link, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err) {
+      setError(err.message || t('publicPass.loadFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={() => void requestLink()}
+        disabled={loading}
+        className="inline-flex w-full items-center justify-center rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-sky-400 disabled:opacity-60"
+      >
+        {loading ? t('publicPass.telegramLoading') : t('publicPass.telegramOpen')}
+      </button>
+      {error ? <p className="mt-2 text-xs text-rose-300">{error}</p> : null}
+    </div>
+  );
+}
+
 /**
  * Public member pass page — opened from SMS link. No login required.
  * Supports /p/:code (short) and legacy /pass?t=JWT.
@@ -119,6 +165,20 @@ export default function MemberPassPage() {
               <p className="mt-5 text-center text-sm leading-relaxed text-white/55">
                 {t('publicPass.hint')}
               </p>
+
+              {pass.telegram?.configured ? (
+                <div className="mt-6 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-left">
+                  {pass.telegram.linked ? (
+                    <p className="text-sm leading-relaxed text-teal-200/90">{t('publicPass.telegramLinked')}</p>
+                  ) : (
+                    <>
+                      <p className="text-sm font-semibold text-white">{t('publicPass.telegramTitle')}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-white/55">{t('publicPass.telegramBody')}</p>
+                      <TelegramLinkButton code={code} token={token} t={t} />
+                    </>
+                  )}
+                </div>
+              ) : null}
             </div>
           ) : null}
         </div>

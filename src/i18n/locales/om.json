@@ -325,7 +325,13 @@
       "forgotPassword": "Koodii jecha iccitii haaromsaa",
       "gymSignup": "Koodii galmee jimii"
     },
-    "otpRecipient": "SMS mirkaneessaa"
+    "otpRecipient": "SMS mirkaneessaa",
+    "channelFilterLabel": "Kanaala",
+    "channelLabel": "Kanaala",
+    "channels": {
+      "sms": "SMS",
+      "telegram": "Telegram"
+    }
   },
   "notifications": {
     "title": "Beeksisa",
@@ -943,7 +949,11 @@
       "regeneratePassConfirm": "QR haaromsii",
       "showPass": "QR agarsiisi",
       "printPass": "QR buusi",
-      "smsPass": "Liinkii paasii deebisii ergi"
+      "smsPass": "Liinkii paasii ergi",
+      "telegramLink": "Telegram wal qabsiisi",
+      "telegramLinked": "Telegram irratti wal qabsiifameera",
+      "telegramLinkCopied": "Liinkii Telegram waraabameera. Bilbila miseensaa irratti bani.",
+      "telegramLinkFailed": "Liinkii Telegram uumuu hin dandeenye."
     },
     "team": {
       "title": "Hojjettoota",
@@ -1020,16 +1030,16 @@
       }
     },
     "memberMessages": {
-      "title": "SMS Miseensaa",
-      "subtitle": "Ergaa SMS ofumaan miseensotaaf ergaman (kan yeroon ga'e, har'a kan dhumu, kan darbe).",
+      "title": "Ergaawwan miseensaa",
+      "subtitle": "Ergaa ofumaan miseensotaaf ergaman (kan yeroon ga'e, har'a kan dhumu, kan darbe).",
       "statusLine": "Ergaalee {{count}} · {{filter}}",
       "statusLineEmpty": "Ilaalcha kana keessatti ergaan hin jiru",
       "messageHistory": "Seenaa ergaa",
       "searchPlaceholder": "Maqaa miseensaatiin barbaadi…",
-      "empty": "SMSn miseensaa kan ergame hin jiru.",
-      "loadError": "Galmee SMS ol fe'uu hin dandeenye.",
-      "emptyTitle": "SMSn hin jiru",
-      "emptyBody": "Seenaan SMS miseensaa ergaa ofumaan jalqabaa ergames booda mul'ata.",
+      "empty": "Ergaan miseensaa kan ergame hin jiru.",
+      "loadError": "Galmee ergaa ol fe'uu hin dandeenye.",
+      "emptyTitle": "Ergaan hin jiru",
+      "emptyBody": "Seenaan ergaa ergaa ofumaan jalqabaa ergame booda mul'ata.",
       "emptyFilteredTitle": "Gosa kanaaf ergaan hin jiru",
       "emptyFilteredBody": "Gosa biraa yaali, ykn gara Hundaatti deebi'i.",
       "emptySearchTitle": "Miseensi walsimatu hin jiru",
@@ -1910,8 +1920,12 @@
       "subtitle": "Koodiiwwan durii {{name}} hin hojjetan. Liinkin haaraa gara {{phone}} ergameera."
     },
     "memberPassSmsSent": {
-      "title": "Liinkin paasii deebi'ee ergameera",
-      "subtitle": "SMS gara {{name}} ({{phone}}) deebi'ee ergameera."
+      "title": "Liinkii paasii ergameera",
+      "subtitle": "Gara {{name}} ({{phone}}) ergameera."
+    },
+    "memberPassTelegramSent": {
+      "title": "Liinkii paasii ergameera",
+      "subtitle": "Gara {{name}} Telegram irratti ergameera."
     }
   },
   "publicPass": {
@@ -1920,6 +1934,11 @@
     "qrAlt": "QR galchuu {{name}}",
     "missingToken": "Liinkin paasii kana hin guutamne. Desk akka deebisee ergitu gaafadhu.",
     "loadFailed": "Paasii kana banuu hin dandeenye.",
-    "errorTitle": "Paasii hin jiru"
+    "errorTitle": "Paasii hin jiru",
+    "telegramTitle": "Yaadachiisa Telegram irratti argadhu",
+    "telegramBody": "Liinkii paasii fi yaadachiisa haaromsaa Telegram irratti argachuuf miseensummaa kee wal qabsiisi.",
+    "telegramLinked": "Telegram irratti wal qabsiifamee jirta. Yaadachiisni achi ni dhufa.",
+    "telegramOpen": "Bot Telegram bani",
+    "telegramLoading": "Liinkii qopheessaa jira…"
   }
 }

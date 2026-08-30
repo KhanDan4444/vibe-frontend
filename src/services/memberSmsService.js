@@ -11,6 +11,9 @@ export function getMemberSmsLog(apiFetch, params = {}) {
   if (params.branch_id && params.branch_id !== 'all') {
     search.set('branch_id', String(params.branch_id));
   }
+  if (params.channel && params.channel !== 'all') {
+    search.set('channel', String(params.channel));
+  }
   const qs = search.toString();
   return apiFetch(`/gym/member-sms${qs ? `?${qs}` : ''}`);
 }

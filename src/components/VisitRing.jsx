@@ -47,7 +47,8 @@ export default function VisitRing({
     : Math.min(1, safeVisits > 0 ? 0.12 + Math.min(safeVisits, 7) * 0.08 : 0);
   const atLimit = capped && safeVisits >= limit;
   const nearLimit = capped && !atLimit && safeVisits === limit - 1 && limit > 1;
-  const empty = capped && safeVisits === 0;
+  // Dash track for any zero week — capped or unlimited — so a new week resets to dashes.
+  const empty = safeVisits === 0;
   const lastWeekOfMonth = isLastWeekOfMonth(new Date(), weekStartsOn);
   const warnAmber = nearLimit || (atLimit && !lastWeekOfMonth);
   const warnRed = atLimit && lastWeekOfMonth;

@@ -14,7 +14,10 @@ import { formatLogTimestamp } from '../../utils/date';
 import {
   formatSmsMessageType,
   formatSmsMessagePreview,
+  formatMessageChannel,
+  messageChannelChipClass,
   SMS_TYPE_FILTER_OPTIONS,
+  MESSAGE_CHANNEL_FILTER_OPTIONS,
   smsMessageTypeIcon,
   smsMessageTypeChipClass,
 } from '../../utils/smsLogLabels';
@@ -51,6 +54,7 @@ export default function MemberMessages() {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [typeFilter, setTypeFilter] = useState('all');
+  const [channelFilter, setChannelFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -71,6 +75,7 @@ export default function MemberMessages() {
         page,
         limit: PAGE_SIZE,
         type: typeFilter,
+        channel: channelFilter,
         search: debouncedSearch,
         ...getBranchQueryParams(),
       });
@@ -87,7 +92,7 @@ export default function MemberMessages() {
     } finally {
       setLoading(false);
     }
-  }, [apiFetch, page, typeFilter, debouncedSearch, getBranchQueryParams, t]);
+  }, [apiFetch, page, typeFilter, channelFilter, debouncedSearch, getBranchQueryParams, t]);
 
   useEffect(() => {
     loadMessages();
@@ -95,7 +100,7 @@ export default function MemberMessages() {
 
   useEffect(() => {
     setPage(1);
-  }, [typeFilter, selectedBranchId, debouncedSearch]);
+  }, [typeFilter, channelFilter, selectedBranchId, debouncedSearch]);
 
   const openMember = (memberId) => {
     if (!memberId) return;
@@ -121,7 +126,14 @@ export default function MemberMessages() {
     : typeFiltered
       ? t('pages.memberMessages.emptyFilteredBody')
       : t('pages.memberMessages.emptyBody');
-  const colCount = 5;
+  const colCount = 6;
+
+  const formatRecipient = (row) => {
+    if (row.channel === 'telegram') {
+      return t('smsLog.channels.telegram');
+    }
+    return row.recipient_phone || row.member_phone || '—';
+  };
 
   return (
     <div className="space-y-4 sm:space-y-5">
@@ -160,6 +172,15 @@ export default function MemberMessages() {
                 labelKey: opt.labelKey,
               }))}
               label={t('smsLog.filterLabel')}
+            />
+            <ToolbarPicker
+              value={channelFilter}
+              onChange={setChannelFilter}
+              options={MESSAGE_CHANNEL_FILTER_OPTIONS.map((opt) => ({
+                id: opt.value,
+                labelKey: opt.labelKey,
+              }))}
+              label={t('smsLog.channelFilterLabel')}
             />
           </div>
         </div>
@@ -200,6 +221,9 @@ export default function MemberMessages() {
                             <span className={smsMessageTypeChipClass(row.message_type, typeFiltered)}>
                               {formatSmsMessageType(t, row.message_type)}
                             </span>
+                            <span className={`ml-1.5 ${messageChannelChipClass(row.channel)}`}>
+                              {formatMessageChannel(t, row.channel)}
+                            </span>
                             {preview ? (
                               <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-app-muted">{preview}</p>
                             ) : null}
@@ -210,7 +234,7 @@ export default function MemberMessages() {
                           </span>
                         </div>
                         <p className="mt-1.5 text-xs text-app-muted">
-                          {row.recipient_phone || row.member_phone || '—'}
+                          {formatRecipient(row)}
                           {showBranchColumn && row.branch_name ? ` · ${row.branch_name}` : ''}
                         </p>
                       </div>
@@ -235,6 +259,7 @@ export default function MemberMessages() {
                 <th>{t('table.member')}</th>
                 <th>{t('table.phone')}</th>
                 <th>{t('smsLog.messageType')}</th>
+                <th>{t('smsLog.channelLabel')}</th>
                 <th>{t('table.when')}</th>
                 <th>{t('table.status')}</th>
               </tr>
@@ -254,11 +279,16 @@ export default function MemberMessages() {
                         {row.member_name}
                       </td>
                       <td className="truncate font-mono text-sm text-app-muted">
-                        {row.recipient_phone || row.member_phone || '—'}
+                        {formatRecipient(row)}
                       </td>
                       <td>
                         <span className={smsMessageTypeChipClass(row.message_type, typeFiltered)}>
                           {formatSmsMessageType(t, row.message_type)}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={messageChannelChipClass(row.channel)}>
+                          {formatMessageChannel(t, row.channel)}
                         </span>
                       </td>
                       <td className="whitespace-nowrap text-app-muted">

@@ -1106,7 +1106,13 @@
       "forgotPassword": "የይለፍ ቃል መቀየሪያ ኮድ",
       "gymSignup": "የጂም ምዝገባ ኮድ"
     },
-    "otpRecipient": "የማረጋገጫ SMS"
+    "otpRecipient": "የማረጋገጫ SMS",
+    "channelFilterLabel": "ቻናል",
+    "channelLabel": "ቻናል",
+    "channels": {
+      "sms": "SMS",
+      "telegram": "ቴሌግራም"
+    }
   },
   "notifications": {
     "collectPayment": "ክፍያ ይቀበሉ",
@@ -1206,16 +1212,16 @@
       }
     },
     "memberMessages": {
-      "title": "የአባላት SMS",
+      "title": "የአባል መልእክቶች",
       "subtitle": "ለአባላት የተላኩ ራስ-ሰር ማስታወሻ መልእክቶች (በቅርብ ጊዜ የሚያልቁ፣ ዛሬ የሚያልቁ እና ጊዜያቸው ያለፈባቸው)።",
       "statusLine": "{{count}} መልእክቶች · {{filter}}",
       "statusLineEmpty": "በዚህ እይታ መልእክት የለም",
       "messageHistory": "የመልእክት ታሪክ",
       "searchPlaceholder": "በአባል ስም ፈልግ…",
-      "empty": "ለአባላት የተላከ ምንም SMS የለም።",
-      "loadError": "የSMS መዝገብ መጫን አልተሳካም።",
-      "emptyTitle": "እስካሁን SMS የለም",
-      "emptyBody": "የመጀመሪያው ራስ-ሰር መልእክት ከተላከ በኋላ የአባል SMS ታሪክ ይታያል።",
+      "empty": "ለአባላት የተላከ ምንም መልእክት የለም።",
+      "loadError": "የመልእክት መዝገብ መጫን አልተሳካም።",
+      "emptyTitle": "እስካሁን መልእክት የለም",
+      "emptyBody": "የመጀመሪያው ራስ-ሰር መልእክት ከተላከ በኋላ የመልእክት ታሪክ ይታያል።",
       "emptyFilteredTitle": "ለዚህ ዓይነት መልእክት የለም",
       "emptyFilteredBody": "ሌላ ዓይነት ይሞክሩ ወይም ወደ ሁሉም ይመለሱ።",
       "emptySearchTitle": "ተዛማጅ አባል የለም",
@@ -1358,7 +1364,11 @@
       "regeneratePassConfirm": "QR እንደገና ፍጠር",
       "showPass": "QR አሳይ",
       "printPass": "QR አውርድ",
-      "smsPass": "የፓስ አገናኝ እንደገና ላክ"
+      "smsPass": "የፓስ አገናኝ ላክ",
+      "telegramLink": "ቴሌግራም አገናኝ",
+      "telegramLinked": "በቴሌግራም ተገናኝቷል",
+      "telegramLinkCopied": "የቴሌግራም አገናኝ ተنسخ። በአባሉ ስልክ ይክፈቱ።",
+      "telegramLinkFailed": "የቴሌግራም አገናኝ መፍጠር አልተቻለም።"
     },
     "team": {
       "title": "ሰራተኞች",
@@ -1899,8 +1909,12 @@
       "subtitle": "የ{{name}} የድሮ ኮዶች አይሰሩም። አዲሱ አገናኝ ወደ {{phone}} ተልኳል።"
     },
     "memberPassSmsSent": {
-      "title": "የፓስ አገናኝ እንደገና ተልኳል",
-      "subtitle": "SMS ወደ {{name}} ({{phone}}) እንደገና ተልኳል።"
+      "title": "የፓስ አገናኝ ተልኳል",
+      "subtitle": "ወደ {{name}} ({{phone}}) ተልኳል።"
+    },
+    "memberPassTelegramSent": {
+      "title": "የፓስ አገናኝ ተልኳል",
+      "subtitle": "ወደ {{name}} በቴሌግራም ተልኳል።"
     }
   },
   "publicPass": {
@@ -1909,6 +1923,11 @@
     "qrAlt": "የ{{name}} የመግቢያ QR",
     "missingToken": "ይህ የፓስ አገናኝ ያልተሟላ ነው። ዴስኩ እንደገና እንዲልክ ይጠይቁ።",
     "loadFailed": "ይህን ፓስ መክፈት አልተቻለም።",
-    "errorTitle": "ፓስ አይገኝም"
+    "errorTitle": "ፓስ አይገኝም",
+    "telegramTitle": "በቴሌግራም ማስታወሻዎች ይקבלו",
+    "telegramBody": "የፓስ አገናኞችን እና የማደስ ማስታወሻዎችን በቴሌግራም ለመקבል አባልነትዎን ያገናኙ።",
+    "telegramLinked": "በቴሌግራም ተገናኝተዋል። ማስታወሻዎች እዚያ ይደርሳሉ።",
+    "telegramOpen": "የቴሌግራም ቦት ይክፈቱ",
+    "telegramLoading": "አገናኝ እየተዘጋጀ…"
   }
 }

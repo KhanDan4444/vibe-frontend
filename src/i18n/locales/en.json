@@ -12,7 +12,7 @@
     "branches": "Branches",
     "team": "Team",
     "activity": "Activity",
-    "messages": "SMS",
+    "messages": "Messages",
     "sectionManage": "Manage",
     "sectionInsights": "Insights",
     "ownerSms": "Owner SMS",
@@ -290,6 +290,8 @@
   },
   "smsLog": {
     "filterLabel": "Message type",
+    "channelFilterLabel": "Channel",
+    "channelLabel": "Channel",
     "phoneFilterLabel": "Filter by phone",
     "phoneFilterPlaceholder": "0912345678 or partial digits",
     "messageType": "Message",
@@ -324,6 +326,10 @@
     "otpTypes": {
       "forgotPassword": "Password reset code",
       "gymSignup": "Gym registration code"
+    },
+    "channels": {
+      "sms": "SMS",
+      "telegram": "Telegram"
     },
     "otpRecipient": "Verification SMS"
   },
@@ -495,7 +501,7 @@
     "regeneratePass": "Failed to regenerate member QR",
     "printMemberPass": "Failed to download member pass",
     "sendMemberPassSms": "Failed to send pass SMS",
-    "memberPassNoPhone": "Add a phone number before sending the pass by SMS.",
+    "memberPassNoPhone": "Add a phone number or link Telegram before sending the pass.",
     "loadMemberReport": "Failed to load member report",
     "loadRevenueReport": "Failed to load revenue report"
   },
@@ -958,7 +964,11 @@
       "regeneratePassConfirm": "Regenerate QR",
       "showPass": "Show QR",
       "printPass": "Download QR",
-      "smsPass": "Resend pass link"
+      "smsPass": "Send pass link",
+      "telegramLink": "Link Telegram",
+      "telegramLinked": "Linked on Telegram",
+      "telegramLinkCopied": "Telegram link copied. Open it on the member's phone.",
+      "telegramLinkFailed": "Could not create Telegram link."
     },
     "team": {
       "title": "Staff",
@@ -1037,16 +1047,16 @@
       }
     },
     "memberMessages": {
-      "title": "Member SMS",
-      "subtitle": "Automatic reminder texts sent to members (due soon, expiring today, expired).",
+      "title": "Member messages",
+      "subtitle": "Automatic reminders sent to members (due soon, expiring today, expired).",
       "statusLine": "{{count}} messages · {{filter}}",
       "statusLineEmpty": "No messages in this view",
       "messageHistory": "Message history",
       "searchPlaceholder": "Search by member name…",
-      "empty": "No member SMS has been sent yet.",
-      "loadError": "Failed to load SMS log.",
-      "emptyTitle": "No SMS yet",
-      "emptyBody": "Member SMS history shows up after the first automatic message is sent.",
+      "empty": "No member messages have been sent yet.",
+      "loadError": "Failed to load message log.",
+      "emptyTitle": "No messages yet",
+      "emptyBody": "Message history shows up after the first automatic reminder is sent.",
       "emptyFilteredTitle": "No messages for this type",
       "emptyFilteredBody": "Try another message type, or switch back to All.",
       "emptySearchTitle": "No matching members",
@@ -1909,8 +1919,12 @@
       "subtitle": "PDF saved for {{name}}."
     },
     "memberPassSmsSent": {
-      "title": "Pass link resent",
-      "subtitle": "SMS resent to {{name}} ({{phone}})."
+      "title": "Pass link sent",
+      "subtitle": "Sent to {{name}} ({{phone}})."
+    },
+    "memberPassTelegramSent": {
+      "title": "Pass link sent",
+      "subtitle": "Sent to {{name}} on Telegram."
     },
     "gymUpdated": {
       "title": "Gym updated",
@@ -1974,6 +1988,11 @@
     "qrAlt": "Check-in QR for {{name}}",
     "missingToken": "This pass link is incomplete. Ask the desk to send it again.",
     "loadFailed": "Could not open this pass.",
-    "errorTitle": "Pass unavailable"
+    "errorTitle": "Pass unavailable",
+    "telegramTitle": "Get reminders on Telegram",
+    "telegramBody": "Link your membership to receive pass links and renewal reminders in Telegram.",
+    "telegramLinked": "You're linked on Telegram. Reminders will arrive there.",
+    "telegramOpen": "Open Telegram bot",
+    "telegramLoading": "Preparing link…"
   }
 }

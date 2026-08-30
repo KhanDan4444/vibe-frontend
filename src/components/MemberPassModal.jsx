@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
+import { Download, MessageSquare, QrCode, RefreshCw, Send } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
 import Button from './ui/Button';
@@ -11,6 +11,7 @@ import {
   getMemberPass,
   regenerateMemberPass,
   sendMemberPassSms,
+  createMemberTelegramLink,
 } from '../services/memberService';
 import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
@@ -29,6 +30,10 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
   const [regenerating, setRegenerating] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [smsSending, setSmsSending] = useState(false);
+  const [telegramLinking, setTelegramLinking] = useState(false);
+
+  const telegramLinked = Boolean(member?.telegram_chat_id);
+  const canSendPass = Boolean(member?.phone || member?.telegram_chat_id);
 
   const loadPass = useCallback(async () => {
     if (!member?.id) return;
@@ -133,7 +138,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
 
   const handleSms = async () => {
     if (!member?.id || smsSending) return;
-    if (!member.phone && !pass?.member?.phone) {
+    if (!canSendPass) {
       onFlash?.({ title: t('errors.memberPassNoPhone'), variant: 'danger' });
       return;
     }
@@ -142,12 +147,15 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
       const res = await sendMemberPassSms(apiFetch, member.id);
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('errors.sendMemberPassSms'));
+      const viaTelegram = data.channel === 'telegram';
       onFlash?.({
         title: t('flash.memberPassSmsSent.title'),
-        subtitle: t('flash.memberPassSmsSent.subtitle', {
-          name: member.name,
-          phone: data.phone || member.phone,
-        }),
+        subtitle: viaTelegram
+          ? t('flash.memberPassTelegramSent.subtitle', { name: member.name })
+          : t('flash.memberPassSmsSent.subtitle', {
+              name: member.name,
+              phone: data.phone || member.phone,
+            }),
         variant: 'success',
       });
     } catch (err) {
@@ -157,9 +165,36 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
     }
   };
 
+  const handleTelegramLink = async () => {
+    if (!member?.id || telegramLinking || telegramLinked) return;
+    setTelegramLinking(true);
+    try {
+      const res = await createMemberTelegramLink(apiFetch, member.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramLinkFailed'));
+      if (data.link) {
+        try {
+          await navigator.clipboard.writeText(data.link);
+        } catch {
+          /* clipboard optional */
+        }
+        window.open(data.link, '_blank', 'noopener,noreferrer');
+      }
+      onFlash?.({
+        title: t('pages.checkIn.telegramLink'),
+        subtitle: t('pages.checkIn.telegramLinkCopied'),
+        variant: 'success',
+      });
+    } catch (err) {
+      onFlash?.({ title: err.message || t('pages.checkIn.telegramLinkFailed'), variant: 'danger' });
+    } finally {
+      setTelegramLinking(false);
+    }
+  };
+
   if (!open || !member) return null;
 
-  const busy = loading || regenerating || printing || smsSending;
+  const busy = loading || regenerating || printing || smsSending || telegramLinking;
   const phone = member.phone || pass?.member?.phone || null;
 
   return (
@@ -245,16 +280,35 @@ export default function MemberPassModal({ open, member, onClose, onFlash }) {
               type="button"
               variant="secondary"
               size="sm"
-              disabled={busy || !phone}
+              disabled={busy || !canSendPass}
               loading={smsSending}
               onClick={() => void handleSms()}
               className="w-full"
-              title={!phone ? t('errors.memberPassNoPhone') : undefined}
+              title={!canSendPass ? t('errors.memberPassNoPhone') : undefined}
             >
               {!smsSending ? <MessageSquare className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
               {t('pages.checkIn.smsPass')}
             </Button>
           </div>
+
+          {telegramLinked ? (
+            <p className="mt-3 text-center text-xs font-medium text-sky-600 dark:text-sky-300">
+              {t('pages.checkIn.telegramLinked')}
+            </p>
+          ) : (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy}
+              loading={telegramLinking}
+              onClick={() => void handleTelegramLink()}
+              className="mt-3 w-full"
+            >
+              {!telegramLinking ? <Send className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {t('pages.checkIn.telegramLink')}
+            </Button>
+          )}
         </div>
         <div className={`${modalFooter} !justify-between`}>
           <Button type="button" variant="secondary" size="sm" onClick={onClose} className="w-full sm:w-auto">
