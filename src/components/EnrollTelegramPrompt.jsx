@@ -8,6 +8,9 @@ import { createMemberTelegramLink, getMember } from '../services/memberService';
 const panelClass =
   'mt-6 w-full rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-4 dark:border-sky-400/30 dark:bg-sky-500/[0.12]';
 
+const brandLinkClass =
+  'font-semibold text-[#0f766e] hover:text-[#0d9488] dark:text-teal-400 dark:hover:text-teal-300';
+
 /**
  * Optional Telegram link step on enroll success — member scans on their phone.
  */
@@ -108,7 +111,7 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
       <div className={panelClass}>
         <button
           type="button"
-          className="w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-sky-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 dark:bg-sky-500 dark:hover:bg-sky-400"
+          className="w-full rounded-lg border border-sky-500/50 bg-transparent px-4 py-2 text-sm font-semibold text-sky-700 transition-colors hover:border-sky-500 hover:bg-sky-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 dark:border-sky-400/45 dark:text-sky-300 dark:hover:border-sky-400 dark:hover:bg-sky-500/15"
           onClick={handleOpen}
         >
           {t('pages.checkIn.telegramLink')}
@@ -121,7 +124,7 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
     <div className={panelClass}>
       <button
         type="button"
-        className="mb-3 text-xs font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200"
+        className={`mb-3 text-xs ${brandLinkClass}`}
         onClick={() => setOpen(false)}
       >
         ← {t('modals.member.telegramEnrollLater')}
@@ -161,7 +164,7 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
           ) : null}
           <button
             type="button"
-            className="mt-3 w-full text-center text-xs font-medium text-sky-600 hover:text-sky-500 dark:text-sky-300"
+            className={`mt-3 w-full text-center text-xs ${brandLinkClass}`}
             onClick={() => void loadLink()}
             disabled={linking}
           >

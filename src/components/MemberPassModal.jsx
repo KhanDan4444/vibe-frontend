@@ -18,6 +18,9 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
 
+const brandLinkClass =
+  'font-semibold text-[#0f766e] hover:text-[#0d9488] dark:text-teal-400 dark:hover:text-teal-300';
+
 /**
  * Member QR pass modal — print card + SMS link + regenerate.
  */
@@ -429,7 +432,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
             <div className="mt-5 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-5">
               <button
                 type="button"
-                className="mb-4 text-xs font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
+                className={`mb-4 text-xs ${brandLinkClass}`}
                 onClick={() => {
                   setShowTelegramSetup(false);
                   setTelegramSetupFromSendPass(false);
@@ -482,7 +485,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                   ) : null}
                   <button
                     type="button"
-                    className="mt-3 w-full text-center text-xs font-medium text-sky-600 hover:text-sky-500 dark:text-sky-300"
+                    className={`mt-3 w-full text-center text-xs ${brandLinkClass}`}
                     onClick={() => void handleTelegramLink()}
                     disabled={telegramLinking}
                   >
