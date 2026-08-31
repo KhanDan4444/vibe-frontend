@@ -446,17 +446,15 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                   <p className="mt-4 break-all rounded-lg bg-app-bg/80 px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-app-muted">
                     {telegramLink.link}
                   </p>
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    <Button type="button" variant="secondary" size="sm" onClick={() => void handleCopyTelegramLink()}>
-                      {t('pages.checkIn.telegramLinkCopy')}
-                    </Button>
+                  <div className="mt-3">
                     <Button
                       type="button"
                       variant="secondary"
                       size="sm"
-                      onClick={() => window.open(telegramLink.link, '_blank', 'noopener,noreferrer')}
+                      className="w-full"
+                      onClick={() => void handleCopyTelegramLink()}
                     >
-                      {t('pages.checkIn.telegramLinkOpenHere')}
+                      {t('pages.checkIn.telegramLinkCopy')}
                     </Button>
                   </div>
                   {telegramLink.expires_in_seconds ? (
@@ -483,7 +481,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
           <Button type="button" variant="secondary" size="sm" onClick={onClose} className="w-full sm:w-auto">
             {t('common.close')}
           </Button>
-          {owner ? (
+          {owner && onPassView ? (
             <button
               type="button"
               disabled={busy}

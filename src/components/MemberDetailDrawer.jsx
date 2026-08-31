@@ -222,6 +222,7 @@ export default function MemberDetailDrawer({
 
   const isFormer = Boolean(member.deletedAt);
   const canShowPass = !isFormer && (isGymOwner(user?.role) || isGymStaff(user?.role));
+  const telegramLinked = Boolean(member.telegramChatId);
   const canShowChangePlan = !readOnly && !isFormer && canChangePlan(member) && onChangePlan && otherPlans.length > 0;
   const canShowTransfer = showTransfer && onTransfer && !isFormer;
   const hasPrimaryLifecycle =
@@ -462,6 +463,15 @@ export default function MemberDetailDrawer({
                       limit: effectiveVisitsLimit(visitSummary.visits_limit),
                     })}
                   </p>
+                  {telegramLinked ? (
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-300">
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                        aria-hidden
+                      />
+                      {t('pages.checkIn.telegramLinked')}
+                    </p>
+                  ) : null}
                 </div>
                 {canShowPass ? (
                   <Button
@@ -477,11 +487,23 @@ export default function MemberDetailDrawer({
                 ) : null}
               </div>
             ) : canShowPass ? (
-              <div className="mb-3">
+              <div className="mb-3 flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
+                {telegramLinked ? (
+                  <p className="flex min-w-0 flex-1 items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-300">
+                    <span
+                      className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                      aria-hidden
+                    />
+                    {t('pages.checkIn.telegramLinked')}
+                  </p>
+                ) : (
+                  <span className="min-w-0 flex-1" />
+                )}
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
+                  className="shrink-0"
                   onClick={() => setIsPassOpen(true)}
                 >
                   <QrCode className="h-3.5 w-3.5 shrink-0" aria-hidden />
