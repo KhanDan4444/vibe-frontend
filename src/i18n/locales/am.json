@@ -876,7 +876,7 @@
       "smsFailedDetail": "አባሉ ተመዝግቧል፣ ነገር ግን SMS አልተሳካም፦ {{detail}}",
       "smsSentTitle": "መልእክቱ ተልኳል",
       "telegramEnrollTitle": "ቴሌግራም አገናኝ (አማራጭ)",
-      "telegramEnrollBody": "በአባሉ ስልክ ላይ — የእድሳት እና የፓስ አገናኞች ከSMS ይልቅ እዚያ ይደርሳሉ።",
+      "telegramEnrollBody": "በአባሉ ስልክ ላይ — የፓስ አገናኞች እና የእድሳት ማስታወሻዎች እዚያ ይደርሳሉ።",
       "telegramEnrollSkip": "ከዚያ በኋላ ከመግቢያ ፓሳቸው ማገናኘት ይችላሉ።",
       "telegramEnrollLater": "በኋላ",
       "telegramLinkedHint": "የፓስ አገናኞች እና የእድሳት ማስታወሻዎች በቴሌግራም ይደርሳሉ።",

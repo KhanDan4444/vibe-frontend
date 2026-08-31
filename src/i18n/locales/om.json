@@ -1193,7 +1193,7 @@
       "smsFailedDetail": "Miseensi galmaa'eera, garuu SMS hin milkoofne: {{detail}}",
       "smsSentTitle": "Ergaan ergameera",
       "telegramEnrollTitle": "Telegram wal qabsiisi (filannoo)",
-      "telegramEnrollBody": "Bilbila miseensaa irratti — haaromsaafi liinkii paasii SMS irraa osoo hin taane achitti ni dhufa.",
+      "telegramEnrollBody": "Bilbila miseensaa irratti — liinkii paasii fi yaadachiisa haaromsaa achitti ni dhufa.",
       "telegramEnrollSkip": "Boodas paasii galchuu isaanii irraa wal qabsiisuu dandeessa.",
       "telegramEnrollLater": "Booda",
       "telegramLinkedHint": "Liinkii paasii fi yaadachiisa haaromsaa Telegram irratti ni dhufa.",

@@ -1222,7 +1222,7 @@
       "smsFailedDetail": "The member is enrolled, but SMS failed: {{detail}}",
       "smsSentTitle": "Message is sent",
       "telegramEnrollTitle": "Link Telegram (optional)",
-      "telegramEnrollBody": "On the member's phone — renewals and pass links arrive there instead of SMS.",
+      "telegramEnrollBody": "On the member's phone — pass links and renewal reminders arrive there.",
       "telegramEnrollSkip": "You can also link later from their check-in pass.",
       "telegramEnrollLater": "Maybe later",
       "telegramLinkedHint": "Pass links and renewal reminders will arrive on Telegram.",

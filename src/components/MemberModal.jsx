@@ -1,6 +1,6 @@
 // src/components/MemberModal.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { X, Upload, User, ArrowLeft, Check, Camera, AlertTriangle } from 'lucide-react';
+import { X, Upload, User, ArrowLeft, Check, Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
@@ -420,8 +420,6 @@ export default function MemberModal({
             skipPayment: false,
             amount: parsedAmount,
             method,
-            smsSent: result?.sms_sent,
-            smsError: result?.sms_error || '',
           });
           setEnrollStep(1);
           setEnrollMaxStep(1);
@@ -448,8 +446,6 @@ export default function MemberModal({
             ...doneSummary,
             memberId: result?.member?.id ?? null,
             skipPayment: true,
-            smsSent: result?.sms_sent,
-            smsError: result?.sms_error || '',
           });
           setEnrollStep(1);
           setEnrollMaxStep(1);
@@ -1264,21 +1260,6 @@ export default function MemberModal({
                   : t('modals.member.successPaid')}
               </p>
 
-              {enrollDone.phone && enrollDone.smsSent === false ? (
-                <p className="mt-4 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-amber-700 dark:text-amber-400">
-                  <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden />
-                  {t('modals.member.smsFailedTitle')}
-                </p>
-              ) : null}
-              {enrollDone.phone && enrollDone.smsSent === true ? (
-                <p className="mt-4 inline-flex items-center justify-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                  <span className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-full border border-emerald-600/40 bg-emerald-500/15 dark:border-emerald-400/45 dark:bg-emerald-400/15">
-                    <Check className="h-3.5 w-3.5" strokeWidth={2.75} aria-hidden />
-                  </span>
-                  {t('modals.member.smsSentTitle')}
-                </p>
-              ) : null}
-
               {(enrollDone.phone ||
                 enrollDone.branchName ||
                 enrollDone.planName ||
@@ -1362,7 +1343,7 @@ export default function MemberModal({
                 <Button type="button" onClick={startAnotherEnroll} className="w-full sm:w-auto">
                   {t('modals.member.enrollAnother')}
                 </Button>
-                <Button type="button" variant="outline" onClick={onClose} className="w-full sm:w-auto">
+                <Button type="button" variant="outline" onClick={onClose} className="w-full border-app-border-subtle text-app-muted sm:w-auto">
                   {t('modals.member.viewMembers')}
                 </Button>
               </div>

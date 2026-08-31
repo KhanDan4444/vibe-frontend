@@ -5,6 +5,9 @@ import { parseApiResponse, formatApiError } from '../utils/api';
 import { mapMemberFromApi } from '../utils/apiMappers';
 import { createMemberTelegramLink, getMember } from '../services/memberService';
 
+const panelClass =
+  'mt-6 w-full rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-4 dark:border-sky-400/30 dark:bg-sky-500/[0.12]';
+
 /**
  * Optional Telegram link step on enroll success — member scans on their phone.
  */
@@ -91,13 +94,10 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
 
   if (linked) {
     return (
-      <div className="mt-6 w-full rounded-xl border border-sky-500/25 bg-sky-500/10 px-4 py-3 text-center">
+      <div className={`${panelClass} text-center`}>
         <p className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-sky-700 dark:text-sky-300">
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400" aria-hidden />
           {t('pages.checkIn.telegramLinked')}
-        </p>
-        <p className="mt-1 text-xs leading-relaxed text-sky-800/80 dark:text-sky-200/80">
-          {t('modals.member.telegramLinkedHint')}
         </p>
       </div>
     );
@@ -105,37 +105,29 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
 
   if (!open) {
     return (
-      <div className="mt-6 w-full rounded-xl border border-sky-500/20 bg-sky-500/5 px-4 py-4 text-center">
-        <p className="text-sm font-semibold text-app-text-strong">{t('modals.member.telegramEnrollTitle')}</p>
-        <p className="mt-1.5 text-xs leading-relaxed text-app-muted">{t('modals.member.telegramEnrollBody')}</p>
-        <Button
+      <div className={panelClass}>
+        <button
           type="button"
-          variant="secondary"
-          size="sm"
-          className="mt-3 w-full border-sky-500/30 text-sky-700 hover:border-sky-500/50 dark:text-sky-300"
+          className="w-full rounded-lg bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-sky-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 dark:bg-sky-500 dark:hover:bg-sky-400"
           onClick={handleOpen}
         >
           {t('pages.checkIn.telegramLink')}
-        </Button>
-        <p className="mt-2 text-[11px] text-app-muted">{t('modals.member.telegramEnrollSkip')}</p>
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="mt-6 w-full rounded-xl border border-sky-500/20 bg-sky-500/5 px-4 py-4">
+    <div className={panelClass}>
       <button
         type="button"
-        className="mb-3 text-xs font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
+        className="mb-3 text-xs font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-300 dark:hover:text-sky-200"
         onClick={() => setOpen(false)}
       >
         ← {t('modals.member.telegramEnrollLater')}
       </button>
       <p className="text-center text-sm font-medium text-app-text-strong">
         {t('pages.checkIn.telegramLinkDeskTitle')}
-      </p>
-      <p className="mt-1 text-center text-xs leading-relaxed text-app-muted">
-        {t('pages.checkIn.telegramLinkDeskHint')}
       </p>
 
       {error ? (
