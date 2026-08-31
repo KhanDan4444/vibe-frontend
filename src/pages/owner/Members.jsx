@@ -818,7 +818,7 @@ export default function Members() {
             return (
               <div
                 key={member.id}
-                className={`${cardSurface} p-4 ${memberAttentionRowClass(member)}`}
+                className={`${cardSurface} p-4 ${memberAttentionRowClass(member, '', statusFilter)}`}
               >
                 <button
                   type="button"
@@ -951,7 +951,7 @@ export default function Members() {
                     <tr
                       key={member.id}
                       onClick={() => openMemberRow(member)}
-                      className={`cursor-pointer transition-colors ${memberAttentionRowClass(member, tableRowHover)}`}
+                      className={`cursor-pointer transition-colors ${memberAttentionRowClass(member, tableRowHover, statusFilter)}`}
                     >
                       <td>
                         <div className="flex items-center gap-3 min-w-0">

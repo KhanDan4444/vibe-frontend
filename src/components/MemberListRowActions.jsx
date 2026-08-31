@@ -120,10 +120,14 @@ export default function MemberListRowActions({
   );
 }
 
-/** Row tint + left edge for expired / due soon. */
-export function memberAttentionRowClass(member, idleHoverClass = '') {
+/** Row tint + left edge — only when that status filter chip is active. */
+export function memberAttentionRowClass(member, idleHoverClass = '', statusFilter = null) {
   if (member.deletedAt) return idleHoverClass;
-  if (member.status === DISPLAY_STATUS.EXPIRED) return 'admin-row-expired';
-  if (member.status === DISPLAY_STATUS.DUE_SOON) return 'admin-row-due-soon';
+  if (statusFilter === DISPLAY_STATUS.EXPIRED && member.status === DISPLAY_STATUS.EXPIRED) {
+    return 'admin-row-expired';
+  }
+  if (statusFilter === DISPLAY_STATUS.DUE_SOON && member.status === DISPLAY_STATUS.DUE_SOON) {
+    return 'admin-row-due-soon';
+  }
   return idleHoverClass;
 }
