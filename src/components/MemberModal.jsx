@@ -36,6 +36,7 @@ import PageHeader from './PageHeader';
 import SearchableSelect from './ui/SearchableSelect';
 import RequiredMark from './ui/RequiredMark';
 import EnrollStepProgress from './EnrollStepProgress';
+import EnrollTelegramPrompt from './EnrollTelegramPrompt';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalHeader, modalFooter, modalStepFooter, modalFieldLabel } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
@@ -415,6 +416,7 @@ export default function MemberModal({
         if (variant === 'page') {
           setEnrollDone({
             ...doneSummary,
+            memberId: result?.member?.id ?? null,
             skipPayment: false,
             amount: parsedAmount,
             method,
@@ -444,6 +446,7 @@ export default function MemberModal({
         if (variant === 'page') {
           setEnrollDone({
             ...doneSummary,
+            memberId: result?.member?.id ?? null,
             skipPayment: true,
             smsSent: result?.sms_sent,
             smsError: result?.sms_error || '',
@@ -1346,6 +1349,14 @@ export default function MemberModal({
                   ) : null}
                 </dl>
               )}
+
+              {enrollDone.memberId ? (
+                <EnrollTelegramPrompt
+                  apiFetch={apiFetch}
+                  memberId={enrollDone.memberId}
+                  memberName={enrollDone.name}
+                />
+              ) : null}
 
               <div className="mt-7 flex w-full flex-col gap-2 sm:flex-row sm:justify-center">
                 <Button type="button" onClick={startAnotherEnroll} className="w-full sm:w-auto">
