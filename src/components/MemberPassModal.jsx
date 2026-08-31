@@ -429,10 +429,10 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               )}
             </>
           ) : (
-            <div className="mt-5 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-5">
+            <div className="mt-5 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-5 text-left">
               <button
                 type="button"
-                className={`mb-4 text-xs ${brandLinkClass}`}
+                className={`mb-4 inline-flex text-xs ${brandLinkClass}`}
                 onClick={() => {
                   setShowTelegramSetup(false);
                   setTelegramSetupFromSendPass(false);
@@ -483,14 +483,16 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                       })}
                     </p>
                   ) : null}
-                  <button
-                    type="button"
-                    className={`mt-3 w-full text-center text-xs ${brandLinkClass}`}
-                    onClick={() => void handleTelegramLink()}
-                    disabled={telegramLinking}
-                  >
-                    {t('pages.checkIn.telegramLinkRefresh')}
-                  </button>
+                  <div className="mt-3 text-center">
+                    <button
+                      type="button"
+                      className={`inline-flex text-xs ${brandLinkClass}`}
+                      onClick={() => void handleTelegramLink()}
+                      disabled={telegramLinking}
+                    >
+                      {t('pages.checkIn.telegramLinkRefresh')}
+                    </button>
+                  </div>
                 </>
               ) : null}
             </div>

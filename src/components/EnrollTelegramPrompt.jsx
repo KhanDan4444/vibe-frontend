@@ -5,8 +5,7 @@ import { parseApiResponse, formatApiError } from '../utils/api';
 import { mapMemberFromApi } from '../utils/apiMappers';
 import { createMemberTelegramLink, getMember } from '../services/memberService';
 
-const panelClass =
-  'mt-6 w-full rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-4 dark:border-sky-400/30 dark:bg-sky-500/[0.12]';
+const panelClass = 'mt-6 w-full';
 
 const brandLinkClass =
   'font-semibold text-[#0f766e] hover:text-[#0d9488] dark:text-teal-400 dark:hover:text-teal-300';
@@ -121,10 +120,10 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
   }
 
   return (
-    <div className={panelClass}>
+    <div className={`${panelClass} w-full self-stretch text-left`}>
       <button
         type="button"
-        className={`mb-3 text-xs ${brandLinkClass}`}
+        className={`mb-3 inline-flex text-xs ${brandLinkClass}`}
         onClick={() => setOpen(false)}
       >
         ← {t('modals.member.telegramEnrollLater')}
@@ -162,14 +161,16 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
               })}
             </p>
           ) : null}
-          <button
-            type="button"
-            className={`mt-3 w-full text-center text-xs ${brandLinkClass}`}
-            onClick={() => void loadLink()}
-            disabled={linking}
-          >
-            {linking ? t('common.processing') : t('pages.checkIn.telegramLinkRefresh')}
-          </button>
+          <div className="mt-3 text-center">
+            <button
+              type="button"
+              className={`inline-flex text-xs ${brandLinkClass}`}
+              onClick={() => void loadLink()}
+              disabled={linking}
+            >
+              {linking ? t('common.processing') : t('pages.checkIn.telegramLinkRefresh')}
+            </button>
+          </div>
         </>
       ) : null}
     </div>
