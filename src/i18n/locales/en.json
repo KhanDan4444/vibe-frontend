@@ -973,6 +973,7 @@
       "telegramLinkThenSendPass": "Link Telegram on the member's phone — we'll send the pass link automatically.",
       "telegramLink": "Link Telegram",
       "telegramLinked": "Linked on Telegram",
+      "telegramUnlinked": "Unlinked from Telegram",
       "telegramLinkDeskTitle": "Member scans to link Telegram",
       "telegramLinkDeskHint": "Show this QR or link on the member's phone — not staff Telegram. They tap Start in the bot.",
       "telegramLinkQrAlt": "Telegram link QR for {{name}}",

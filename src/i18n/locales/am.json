@@ -1374,6 +1374,7 @@
       "telegramLinkThenSendPass": "በአባሉ ስልክ ላይ ቴሌግራም ያገናኙ — ከተገናኘ በኋላ የፓስ አገናኙን በራስ-ሰር እንልካለን።",
       "telegramLink": "ቴሌግራም አገናኝ",
       "telegramLinked": "በቴሌግራም ተገናኝቷል",
+      "telegramUnlinked": "ከቴሌግራም ተለያይቷል",
       "telegramLinkCopied": "የቴሌግራም አገናኝ ተنسخ። በአባሉ ስልክ ይክፈቱ።",
       "telegramLinkFailed": "የቴሌግራም አገናኝ መፍጠር አልተቻለም።"
     },

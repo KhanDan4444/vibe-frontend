@@ -39,6 +39,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const [telegramSetupFromSendPass, setTelegramSetupFromSendPass] = useState(false);
   const onMemberUpdatedRef = useRef(onMemberUpdated);
   const telegramSetupFromSendPassRef = useRef(false);
+  const telegramLinkedRef = useRef(false);
   onMemberUpdatedRef.current = onMemberUpdated;
   telegramSetupFromSendPassRef.current = telegramSetupFromSendPass;
 
@@ -86,6 +87,16 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
     [onFlash, sendPassLink, t]
   );
 
+  const handleTelegramUnlinked = useCallback(() => {
+    setTelegramLink(null);
+    setShowTelegramSetup(false);
+    setTelegramSetupFromSendPass(false);
+    onFlash?.({
+      title: t('pages.checkIn.telegramUnlinked'),
+      variant: 'success',
+    });
+  }, [onFlash, t]);
+
   const refreshMember = useCallback(async () => {
     if (!member?.id) return null;
     try {
@@ -112,6 +123,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   }, [member]);
 
   const telegramLinked = Boolean(liveMember?.telegramChatId);
+  telegramLinkedRef.current = telegramLinked;
   const canSendPass = telegramLinked;
 
   const loadPass = useCallback(async () => {
@@ -167,16 +179,20 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   }, [open, member?.id, apiFetch, t]);
 
   useEffect(() => {
-    if (!open || telegramLinked || !telegramLink) return undefined;
+    if (!open || (!telegramLinked && !telegramLink)) return undefined;
     const timer = setInterval(() => {
       void refreshMember().then((mapped) => {
-        if (mapped?.telegramChatId) {
+        const wasLinked = telegramLinkedRef.current;
+        const nowLinked = Boolean(mapped?.telegramChatId);
+        if (!wasLinked && nowLinked) {
           void handleTelegramLinked(telegramSetupFromSendPassRef.current);
+        } else if (wasLinked && !nowLinked) {
+          handleTelegramUnlinked();
         }
       });
     }, 5000);
     return () => clearInterval(timer);
-  }, [open, telegramLinked, telegramLink, refreshMember, handleTelegramLinked]);
+  }, [open, telegramLinked, telegramLink, refreshMember, handleTelegramLinked, handleTelegramUnlinked]);
 
   const handleRegenerate = async () => {
     if (!member?.id || regenerating) return;

@@ -959,6 +959,7 @@
       "telegramLinkThenSendPass": "Bilbila miseensaa irratti Telegram wal qabsiisi — erga wal qabsiifamee booda liinkii paasii ofumaan ni ergina.",
       "telegramLink": "Telegram wal qabsiisi",
       "telegramLinked": "Telegram irratti wal qabsiifameera",
+      "telegramUnlinked": "Telegram irraa addaan citeera",
       "telegramLinkCopied": "Liinkii Telegram waraabameera. Bilbila miseensaa irratti bani.",
       "telegramLinkFailed": "Liinkii Telegram uumuu hin dandeenye."
     },
