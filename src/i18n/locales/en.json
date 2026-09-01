@@ -958,10 +958,20 @@
       "smsPassHint": "Enroll and renew messages include the pass link when Telegram is linked.",
       "memberPassQrAlt": "Check-in QR for {{name}}",
       "stationAction": "Gym QR",
-      "stationTitle": "Self check-in poster",
-      "stationBody": "Print this QR at the entrance. Members scan it to check in with Telegram — no desk needed.",
+      "stationTitle": "Gym QR",
+      "stationBody": "Download and print this poster at your entrance. Members scan to check in with Telegram.",
       "stationBranch": "Branch",
       "stationQrAlt": "Gym check-in QR",
+      "stationPosterTitle": "Check in here",
+      "stationStep1": "Scan this QR with your phone",
+      "stationStep2": "Enter the phone number on your membership",
+      "stationStep3": "Verify with Telegram — you're checked in",
+      "stationDownloadPoster": "Download poster",
+      "stationCopyLink": "Copy link",
+      "stationTestScan": "Test scan",
+      "stationLinkCopied": "Check-in link copied",
+      "stationLinkCopyFailed": "Could not copy link",
+      "stationDownloadFailed": "Could not download poster",
       "stationRegenerate": "Regenerate QR",
       "stationRegenTitle": "Regenerate gym QR?",
       "stationRegenMessage": "The old poster will stop working. Print and replace the QR at this branch.",
@@ -1957,6 +1967,14 @@
     "memberPassPrinted": {
       "title": "QR downloaded",
       "subtitle": "PDF saved for {{name}}."
+    },
+    "gymQrPosterDownloaded": {
+      "title": "Poster downloaded",
+      "subtitle": "Print and place at {{branch}}."
+    },
+    "gymQrRegenerated": {
+      "title": "Gym QR regenerated",
+      "subtitle": "Replace the poster at {{branch}} — old codes no longer work."
     },
     "memberPassSmsSent": {
       "title": "Pass link sent",

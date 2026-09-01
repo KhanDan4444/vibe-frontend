@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw } from 'lucide-react';
+import { Copy, Download, ExternalLink, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import ConfirmDialog from './ConfirmDialog';
@@ -10,7 +10,7 @@ import { parseApiResponse } from '../utils/api';
 import { getBranchStationPass, regenerateBranchStationPass } from '../services/branchService';
 
 /**
- * Owner/staff modal — branch gym QR for member self check-in poster.
+ * Owner/staff modal — branch gym QR poster for member self check-in.
  */
 export default function StationQrModal({
   open,
@@ -20,11 +20,14 @@ export default function StationQrModal({
   initialBranchId = null,
   canRegenerate = false,
   selfCheckInEnabled = false,
+  onFlash,
 }) {
   const { t } = useTranslation();
   const [branchId, setBranchId] = useState(initialBranchId);
   const [loading, setLoading] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [copying, setCopying] = useState(false);
   const [confirmRegen, setConfirmRegen] = useState(false);
   const [error, setError] = useState('');
   const [payload, setPayload] = useState(null);
@@ -85,6 +88,11 @@ export default function StationQrModal({
       if (!res.ok) throw new Error(data.error || t('pages.checkIn.stationRegenFailed'));
       setPayload(data);
       setConfirmRegen(false);
+      onFlash?.({
+        title: t('flash.gymQrRegenerated.title'),
+        subtitle: t('flash.gymQrRegenerated.subtitle', { branch: data.branch_name || '' }),
+        variant: 'success',
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -92,33 +100,102 @@ export default function StationQrModal({
     }
   };
 
+  const handleDownload = async () => {
+    if (!payload?.qr_data_url || downloading) return;
+    setDownloading(true);
+    try {
+      const { downloadGymQrPosterPdf } = await import('../utils/printGymQrPoster');
+      await downloadGymQrPosterPdf({
+        gymName: payload.gym_name,
+        branchName: payload.branch_name,
+        qrDataUrl: payload.qr_data_url,
+        labels: {
+          posterTitle: t('pages.checkIn.stationPosterTitle'),
+          step1: t('pages.checkIn.stationStep1'),
+          step2: t('pages.checkIn.stationStep2'),
+          step3: t('pages.checkIn.stationStep3'),
+        },
+      });
+      onFlash?.({
+        title: t('flash.gymQrPosterDownloaded.title'),
+        subtitle: t('flash.gymQrPosterDownloaded.subtitle', {
+          branch: payload.branch_name || payload.gym_name || '',
+        }),
+        variant: 'success',
+      });
+    } catch (err) {
+      onFlash?.({
+        title: err.message || t('pages.checkIn.stationDownloadFailed'),
+        variant: 'danger',
+      });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!payload?.check_in_url || copying) return;
+    setCopying(true);
+    try {
+      await navigator.clipboard.writeText(payload.check_in_url);
+      onFlash?.({
+        title: t('pages.checkIn.stationLinkCopied'),
+        variant: 'success',
+      });
+    } catch {
+      onFlash?.({
+        title: t('pages.checkIn.stationLinkCopyFailed'),
+        variant: 'danger',
+      });
+    } finally {
+      setCopying(false);
+    }
+  };
+
+  const handleTestScan = () => {
+    if (!payload?.check_in_url) return;
+    window.open(payload.check_in_url, '_blank', 'noopener,noreferrer');
+  };
+
   const showBranchPicker = activeBranches.length > 1;
+  const busy = loading || regenerating || downloading || copying;
+  const gymName = payload?.gym_name;
+  const branchName = payload?.branch_name;
 
   return (
     <>
-      <ResponsiveModal open={open} onClose={onClose} size="md" labelledBy="station-qr-title">
+      <ResponsiveModal open={open} onClose={onClose} size="lg" labelledBy="station-qr-title">
         <div className={modalBody}>
-          <h3 id="station-qr-title" className={modalTitle}>
-            {t('pages.checkIn.stationTitle')}
-          </h3>
-          <p className={`mt-1 text-sm ${mutedText}`}>{t('pages.checkIn.stationBody')}</p>
+          <div className="flex items-start gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]">
+              <QrCode className="h-5 w-5" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h3 id="station-qr-title" className={modalTitle}>
+                {t('pages.checkIn.stationAction')}
+              </h3>
+              <p className={`mt-1 text-sm leading-relaxed ${mutedText}`}>
+                {t('pages.checkIn.stationBody')}
+              </p>
+            </div>
+          </div>
 
           {!selfCheckInEnabled ? (
-            <p className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-200">
+            <p className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2.5 text-sm text-amber-800 dark:text-amber-200">
               {t('pages.checkIn.stationDisabledHint')}
             </p>
           ) : null}
 
           {showBranchPicker ? (
             <label className="mt-4 block">
-              <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-app-muted">
+              <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-app-muted">
                 {t('pages.checkIn.stationBranch')}
               </span>
               <select
-                className="auth-field w-full"
+                className="auth-field w-full max-w-xs"
                 value={resolvedBranchId ?? ''}
                 onChange={(e) => setBranchId(Number(e.target.value))}
-                disabled={loading || regenerating}
+                disabled={busy}
               >
                 {activeBranches.map((b) => (
                   <option key={b.id} value={b.id}>
@@ -127,36 +204,121 @@ export default function StationQrModal({
                 ))}
               </select>
             </label>
-          ) : payload?.branch_name ? (
-            <p className="mt-3 text-sm font-medium text-app-text-strong">{payload.branch_name}</p>
           ) : null}
 
           {error ? (
-            <p className="mt-3 text-sm text-rose-500">{error}</p>
-          ) : loading ? (
-            <div className="mx-auto mt-6 h-64 w-64 animate-pulse rounded-2xl bg-app-border/40" />
-          ) : payload?.qr_data_url ? (
-            <div className="mt-5 flex flex-col items-center">
-              <img
-                src={payload.qr_data_url}
-                alt={t('pages.checkIn.stationQrAlt')}
-                className="h-[min(280px,70vw)] w-[min(280px,70vw)] rounded-2xl bg-white p-3 shadow-sm"
-              />
-              <p className="mt-3 break-all text-center font-mono text-xs text-app-muted">
-                {payload.check_in_url}
-              </p>
+            <div className="ui-alert-rose mt-4">
+              <p className="text-sm">{error}</p>
+              <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={() => void loadPass()}>
+                {t('common.retry')}
+              </Button>
             </div>
           ) : null}
+
+          <div className="mt-5 overflow-hidden rounded-[1.25rem] border border-app-border-subtle bg-app-bg/50 shadow-sm">
+            <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
+            <div className="flex flex-col items-center px-5 py-6 sm:px-8 sm:py-7">
+              {loading ? (
+                <div className="h-[220px] w-[220px] animate-pulse rounded-2xl bg-app-border/60" />
+              ) : (
+                <>
+                  {gymName ? (
+                    <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--color-brand-text)]">
+                      {gymName}
+                    </p>
+                  ) : null}
+                  {branchName ? (
+                    <p className="mt-1.5 text-center text-sm font-medium text-app-muted">{branchName}</p>
+                  ) : null}
+                  <p className="mt-3 text-center font-display text-lg font-semibold tracking-tight text-app-text-strong">
+                    {t('pages.checkIn.stationPosterTitle')}
+                  </p>
+
+                  {payload?.qr_data_url ? (
+                    <img
+                      src={payload.qr_data_url}
+                      alt={t('pages.checkIn.stationQrAlt')}
+                      className="mt-5 h-[min(220px,56vw)] w-[min(220px,56vw)] rounded-2xl bg-white p-3 shadow-md ring-1 ring-black/5"
+                    />
+                  ) : (
+                    <div className="mt-5 flex h-[220px] w-[220px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+                      —
+                    </div>
+                  )}
+
+                  <ol className="mt-6 w-full max-w-sm space-y-2 text-left text-sm text-app-muted">
+                    <li className="flex gap-2.5">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-brand-soft)] text-xs font-bold text-[color:var(--color-brand-text)]">
+                        1
+                      </span>
+                      <span className="pt-0.5 leading-snug">{t('pages.checkIn.stationStep1')}</span>
+                    </li>
+                    <li className="flex gap-2.5">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-brand-soft)] text-xs font-bold text-[color:var(--color-brand-text)]">
+                        2
+                      </span>
+                      <span className="pt-0.5 leading-snug">{t('pages.checkIn.stationStep2')}</span>
+                    </li>
+                    <li className="flex gap-2.5">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-brand-soft)] text-xs font-bold text-[color:var(--color-brand-text)]">
+                        3
+                      </span>
+                      <span className="pt-0.5 leading-snug">{t('pages.checkIn.stationStep3')}</span>
+                    </li>
+                  </ol>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy || !payload?.qr_data_url}
+              loading={downloading}
+              onClick={() => void handleDownload()}
+              className="w-full"
+            >
+              {!downloading ? <Download className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {t('pages.checkIn.stationDownloadPoster')}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy || !payload?.check_in_url}
+              loading={copying}
+              onClick={() => void handleCopyLink()}
+              className="w-full"
+            >
+              {!copying ? <Copy className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
+              {t('pages.checkIn.stationCopyLink')}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={busy || !payload?.check_in_url}
+              onClick={handleTestScan}
+              className="w-full"
+            >
+              <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              {t('pages.checkIn.stationTestScan')}
+            </Button>
+          </div>
         </div>
 
         <div className={modalFooter}>
           {canRegenerate ? (
             <Button
               type="button"
-              variant="secondary"
+              variant="ghost"
               size="sm"
-              disabled={!resolvedBranchId || loading || regenerating}
+              disabled={!resolvedBranchId || busy}
               onClick={() => setConfirmRegen(true)}
+              className="text-app-muted"
             >
               <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
               {t('pages.checkIn.stationRegenerate')}

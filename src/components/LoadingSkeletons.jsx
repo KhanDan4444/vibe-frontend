@@ -76,6 +76,32 @@ export function MemberDrawerVisitCardSkeleton() {
   );
 }
 
+/** Check-in visit rules: weekly cap chips + self check-in row */
+export function CheckInVisitRulesSkeleton() {
+  return (
+    <div className="space-y-4" role="status" aria-label="Loading">
+      <div>
+        <div className="app-skeleton h-3 w-24" />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="app-skeleton h-9 w-[6.5rem] rounded-full" />
+          ))}
+        </div>
+      </div>
+      <div className="h-px bg-app-border-subtle" aria-hidden />
+      <div className="flex items-start gap-4">
+        <div className="app-skeleton h-11 w-11 shrink-0 rounded-2xl" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="app-skeleton h-4 w-28" />
+          <div className="app-skeleton h-3 w-full max-w-xs" />
+          <div className="app-skeleton h-3 w-32" />
+        </div>
+        <div className="app-skeleton mt-0.5 h-8 w-[3.25rem] shrink-0 rounded-full" />
+      </div>
+    </div>
+  );
+}
+
 /** Check-in today list: photo | name | time */
 export function CheckInTodaySkeleton({ rows = 3 }) {
   return (

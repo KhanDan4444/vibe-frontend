@@ -944,10 +944,20 @@
       "smsPassHint": "Telegram yoo wal qabsiifame liinkin paasii ergaa galmeessuu fi haaromsuu keessatti ni jira.",
       "memberPassQrAlt": "QR galchuu {{name}}",
       "stationAction": "QR jiimii",
-      "stationTitle": "Poosteran ofiin galchuu",
-      "stationBody": "QR kana balbala irratti maxxansi. Miseensonni Telegramn mirkaneessanii osoo desk hin taane galchu.",
+      "stationTitle": "QR jiimii",
+      "stationBody": "Balbala irratti maxxansi. Miseensonni Telegramn galchuuf scan godhu.",
       "stationBranch": "Damee",
       "stationQrAlt": "QR galchuu jiimii",
+      "stationPosterTitle": "Asitti galchi",
+      "stationStep1": "QR kana bilbila keetiin scan godhi",
+      "stationStep2": "Lakkoofsa bilbila miseensummaa kee galchi",
+      "stationStep3": "Telegramn mirkaneessi — galchamee jirta",
+      "stationDownloadPoster": "Poosteran buusi",
+      "stationCopyLink": "Liinkii waraabi",
+      "stationTestScan": "Scan qoradhu",
+      "stationLinkCopied": "Liinkin galchuu waraabameera",
+      "stationLinkCopyFailed": "Liinkii waraabuu hin dandeenye",
+      "stationDownloadFailed": "Poosteran buusuu hin dandeenye",
       "stationRegenerate": "QR haaromsii",
       "stationRegenTitle": "QR jiimii haaromsuu?",
       "stationRegenMessage": "Poosteran durii hojjachuu dhaaba. QR haaraa maxxansi.",
@@ -1943,6 +1953,14 @@
     "memberPassPrinted": {
       "title": "QR buufameera",
       "subtitle": "PDF {{name}} qabameera."
+    },
+    "gymQrPosterDownloaded": {
+      "title": "Poosteran buufameera",
+      "subtitle": "{{branch}} irratti maxxansi."
+    },
+    "gymQrRegenerated": {
+      "title": "QR jiimii haaromfameera",
+      "subtitle": "Poosteran {{branch}} irratti jijjiiri — koodii durii hin hojjetu."
     },
     "memberPassRegenerated": {
       "title": "QR haaromfameera",

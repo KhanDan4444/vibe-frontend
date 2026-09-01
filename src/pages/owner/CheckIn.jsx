@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle2, History, QrCode, ScanLine, Settings2, UserRound } from 'lucide-react';
@@ -29,6 +29,7 @@ import StationQrModal from '../../components/StationQrModal';
 import {
   CheckInSearchSkeleton,
   CheckInTodaySkeleton,
+  CheckInVisitRulesSkeleton,
 } from '../../components/LoadingSkeletons';
 import AttendanceHistoryModal from '../../components/AttendanceHistoryModal';
 import { flashFromKey } from '../../i18n/flashToast';
@@ -65,6 +66,8 @@ export default function CheckIn() {
   const [debounced, setDebounced] = useState('');
   const [results, setResults] = useState([]);
   const [settings, setSettings] = useState(null);
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [visitRulesLoading, setVisitRulesLoading] = useState(false);
   const [canManage, setCanManage] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
@@ -85,6 +88,8 @@ export default function CheckIn() {
   const [cardErrors, setCardErrors] = useState({});
   /** @type {Record<number, boolean>} */
   const [successIds, setSuccessIds] = useState({});
+  const visitRulesPanelRef = useRef(null);
+  const visitRulesTriggerRef = useRef(null);
 
   useEffect(() => {
     const { q, memberId } = location.state || {};
@@ -108,7 +113,12 @@ export default function CheckIn() {
     setSuccessIds({});
   }, [debounced]);
 
-  const loadSettings = useCallback(async () => {
+  const loadSettings = useCallback(async ({ forVisitRules = false } = {}) => {
+    if (forVisitRules) {
+      setVisitRulesLoading(true);
+    } else {
+      setSettingsLoading(true);
+    }
     try {
       const res = await getAttendanceSettings(apiFetch);
       const data = await parseApiResponse(res);
@@ -118,8 +128,42 @@ export default function CheckIn() {
       }
     } catch {
       /* non-blocking */
+    } finally {
+      if (forVisitRules) {
+        setVisitRulesLoading(false);
+      } else {
+        setSettingsLoading(false);
+      }
     }
   }, [apiFetch]);
+
+  useEffect(() => {
+    if (!settingsOpen || !owner || !canManage) return;
+    void loadSettings({ forVisitRules: true });
+  }, [settingsOpen, owner, canManage, loadSettings]);
+
+  useEffect(() => {
+    if (!settingsOpen) return undefined;
+
+    const closeIfOutside = (event) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (visitRulesPanelRef.current?.contains(target)) return;
+      if (visitRulesTriggerRef.current?.contains(target)) return;
+      setSettingsOpen(false);
+    };
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') setSettingsOpen(false);
+    };
+
+    document.addEventListener('mousedown', closeIfOutside);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', closeIfOutside);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [settingsOpen]);
 
   const loadToday = useCallback(async () => {
     setTodayLoading(true);
@@ -212,11 +256,13 @@ export default function CheckIn() {
   }, [apiFetch, debounced, getBranchQueryParams, t, searchNonce]);
 
   const capChipLabel = useMemo(() => {
-    if (!settings) return null;
+    if (settingsLoading || !settings) return null;
     return t('pages.checkIn.capChipDays', {
       count: effectiveVisitsPerWeek(settings.visits_per_week),
     });
-  }, [settings, t]);
+  }, [settings, settingsLoading, t]);
+
+  const visitRulesBusy = visitRulesLoading || savingSettings;
 
   const alreadyTodayIds = useMemo(
     () => new Set(todayRows.map((row) => row.member_id)),
@@ -482,23 +528,29 @@ export default function CheckIn() {
               </Button>
             ) : null}
             {owner && canManage ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                aria-expanded={settingsOpen}
-                onClick={() => setSettingsOpen((o) => !o)}
-              >
-                <Settings2 className="h-4 w-4" />
-                {t('pages.checkIn.visitRules')}
-              </Button>
+              <span ref={visitRulesTriggerRef} className="inline-flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  aria-expanded={settingsOpen}
+                  disabled={visitRulesLoading && settingsOpen}
+                  onClick={() => setSettingsOpen((o) => !o)}
+                >
+                  <Settings2 className={`h-4 w-4 ${visitRulesLoading && settingsOpen ? 'animate-pulse' : ''}`} />
+                  {t('pages.checkIn.visitRules')}
+                </Button>
+              </span>
             ) : null}
           </div>
         }
       />
 
       {settingsOpen && owner && canManage ? (
-        <Card className="overflow-hidden border-[color:var(--color-brand)]/20 shadow-sm">
+        <Card
+          ref={visitRulesPanelRef}
+          className="overflow-hidden border-[color:var(--color-brand)]/20 shadow-sm"
+        >
           <div className="flex items-start justify-between gap-3 border-b border-app-border-subtle px-4 py-4 sm:px-5">
             <div>
               <h2 className={panelTitle}>{t('pages.checkIn.visitRulesTitle')}</h2>
@@ -514,6 +566,10 @@ export default function CheckIn() {
           </div>
 
           <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
+            {visitRulesBusy ? (
+              <CheckInVisitRulesSkeleton />
+            ) : (
+              <>
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-app-muted">
                 {t('pages.checkIn.visitRulesWeeklyLabel')}
@@ -600,6 +656,8 @@ export default function CheckIn() {
                 </span>
               </button>
             </div>
+              </>
+            )}
           </div>
         </Card>
       ) : null}
@@ -639,7 +697,12 @@ export default function CheckIn() {
               <p className="font-display text-xl font-semibold uppercase tracking-wide text-app-text-strong sm:text-2xl">
                 {t('pages.checkIn.deskLabel')}
               </p>
-              {capChipLabel ? (
+              {settingsLoading ? (
+                <span
+                  className="app-skeleton inline-block h-6 w-[5.75rem] rounded-full"
+                  aria-hidden
+                />
+              ) : capChipLabel ? (
                 <button
                   type="button"
                   disabled={!owner || !canManage || readOnly}
@@ -916,6 +979,7 @@ export default function CheckIn() {
         initialBranchId={stationBranchId}
         canRegenerate={owner && canManage}
         selfCheckInEnabled={Boolean(settings?.station_self_checkin)}
+        onFlash={showFlash}
       />
     </div>
   );

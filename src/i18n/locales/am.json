@@ -1364,10 +1364,20 @@
       "smsPassHint": "ቴሌግራም ከተገናኘ በኋላ የፓስ አገናኝ በምዝገባና ማደስ መልእክት ይካተታል።",
       "memberPassQrAlt": "የ{{name}} የመግቢያ QR",
       "stationAction": "የጂም QR",
-      "stationTitle": "ራስ-ሰር መግቢያ ፖስተር",
-      "stationBody": "ይህን QR በመግቢያ ያትሙ። አባላት በቴሌግራም ያረጋግጥተው ያለ ዴስክ ይገባሉ።",
+      "stationTitle": "የጂም QR",
+      "stationBody": "በመግቢያዎ ያትሙ። አባላት በቴሌግራም ለመግቢያ ይስካናሉ።",
       "stationBranch": "ቅርንጫፍ",
       "stationQrAlt": "የጂም መግቢያ QR",
+      "stationPosterTitle": "እዚህ ይግቡ",
+      "stationStep1": "ይህን QR በስልክዎ ይስካኑ",
+      "stationStep2": "በአባልነትዎ ላይ ያለውን ስልክ ያስገቡ",
+      "stationStep3": "በቴሌግራም ያረጋግጡ — ተመዝግበዋል",
+      "stationDownloadPoster": "ፖስተር አውርድ",
+      "stationCopyLink": "አገናኝ ቅዳ",
+      "stationTestScan": "ስካን ይሞክሩ",
+      "stationLinkCopied": "የመግቢያ አገናኝ ተنسخ",
+      "stationLinkCopyFailed": "አገናኝ መቅዳት አልተቻለም",
+      "stationDownloadFailed": "ፖስተር ማውረድ አልተቻለም",
       "stationRegenerate": "QR እንደገና ፍጠር",
       "stationRegenTitle": "የጂም QR እንደገና ይፈጠር?",
       "stationRegenMessage": "የድሮው ፖስተር አይሰራም። አዲሱን QR ያትሙ።",
@@ -1932,6 +1942,14 @@
     "memberPassPrinted": {
       "title": "QR ወርዷል",
       "subtitle": "የ{{name}} PDF ተቀምጧል።"
+    },
+    "gymQrPosterDownloaded": {
+      "title": "ፖስተር ወርዷል",
+      "subtitle": "በ{{branch}} ያትሙ።"
+    },
+    "gymQrRegenerated": {
+      "title": "የጂም QR እንደገና ተፈጥሯል",
+      "subtitle": "በ{{branch}} ፖስተሩን ይተኩ — የድሮ ኮዶች አይሰሩም።"
     },
     "memberPassRegenerated": {
       "title": "QR እንደገና ተፈጥሯል",
