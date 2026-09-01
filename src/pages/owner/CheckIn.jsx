@@ -30,6 +30,7 @@ import {
   CheckInSearchSkeleton,
   CheckInTodaySkeleton,
   CheckInVisitRulesSkeleton,
+  CheckInVisitRulesButtonSkeleton,
 } from '../../components/LoadingSkeletons';
 import AttendanceHistoryModal from '../../components/AttendanceHistoryModal';
 import { flashFromKey } from '../../i18n/flashToast';
@@ -527,7 +528,9 @@ export default function CheckIn() {
                 {t('pages.checkIn.stationAction')}
               </Button>
             ) : null}
-            {owner && canManage ? (
+            {owner && settingsLoading ? (
+              <CheckInVisitRulesButtonSkeleton />
+            ) : owner && canManage ? (
               <span ref={visitRulesTriggerRef} className="inline-flex">
                 <Button
                   type="button"

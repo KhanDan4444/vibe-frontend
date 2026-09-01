@@ -56,7 +56,11 @@ export default function StationCheckInPage() {
       const { res, data } = await fetchStationSession(stationToken);
       if (!res.ok) {
         setStep(STEPS.ERROR);
-        setError(data.error || t('publicStationCheckIn.loadFailed'));
+        if (data.code === 'SELF_CHECKIN_DISABLED') {
+          setError(t('publicStationCheckIn.selfCheckinDisabled'));
+        } else {
+          setError(data.error || t('publicStationCheckIn.loadFailed'));
+        }
         return;
       }
       setSession(data);

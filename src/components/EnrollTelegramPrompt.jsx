@@ -1,6 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useFlash } from '../context/FlashContext';
 import Button from './ui/Button';
 import { parseApiResponse, formatApiError } from '../utils/api';
 import { mapMemberFromApi } from '../utils/apiMappers';
@@ -16,6 +17,7 @@ const brandLinkClass =
  */
 export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName }) {
   const { t } = useTranslation();
+  const { showFlash } = useFlash();
   const [open, setOpen] = useState(false);
   const [linked, setLinked] = useState(false);
   const [linking, setLinking] = useState(false);
@@ -88,8 +90,9 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
     if (!telegramLink?.link) return;
     try {
       await navigator.clipboard.writeText(telegramLink.link);
+      showFlash({ title: t('pages.checkIn.telegramLinkCopied'), variant: 'success' });
     } catch {
-      /* ignore */
+      showFlash({ title: t('pages.checkIn.telegramLinkCopyFailed'), variant: 'danger' });
     }
   };
 
@@ -131,6 +134,9 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
       </button>
       <p className="text-center text-sm font-medium text-app-text-strong">
         {t('pages.checkIn.telegramLinkDeskTitle')}
+      </p>
+      <p className="mt-2 text-center text-xs leading-relaxed text-app-muted">
+        {t('pages.checkIn.telegramLinkDeskHint')}
       </p>
 
       {error ? (

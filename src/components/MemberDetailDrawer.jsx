@@ -16,14 +16,14 @@ import {
 } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 import { canRenewMember, canChangePlan } from '../utils/memberRenew';
-import { parseApiResponse } from '../utils/api';
+import { parseApiResponse, formatApiError } from '../utils/api';
 import { mapPaymentFromApi } from '../utils/apiMappers';
 import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
 import { formatFriendlyDate, formatDisplayDate, attendanceDayRelative, formatAttendanceDayLabel, formatDisplayTime } from '../utils/date';
 import { resolveMemberPlanLabel } from '../utils/formatPlanDisplayName';
 import { effectiveVisitsLimit } from '../utils/attendanceCap';
-import { getMemberPayments } from '../services/memberService';
+import { getMemberPayments, unlinkMemberTelegram } from '../services/memberService';
 import { getMemberVisitSummary, listCheckIns } from '../services/checkInService';
 import VisitRing from './VisitRing';
 import { MemberDrawerVisitCardSkeleton } from './LoadingSkeletons';
@@ -35,6 +35,7 @@ import { formatMoney } from '../utils/formatMoney';
 import { useAuth } from '../context/AuthContext';
 import { useFlash } from '../context/FlashContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
+import { mutationErrorState } from '../utils/validation';
 import {
   SlidePanel,
   SlidePanelProfileHeader,
@@ -88,6 +89,7 @@ export default function MemberDetailDrawer({
   const [isPassOpen, setIsPassOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const [memberPayments, setMemberPayments] = useState([]);
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [paymentsError, setPaymentsError] = useState('');
@@ -97,6 +99,27 @@ export default function MemberDetailDrawer({
   const [recentVisits, setRecentVisits] = useState([]);
   const [visitHistoryOpen, setVisitHistoryOpen] = useState(false);
   const [recentVisitsOpen, setRecentVisitsOpen] = useState(false);
+  const [confirmTelegramUnlink, setConfirmTelegramUnlink] = useState(false);
+  const [telegramUnlinking, setTelegramUnlinking] = useState(false);
+
+  const handleTelegramUnlink = async () => {
+    if (!member?.id || !apiFetch || telegramUnlinking || !member.telegramChatId) return;
+    setTelegramUnlinking(true);
+    try {
+      const res = await unlinkMemberTelegram(apiFetch, member.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) {
+        throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramUnlinkFailed'));
+      }
+      setConfirmTelegramUnlink(false);
+      onMemberRefresh?.({ ...member, telegramChatId: null });
+      showFlash({ title: t('pages.checkIn.telegramUnlinked'), variant: 'success' });
+    } catch (err) {
+      showFlash({ title: err.message || t('pages.checkIn.telegramUnlinkFailed'), variant: 'danger' });
+    } finally {
+      setTelegramUnlinking(false);
+    }
+  };
 
   const loadPayments = useCallback(async () => {
     if (!member?.id || !apiFetch) return;
@@ -281,11 +304,15 @@ export default function MemberDetailDrawer({
   const handleEditSubmit = async (data) => {
     setSaving(true);
     setError('');
+    setFieldErrors({});
     try {
       await onUpdate(member.id, data);
       setIsEditOpen(false);
     } catch (err) {
-      setError(err.message);
+      const next = mutationErrorState(err, {}, t);
+      setError(next.error);
+      setFieldErrors(next.fieldErrors || {});
+      throw err;
     } finally {
       setSaving(false);
     }
@@ -464,13 +491,23 @@ export default function MemberDetailDrawer({
                     })}
                   </p>
                   {telegramLinked ? (
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-300">
-                      <span
-                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
-                        aria-hidden
-                      />
-                      {t('pages.checkIn.telegramLinked')}
-                    </p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <p className="flex items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-300">
+                        <span
+                          className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                          aria-hidden
+                        />
+                        {t('pages.checkIn.telegramLinked')}
+                      </p>
+                      <button
+                        type="button"
+                        disabled={telegramUnlinking}
+                        onClick={() => setConfirmTelegramUnlink(true)}
+                        className="text-xs font-semibold text-rose-600 hover:text-rose-500 disabled:opacity-50 dark:text-rose-400"
+                      >
+                        {t('pages.checkIn.telegramUnlink')}
+                      </button>
+                    </div>
                   ) : null}
                 </div>
                 {canShowPass ? (
@@ -489,13 +526,23 @@ export default function MemberDetailDrawer({
             ) : canShowPass ? (
               <div className="mb-3 flex items-center gap-3 rounded-xl border border-app-border-subtle bg-app-bg/60 px-4 py-3.5">
                 {telegramLinked ? (
-                  <p className="flex min-w-0 flex-1 items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-300">
-                    <span
-                      className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
-                      aria-hidden
-                    />
-                    {t('pages.checkIn.telegramLinked')}
-                  </p>
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
+                    <p className="flex items-center gap-1.5 text-xs font-medium text-sky-600 dark:text-sky-300">
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                        aria-hidden
+                      />
+                      {t('pages.checkIn.telegramLinked')}
+                    </p>
+                    <button
+                      type="button"
+                      disabled={telegramUnlinking}
+                      onClick={() => setConfirmTelegramUnlink(true)}
+                      className="text-xs font-semibold text-rose-600 hover:text-rose-500 disabled:opacity-50 dark:text-rose-400"
+                    >
+                      {t('pages.checkIn.telegramUnlink')}
+                    </button>
+                  </div>
                 ) : (
                   <span className="min-w-0 flex-1" />
                 )}
@@ -705,7 +752,11 @@ export default function MemberDetailDrawer({
         <Suspense fallback={null}>
           <MemberModal
             isOpen={isEditOpen}
-            onClose={() => setIsEditOpen(false)}
+            onClose={() => {
+              setIsEditOpen(false);
+              setError('');
+              setFieldErrors({});
+            }}
             onSubmit={handleEditSubmit}
             plans={plans}
             member={member}
@@ -716,6 +767,7 @@ export default function MemberDetailDrawer({
             apiFetch={apiFetch}
             saving={saving}
             error={error}
+            fieldErrors={fieldErrors}
           />
         </Suspense>
       ) : null}
@@ -727,6 +779,16 @@ export default function MemberDetailDrawer({
         confirmText={t('drawer.deleteConfirm')}
         onConfirm={handleConfirmDelete}
         onCancel={() => setIsDeleteOpen(false)}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmTelegramUnlink}
+        type="danger"
+        title={t('pages.checkIn.telegramUnlink')}
+        message={t('pages.checkIn.telegramUnlinkConfirm', { name: member.name })}
+        confirmText={t('pages.checkIn.telegramUnlink')}
+        onCancel={() => setConfirmTelegramUnlink(false)}
+        onConfirm={() => void handleTelegramUnlink()}
       />
 
       {isPassOpen ? (

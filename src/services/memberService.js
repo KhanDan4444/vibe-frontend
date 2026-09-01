@@ -23,6 +23,9 @@ export const sendMemberPassSms = (apiFetch, id) =>
 export const createMemberTelegramLink = (apiFetch, id) =>
   apiFetch(`/members/${id}/telegram/link-token`, { method: 'POST' });
 
+export const unlinkMemberTelegram = (apiFetch, id) =>
+  apiFetch(`/members/${id}/telegram`, { method: 'DELETE' });
+
 export const enrollMember = (apiFetch, payload) =>
   apiFetch('/members/enroll', {
     method: 'POST',

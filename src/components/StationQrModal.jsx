@@ -301,7 +301,7 @@ export default function StationQrModal({
               type="button"
               variant="secondary"
               size="sm"
-              disabled={busy || !payload?.check_in_url}
+              disabled={busy || !payload?.check_in_url || !selfCheckInEnabled}
               onClick={handleTestScan}
               className="col-span-2 w-full"
             >

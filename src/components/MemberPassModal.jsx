@@ -14,6 +14,7 @@ import {
   regenerateMemberPass,
   sendMemberPassSms,
   createMemberTelegramLink,
+  unlinkMemberTelegram,
 } from '../services/memberService';
 import { useAuth } from '../context/AuthContext';
 import { isGymOwner } from '../utils/roles';
@@ -36,6 +37,8 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   const [printing, setPrinting] = useState(false);
   const [smsSending, setSmsSending] = useState(false);
   const [telegramLinking, setTelegramLinking] = useState(false);
+  const [telegramUnlinking, setTelegramUnlinking] = useState(false);
+  const [confirmTelegramUnlink, setConfirmTelegramUnlink] = useState(false);
   const [telegramLink, setTelegramLink] = useState(null);
   const [liveMember, setLiveMember] = useState(member);
   const [showTelegramSetup, setShowTelegramSetup] = useState(false);
@@ -94,11 +97,13 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
     setTelegramLink(null);
     setShowTelegramSetup(false);
     setTelegramSetupFromSendPass(false);
+    setLiveMember((prev) => (prev ? { ...prev, telegramChatId: null } : prev));
+    onMemberUpdatedRef.current?.({ ...member, telegramChatId: null });
     onFlash?.({
       title: t('pages.checkIn.telegramUnlinked'),
       variant: 'success',
     });
-  }, [onFlash, t]);
+  }, [member, onFlash, t]);
 
   const refreshMember = useCallback(async () => {
     if (!member?.id) return null;
@@ -306,9 +311,28 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
     }
   };
 
+  const handleTelegramUnlink = async () => {
+    if (!member?.id || telegramUnlinking || !telegramLinked) return;
+    setTelegramUnlinking(true);
+    try {
+      const res = await unlinkMemberTelegram(apiFetch, member.id);
+      const data = await parseApiResponse(res);
+      if (!res.ok) {
+        throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramUnlinkFailed'));
+      }
+      setConfirmTelegramUnlink(false);
+      await refreshMember();
+      handleTelegramUnlinked();
+    } catch (err) {
+      onFlash?.({ title: err.message || t('pages.checkIn.telegramUnlinkFailed'), variant: 'danger' });
+    } finally {
+      setTelegramUnlinking(false);
+    }
+  };
+
   if (!open || !member) return null;
 
-  const busy = loading || regenerating || printing || smsSending || telegramLinking;
+  const busy = loading || regenerating || printing || smsSending || telegramLinking || telegramUnlinking;
   const phone = member.phone || pass?.member?.phone || null;
   const onPassView = telegramLinked || !showTelegramSetup;
 
@@ -409,9 +433,19 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               </div>
 
               {telegramLinked ? (
-                <p className="mt-3 text-center text-xs font-medium text-sky-600 dark:text-sky-300">
-                  {t('pages.checkIn.telegramLinked')}
-                </p>
+                <div className="mt-3 flex flex-col items-center gap-2">
+                  <p className="text-center text-xs font-medium text-sky-600 dark:text-sky-300">
+                    {t('pages.checkIn.telegramLinked')}
+                  </p>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => setConfirmTelegramUnlink(true)}
+                    className="text-xs font-semibold text-rose-600 transition hover:text-rose-500 disabled:opacity-50 dark:text-rose-400"
+                  >
+                    {t('pages.checkIn.telegramUnlink')}
+                  </button>
+                </div>
               ) : (
                 <p className="mt-3 text-center text-xs text-app-muted">
                   <button
@@ -526,6 +560,16 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
         confirmText={t('pages.checkIn.regeneratePassConfirm')}
         onCancel={() => setConfirmRegen(false)}
         onConfirm={() => void handleRegenerate()}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmTelegramUnlink}
+        type="danger"
+        title={t('pages.checkIn.telegramUnlink')}
+        message={t('pages.checkIn.telegramUnlinkConfirm', { name: member.name })}
+        confirmText={t('pages.checkIn.telegramUnlink')}
+        onCancel={() => setConfirmTelegramUnlink(false)}
+        onConfirm={() => void handleTelegramUnlink()}
       />
     </>
   );

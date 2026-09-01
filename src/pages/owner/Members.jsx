@@ -456,14 +456,10 @@ export default function Members() {
 
   const handleUpdateFromDrawer = async (id, data) => {
     setSaving(true);
-    setError('');
     try {
       await updateMember(id, data);
       showFlash(flashFromKey(t, 'contactUpdated'));
       refreshAfterMemberChange(id);
-    } catch (err) {
-      setError(err.message);
-      throw err;
     } finally {
       setSaving(false);
     }

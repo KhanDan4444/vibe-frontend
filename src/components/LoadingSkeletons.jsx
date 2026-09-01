@@ -76,6 +76,17 @@ export function MemberDrawerVisitCardSkeleton() {
   );
 }
 
+/** Page header ghost button — Visit rules (icon + label) */
+export function CheckInVisitRulesButtonSkeleton() {
+  return (
+    <div
+      className="app-skeleton h-9 w-[7.75rem] rounded-lg"
+      role="status"
+      aria-label="Loading"
+    />
+  );
+}
+
 /** Check-in visit rules: weekly cap chips + self check-in row */
 export function CheckInVisitRulesSkeleton() {
   return (
