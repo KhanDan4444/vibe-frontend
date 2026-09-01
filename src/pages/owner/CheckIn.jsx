@@ -34,7 +34,7 @@ import { flashFromKey } from '../../i18n/flashToast';
 import { cardSurface, mutedText, panelTitle, renewActionBtn } from '../../utils/surfaceClasses';
 import { effectiveVisitsLimit, effectiveVisitsPerWeek, WEEKLY_VISIT_CAP_DEFAULT } from '../../utils/attendanceCap';
 import { formatMemberStatusForDisplay, DISPLAY_STATUS } from '../../utils/memberStatus';
-import { todayString, formatDisplayTime } from '../../utils/date';
+import { formatDisplayTime } from '../../utils/date';
 
 const CAP_OPTIONS = [
   { value: String(WEEKLY_VISIT_CAP_DEFAULT), labelKey: 'pages.checkIn.capDays', days: WEEKLY_VISIT_CAP_DEFAULT },
@@ -49,8 +49,15 @@ export default function CheckIn() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const { apiFetch, user } = useAuth();
-  const { showFlash, readOnly, getBranchQueryParams, refreshSummary, selectedBranchId, branches } =
-    useGym();
+  const {
+    showFlash,
+    readOnly,
+    getBranchQueryParams,
+    refreshSummary,
+    selectedBranchId,
+    branches,
+    summary,
+  } = useGym();
   const owner = isGymOwner(user?.role);
 
   const [query, setQuery] = useState('');
@@ -61,7 +68,7 @@ export default function CheckIn() {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [todayRows, setTodayRows] = useState([]);
-  const [todayTotal, setTodayTotal] = useState(0);
+  const [listTodayTotal, setListTodayTotal] = useState(0);
   const [todayLoading, setTodayLoading] = useState(true);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [checkingId, setCheckingId] = useState(null);
@@ -117,17 +124,16 @@ export default function CheckIn() {
       const branchParams = getBranchQueryParams();
       const todayRes = await listCheckIns(apiFetch, {
         ...branchParams,
-        date: todayString(),
         limit: TODAY_LIST_LIMIT,
       });
       const todayData = await parseApiResponse(todayRes);
       if (!todayRes.ok) throw new Error(todayData.error || t('errors.loadCheckIns'));
       setTodayRows(todayData.checkIns || []);
-      setTodayTotal(todayData.total ?? 0);
+      setListTodayTotal(todayData.total ?? 0);
       setSearchError('');
     } catch (err) {
       setTodayRows([]);
-      setTodayTotal(0);
+      setListTodayTotal(0);
       setSearchError(err.message);
     } finally {
       setTodayLoading(false);
@@ -141,6 +147,28 @@ export default function CheckIn() {
   useEffect(() => {
     void loadToday();
   }, [loadToday, selectedBranchId]);
+
+  useEffect(() => {
+    const refresh = () => {
+      void loadToday();
+      void refreshSummary?.();
+    };
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [loadToday, refreshSummary]);
+
+  const dashboardTodayTotal = summary?.checkedInToday;
+  const todayTotal = useMemo(() => {
+    if (typeof listTodayTotal === 'number' && typeof dashboardTodayTotal === 'number') {
+      return Math.max(listTodayTotal, dashboardTodayTotal);
+    }
+    if (typeof listTodayTotal === 'number') return listTodayTotal;
+    if (typeof dashboardTodayTotal === 'number') return dashboardTodayTotal;
+    return 0;
+  }, [listTodayTotal, dashboardTodayTotal]);
 
   useEffect(() => {
     if (!debounced) {
@@ -235,12 +263,20 @@ export default function CheckIn() {
           m.id === memberId
             ? {
                 ...m,
+                checked_in_today: true,
                 visits_this_week: data.visits_this_week,
                 visits_limit: data.visits_limit,
               }
             : m
         )
       );
+    }
+    if (data.checkIn) {
+      setTodayRows((prev) => {
+        if (prev.some((row) => row.id === data.checkIn.id)) return prev;
+        return [data.checkIn, ...prev];
+      });
+      setListTodayTotal((prev) => prev + 1);
     }
     void loadToday();
     void refreshSummary?.();
@@ -250,7 +286,11 @@ export default function CheckIn() {
     if (readOnly) return;
     const status = formatMemberStatusForDisplay(member.status);
     if (status === DISPLAY_STATUS.EXPIRED) return;
-    if (alreadyTodayIds.has(member.id) || cardErrors[member.id]?.code === 'ALREADY_TODAY') {
+    if (
+      member.checked_in_today ||
+      alreadyTodayIds.has(member.id) ||
+      cardErrors[member.id]?.code === 'ALREADY_TODAY'
+    ) {
       setCardErrors((prev) => ({
         ...prev,
         [member.id]: { code: 'ALREADY_TODAY', message: t('pages.checkIn.alreadyToday') },
@@ -559,6 +599,7 @@ export default function CheckIn() {
                 const checkInBlocked = status === DISPLAY_STATUS.EXPIRED;
                 const cardError = cardErrors[member.id];
                 const alreadyToday =
+                  member.checked_in_today ||
                   alreadyTodayIds.has(member.id) ||
                   Boolean(successIds[member.id]) ||
                   cardError?.code === 'ALREADY_TODAY';

@@ -1520,15 +1520,12 @@
 
   @keyframes enroll-success-check {
     0% {
-      opacity: 0;
       transform: scale(0.72);
     }
     70% {
-      opacity: 1;
       transform: scale(1.06);
     }
     100% {
-      opacity: 1;
       transform: scale(1);
     }
   }
