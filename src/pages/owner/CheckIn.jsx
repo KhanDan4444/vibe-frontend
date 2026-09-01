@@ -76,6 +76,7 @@ export default function CheckIn() {
   const [forceTarget, setForceTarget] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [togglingSelfCheckIn, setTogglingSelfCheckIn] = useState(false);
   const [searchNonce, setSearchNonce] = useState(0);
   const [scanOpen, setScanOpen] = useState(false);
   const [stationOpen, setStationOpen] = useState(false);
@@ -112,7 +113,7 @@ export default function CheckIn() {
       const res = await getAttendanceSettings(apiFetch);
       const data = await parseApiResponse(res);
       if (res.ok) {
-        setSettings(data.settings);
+        setSettings((prev) => ({ ...prev, ...data.settings }));
         setCanManage(Boolean(data.canManage));
       }
     } catch {
@@ -195,7 +196,7 @@ export default function CheckIn() {
         if (cancelled) return;
         if (!res.ok) throw new Error(data.error || t('errors.searchMembers'));
         setResults(data.members || []);
-        if (data.settings) setSettings(data.settings);
+        if (data.settings) setSettings((prev) => ({ ...prev, ...data.settings }));
       } catch (err) {
         if (!cancelled) {
           setResults([]);
@@ -422,22 +423,25 @@ export default function CheckIn() {
   };
 
   const toggleSelfCheckIn = async () => {
-    if (!canManage || savingSettings || readOnly) return;
-    setSavingSettings(true);
+    if (!canManage || savingSettings || togglingSelfCheckIn || readOnly) return;
+    const previous = Boolean(settings?.station_self_checkin);
+    const next = !previous;
+    setSettings((prev) => ({ ...prev, station_self_checkin: next }));
+    setTogglingSelfCheckIn(true);
     try {
-      const next = !settings?.station_self_checkin;
       const res = await updateAttendanceSettings(apiFetch, { station_self_checkin: next });
       const data = await parseApiResponse(res);
       if (!res.ok) throw new Error(formatApiError(data) || data.error);
-      setSettings(data.settings);
+      setSettings((prev) => ({ ...prev, ...data.settings }));
       showFlash({
         title: next ? t('pages.checkIn.stationEnabledToast') : t('pages.checkIn.stationDisabledToast'),
         variant: 'success',
       });
     } catch (err) {
+      setSettings((prev) => ({ ...prev, station_self_checkin: previous }));
       showFlash({ title: err.message, variant: 'danger' });
     } finally {
-      setSavingSettings(false);
+      setTogglingSelfCheckIn(false);
     }
   };
 
@@ -494,65 +498,106 @@ export default function CheckIn() {
       />
 
       {settingsOpen && owner && canManage ? (
-        <Card className="overflow-hidden border-[color:var(--color-brand)]/25">
-          <div className="space-y-3 p-4 sm:p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className={panelTitle}>{t('pages.checkIn.visitRulesTitle')}</h2>
-                <p className={`mt-1 text-sm ${mutedText}`}>{t('pages.checkIn.visitRulesBody')}</p>
-              </div>
-              <button
-                type="button"
-                className="text-xs font-medium text-app-muted hover:text-app-text"
-                onClick={() => setSettingsOpen(false)}
-              >
-                {t('common.done')}
-              </button>
+        <Card className="overflow-hidden border-[color:var(--color-brand)]/20 shadow-sm">
+          <div className="flex items-start justify-between gap-3 border-b border-app-border-subtle px-4 py-4 sm:px-5">
+            <div>
+              <h2 className={panelTitle}>{t('pages.checkIn.visitRulesTitle')}</h2>
+              <p className={`mt-1 text-sm ${mutedText}`}>{t('pages.checkIn.visitRulesBody')}</p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {CAP_OPTIONS.map((opt) => {
-                const active = capValue === opt.value;
-                return (
-                  <button
-                    key={opt.value || 'unlimited'}
-                    type="button"
-                    disabled={savingSettings || readOnly}
-                    onClick={() => void saveCap(opt.value)}
-                    className={`rounded-full border px-3.5 py-2 text-sm font-medium transition-colors ${
-                      active
-                        ? 'border-transparent bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]'
-                        : 'border-app-border-subtle bg-app-raised text-app-muted hover:text-app-text'
+            <button
+              type="button"
+              className="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-app-muted transition-colors hover:bg-app-bg/80 hover:text-app-text"
+              onClick={() => setSettingsOpen(false)}
+            >
+              {t('common.done')}
+            </button>
+          </div>
+
+          <div className="space-y-4 px-4 py-4 sm:px-5 sm:py-5">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-app-muted">
+                {t('pages.checkIn.visitRulesWeeklyLabel')}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {CAP_OPTIONS.map((opt) => {
+                  const active = capValue === opt.value;
+                  return (
+                    <button
+                      key={opt.value || 'unlimited'}
+                      type="button"
+                      disabled={savingSettings || readOnly}
+                      onClick={() => void saveCap(opt.value)}
+                      className={`rounded-full border px-3.5 py-2 text-sm font-medium transition-all ${
+                        active
+                          ? 'border-transparent bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)] shadow-sm ring-1 ring-[color:var(--color-brand)]/20'
+                          : 'border-app-border-subtle bg-app-raised text-app-muted hover:border-[color:var(--color-brand)]/25 hover:text-app-text'
+                      }`}
+                    >
+                      {opt.days ? t(opt.labelKey, { count: opt.days }) : t(opt.labelKey)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="h-px bg-app-border-subtle" aria-hidden />
+
+            <div className="flex items-start gap-3.5 sm:gap-4">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]">
+                <QrCode className="h-5 w-5" aria-hidden />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-semibold text-app-text-strong">
+                    {t('pages.checkIn.stationSelfCheckIn')}
+                  </p>
+                  <span
+                    className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                      settings?.station_self_checkin
+                        ? 'bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]'
+                        : 'bg-app-border/80 text-app-muted'
                     }`}
                   >
-                    {opt.days ? t(opt.labelKey, { count: opt.days }) : t(opt.labelKey)}
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mt-4 flex items-start justify-between gap-3 rounded-xl border border-app-border-subtle bg-app-bg/50 px-3.5 py-3">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-app-text-strong">
-                  {t('pages.checkIn.stationSelfCheckIn')}
+                    {settings?.station_self_checkin
+                      ? t('pages.checkIn.stationSelfCheckInOn')
+                      : t('pages.checkIn.stationSelfCheckInOff')}
+                  </span>
+                </div>
+                <p className={`mt-1 text-sm leading-relaxed ${mutedText}`}>
+                  {t('pages.checkIn.stationSelfCheckInHint')}
                 </p>
-                <p className={`mt-0.5 text-xs ${mutedText}`}>{t('pages.checkIn.stationSelfCheckInHint')}</p>
+                {settings?.station_self_checkin ? (
+                  <button
+                    type="button"
+                    className="mt-2.5 text-sm font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
+                    onClick={() => setStationOpen(true)}
+                  >
+                    {t('pages.checkIn.stationViewQr')}
+                  </button>
+                ) : null}
               </div>
               <button
                 type="button"
                 role="switch"
                 aria-checked={Boolean(settings?.station_self_checkin)}
-                disabled={savingSettings || readOnly}
+                aria-busy={togglingSelfCheckIn}
+                disabled={togglingSelfCheckIn || readOnly}
                 onClick={() => void toggleSelfCheckIn()}
-                className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                className={`relative mt-0.5 h-8 w-[3.25rem] shrink-0 rounded-full transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-brand)] disabled:cursor-not-allowed disabled:opacity-50 ${
                   settings?.station_self_checkin
                     ? 'bg-[color:var(--color-brand)]'
                     : 'bg-app-border'
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-                    settings?.station_self_checkin ? 'translate-x-5' : 'translate-x-0.5'
-                  }`}
-                />
+                  className={`absolute top-1 left-1 flex h-6 w-6 items-center justify-center rounded-full bg-white shadow-md transition-transform duration-200 ${
+                    settings?.station_self_checkin ? 'translate-x-5' : 'translate-x-0'
+                  } ${togglingSelfCheckIn ? 'scale-90 opacity-80' : ''}`}
+                >
+                  {togglingSelfCheckIn ? (
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[color:var(--color-brand)] border-t-transparent" />
+                  ) : null}
+                </span>
               </button>
             </div>
           </div>
