@@ -9,6 +9,9 @@ import { modalTitle, mutedText } from '../utils/surfaceClasses';
 import { parseApiResponse } from '../utils/api';
 import { getBranchStationPass, regenerateBranchStationPass } from '../services/branchService';
 
+const regenLinkClass =
+  'inline-flex items-center justify-center gap-1.5 rounded-md px-2 py-2 text-xs font-semibold text-[#0f766e] transition-colors hover:text-[#0d9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/40 disabled:cursor-not-allowed disabled:opacity-50 dark:text-teal-400 dark:hover:text-teal-300';
+
 /**
  * Owner/staff modal — branch gym QR poster for member self check-in.
  */
@@ -164,19 +167,17 @@ export default function StationQrModal({
 
   return (
     <>
-      <ResponsiveModal open={open} onClose={onClose} size="lg" labelledBy="station-qr-title">
+      <ResponsiveModal open={open} onClose={onClose} size="md" labelledBy="station-qr-title">
         <div className={modalBody}>
           <div className="flex items-start gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]">
               <QrCode className="h-5 w-5" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
               <h3 id="station-qr-title" className={modalTitle}>
                 {t('pages.checkIn.stationAction')}
               </h3>
-              <p className={`mt-1 text-sm leading-relaxed ${mutedText}`}>
-                {t('pages.checkIn.stationBody')}
-              </p>
+              <p className={`mt-1 text-sm ${mutedText}`}>{t('pages.checkIn.stationBody')}</p>
             </div>
           </div>
 
@@ -207,7 +208,7 @@ export default function StationQrModal({
           ) : null}
 
           {error ? (
-            <div className="ui-alert-rose mt-4">
+            <div className="ui-alert-rose mt-5">
               <p className="text-sm">{error}</p>
               <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={() => void loadPass()}>
                 {t('common.retry')}
@@ -215,22 +216,22 @@ export default function StationQrModal({
             </div>
           ) : null}
 
-          <div className="mt-5 overflow-hidden rounded-[1.25rem] border border-app-border-subtle bg-app-bg/50 shadow-sm">
+          <div className="mt-5 flex flex-col items-center overflow-hidden rounded-2xl border border-app-border-subtle bg-app-bg/60">
             <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
-            <div className="flex flex-col items-center px-5 py-6 sm:px-8 sm:py-7">
+            <div className="flex w-full flex-col items-center px-5 py-6">
               {loading ? (
-                <div className="h-[220px] w-[220px] animate-pulse rounded-2xl bg-app-border/60" />
+                <div className="h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
               ) : (
                 <>
                   {gymName ? (
-                    <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-[color:var(--color-brand-text)]">
+                    <p className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
                       {gymName}
                     </p>
                   ) : null}
                   {branchName ? (
                     <p className="mt-1.5 text-center text-sm font-medium text-app-muted">{branchName}</p>
                   ) : null}
-                  <p className="mt-3 text-center font-display text-lg font-semibold tracking-tight text-app-text-strong">
+                  <p className="mt-3 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
                     {t('pages.checkIn.stationPosterTitle')}
                   </p>
 
@@ -238,10 +239,10 @@ export default function StationQrModal({
                     <img
                       src={payload.qr_data_url}
                       alt={t('pages.checkIn.stationQrAlt')}
-                      className="mt-5 h-[min(220px,56vw)] w-[min(220px,56vw)] rounded-2xl bg-white p-3 shadow-md ring-1 ring-black/5"
+                      className="mt-4 h-[200px] w-[200px] rounded-2xl bg-white p-2 shadow-sm ring-1 ring-black/5"
                     />
                   ) : (
-                    <div className="mt-5 flex h-[220px] w-[220px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
+                    <div className="mt-4 flex h-[200px] w-[200px] items-center justify-center rounded-2xl bg-app-border text-sm text-app-muted">
                       —
                     </div>
                   )}
@@ -271,7 +272,7 @@ export default function StationQrModal({
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="mt-4 grid grid-cols-2 gap-2">
             <Button
               type="button"
               variant="secondary"
@@ -298,11 +299,11 @@ export default function StationQrModal({
             </Button>
             <Button
               type="button"
-              variant="ghost"
+              variant="secondary"
               size="sm"
               disabled={busy || !payload?.check_in_url}
               onClick={handleTestScan}
-              className="w-full"
+              className="col-span-2 w-full"
             >
               <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
               {t('pages.checkIn.stationTestScan')}
@@ -310,23 +311,21 @@ export default function StationQrModal({
           </div>
         </div>
 
-        <div className={modalFooter}>
+        <div className={`${modalFooter} !justify-between`}>
+          <Button type="button" variant="secondary" size="sm" onClick={onClose} className="w-full sm:w-auto">
+            {t('common.close')}
+          </Button>
           {canRegenerate ? (
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="sm"
               disabled={!resolvedBranchId || busy}
               onClick={() => setConfirmRegen(true)}
-              className="text-app-muted"
+              className={regenLinkClass}
             >
-              <RefreshCw className={`h-4 w-4 ${regenerating ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${regenerating ? 'animate-spin' : ''}`} aria-hidden />
               {t('pages.checkIn.stationRegenerate')}
-            </Button>
+            </button>
           ) : null}
-          <Button type="button" variant="primary" size="sm" onClick={onClose}>
-            {t('common.done')}
-          </Button>
         </div>
       </ResponsiveModal>
 
