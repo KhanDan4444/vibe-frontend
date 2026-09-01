@@ -261,6 +261,8 @@ export default function OwnerDashboard() {
               icon={UserPlus}
               color="cream"
               trend={newMembersTrend}
+              trendCaption={t('metrics.vsLastMonth')}
+              trendBelowValue
               hint={t('metrics.thisMonthCaption')}
               hintColor="text-[10px] font-medium leading-tight text-[color:var(--color-status-new)]"
               onClick={() => navigate('/dashboard/members', { state: { filter: 'New' } })}
