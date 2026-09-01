@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -13,6 +14,7 @@ import MemberModal from '../../components/MemberModal';
  */
 export default function EnrollMember() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { apiFetch, user } = useAuth();
   const {
     plans,
@@ -48,7 +50,7 @@ export default function EnrollMember() {
       void refreshSummary();
       return result;
     } catch (err) {
-      const next = mutationErrorState(err, { date: 'paymentDate' });
+      const next = mutationErrorState(err, { date: 'paymentDate' }, t);
       setError(next.error || err.message);
       setFieldErrors(next.fieldErrors || {});
       throw err;

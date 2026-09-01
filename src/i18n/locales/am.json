@@ -610,6 +610,7 @@
     "validAmountAndDate": "ትክክለኛ መጠን እና ቀን ያስገቡ።",
     "phoneRequired": "ለSMS ማስታወሻ የስልክ ቁጥር ያስፈልጋል።",
     "phoneInvalid": "ትክክለኛ የኢትዮጵያ ሞባይል ቁጥር ያስገቡ (09… ወይም +251…)።",
+    "phoneAlreadyUsed": "ይህ ስልክ ቁጥር አስቀድሞ በ{{name}} ላይ ተመዝግቧል።",
     "nameRequired": "ስም ያስፈልጋል።",
     "fullNameRequired": "የአባሉን ሙሉ ስም ያስገቡ።",
     "nameTooLong": "ስሙ በጣም ረጅም ነው።",

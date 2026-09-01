@@ -892,7 +892,6 @@ export default function MemberModal({
                 aria-invalid={Boolean(fieldErrors.phone)}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
-              <p className="mt-1 text-xs text-app-muted">{t('modals.member.phoneHint')}</p>
             </div>
               </>
             )}

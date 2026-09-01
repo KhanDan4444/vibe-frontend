@@ -1642,6 +1642,7 @@
     "validAmountAndDate": "Hanga maallaqaa fi guyyaa sirrii galchi.",
     "phoneRequired": "SMS yaadachiisaaf lakkoofsi bilbilaa barbaachisaadha.",
     "phoneInvalid": "Lakkoofsa bilbilaa Itoophiyaa sirrii galchi (09… ykn +251…).",
+    "phoneAlreadyUsed": "Lakkoofsi bilbilaa kun duraan {{name}} irratti galmaa'eera.",
     "nameRequired": "Maqaan barbaachisaadha.",
     "fullNameRequired": "Maqaa guutuu miseensaa galchi.",
     "nameTooLong": "Maqaan baay'ee dheeraadha.",

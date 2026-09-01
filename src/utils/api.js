@@ -33,6 +33,7 @@ export function apiErrorFromResponse(data, status) {
   const err = new Error(data?.error || `Request failed (${status})`);
   if (data?.code) err.code = data.code;
   if (data?.field) err.field = data.field;
+  if (data?.member_name) err.member_name = data.member_name;
   return err;
 }
 

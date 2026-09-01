@@ -1679,6 +1679,7 @@
     "validAmountAndDate": "Enter a valid amount and date.",
     "phoneRequired": "Phone number is required for SMS reminders.",
     "phoneInvalid": "Enter a valid Ethiopian mobile number (09… or +251…).",
+    "phoneAlreadyUsed": "This phone number is already on file for {{name}}.",
     "nameRequired": "Name is required.",
     "fullNameRequired": "Enter the member's full name.",
     "nameTooLong": "Name is too long.",

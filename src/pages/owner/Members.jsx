@@ -425,7 +425,7 @@ export default function Members() {
       showFlash(flashFromKey(t, 'memberUpdated'));
       refreshAfterMemberChange(memberId);
     } catch (err) {
-      setModalState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }) }));
+      setModalState((s) => ({ ...s, ...mutationErrorState(err, { date: 'paymentDate' }, t) }));
     } finally {
       setSaving(false);
     }

@@ -60,18 +60,29 @@ export function normalizeApiField(field) {
   return API_FIELD_ALIASES[field] || field;
 }
 
+function resolveMutationMessage(err, t) {
+  if (t && err?.code === 'PHONE_ALREADY_USED') {
+    return t('validation.phoneAlreadyUsed', {
+      name: err.member_name || 'another member',
+    });
+  }
+  return err?.message || 'Something went wrong.';
+}
+
 /**
  * Split a mutation/API error into banner vs field-level state.
- * @param {Error & { field?: string }} err
+ * @param {Error & { field?: string, code?: string, member_name?: string }} err
  * @param {Record<string, string>} [fieldMap]
+ * @param {(key: string, params?: Record<string, string>) => string} [t]
  */
-export function mutationErrorState(err, fieldMap = {}) {
+export function mutationErrorState(err, fieldMap = {}, t) {
+  const message = resolveMutationMessage(err, t);
   const apiField = normalizeApiField(err?.field);
   const key = apiField ? fieldMap[apiField] || apiField : null;
   if (key) {
-    return { error: '', fieldErrors: { [key]: err?.message || 'Something went wrong.' } };
+    return { error: '', fieldErrors: { [key]: message } };
   }
-  return { error: err?.message || 'Something went wrong.', fieldErrors: {} };
+  return { error: message, fieldErrors: {} };
 }
 
 /**
