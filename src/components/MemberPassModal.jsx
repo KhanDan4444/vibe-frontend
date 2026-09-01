@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
+import { Download, Copy, Loader2, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
 import Button from './ui/Button';
@@ -74,11 +74,11 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
   }, [apiFetch, member?.id, member?.name, member?.phone, onFlash, t]);
 
   const handleTelegramLinked = useCallback(
-    async (fromSendPass) => {
+    async (fromSendPass, opts = {}) => {
       setTelegramLink(null);
       setShowTelegramSetup(false);
       setTelegramSetupFromSendPass(false);
-      if (fromSendPass) {
+      if (fromSendPass && opts.alreadyLinked) {
         await sendPassLink();
         return;
       }
@@ -276,7 +276,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
       if (!res.ok) throw new Error(formatApiError(data) || data.error || t('pages.checkIn.telegramLinkFailed'));
       if (data.already_linked) {
         await refreshMember();
-        await handleTelegramLinked(telegramSetupFromSendPassRef.current);
+        await handleTelegramLinked(telegramSetupFromSendPassRef.current, { alreadyLinked: true });
         return;
       }
       if (data.link) {
@@ -446,10 +446,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                 </p>
               ) : null}
               <p className="text-center text-sm font-medium text-app-text-strong">
-                {t('pages.checkIn.telegramLinkDeskTitle')}
-              </p>
-              <p className="mt-1 text-center text-xs leading-relaxed text-app-muted">
-                {t('pages.checkIn.telegramLinkDeskHint')}
+                {t('pages.checkIn.telegramLink')}
               </p>
               {telegramLinking && !telegramLink ? (
                 <div className="mx-auto mt-6 h-[200px] w-[200px] animate-pulse rounded-xl bg-app-border" />
@@ -462,19 +459,18 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               ) : null}
               {telegramLink?.link ? (
                 <>
-                  <p className="mt-4 break-all rounded-lg bg-app-bg/80 px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-app-muted">
-                    {telegramLink.link}
-                  </p>
-                  <div className="mt-3">
-                    <Button
+                  <div className="mt-3 flex items-center gap-1.5 px-2">
+                    <p className="min-w-0 flex-1 break-all font-mono text-[11px] leading-relaxed text-app-muted">
+                      {telegramLink.link}
+                    </p>
+                    <button
                       type="button"
-                      variant="secondary"
-                      size="sm"
-                      className="w-full"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-sky-500/[0.08] text-sky-600 transition-opacity hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 dark:bg-sky-400/10 dark:text-sky-400"
                       onClick={() => void handleCopyTelegramLink()}
+                      aria-label={t('pages.checkIn.telegramLinkCopy')}
                     >
-                      {t('pages.checkIn.telegramLinkCopy')}
-                    </Button>
+                      <Copy className="h-[18px] w-[18px]" aria-hidden />
+                    </button>
                   </div>
                   {telegramLink.expires_in_seconds ? (
                     <p className="mt-2 text-center text-[11px] text-app-muted">
@@ -483,6 +479,12 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                       })}
                     </p>
                   ) : null}
+                  <div className="mt-3 flex items-center justify-center gap-2 px-2">
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600 dark:text-sky-400" aria-hidden />
+                    <p className="text-center text-xs leading-relaxed text-app-muted">
+                      {t('pages.checkIn.telegramWaitingForMember')}
+                    </p>
+                  </div>
                   <div className="mt-3 text-center">
                     <button
                       type="button"

@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from './ui/Button';
@@ -161,6 +162,12 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
               })}
             </p>
           ) : null}
+          <div className="mt-3 flex items-center justify-center gap-2 px-2">
+            <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600 dark:text-sky-400" aria-hidden />
+            <p className="text-center text-xs leading-relaxed text-app-muted">
+              {t('pages.checkIn.telegramWaitingForMember')}
+            </p>
+          </div>
           <div className="mt-3 text-center">
             <button
               type="button"

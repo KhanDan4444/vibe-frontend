@@ -12,3 +12,11 @@ export const updateBranch = (apiFetch, branchId, payload) =>
     method: 'PATCH',
     body: JSON.stringify(payload),
   });
+
+export const getBranchStationPass = (apiFetch, branchId) =>
+  apiFetch(`/gym/branches/${branchId}/station-pass`);
+
+export const regenerateBranchStationPass = (apiFetch, branchId) =>
+  apiFetch(`/gym/branches/${branchId}/station-pass/regenerate`, {
+    method: 'POST',
+  });

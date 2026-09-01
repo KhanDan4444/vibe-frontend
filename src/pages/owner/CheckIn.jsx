@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, History, ScanLine, Settings2, UserRound } from 'lucide-react';
+import { CheckCircle2, History, QrCode, ScanLine, Settings2, UserRound } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
@@ -25,6 +25,7 @@ import UnpaidBadge from '../../components/UnpaidBadge';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import ScanMemberQrModal from '../../components/ScanMemberQrModal';
+import StationQrModal from '../../components/StationQrModal';
 import {
   CheckInSearchSkeleton,
   CheckInTodaySkeleton,
@@ -77,6 +78,7 @@ export default function CheckIn() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [searchNonce, setSearchNonce] = useState(0);
   const [scanOpen, setScanOpen] = useState(false);
+  const [stationOpen, setStationOpen] = useState(false);
   const [scanBusy, setScanBusy] = useState(false);
   /** @type {Record<number, { code: string, message: string }>} */
   const [cardErrors, setCardErrors] = useState({});
@@ -419,6 +421,31 @@ export default function CheckIn() {
     }
   };
 
+  const toggleSelfCheckIn = async () => {
+    if (!canManage || savingSettings || readOnly) return;
+    setSavingSettings(true);
+    try {
+      const next = !settings?.station_self_checkin;
+      const res = await updateAttendanceSettings(apiFetch, { station_self_checkin: next });
+      const data = await parseApiResponse(res);
+      if (!res.ok) throw new Error(formatApiError(data) || data.error);
+      setSettings(data.settings);
+      showFlash({
+        title: next ? t('pages.checkIn.stationEnabledToast') : t('pages.checkIn.stationDisabledToast'),
+        variant: 'success',
+      });
+    } catch (err) {
+      showFlash({ title: err.message, variant: 'danger' });
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const stationBranchId =
+    selectedBranchId === 'all'
+      ? branches.find((b) => b.is_default)?.id ?? branches[0]?.id ?? null
+      : selectedBranchId;
+
   const capValue = String(effectiveVisitsPerWeek(settings?.visits_per_week));
 
   return (
@@ -437,6 +464,17 @@ export default function CheckIn() {
               >
                 <ScanLine className="h-4 w-4" />
                 {t('pages.checkIn.scanAction')}
+              </Button>
+            ) : null}
+            {!readOnly ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setStationOpen(true)}
+              >
+                <QrCode className="h-4 w-4" />
+                {t('pages.checkIn.stationAction')}
               </Button>
             ) : null}
             {owner && canManage ? (
@@ -490,6 +528,32 @@ export default function CheckIn() {
                   </button>
                 );
               })}
+            </div>
+            <div className="mt-4 flex items-start justify-between gap-3 rounded-xl border border-app-border-subtle bg-app-bg/50 px-3.5 py-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-app-text-strong">
+                  {t('pages.checkIn.stationSelfCheckIn')}
+                </p>
+                <p className={`mt-0.5 text-xs ${mutedText}`}>{t('pages.checkIn.stationSelfCheckInHint')}</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={Boolean(settings?.station_self_checkin)}
+                disabled={savingSettings || readOnly}
+                onClick={() => void toggleSelfCheckIn()}
+                className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${
+                  settings?.station_self_checkin
+                    ? 'bg-[color:var(--color-brand)]'
+                    : 'bg-app-border'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+                    settings?.station_self_checkin ? 'translate-x-5' : 'translate-x-0.5'
+                  }`}
+                />
+              </button>
             </div>
           </div>
         </Card>
@@ -797,6 +861,16 @@ export default function CheckIn() {
           if (!scanBusy) setScanOpen(false);
         }}
         onScan={(token) => runCheckInFromPass(token)}
+      />
+
+      <StationQrModal
+        open={stationOpen}
+        onClose={() => setStationOpen(false)}
+        apiFetch={apiFetch}
+        branches={branches}
+        initialBranchId={stationBranchId}
+        canRegenerate={owner && canManage}
+        selfCheckInEnabled={Boolean(settings?.station_self_checkin)}
       />
     </div>
   );

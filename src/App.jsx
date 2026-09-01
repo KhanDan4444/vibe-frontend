@@ -14,6 +14,7 @@ const ForgotPassword = lazyWithRetry(() => import('./pages/auth/ForgotPassword')
 const RegisterGym = lazyWithRetry(() => import('./pages/auth/RegisterGym'));
 const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
 const MemberPassPage = lazyWithRetry(() => import('./pages/public/MemberPassPage'));
+const StationCheckInPage = lazyWithRetry(() => import('./pages/public/StationCheckInPage'));
 const OwnerLayout = lazyWithRetry(() => import('./layouts/OwnerLayout'));
 const OwnerDashboard = lazyWithRetry(() => import('./pages/owner/OwnerDashboard'));
 const Members = lazyWithRetry(() => import('./pages/owner/Members'));
@@ -104,6 +105,7 @@ export default function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/pass" element={<MemberPassPage />} />
               <Route path="/p/:code" element={<MemberPassPage />} />
+              <Route path="/check-in" element={<StationCheckInPage />} />
 
               <Route
                 path="/"

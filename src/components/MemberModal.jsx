@@ -1243,8 +1243,8 @@ export default function MemberModal({
         <div className="mx-auto w-full max-w-xl enroll-success-in">
           <Card className="overflow-hidden p-6 sm:p-8">
             <div className="mx-auto flex max-w-sm flex-col items-center text-center">
-              <div className="enroll-success-check mb-6 flex h-24 w-24 items-center justify-center rounded-full border-[1.5px] border-[color:var(--color-brand-text)]/30 bg-[color:var(--color-brand-soft)]">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-brand-text)]/[0.16] text-[color:var(--color-brand-text)]">
+              <div className="enroll-success-check mb-6 flex h-[5.5rem] w-[5.5rem] items-center justify-center rounded-full border-[1.5px] border-[color:var(--color-status-active)]/30 bg-[color:var(--color-status-active)]/10 dark:bg-[color:var(--color-status-active)]/14">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[color:var(--color-status-active)]/20 text-[color:var(--color-status-active)] dark:bg-[color:var(--color-status-active)]/28">
                   <Check className="h-9 w-9" strokeWidth={2.5} />
                 </div>
               </div>
