@@ -68,7 +68,9 @@ export default function MetricCard({
   showHintBelow,
   trend,
   trendCaption = 'vs last month',
+  trendBelowValue = false,
   variant = 'default',
+  valueSize = 'default',
   className = '',
   onClick,
 }) {
@@ -78,6 +80,14 @@ export default function MetricCard({
   const trendPositive = trend ? !String(trend).startsWith('-') : true;
   const isHero = variant === 'emphasis';
   const isDense = variant === 'dense';
+  const valueSizeClass =
+    isHero
+      ? 'text-4xl sm:text-5xl'
+      : isDense && valueSize === 'lg'
+        ? 'text-2xl sm:text-3xl'
+        : isDense
+          ? 'text-xl sm:text-2xl'
+          : 'text-2xl sm:text-3xl';
   const showIcon = Boolean(Icon) && !badge;
 
   return (
@@ -138,7 +148,8 @@ export default function MetricCard({
           className={[
             'font-display font-bold tracking-tight',
             headingText,
-            isHero ? 'text-4xl sm:text-5xl' : isDense ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-3xl',
+            valueSizeClass,
+            trendBelowValue ? 'w-full' : '',
           ].join(' ')}
         >
           {value}
@@ -154,7 +165,7 @@ export default function MetricCard({
             {subValue}
           </span>
         )}
-        {trend && (
+        {trend && !trendBelowValue && (
           <span
             className={`text-xs font-semibold ${
               trendPositive
@@ -167,7 +178,22 @@ export default function MetricCard({
         )}
       </div>
 
-      {trend && trendCaption && (
+      {trend && trendBelowValue && trendCaption && (
+        <p className={`mt-1 text-xs ${mutedText}`}>
+          <span
+            className={`font-semibold ${
+              trendPositive
+                ? 'text-[color:var(--color-status-active)]'
+                : 'text-[color:var(--color-status-expired)]'
+            }`}
+          >
+            {trend}
+          </span>
+          <span> {trendCaption}</span>
+        </p>
+      )}
+
+      {trend && !trendBelowValue && trendCaption && (
         <p className={`mt-1 text-xs ${mutedText}`}>{trendCaption}</p>
       )}
 
@@ -199,9 +225,15 @@ export default function MetricCard({
   );
 }
 
-export function MetricCardSkeleton({ variant = 'default', className = '' }) {
+export function MetricCardSkeleton({ variant = 'default', valueSize = 'default', className = '' }) {
   const isHero = variant === 'emphasis';
   const isDense = variant === 'dense';
+  const valueSkeletonClass =
+    isHero
+      ? 'h-10 w-14 sm:h-12 sm:w-16'
+      : isDense && valueSize === 'lg'
+        ? 'h-8 w-11 sm:h-9 sm:w-12'
+        : 'h-7 w-10 sm:h-8';
   const cardClass = isHero
     ? 'app-metric-hero p-5 sm:p-6'
     : isDense
@@ -215,7 +247,7 @@ export function MetricCardSkeleton({ variant = 'default', className = '' }) {
         <div className={`app-skeleton shrink-0 rounded-sm ${isDense ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
       </div>
       <div className={`flex flex-wrap items-baseline gap-x-2 gap-y-1 ${isHero ? 'mt-3' : 'mt-1.5 sm:mt-2'}`}>
-        <div className={`app-skeleton ${isHero ? 'h-10 w-14 sm:h-12 sm:w-16' : 'h-7 w-10 sm:h-8'}`} />
+        <div className={`app-skeleton ${valueSkeletonClass}`} />
         {isHero ? <div className="app-skeleton h-6 w-10 sm:h-7 sm:w-12" /> : null}
       </div>
       {isHero ? (

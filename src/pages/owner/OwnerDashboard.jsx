@@ -231,6 +231,7 @@ export default function OwnerDashboard() {
             <MetricCard
               className="lg:col-span-1 cursor-pointer"
               variant="dense"
+              valueSize="lg"
               label={t('metrics.dueSoon')}
               value={dueSoonMembersCount}
               icon={AlertTriangle}
@@ -242,6 +243,7 @@ export default function OwnerDashboard() {
             <MetricCard
               className="lg:col-span-1 cursor-pointer"
               variant="dense"
+              valueSize="lg"
               label={t('metrics.expired')}
               value={expiredMembersCount}
               icon={XCircle}
@@ -253,6 +255,7 @@ export default function OwnerDashboard() {
             <MetricCard
               className="lg:col-span-1 cursor-pointer"
               variant="dense"
+              valueSize="lg"
               label={t('metrics.newMember', { count: newMembersThisMonth })}
               value={newMembersThisMonth}
               icon={UserPlus}
@@ -265,12 +268,14 @@ export default function OwnerDashboard() {
             <MetricCard
               className="lg:col-span-1 cursor-pointer"
               variant="dense"
+              valueSize="lg"
               label={t('pages.dashboard.thisMonthRevenue')}
               value={formatMoney(monthlyIncome)}
               icon={TrendingUp}
               color="teal"
               trend={revenueTrend}
               trendCaption={t('metrics.vsLastMonth')}
+              trendBelowValue
               onClick={() => navigate('/dashboard/revenue')}
             />
           </>
