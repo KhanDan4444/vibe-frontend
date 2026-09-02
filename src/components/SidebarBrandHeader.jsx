@@ -2,6 +2,7 @@ import { PanelLeft, PanelLeftClose } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import BrandLogo from './BrandLogo';
 import SidebarTooltip from './SidebarTooltip';
+import SidebarShortcutCoach from './SidebarShortcutCoach';
 import { sidebarIconButton } from '../utils/surfaceClasses';
 
 /**
