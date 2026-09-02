@@ -499,7 +499,14 @@
     border-radius: 1rem;
     border: 1px solid rgb(255 255 255 / 0.1);
     background-color: rgb(255 255 255 / 0.03);
-    padding: 1rem 1rem 0.875rem;
+    padding: 1rem 0.875rem 0.875rem;
+  }
+
+  @media (max-width: 380px) {
+    .auth-otp-panel {
+      padding-left: 0.625rem;
+      padding-right: 0.625rem;
+    }
   }
 
   .auth-otp-block {
@@ -557,8 +564,11 @@
 
   .auth-otp-slots-wrap {
     position: relative;
+    width: 100%;
     cursor: text;
-    border-radius: 1rem;
+    border-radius: 0.875rem;
+    padding: 0.125rem;
+    box-sizing: border-box;
     transition: box-shadow 150ms ease;
   }
 
@@ -581,20 +591,22 @@
   .auth-otp-slots {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: clamp(0.3125rem, 1.8vw, 0.4375rem);
+    gap: clamp(0.25rem, 1.6vw, 0.4375rem);
+    width: 100%;
   }
 
   .auth-otp-slot {
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1;
-    min-height: 2.75rem;
-    max-height: 3rem;
-    border-radius: 1rem;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    border-radius: clamp(0.5rem, 2.2vw, 0.875rem);
     border: 1px solid rgb(255 255 255 / 0.14);
     background-color: rgb(255 255 255 / 0.055);
-    font-size: clamp(1.0625rem, 4vw, 1.1875rem);
+    font-size: clamp(0.9375rem, 3.6vw, 1.125rem);
     font-weight: 600;
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
@@ -624,7 +636,7 @@
     color: transparent;
     caret-color: transparent;
     opacity: 0.001;
-    font-size: 1rem;
+    font-size: 16px; /* avoid iOS zoom on focus */
   }
 
   .auth-otp-input-overlay:focus {

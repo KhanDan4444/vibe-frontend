@@ -363,18 +363,18 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                 <div className="h-1.5 w-full bg-[color:var(--color-brand)]" aria-hidden />
                 <div className="flex w-full flex-col items-center px-5 py-6">
                   {pass?.gym_name ? (
-                    <p className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
+                    <p className="text-center text-[13px] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-brand-text)]">
                       {pass.gym_name}
                     </p>
                   ) : null}
-                  <p className="mt-2 text-center text-sm font-medium text-app-muted">
+                  <p className="mt-2 text-center text-[13px] font-medium text-app-muted">
                     {t('publicPass.title')}
                   </p>
 
-                  <p className="mt-4 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
+                  <p className="mt-4 text-center font-display text-xl font-semibold tracking-tight text-app-text-strong">
                     {member.name}
                   </p>
-                  {phone ? <p className="mt-0.5 font-mono text-xs text-app-muted">{phone}</p> : null}
+                  {phone ? <p className="mt-1.5 font-mono text-[15px] text-app-muted">{phone}</p> : null}
 
                   {loading ? (
                     <div className="mt-4 h-[200px] w-[200px] animate-pulse rounded-2xl bg-app-border" />
@@ -421,21 +421,25 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               </div>
 
               {telegramLinked ? (
-                <div className="mt-3 flex flex-col items-center gap-2">
-                  <p className="text-center text-xs font-medium text-sky-600 dark:text-sky-300">
+                <div className="mt-3 flex flex-col items-center gap-1">
+                  <p className="flex items-center gap-1.5 text-sm font-semibold text-sky-600 dark:text-sky-300">
+                    <span
+                      className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400"
+                      aria-hidden
+                    />
                     {t('pages.checkIn.telegramLinked')}
                   </p>
                   <button
                     type="button"
                     disabled={busy}
                     onClick={() => setConfirmTelegramUnlink(true)}
-                    className="text-xs font-semibold text-rose-600 transition hover:text-rose-500 disabled:opacity-50 dark:text-rose-400"
+                    className="text-[13px] font-semibold text-rose-600 transition hover:text-rose-500 disabled:opacity-50 dark:text-rose-400"
                   >
                     {t('pages.checkIn.telegramUnlink')}
                   </button>
                 </div>
               ) : (
-                <p className="mt-3 text-center text-xs text-app-muted">
+                <p className="mt-3 text-center text-sm text-app-muted">
                   <button
                     type="button"
                     className="font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-300"
@@ -451,10 +455,10 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               )}
             </>
           ) : (
-            <div className="mt-5 rounded-2xl border border-sky-500/20 bg-sky-500/5 px-4 py-5 text-left">
+            <div className="mt-5 px-1 py-2 text-left">
               <button
                 type="button"
-                className={`mb-4 inline-flex text-xs ${brandLinkClass}`}
+                className={`mb-4 inline-flex text-[13px] ${brandLinkClass}`}
                 onClick={() => {
                   setShowTelegramSetup(false);
                   setTelegramSetupFromSendPass(false);
@@ -463,11 +467,11 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                 ← {t('pages.checkIn.backToPass')}
               </button>
               {telegramSetupFromSendPass ? (
-                <p className="mb-4 rounded-lg border border-sky-500/25 bg-sky-500/10 px-3 py-2 text-center text-xs leading-relaxed text-sky-700 dark:text-sky-200">
+                <p className="mb-4 rounded-lg bg-sky-500/10 px-3 py-2.5 text-center text-[13px] leading-relaxed text-sky-700 dark:text-sky-200">
                   {t('pages.checkIn.telegramLinkThenSendPass')}
                 </p>
               ) : null}
-              <p className="text-center text-sm font-medium text-app-text-strong">
+              <p className="text-center font-display text-lg font-semibold tracking-tight text-app-text-strong">
                 {t('pages.checkIn.telegramLink')}
               </p>
               {telegramLinking && !telegramLink ? (
@@ -483,7 +487,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                 <>
                   <TelegramLinkShareRow link={telegramLink.link} />
                   {telegramLink.expires_in_seconds ? (
-                    <p className="mt-2 text-center text-[11px] text-app-muted">
+                    <p className="mt-2 text-center text-[13px] text-app-muted">
                       {t('pages.checkIn.telegramLinkExpires', {
                         minutes: Math.max(1, Math.round(telegramLink.expires_in_seconds / 60)),
                       })}
@@ -491,14 +495,14 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
                   ) : null}
                   <div className="mt-3 flex items-center justify-center gap-2 px-2">
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600 dark:text-sky-400" aria-hidden />
-                    <p className="text-center text-xs leading-relaxed text-app-muted">
+                    <p className="text-center text-[13px] leading-relaxed text-app-muted">
                       {t('pages.checkIn.telegramWaitingForMember')}
                     </p>
                   </div>
                   <div className="mt-3 text-center">
                     <button
                       type="button"
-                      className={`inline-flex text-xs ${brandLinkClass}`}
+                      className={`inline-flex text-[13px] ${brandLinkClass}`}
                       onClick={() => void handleTelegramLink()}
                       disabled={telegramLinking}
                     >

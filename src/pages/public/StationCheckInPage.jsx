@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import AuthOtpField from '../../components/auth/AuthOtpField';
+import StationVisitRing from '../../components/StationVisitRing';
 import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
 import {
   fetchStationSession,
@@ -191,6 +192,16 @@ export default function StationCheckInPage() {
   const gymName = session?.gym_name;
   const branchName = session?.branch_name;
   const memberName = successData?.member?.name || successData?.member_name || session?.trusted?.member_name;
+  const isSuccess = step === STEPS.SUCCESS;
+  const showStepTitle = !isSuccess && step !== STEPS.LOADING && step !== STEPS.ERROR;
+
+  const handleDone = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.close?.();
+  };
 
   return (
     <div className="relative min-h-[100dvh] overflow-hidden bg-[#071018] text-white">
@@ -212,7 +223,13 @@ export default function StationCheckInPage() {
         </div>
 
         <div className="flex flex-1 flex-col items-center justify-center">
-          <div className="w-full rounded-[1.75rem] border border-white/12 bg-white/[0.06] px-5 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-md">
+          <div
+            className={`w-full rounded-[1.75rem] border px-5 py-8 shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-md transition-[border-color,box-shadow] duration-300 ${
+              isSuccess
+                ? 'border-teal-400/25 bg-white/[0.07] shadow-[0_28px_90px_rgba(13,148,136,0.12)]'
+                : 'border-white/12 bg-white/[0.06]'
+            }`}
+          >
             {gymName ? (
               <p className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-teal-200/80">
                 {gymName}
@@ -221,9 +238,11 @@ export default function StationCheckInPage() {
             {branchName ? (
               <p className="mt-1 text-center text-sm text-white/55">{branchName}</p>
             ) : null}
-            <p className="mt-3 text-center font-display text-lg font-semibold text-white">
-              {t('publicStationCheckIn.title')}
-            </p>
+            {showStepTitle ? (
+              <p className="mt-3 text-center font-display text-lg font-semibold text-white">
+                {t('publicStationCheckIn.title')}
+              </p>
+            ) : null}
 
             {step === STEPS.LOADING ? (
               <div className="mt-10 flex flex-col items-center gap-3 text-white/70">
@@ -336,27 +355,41 @@ export default function StationCheckInPage() {
             ) : null}
 
             {step === STEPS.SUCCESS ? (
-              <div className="mt-6 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-teal-500/20 text-teal-300">
-                  <CheckCircle2 className="h-8 w-8" aria-hidden />
-                </div>
-                <p className="mt-4 font-display text-xl font-semibold text-white">
-                  {t('publicStationCheckIn.successTitle')}
-                </p>
-                {memberName ? (
-                  <p className="mt-2 text-sm text-white/70">{memberName}</p>
-                ) : null}
-                {successData?.visits_this_week != null && successData?.visits_limit != null ? (
-                  <p className="mt-3 text-sm text-teal-200/80">
-                    {t('publicStationCheckIn.visitsThisWeek', {
-                      count: successData.visits_this_week,
-                      limit: successData.visits_limit,
-                    })}
+              <div className="mt-2 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-safe:duration-300">
+                <div className="flex flex-col items-center text-center">
+                  <StationVisitRing
+                    visits={successData?.visits_this_week ?? 0}
+                    limit={successData?.visits_limit ?? null}
+                    celebrate
+                    size={104}
+                    stroke={7}
+                  />
+                  <p className="mt-5 font-display text-[1.65rem] font-semibold leading-tight tracking-tight text-white">
+                    {t('publicStationCheckIn.successTitle')}
                   </p>
-                ) : null}
-                <p className="mt-4 text-xs leading-relaxed text-white/45">
-                  {t('publicStationCheckIn.trustedHint')}
-                </p>
+                  <p className="mt-1.5 text-sm text-white/55">{t('publicStationCheckIn.successSubtitle')}</p>
+                  {memberName ? (
+                    <p className="mt-3 text-base font-medium text-teal-100/90">{memberName}</p>
+                  ) : null}
+                  {successData?.visits_this_week != null && successData?.visits_limit != null ? (
+                    <p className="mt-3 text-sm font-medium text-teal-200/75">
+                      {t('publicStationCheckIn.visitsThisWeek', {
+                        count: successData.visits_this_week,
+                        limit: successData.visits_limit,
+                      })}
+                    </p>
+                  ) : null}
+                  <p className="mt-5 max-w-[16rem] text-xs leading-relaxed text-white/40">
+                    {t('publicStationCheckIn.trustedHint')}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleDone}
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-white/14 bg-white/[0.08] px-4 py-3 text-sm font-semibold text-white transition hover:border-teal-400/30 hover:bg-teal-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-400/40 active:scale-[0.99]"
+                  >
+                    {t('publicStationCheckIn.successDone')}
+                  </button>
+                </div>
               </div>
             ) : null}
           </div>

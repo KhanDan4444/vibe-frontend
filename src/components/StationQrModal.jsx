@@ -226,14 +226,14 @@ export default function StationQrModal({
               ) : (
                 <>
                   {gymName ? (
-                    <p className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-[color:var(--color-brand-text)]">
+                    <p className="text-center text-[13px] font-semibold uppercase tracking-[0.12em] text-[color:var(--color-brand-text)]">
                       {gymName}
                     </p>
                   ) : null}
                   {branchName ? (
-                    <p className="mt-1.5 text-center text-sm font-medium text-app-muted">{branchName}</p>
+                    <p className="mt-1.5 text-center text-[13px] font-medium text-app-muted">{branchName}</p>
                   ) : null}
-                  <p className="mt-3 text-center font-display text-base font-semibold tracking-tight text-app-text-strong">
+                  <p className="mt-3 text-center font-display text-xl font-semibold tracking-tight text-app-text-strong">
                     {t('pages.checkIn.stationPosterTitle')}
                   </p>
 
@@ -249,7 +249,7 @@ export default function StationQrModal({
                     </div>
                   )}
 
-                  <ol className="mt-6 w-full max-w-sm space-y-2 text-left text-sm text-app-muted">
+                  <ol className="mt-6 w-full max-w-sm space-y-2.5 text-left text-[15px] text-app-muted">
                     <li className="flex gap-2.5">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-brand-soft)] text-xs font-bold text-[color:var(--color-brand-text)]">
                         1

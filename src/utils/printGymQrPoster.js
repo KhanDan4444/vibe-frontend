@@ -5,10 +5,43 @@
 import { createPdfDoc, PDF_BRAND } from './reportExportCore';
 
 const TEAL = [15, 118, 110];
+const TEAL_SOFT = [204, 251, 241];
 const INK = [15, 23, 42];
 const MUTED = PDF_BRAND.muted;
 const CARD_FILL = [255, 255, 255];
 const CARD_EDGE = [226, 232, 240];
+
+/**
+ * @param {import('jspdf').jsPDF} doc
+ * @param {number} x
+ * @param {number} y
+ * @param {number} num
+ * @param {string} text
+ * @param {number} maxWidth
+ */
+function drawNumberedStep(doc, x, y, num, text, maxWidth) {
+  const badgeR = 3.2;
+  const badgeCx = x + badgeR;
+  const textX = x + badgeR * 2 + 3;
+  const textWidth = maxWidth - (textX - x);
+
+  doc.setFillColor(...TEAL_SOFT);
+  doc.circle(badgeCx, y + 2.2, badgeR, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(...TEAL);
+  doc.text(String(num), badgeCx, y + 3.1, { align: 'center' });
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(...INK);
+  const lines = doc.splitTextToSize(text, textWidth);
+  doc.text(lines, textX, y + 3);
+
+  const lineHeight = 4.8;
+  return y + Math.max(lines.length * lineHeight, 7) + 2.5;
+}
 
 /**
  * @param {{
@@ -87,16 +120,15 @@ export async function downloadGymQrPosterPdf(opts) {
   }
 
   const steps = [
-    labels.step1 || '1. Scan this QR',
-    labels.step2 || '2. Enter your phone number',
-    labels.step3 || '3. Verify with Telegram',
+    labels.step1 || 'Scan with your phone camera',
+    labels.step2 || 'Enter your membership phone number',
+    labels.step3 || 'Enter the code from Telegram. Then you are all done!',
   ];
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.setTextColor(...INK);
+  const stepX = cardX + pad;
+  const stepWidth = cardW - pad * 2;
   steps.forEach((line, index) => {
-    doc.text(line, cardX + pad, y + index * 6.5);
+    y = drawNumberedStep(doc, stepX, y, index + 1, line, stepWidth);
   });
 
   const safeGym = String(gymName || 'gym')

@@ -1,10 +1,10 @@
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { dimText } from '../utils/surfaceClasses';
 import { parseApiResponse, formatApiError } from '../utils/api';
 import { mapMemberFromApi } from '../utils/apiMappers';
 import { createMemberTelegramLink, getMember } from '../services/memberService';
+import TelegramLinkShareRow from './TelegramLinkShareRow';
 
 const panelClass = 'mt-6 w-full';
 
@@ -115,29 +115,29 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
     <div className={`${panelClass} w-full self-stretch text-left`}>
       <button
         type="button"
-        className={`mb-3 inline-flex text-xs ${brandLinkClass}`}
+        className={`mb-3 inline-flex text-[13px] ${brandLinkClass}`}
         onClick={() => setOpen(false)}
       >
         ← {t('modals.member.telegramEnrollLater')}
       </button>
-      <p className="text-center text-sm font-medium text-app-text-strong">
+      <p className="text-center font-display text-lg font-semibold tracking-tight text-app-text-strong">
         {t('pages.checkIn.telegramLinkDeskTitle')}
       </p>
-      <p className="mt-2 text-center text-xs leading-relaxed text-app-dim">
+      <p className="mt-2 text-center text-[13px] leading-relaxed text-app-dim">
         {t('pages.checkIn.telegramLinkDeskHint')}
       </p>
 
       {error ? (
-        <p className="mt-3 text-center text-xs font-medium text-rose-600 dark:text-rose-400">{error}</p>
+        <p className="mt-3 text-center text-[13px] font-medium text-rose-600 dark:text-rose-400">{error}</p>
       ) : null}
 
       {linking && !telegramLink ? (
-        <div className="mx-auto mt-5 h-[180px] w-[180px] animate-pulse rounded-xl bg-app-border" />
+        <div className="mx-auto mt-5 h-[200px] w-[200px] animate-pulse rounded-xl bg-app-border" />
       ) : telegramLink?.qr_data_url ? (
         <img
           src={telegramLink.qr_data_url}
           alt={t('pages.checkIn.telegramLinkQrAlt', { name: memberName })}
-          className="mx-auto mt-5 h-[180px] w-[180px] rounded-xl bg-white p-2 shadow-sm ring-1 ring-black/5"
+          className="mx-auto mt-5 h-[200px] w-[200px] rounded-xl bg-white p-2 shadow-sm ring-1 ring-black/5"
         />
       ) : null}
 
@@ -145,7 +145,7 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
         <>
           <TelegramLinkShareRow link={telegramLink.link} />
           {telegramLink.expires_in_seconds ? (
-            <p className="mt-2 text-center text-[11px] text-app-dim">
+            <p className="mt-2 text-center text-[13px] text-app-dim">
               {t('pages.checkIn.telegramLinkExpires', {
                 minutes: Math.max(1, Math.round(telegramLink.expires_in_seconds / 60)),
               })}
@@ -153,14 +153,14 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
           ) : null}
           <div className="mt-3 flex items-center justify-center gap-2 px-2">
             <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600 dark:text-sky-400" aria-hidden />
-            <p className="text-center text-xs leading-relaxed text-app-dim">
+            <p className="text-center text-[13px] leading-relaxed text-app-dim">
               {t('pages.checkIn.telegramWaitingForMember')}
             </p>
           </div>
           <div className="mt-3 text-center">
             <button
               type="button"
-              className={`inline-flex text-xs ${brandLinkClass}`}
+              className={`inline-flex text-[13px] ${brandLinkClass}`}
               onClick={() => void loadLink()}
               disabled={linking}
             >
