@@ -223,7 +223,7 @@ export default function Activity() {
             <h2 className={panelTitle}>
               {t('pages.activity.history')}
             </h2>
-            <p className="mt-0.5 text-xs text-app-muted">{t('pages.activity.subtitle')}</p>
+            <p className="mt-0.5 text-xs text-app-dim">{t('pages.activity.subtitle')}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
             <SearchField
@@ -279,7 +279,7 @@ export default function Activity() {
                         <p className={`text-sm font-semibold leading-snug ${actionFiltered ? 'text-app-muted' : 'text-app-text-strong'}`}>
                           {formatAuditAction(entry.action)}
                         </p>
-                        <span className="shrink-0 text-xs font-medium tabular-nums text-app-muted">
+                        <span className="shrink-0 text-xs font-medium tabular-nums text-app-dim">
                           {formatLogTimestamp(entry.created_at, t, i18n.language)}
                         </span>
                       </div>
@@ -287,7 +287,7 @@ export default function Activity() {
                         <p className="mt-1 truncate text-sm text-app-text">{entry.entity_label}</p>
                       ) : null}
                       {detailText ? (
-                        <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-app-muted">{detailText}</p>
+                        <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-app-dim">{detailText}</p>
                       ) : null}
                       <div className="mt-1.5 flex flex-wrap items-center gap-2">
                         <span className="text-xs font-semibold text-app-muted">{entry.actor_name}</span>
@@ -295,7 +295,7 @@ export default function Activity() {
                           {formatActorRole(entry.actor_role)}
                         </span>
                         {showBranchColumn && entry.branch_name ? (
-                          <span className="text-xs text-app-muted">· {entry.branch_name}</span>
+                          <span className="text-xs text-app-dim">· {entry.branch_name}</span>
                         ) : null}
                       </div>
                     </div>
@@ -369,10 +369,10 @@ export default function Activity() {
                       <td className="truncate text-app-text">
                         {entry.entity_label || '—'}
                       </td>
-                      <td className="truncate text-app-muted">
+                      <td className="truncate text-app-dim">
                         {detailText || '—'}
                       </td>
-                      <td className="whitespace-nowrap text-app-muted">
+                      <td className="whitespace-nowrap text-app-dim">
                         {formatLogTimestamp(entry.created_at, t, i18n.language)}
                       </td>
                     </tr>

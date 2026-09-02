@@ -2,7 +2,7 @@ import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 're
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import RequiredMark from './RequiredMark';
+import { dimText, placeholderDim } from '../../utils/surfaceClasses';
 
 const MENU_MAX_HEIGHT = 240;
 const MENU_CHROME = 44; // search row
@@ -172,11 +172,11 @@ export default function SearchableSelect({
           .filter(Boolean)
           .join(' ')}
       >
-        <span className={selected ? 'text-app-text-strong' : 'text-app-muted'}>
+        <span className={selected ? 'text-app-text-strong' : dimText}>
           {selected?.label || placeholder || t('common.select')}
         </span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180 text-teal-600 dark:text-teal-400' : 'text-app-muted'}`}
+          className={`h-4 w-4 shrink-0 transition ${open ? 'rotate-180 text-teal-600 dark:text-teal-400' : dimText}`}
         />
       </button>
 
@@ -195,20 +195,20 @@ export default function SearchableSelect({
               }}
             >
               <div className="flex items-center gap-2 border-b border-app-border-subtle px-3 py-2">
-                <Search className="h-4 w-4 shrink-0 text-app-muted" />
+                <Search className={`h-4 w-4 shrink-0 ${dimText}`} />
                 <input
                   ref={inputRef}
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t('common.search')}
-                  className="w-full bg-transparent text-sm text-app-text-strong outline-none placeholder:text-app-muted"
+                  className={`w-full bg-transparent text-sm text-app-text-strong outline-none ${placeholderDim}`}
                   aria-label={t('common.search')}
                 />
               </div>
               <ul role="listbox" className="overflow-y-auto py-1" style={{ maxHeight: listMax }}>
                 {filtered.length === 0 ? (
-                  <li className="px-3 py-2.5 text-sm text-app-muted">{t('common.noResults')}</li>
+                  <li className={`px-3 py-2.5 text-sm ${dimText}`}>{t('common.noResults')}</li>
                 ) : (
                   filtered.map((opt) => {
                     const active = String(opt.value) === String(value);

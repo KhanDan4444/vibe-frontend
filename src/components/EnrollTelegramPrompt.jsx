@@ -1,8 +1,7 @@
 import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useFlash } from '../context/FlashContext';
-import Button from './ui/Button';
+import { dimText } from '../utils/surfaceClasses';
 import { parseApiResponse, formatApiError } from '../utils/api';
 import { mapMemberFromApi } from '../utils/apiMappers';
 import { createMemberTelegramLink, getMember } from '../services/memberService';
@@ -17,7 +16,6 @@ const brandLinkClass =
  */
 export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName }) {
   const { t } = useTranslation();
-  const { showFlash } = useFlash();
   const [open, setOpen] = useState(false);
   const [linked, setLinked] = useState(false);
   const [linking, setLinking] = useState(false);
@@ -86,16 +84,6 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
     if (!telegramLink) void loadLink();
   };
 
-  const handleCopy = async () => {
-    if (!telegramLink?.link) return;
-    try {
-      await navigator.clipboard.writeText(telegramLink.link);
-      showFlash({ title: t('pages.checkIn.telegramLinkCopied'), variant: 'success' });
-    } catch {
-      showFlash({ title: t('pages.checkIn.telegramLinkCopyFailed'), variant: 'danger' });
-    }
-  };
-
   if (!memberId || !apiFetch) return null;
 
   if (linked) {
@@ -135,7 +123,7 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
       <p className="text-center text-sm font-medium text-app-text-strong">
         {t('pages.checkIn.telegramLinkDeskTitle')}
       </p>
-      <p className="mt-2 text-center text-xs leading-relaxed text-app-muted">
+      <p className="mt-2 text-center text-xs leading-relaxed text-app-dim">
         {t('pages.checkIn.telegramLinkDeskHint')}
       </p>
 
@@ -155,14 +143,9 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
 
       {telegramLink?.link ? (
         <>
-          <p className="mt-3 break-all rounded-lg bg-app-bg/80 px-3 py-2 text-center font-mono text-[11px] leading-relaxed text-app-muted">
-            {telegramLink.link}
-          </p>
-          <Button type="button" variant="secondary" size="sm" className="mt-3 w-full" onClick={() => void handleCopy()}>
-            {t('pages.checkIn.telegramLinkCopy')}
-          </Button>
+          <TelegramLinkShareRow link={telegramLink.link} />
           {telegramLink.expires_in_seconds ? (
-            <p className="mt-2 text-center text-[11px] text-app-muted">
+            <p className="mt-2 text-center text-[11px] text-app-dim">
               {t('pages.checkIn.telegramLinkExpires', {
                 minutes: Math.max(1, Math.round(telegramLink.expires_in_seconds / 60)),
               })}
@@ -170,7 +153,7 @@ export default function EnrollTelegramPrompt({ apiFetch, memberId, memberName })
           ) : null}
           <div className="mt-3 flex items-center justify-center gap-2 px-2">
             <Loader2 className="h-4 w-4 shrink-0 animate-spin text-sky-600 dark:text-sky-400" aria-hidden />
-            <p className="text-center text-xs leading-relaxed text-app-muted">
+            <p className="text-center text-xs leading-relaxed text-app-dim">
               {t('pages.checkIn.telegramWaitingForMember')}
             </p>
           </div>

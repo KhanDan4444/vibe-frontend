@@ -18,7 +18,7 @@ export default function PasswordRule({ show, ok, label, variant = 'app' }) {
   const iconOkClass = isAuth
     ? 'text-emerald-300'
     : 'text-emerald-600 dark:text-emerald-400';
-  const iconPendingClass = isAuth ? 'text-white/35' : 'text-app-muted/70';
+  const iconPendingClass = isAuth ? 'text-white/35' : 'text-app-muted';
 
   return (
     <p

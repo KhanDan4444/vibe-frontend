@@ -386,7 +386,7 @@ export default function OwnerDashboard() {
                               <span className="block truncate font-semibold text-app-text-strong">
                                 {member.name}
                               </span>
-                              <p className="truncate text-xs text-app-muted">
+                              <p className="truncate text-xs text-app-dim">
                                 {planLabel}
                                 {' · '}
                                 {attentionEndLabel(member, t)}
@@ -504,7 +504,7 @@ export default function OwnerDashboard() {
                 <div className="min-h-[200px] flex-1 sm:min-h-[240px]">
                   <Suspense
                     fallback={
-                      <div className="flex h-full items-center justify-center text-sm text-app-muted">
+                      <div className="flex h-full items-center justify-center text-sm text-app-dim">
                         {t('common.loading')}
                       </div>
                     }
@@ -523,7 +523,7 @@ export default function OwnerDashboard() {
             <div className="min-h-[200px] flex-1 sm:min-h-[240px]">
               <Suspense
                 fallback={
-                  <div className="flex h-full items-center justify-center text-sm text-app-muted">
+                  <div className="flex h-full items-center justify-center text-sm text-app-dim">
                     {t('common.loading')}
                   </div>
                 }

@@ -1,5 +1,6 @@
 // src/pages/admin/AdminPayments.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { usePreferences } from '../../context/PreferencesContext';
 import { useAuth } from '../../context/AuthContext';
 import {
   Calendar,
@@ -29,7 +30,7 @@ import PaginationControls from '../../components/PaginationControls';
 import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { PERIOD_PRESETS, saasPaymentsToCsv, downloadCsv } from '../../utils/saasPaymentReport';
-import { PAYMENT_METHOD_COLORS } from '../../utils/reportChartData';
+import { PAYMENT_METHOD_COLORS, paymentMethodColors } from '../../utils/reportChartData';
 import { comparePaymentMethodOrder } from '../../i18n/helpers';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortAdminPaymentsList } from '../../utils/listSort';
 import { getSaasPayments, updateSaasPayment, getGyms, collectGymPayment } from '../../services/gymAdminService';
@@ -48,8 +49,8 @@ import SearchField from '../../components/SearchField';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-function methodShareColor(method) {
-  return PAYMENT_METHOD_COLORS[method] || PAYMENT_METHOD_COLORS.Other;
+function methodShareColor(method, colors = PAYMENT_METHOD_COLORS) {
+  return colors[method] || colors.Other;
 }
 
 function AdminPaymentRowActions({ payment, t, onEdit, onDelete }) {
@@ -99,6 +100,8 @@ function termStartForGym(gyms, gymId) {
 
 export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBootingChange }) {
   const { t } = useTranslation();
+  const { isDark } = usePreferences();
+  const methodColors = useMemo(() => paymentMethodColors(isDark), [isDark]);
   const { apiFetch } = useAuth();
 
   const [payments, setPayments] = useState([]);
@@ -488,7 +491,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           <div className="flex h-5 w-full gap-0.5 overflow-hidden rounded-full bg-app-border-subtle sm:h-6">
             {methodRows.map((row) => {
               const selected = methodFilter === row.method;
-              const color = methodShareColor(row.method);
+              const color = methodShareColor(row.method, methodColors);
               return (
                 <button
                   key={`share-${row.method}`}
@@ -513,7 +516,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
           <ul className="space-y-0.5">
             {methodRows.map((row) => {
               const selected = methodFilter === row.method;
-              const color = methodShareColor(row.method);
+              const color = methodShareColor(row.method, methodColors);
               return (
                 <li key={row.method}>
                   <button
@@ -607,7 +610,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                   <div className="mt-1.5 flex items-center gap-2">
                     <span
                       className="h-2 w-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: methodShareColor(payment.method) }}
+                      style={{ backgroundColor: methodShareColor(payment.method, methodColors) }}
                       aria-hidden
                     />
                     <PaymentMethodBadge method={payment.method} quiet />
@@ -683,7 +686,7 @@ export default function AdminPayments({ gyms: gymsProp, onCollectPayment, onBoot
                       <span className="inline-flex items-center gap-2">
                         <span
                           className="h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: methodShareColor(payment.method) }}
+                          style={{ backgroundColor: methodShareColor(payment.method, methodColors) }}
                           aria-hidden
                         />
                         <PaymentMethodBadge method={payment.method} quiet />

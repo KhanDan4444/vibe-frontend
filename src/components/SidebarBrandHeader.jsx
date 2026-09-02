@@ -2,7 +2,7 @@ import { PanelLeft, PanelLeftClose } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import BrandLogo from './BrandLogo';
 import SidebarTooltip from './SidebarTooltip';
-import SidebarShortcutCoach from './SidebarShortcutCoach';
+import { sidebarIconButton } from '../utils/surfaceClasses';
 
 /**
  * Desktop sidebar chrome: brand + collapse control in the header.
@@ -28,7 +28,7 @@ export default function SidebarBrandHeader({
         ref={collapseToggleRef}
         type="button"
         onClick={toggleCollapsed}
-        className={`shrink-0 rounded-lg text-slate-400 transition-colors hover:bg-white/[0.06] hover:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 dark:text-app-muted dark:hover:bg-app-raised/80 dark:hover:text-app-text-strong ${
+        className={`${sidebarIconButton} ${
           compact ? 'flex h-11 w-11 items-center justify-center' : 'p-2'
         }`}
         aria-label={`${tipLabel} (${shortcutHint})`}

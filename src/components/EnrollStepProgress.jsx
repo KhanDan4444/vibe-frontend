@@ -2,7 +2,7 @@
  * Light 3-step progress for enroll (and future longer forms).
  * First/last steps sit on the form edges; connectors are straight bars between circles.
  */
-import { Fragment } from 'react';
+import { dimText } from '../utils/surfaceClasses';
 import { useTranslation } from 'react-i18next';
 
 function labelAlign(index, total) {
@@ -76,7 +76,7 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
                         ? 'bg-teal-700/85 text-white shadow-sm ring-1 ring-teal-600/25 group-hover:bg-teal-700 group-hover:ring-2 group-hover:ring-teal-600/35 group-focus-visible:ring-2 group-focus-visible:ring-teal-600/40 group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-app-raised dark:bg-teal-600/90 dark:ring-teal-400/20 dark:group-hover:bg-teal-600'
                         : unlocked
                           ? 'bg-teal-700/85 text-white dark:bg-teal-600/90'
-                          : 'bg-app-surface text-app-muted ring-1 ring-app-border-subtle opacity-70',
+                          : `bg-app-surface ${dimText} ring-1 ring-app-border-subtle opacity-70`,
                   ].join(' ')}
                 >
                   {completed ? (
@@ -105,7 +105,7 @@ export default function EnrollStepProgress({ steps, current, maxReached = curren
                 className={[
                   'text-[11px] font-semibold leading-snug sm:text-xs',
                   labelAlign(index, total),
-                  active || unlocked ? 'text-app-text-strong' : 'text-app-muted',
+                  active || unlocked ? 'text-app-text-strong' : dimText,
                 ].join(' ')}
               >
                 {step.label}

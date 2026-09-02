@@ -38,9 +38,11 @@ import {
   aggregateRevenueByMember,
   aggregateRevenueByDate,
   memberReportStats,
-  PAYMENT_METHOD_COLORS,
+  membershipPlanPalette,
+  paymentMethodColors,
   planChartColors,
 } from '../../utils/reportChartData';
+import { usePreferences } from '../../context/PreferencesContext';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
@@ -50,6 +52,7 @@ import ToolbarPicker from '../../components/ToolbarPicker';
 
 export default function OwnerReports() {
   const { t } = useTranslation();
+  const { isDark } = usePreferences();
   const { apiFetch } = useAuth();
   const { summary, getBranchQueryParams, selectedBranchId, branches, gymName } = useGym();
   const memberReportGuard = useLatestRequestGuard();
@@ -132,7 +135,11 @@ export default function OwnerReports() {
   const memberStats = useMemo(() => memberReportStats(members), [members]);
   const overviewChart = useMemo(() => aggregateMembersOverview(members), [members]);
   const planChart = useMemo(() => aggregateMembersByPlan(members), [members]);
-  const planColors = useMemo(() => planChartColors(planChart), [planChart]);
+  const planColors = useMemo(
+    () => planChartColors(planChart, membershipPlanPalette(isDark)),
+    [planChart, isDark],
+  );
+  const methodColorMap = useMemo(() => paymentMethodColors(isDark), [isDark]);
   const methodChart = useMemo(() => aggregateRevenueByMethod(revenueSummary), [revenueSummary]);
   const topMembersChart = useMemo(() => aggregateRevenueByMember(payments), [payments]);
   const trendChart = useMemo(() => aggregateRevenueByDate(payments), [payments]);
@@ -314,7 +321,7 @@ export default function OwnerReports() {
           <ChartCard title={t('metrics.revenueByMethod')} empty={methodChart.length === 0}>
             <ReportDonut
               data={methodChart}
-              colors={PAYMENT_METHOD_COLORS}
+              colors={methodColorMap}
               showCounts
               formatValue={formatMoney}
             />

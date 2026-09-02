@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   PieChart,
   Pie,
@@ -7,11 +7,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { useChartTheme } from '../../utils/chartTheme';
+import { useChartTheme, donutSlicePalette } from '../../utils/chartTheme';
+import { dimText } from '../../utils/surfaceClasses';
 import { chartTooltipStyle } from '../../utils/chartTooltip';
-
-/** Fallback slice palette — alternating hues so adjacent slices stay distinct. */
-const PIE_PALETTE = ['#14b8a6', '#f59e0b', '#38bdf8', '#94a3b8', '#fb7185', '#84cc16', '#a78bfa'];
 
 function renderSlice(props) {
   const {
@@ -42,6 +40,10 @@ function renderSlice(props) {
 export default function ReportDonut({ data, colors = {}, showCounts = false, formatValue }) {
   const chartTheme = useChartTheme();
   const [activeIndex, setActiveIndex] = useState(null);
+  const fallbackPalette = useMemo(
+    () => donutSlicePalette(chartTheme.isDark),
+    [chartTheme.isDark]
+  );
   const rows = Array.isArray(data) ? data : [];
   const displayValue = formatValue || ((v) => v);
 
@@ -49,7 +51,7 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
     ? (value, name) => [displayValue(value), name]
     : (value, name) => [value, name];
 
-  const sliceColor = (entry, i) => colors[entry.name] || PIE_PALETTE[i % PIE_PALETTE.length];
+  const sliceColor = (entry, i) => colors[entry.name] || fallbackPalette[i % fallbackPalette.length];
 
   return (
     <div className="flex h-full flex-col">
@@ -98,7 +100,7 @@ export default function ReportDonut({ data, colors = {}, showCounts = false, for
             <li
               key={entry.name}
               className={`flex cursor-pointer items-center gap-2 text-xs transition-colors duration-200 ${
-                active ? 'font-medium text-app-text-strong' : 'text-slate-600 dark:text-app-muted'
+                active ? 'font-medium text-app-text-strong' : dimText
               }`}
               onMouseEnter={() => setActiveIndex(i)}
               onMouseLeave={() => setActiveIndex(null)}

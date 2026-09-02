@@ -26,6 +26,7 @@ import {
   shellPage,
   sidebarNavActive,
   sidebarNavIdle,
+  sidebarIconIdle,
   sidebarSurface,
 } from '../utils/surfaceClasses';
 import {
@@ -207,7 +208,7 @@ export default function AdminLayout() {
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className={`fixed inset-0 ${overlayBackdrop}`} onClick={() => setSidebarOpen(false)} />
           <div className={`relative flex w-full max-w-xs flex-col p-6 ${sidebarSurface}`}>
-            <button type="button" onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400">
+            <button type="button" onClick={() => setSidebarOpen(false)} className={`absolute right-4 top-4 ${sidebarIconIdle}`}>
               <X className="h-6 w-6" />
             </button>
             <div className="mb-7 mt-1">

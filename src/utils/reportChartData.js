@@ -6,43 +6,68 @@
 import { formatDisplayDate } from './date';
 import { formatPlanDisplayName } from './formatPlanDisplayName';
 import { comparePaymentMethodOrder } from '../i18n/helpers';
+import { chartNeutral } from './themeColors';
 
-/** Distinct slice colors for payment method donut charts. */
-export const PAYMENT_METHOD_COLORS = {
+const PAYMENT_METHOD_BASE = {
   Cash: '#14b8a6', // teal
   'Bank Transfer': '#f59e0b', // amber
   'Tele Birr': '#38bdf8', // sky
   Card: '#8b5cf6', // violet
-  Other: '#94a3b8', // slate
 };
+
+/** Distinct slice colors for payment method donut charts (light default). */
+export const PAYMENT_METHOD_COLORS = {
+  ...PAYMENT_METHOD_BASE,
+  Other: chartNeutral(false),
+};
+
+/** Theme-aware payment method colors for on-screen charts. */
+export function paymentMethodColors(isDark = false) {
+  return {
+    ...PAYMENT_METHOD_BASE,
+    Other: chartNeutral(isDark),
+  };
+}
+
+const MEMBERSHIP_PLAN_BASE = [
+  '#14b8a6', // teal
+  '#f59e0b', // amber
+  '#38bdf8', // sky
+  null, // neutral — filled per theme
+  '#fb7185', // rose
+  '#84cc16', // lime
+  '#a78bfa', // violet (last resort for 7+ plans)
+];
+
+/** Distinct slice colors for membership plan donuts (light default). */
+export const MEMBERSHIP_PLAN_PALETTE = MEMBERSHIP_PLAN_BASE.map((c) => c ?? chartNeutral(false));
+
+const SAAS_PLAN_BASE = [
+  '#2563eb', // blue-600
+  '#8b5cf6', // violet-500
+  '#06b6d4', // cyan-500
+  '#d946ef', // fuchsia-500
+  null, // neutral
+  '#4f46e5', // indigo-600
+  '#0891b2', // cyan-600
+];
+
+/** SaaS-plan palette kept visually distinct from semantic status colors (light default). */
+export const SAAS_PLAN_PALETTE = SAAS_PLAN_BASE.map((c) => c ?? chartNeutral(false));
+
+export function membershipPlanPalette(isDark = false) {
+  return MEMBERSHIP_PLAN_BASE.map((c) => c ?? chartNeutral(isDark));
+}
+
+export function saasPlanPalette(isDark = false) {
+  return SAAS_PLAN_BASE.map((c) => c ?? chartNeutral(isDark));
+}
 
 /** Paid vs unpaid slice colors (member / gym payment status donuts). */
 export const PAYMENT_STATUS_COLORS = {
   Paid: '#0d9488',
   Unpaid: '#ea580c',
 };
-
-/** Distinct slice colors for membership / SaaS plan donuts (applied by slice order). */
-export const MEMBERSHIP_PLAN_PALETTE = [
-  '#14b8a6', // teal
-  '#f59e0b', // amber
-  '#38bdf8', // sky
-  '#94a3b8', // slate
-  '#fb7185', // rose
-  '#84cc16', // lime
-  '#a78bfa', // violet (last resort for 7+ plans)
-];
-
-/** SaaS-plan palette kept visually distinct from semantic status colors. */
-export const SAAS_PLAN_PALETTE = [
-  '#2563eb', // blue-600
-  '#8b5cf6', // violet-500
-  '#06b6d4', // cyan-500
-  '#d946ef', // fuchsia-500
-  '#64748b', // slate-500
-  '#4f46e5', // indigo-600
-  '#0891b2', // cyan-600
-];
 
 /** Build a name → color map for plan donut charts. */
 export function planChartColors(planData, palette = MEMBERSHIP_PLAN_PALETTE) {

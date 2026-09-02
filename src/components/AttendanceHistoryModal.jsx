@@ -6,7 +6,7 @@ import EmptyState from './EmptyState';
 import MemberPhoto from './MemberPhoto';
 import { AttendanceDayListSkeleton, CheckInTodaySkeleton } from './LoadingSkeletons';
 import { modalBody } from '../utils/modalLayout';
-import { modalTitle, mutedText } from '../utils/surfaceClasses';
+import { modalTitle, mutedText, placeholderDim } from '../utils/surfaceClasses';
 import { listCheckIns } from '../services/checkInService';
 import { parseApiResponse } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
@@ -213,7 +213,7 @@ export default function AttendanceHistoryModal({
                   value={dayQuery}
                   onChange={(e) => setDayQuery(e.target.value)}
                   placeholder={t('pages.checkIn.historySearchDay')}
-                  className="min-w-0 flex-1 bg-transparent text-sm text-app-text-strong outline-none placeholder:text-app-muted"
+                  className={`min-w-0 flex-1 bg-transparent text-sm text-app-text-strong outline-none ${placeholderDim}`}
                 />
               </label>
               {filteredRows.length === 0 ? (

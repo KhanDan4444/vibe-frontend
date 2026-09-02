@@ -62,9 +62,7 @@ export function normalizeApiField(field) {
 
 function resolveMutationMessage(err, t) {
   if (t && err?.code === 'PHONE_ALREADY_USED') {
-    return t('validation.phoneAlreadyUsed', {
-      name: err.member_name || 'another member',
-    });
+    return t('validation.phoneAlreadyUsed');
   }
   return err?.message || 'Something went wrong.';
 }

@@ -17,7 +17,7 @@ export const PDF_FORMAT = { orientation: 'landscape', unit: 'mm', format: 'a4' }
 export const PDF_BRAND = {
   teal: [15, 118, 110],
   text: [30, 41, 59],
-  muted: [100, 116, 139],
+  muted: [71, 85, 105],
   stripe: [248, 250, 252],
   line: [226, 232, 240],
   white: [255, 255, 255],

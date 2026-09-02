@@ -41,6 +41,7 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { modalBody, modalHeader, modalFooter, modalStepFooter, modalFieldLabel } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
 import { listTrainers } from '../services/trainerService';
+import { checkMemberPhoneAvailable } from '../services/memberService';
 import { parseApiResponse } from '../utils/api';
 
 
@@ -89,6 +90,7 @@ export default function MemberModal({
   const [enrollStep, setEnrollStep] = useState(1);
   const [enrollMaxStep, setEnrollMaxStep] = useState(1);
   const [enrollDone, setEnrollDone] = useState(null);
+  const [phoneChecking, setPhoneChecking] = useState(false);
   const lastModalModeRef = useRef(null);
 
   const isEdit = !!member;
@@ -147,6 +149,12 @@ export default function MemberModal({
     lastModalModeRef.current = 'enroll';
     initEnrollDefaults();
   }, [member, initEnrollDefaults, resolvedDefaultBranch]);
+
+  useEffect(() => {
+    if (variant === 'page' && !member && externalFieldErrors.phone) {
+      setEnrollStep(1);
+    }
+  }, [variant, member, externalFieldErrors.phone]);
 
   const { markTouched, resetDraft } = useModalFormDraft({
     isOpen,
@@ -461,7 +469,7 @@ export default function MemberModal({
   };
 
   const displayError = validationError || error;
-  const isBusy = saving || submitting || photoProcessing;
+  const isBusy = saving || submitting || photoProcessing || phoneChecking;
   const isPage = variant === 'page';
   const selectedPlan = plans.find((p) => String(p.id) === String(planId));
   const useSteps = isPage && !isEdit;
@@ -469,7 +477,7 @@ export default function MemberModal({
   const computedEndDate =
     selectedPlan && startDate ? calculateEndDate(startDate, selectedPlan.duration) : '';
   const endDateValue = computedEndDate && computedEndDate !== '—' ? computedEndDate : '';
-  const sectionTitleClass = 'text-sm font-semibold text-app-muted';
+  const sectionTitleClass = 'text-sm font-semibold text-app-text-strong';
 
   const enrollSteps = [
     { id: 'member', label: t('modals.member.stepMember') },
@@ -513,7 +521,7 @@ export default function MemberModal({
             }}
           />
           {!isEdit ? (
-            <p className="mt-1 text-xs text-app-muted">{t('modals.member.trainerFeeHint')}</p>
+            <p className="mt-1 text-xs text-app-dim">{t('modals.member.trainerFeeHint')}</p>
           ) : null}
           <FieldError message={fieldErrorMessage(fieldErrors, 'trainerFee')} />
         </div>
@@ -544,7 +552,7 @@ export default function MemberModal({
 
   const trainerSelect =
     trainers.length === 0 ? (
-      <p className="text-xs text-app-muted">{t('modals.member.noTrainersYet')}</p>
+      <p className="text-xs text-app-dim">{t('modals.member.noTrainersYet')}</p>
     ) : (
       <SearchableSelect
         id="member-trainer"
@@ -642,10 +650,38 @@ export default function MemberModal({
     return true;
   };
 
-  const goEnrollNext = () => {
+  const ensurePhoneAvailable = async () => {
+    if (!apiFetch) return true;
+    setPhoneChecking(true);
+    try {
+      const res = await checkMemberPhoneAvailable(apiFetch, phone.trim());
+      const data = await parseApiResponse(res);
+      if (!res.ok) {
+        setValidationError(data?.error || t('auth.connectionFailed'));
+        return false;
+      }
+      if (!data.available) {
+        setLocalFieldErrors((prev) => ({
+          ...prev,
+          phone: t('validation.phoneAlreadyUsed'),
+        }));
+        return false;
+      }
+      clearFieldError(setLocalFieldErrors, 'phone');
+      return true;
+    } catch {
+      setValidationError(t('auth.connectionFailed'));
+      return false;
+    } finally {
+      setPhoneChecking(false);
+    }
+  };
+
+  const goEnrollNext = async () => {
     setValidationError('');
     if (enrollStep === 1) {
       if (!validateEnrollStep(1)) return;
+      if (!(await ensurePhoneAvailable())) return;
       // Defer so the Continue click cannot land on a newly mounted Submit control.
       window.setTimeout(() => {
         setEnrollStep(2);
@@ -662,11 +698,12 @@ export default function MemberModal({
     }
   };
 
-  const selectEnrollStep = (n) => {
+  const selectEnrollStep = async (n) => {
     if (n < 1 || n > enrollMaxStep || n === enrollStep) return;
     if (n > enrollStep) {
       for (let s = enrollStep; s < n; s += 1) {
         if (!validateEnrollStep(s)) return;
+        if (s === 1 && !(await ensurePhoneAvailable())) return;
       }
     }
     setValidationError('');
@@ -709,7 +746,7 @@ export default function MemberModal({
             <span className="block text-sm font-semibold text-app-text-strong">
               {photoPreview ? t('modals.member.changePhoto') : t('modals.member.addPhotoOptional')}
             </span>
-            <span className="mt-0.5 block text-xs text-app-muted">
+            <span className="mt-0.5 block text-xs text-app-dim">
               {t('modals.member.photoHintShort')}
             </span>
             <input
@@ -761,7 +798,7 @@ export default function MemberModal({
                 {t('modals.member.removePhoto')}
               </button>
             )}
-            <p className="text-xs text-app-muted">{t('modals.member.photoHint')}</p>
+            <p className="text-xs text-app-dim">{t('modals.member.photoHint')}</p>
           </div>
         </div>
       </div>
@@ -1017,7 +1054,7 @@ export default function MemberModal({
                   >
                     {endDateValue ? formatDisplayDate(endDateValue) : '—'}
                   </div>
-                  <p className="mt-1 text-xs text-app-muted">{t('modals.member.endDateHint')}</p>
+                  <p className="mt-1 text-xs text-app-dim">{t('modals.member.endDateHint')}</p>
                 </div>
               </div>
             </section>
@@ -1070,7 +1107,7 @@ export default function MemberModal({
                       <p className="mt-1.5 text-base font-semibold text-app-text-strong">
                         {selectedPlan ? formatMoney(selectedPlan.price) : t('modals.member.amountPickPlan')}
                       </p>
-                      <p className="mt-1 text-xs text-app-muted">{t('modals.member.amountFromPlan')}</p>
+                      <p className="mt-1 text-xs text-app-dim">{t('modals.member.amountFromPlan')}</p>
                       <FieldError message={fieldErrorMessage(fieldErrors, 'amount')} />
                     </div>
                     <div>
@@ -1110,7 +1147,7 @@ export default function MemberModal({
                     />
                     <FieldError message={fieldErrorMessage(fieldErrors, 'paymentDate')} />
                     {startDate && (
-                      <p className="mt-1 text-xs text-app-muted">
+                      <p className="mt-1 text-xs text-app-dim">
                         {t('modals.member.paymentDateHint', { date: formatDisplayDate(startDate) })}
                       </p>
                     )}
@@ -1143,7 +1180,7 @@ export default function MemberModal({
         {formFields}
         <div className={modalStepFooter}>
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-center text-xs text-app-muted sm:text-left">
+            <p className="text-center text-xs text-app-dim sm:text-left">
               {t('modals.member.stepOf', { current: enrollStep, total: 3 })}
             </p>
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
@@ -1163,8 +1200,9 @@ export default function MemberModal({
               {enrollStep < 3 ? (
                 <Button
                   type="button"
+                  loading={enrollStep === 1 && phoneChecking}
                   disabled={isBusy || (enrollStep === 2 && !canContinueStep2)}
-                  onClick={goEnrollNext}
+                  onClick={() => void goEnrollNext()}
                   className="w-full sm:w-auto"
                 >
                   {t('common.continue')}
@@ -1253,7 +1291,7 @@ export default function MemberModal({
               <p className="mt-2.5 font-display text-2xl font-semibold tracking-tight text-app-text-strong sm:text-[1.75rem]">
                 {enrollDone.name}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-app-muted sm:text-[15px]">
+              <p className="mt-2 text-sm leading-relaxed text-app-dim sm:text-[15px]">
                 {enrollDone.skipPayment
                   ? t('modals.member.successSkip')
                   : t('modals.member.successPaid')}

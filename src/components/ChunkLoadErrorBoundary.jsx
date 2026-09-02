@@ -38,11 +38,11 @@ export class ChunkLoadErrorBoundary extends React.Component {
                 className="h-8 w-8 animate-spin rounded-full border-2 border-teal-600/30 border-t-teal-600 dark:border-teal-400/25 dark:border-t-teal-400"
                 aria-hidden
               />
-              <p className="text-sm text-slate-500 dark:text-app-muted">Reloading…</p>
+              <p className="text-sm text-app-muted">Reloading…</p>
             </>
           ) : (
             <>
-              <p className="text-sm text-slate-500 dark:text-app-muted">Updating…</p>
+              <p className="text-sm text-app-muted">Updating…</p>
               <button
                 type="button"
                 onClick={this.handleReload}

@@ -41,10 +41,11 @@ import {
   aggregateRevenueByGym,
   aggregateRevenueByDate,
   gymReportStats,
-  PAYMENT_METHOD_COLORS,
-  SAAS_PLAN_PALETTE,
+  paymentMethodColors,
   planChartColors,
+  saasPlanPalette,
 } from '../../utils/reportChartData';
+import { usePreferences } from '../../context/PreferencesContext';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { MEMBER_FILTER_CHART_COLORS } from '../../utils/filterChipThemes';
@@ -64,6 +65,7 @@ const GYM_STATUS_FILTERS = [
 
 export default function AdminReports({ onBootingChange }) {
   const { t } = useTranslation();
+  const { isDark } = usePreferences();
   const { apiFetch } = useAuth();
   const gymReportGuard = useLatestRequestGuard();
 
@@ -155,9 +157,10 @@ export default function AdminReports({ onBootingChange }) {
   const overviewChart = useMemo(() => aggregateGymsOverview(gyms), [gyms]);
   const planChart = useMemo(() => aggregateGymsByPlan(gyms), [gyms]);
   const planColors = useMemo(
-    () => planChartColors(planChart, SAAS_PLAN_PALETTE),
-    [planChart],
+    () => planChartColors(planChart, saasPlanPalette(isDark)),
+    [planChart, isDark],
   );
+  const methodColorMap = useMemo(() => paymentMethodColors(isDark), [isDark]);
   const methodChart = useMemo(() => aggregateRevenueByMethod(revenueSummary), [revenueSummary]);
   const topGymsChart = useMemo(() => aggregateRevenueByGym(payments), [payments]);
   const trendChart = useMemo(() => aggregateRevenueByDate(payments), [payments]);
@@ -376,7 +379,7 @@ export default function AdminReports({ onBootingChange }) {
           <ChartCard title={t('metrics.revenueByMethod')} subtitle={t('admin.revenueByMethodSubtitle')} empty={methodChart.length === 0}>
             <ReportDonut
               data={methodChart}
-              colors={PAYMENT_METHOD_COLORS}
+              colors={methodColorMap}
               showCounts
               formatValue={formatMoney}
             />

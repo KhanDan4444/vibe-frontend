@@ -2,11 +2,11 @@
  * A4 portrait gym check-in poster — print at entrance (self check-in QR).
  */
 
-import { createPdfDoc } from './reportExportCore';
+import { createPdfDoc, PDF_BRAND } from './reportExportCore';
 
 const TEAL = [15, 118, 110];
 const INK = [15, 23, 42];
-const MUTED = [100, 116, 139];
+const MUTED = PDF_BRAND.muted;
 const CARD_FILL = [255, 255, 255];
 const CARD_EDGE = [226, 232, 240];
 

@@ -1,7 +1,7 @@
 // src/components/MetricCard.jsx
 import React from 'react';
 import Card from './ui/Card';
-import { mutedText, headingText } from '../utils/surfaceClasses';
+import { mutedText, headingText, dimText } from '../utils/surfaceClasses';
 
 /**
  * Shared metric card for dashboards (AdminDashboard + OwnerDashboard).
@@ -117,9 +117,8 @@ export default function MetricCard({
       <div className="flex items-start justify-between gap-2 min-w-0">
         <span
           className={[
-            'min-w-0 flex-1 font-medium leading-snug break-words',
+            'min-w-0 flex-1 font-medium leading-snug break-words text-app-text',
             isHero ? 'text-sm' : 'text-xs',
-            mutedText,
           ].join(' ')}
         >
           {label}
@@ -158,7 +157,7 @@ export default function MetricCard({
           <span
             className={[
               'font-display font-medium tracking-tight',
-              mutedText,
+              dimText,
               isHero ? 'text-xl sm:text-2xl' : isDense ? 'text-base' : 'text-lg',
             ].join(' ')}
           >
@@ -179,7 +178,7 @@ export default function MetricCard({
       </div>
 
       {trend && trendBelowValue && trendCaption && (
-        <p className={`mt-1 text-xs ${mutedText}`}>
+        <p className={`mt-1 text-xs ${dimText}`}>
           <span
             className={`font-semibold ${
               trendPositive
@@ -194,11 +193,11 @@ export default function MetricCard({
       )}
 
       {trend && !trendBelowValue && trendCaption && (
-        <p className={`mt-1 text-xs ${mutedText}`}>{trendCaption}</p>
+        <p className={`mt-1 text-xs ${dimText}`}>{trendCaption}</p>
       )}
 
       {!badge && !showProgressBar && !showHintBelow && hint && (
-        <p className={`mt-1 ${hintColor || `text-xs ${mutedText}`}`}>{hint}</p>
+        <p className={`mt-1 ${hintColor || `text-xs ${dimText}`}`}>{hint}</p>
       )}
 
       {showProgressBar && (
@@ -211,15 +210,15 @@ export default function MetricCard({
       )}
 
       {badge && hint && (
-        <p className={`mt-2 text-xs ${hintColor || mutedText}`}>{hint}</p>
+        <p className={`mt-2 text-xs ${hintColor || dimText}`}>{hint}</p>
       )}
 
       {!badge && showProgressBar && hint && (
-        <p className={`mt-2 text-xs ${hintColor || mutedText}`}>{hint}</p>
+        <p className={`mt-2 text-xs ${hintColor || dimText}`}>{hint}</p>
       )}
 
       {!badge && !showProgressBar && showHintBelow && hint && (
-        <p className={`mt-2 text-xs ${hintColor || mutedText}`}>{hint}</p>
+        <p className={`mt-2 text-xs ${hintColor || dimText}`}>{hint}</p>
       )}
     </Card>
   );

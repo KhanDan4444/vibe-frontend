@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, Copy, Loader2, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
+import { Download, Loader2, MessageSquare, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import ConfirmDialog from './ConfirmDialog';
 import Button from './ui/Button';
+import TelegramLinkShareRow from './TelegramLinkShareRow';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 import { modalTitle, mutedText } from '../utils/surfaceClasses';
 import { parseApiResponse, formatApiError } from '../utils/api';
@@ -298,19 +299,6 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
     }
   };
 
-  const handleCopyTelegramLink = async () => {
-    if (!telegramLink?.link) return;
-    try {
-      await navigator.clipboard.writeText(telegramLink.link);
-      onFlash?.({
-        title: t('pages.checkIn.telegramLinkCopied'),
-        variant: 'success',
-      });
-    } catch {
-      onFlash?.({ title: t('pages.checkIn.telegramLinkCopyFailed'), variant: 'danger' });
-    }
-  };
-
   const handleTelegramUnlink = async () => {
     if (!member?.id || telegramUnlinking || !telegramLinked) return;
     setTelegramUnlinking(true);
@@ -493,19 +481,7 @@ export default function MemberPassModal({ open, member, onClose, onFlash, onMemb
               ) : null}
               {telegramLink?.link ? (
                 <>
-                  <div className="mt-3 flex items-center gap-1.5 px-2">
-                    <p className="min-w-0 flex-1 break-all font-mono text-[11px] leading-relaxed text-app-muted">
-                      {telegramLink.link}
-                    </p>
-                    <button
-                      type="button"
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] bg-sky-500/[0.08] text-sky-600 transition-opacity hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400/60 dark:bg-sky-400/10 dark:text-sky-400"
-                      onClick={() => void handleCopyTelegramLink()}
-                      aria-label={t('pages.checkIn.telegramLinkCopy')}
-                    >
-                      <Copy className="h-[18px] w-[18px]" aria-hidden />
-                    </button>
-                  </div>
+                  <TelegramLinkShareRow link={telegramLink.link} />
                   {telegramLink.expires_in_seconds ? (
                     <p className="mt-2 text-center text-[11px] text-app-muted">
                       {t('pages.checkIn.telegramLinkExpires', {

@@ -1,7 +1,7 @@
 // src/pages/owner/Revenue.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { usePreferences } from '../../context/PreferencesContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
 import { CreditCard, Calendar, Trash2, Edit, Download, CircleDollarSign, UserX, X } from 'lucide-react';
@@ -13,7 +13,7 @@ import MetricCard, { MetricCardSkeleton } from '../../components/MetricCard';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import PaginationControls from '../../components/PaginationControls';
 import { PERIOD_PRESETS, downloadCsv } from '../../utils/paymentReport';
-import { PAYMENT_METHOD_COLORS } from '../../utils/reportChartData';
+import { PAYMENT_METHOD_COLORS, paymentMethodColors } from '../../utils/reportChartData';
 import { comparePaymentMethodOrder } from '../../i18n/helpers';
 import { parseApiResponse } from '../../utils/api';
 import { runInBackground } from '../../utils/runInBackground';
@@ -44,8 +44,8 @@ import { PaymentCardSkeleton, AdminTableRowsSkeleton } from '../../components/Lo
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 
-function methodShareColor(method) {
-  return PAYMENT_METHOD_COLORS[method] || PAYMENT_METHOD_COLORS.Other;
+function methodShareColor(method, colors = PAYMENT_METHOD_COLORS) {
+  return colors[method] || colors.Other;
 }
 
 function RevenuePaymentActions({ payment, t, onEdit, onDelete }) {
@@ -74,6 +74,8 @@ function RevenuePaymentActions({ payment, t, onEdit, onDelete }) {
 
 export default function Revenue() {
   const { t } = useTranslation();
+  const { isDark } = usePreferences();
+  const methodColors = useMemo(() => paymentMethodColors(isDark), [isDark]);
   const { apiFetch, user } = useAuth();
   const { plans, updatePayment, deletePayment, showFlash, refreshSummary, readOnly, getBranchQueryParams, selectedBranchId, branches, error: gymError } = useGym();
   const activeBranchCount = branches.filter((b) => b.is_active !== false).length;
@@ -443,7 +445,7 @@ export default function Revenue() {
           <div className="flex h-5 w-full gap-0.5 overflow-hidden rounded-full bg-app-border-subtle sm:h-6">
             {methodRows.map((row) => {
               const selected = methodFilter === row.method;
-              const color = methodShareColor(row.method);
+              const color = methodShareColor(row.method, methodColors);
               return (
                 <button
                   key={`share-${row.method}`}
@@ -468,7 +470,7 @@ export default function Revenue() {
           <ul className="space-y-0.5">
             {methodRows.map((row) => {
               const selected = methodFilter === row.method;
-              const color = methodShareColor(row.method);
+              const color = methodShareColor(row.method, methodColors);
               return (
                 <li key={row.method}>
                   <button
@@ -560,7 +562,7 @@ export default function Revenue() {
                   <div className="mt-1.5 flex items-center gap-2">
                     <span
                       className="h-2 w-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: methodShareColor(payment.method) }}
+                      style={{ backgroundColor: methodShareColor(payment.method, methodColors) }}
                       aria-hidden
                     />
                     <PaymentMethodBadge method={payment.method} quiet />
@@ -634,7 +636,7 @@ export default function Revenue() {
                       <span className="inline-flex items-center gap-2">
                         <span
                           className="h-2 w-2 shrink-0 rounded-full"
-                          style={{ backgroundColor: methodShareColor(payment.method) }}
+                          style={{ backgroundColor: methodShareColor(payment.method, methodColors) }}
                           aria-hidden
                         />
                         <PaymentMethodBadge method={payment.method} quiet />

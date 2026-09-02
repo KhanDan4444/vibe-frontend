@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
-import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, overlayBackdrop } from '../utils/surfaceClasses';
+import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, sidebarIconIdle, overlayBackdrop } from '../utils/surfaceClasses';
 import {
   LayoutDashboard,
   Users,
@@ -224,7 +224,7 @@ export default function OwnerLayout() {
     return (
       <div key={section.id} className={showHeading || section.labelKey ? 'pt-3 first:pt-0' : undefined}>
         {showHeading && labelsVisible ? (
-          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted/80">
+          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-app-muted">
             {t(section.labelKey)}
           </p>
         ) : null}
@@ -285,7 +285,7 @@ export default function OwnerLayout() {
         <div className="fixed inset-0 z-50 flex lg:hidden">
           <div className={`fixed inset-0 ${overlayBackdrop}`} onClick={() => setSidebarOpen(false)} />
           <div className={`relative flex w-full max-w-xs flex-col p-6 animate-in slide-in-from-left duration-200 ${sidebarSurface}`}>
-            <button onClick={() => setSidebarOpen(false)} className="absolute right-4 top-4 text-slate-400 hover:text-slate-200 dark:text-app-muted dark:hover:text-app-text-strong">
+            <button onClick={() => setSidebarOpen(false)} className={`absolute right-4 top-4 ${sidebarIconIdle}`}>
               <X className="h-6 w-6" />
             </button>
             <div className="mb-7 mt-1">

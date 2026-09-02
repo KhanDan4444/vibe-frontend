@@ -12,6 +12,12 @@ export const getMember = (apiFetch, id) => apiFetch(`/members/${id}`);
 
 export const getMemberPayments = (apiFetch, id) => apiFetch(`/members/${id}/payments`);
 
+export const checkMemberPhoneAvailable = (apiFetch, phone, excludeMemberId) => {
+  const qs = new URLSearchParams({ phone: String(phone || '').trim() });
+  if (excludeMemberId != null) qs.set('exclude_member_id', String(excludeMemberId));
+  return apiFetch(`/members/phone-check?${qs}`);
+};
+
 export const getMemberPass = (apiFetch, id) => apiFetch(`/members/${id}/pass`);
 
 export const regenerateMemberPass = (apiFetch, id) =>

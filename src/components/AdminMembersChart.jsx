@@ -10,7 +10,7 @@ export default function AdminMembersChart({ chartData }) {
 
   if (!chartData?.length || !chartData.some((c) => c.members > 0)) {
     return (
-      <p className="flex h-full items-center justify-center text-sm text-slate-400">
+      <p className="flex h-full items-center justify-center text-sm text-app-muted">
         No member data yet — register gyms to see the chart.
       </p>
     );

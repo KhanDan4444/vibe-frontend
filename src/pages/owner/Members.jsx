@@ -835,14 +835,14 @@ export default function Members() {
                       <span className="list-row-copy font-semibold text-app-text-strong">{member.name}</span>
                       <StatusBadge status={showingFormer ? 'Former' : member.status} />
                     </div>
-                    <p className="mt-0.5 text-xs text-app-muted truncate">
+                    <p className="mt-0.5 text-xs text-app-dim truncate">
                       {member.phone || '—'}
                       {' · '}
                       {planLabel}
                       {member.trainerName ? ` · ${member.trainerName}` : ''}
                       {showBranchColumn && member.branchName ? ` · ${member.branchName}` : ''}
                     </p>
-                    <p className="mt-0.5 text-xs text-app-muted">
+                    <p className="mt-0.5 text-xs text-app-dim">
                       {showingFormer
                         ? t('pages.members.removedOnDate', {
                             date: formatDisplayDate(member.deletedAt),
@@ -968,14 +968,14 @@ export default function Members() {
                       {showBranchColumn && (
                         <td className="truncate text-app-text">{member.branchName || '—'}</td>
                       )}
-                      <td className="truncate font-mono text-sm text-app-muted">{member.phone}</td>
+                      <td className="truncate font-mono text-sm text-app-dim">{member.phone}</td>
                       <td className="truncate font-medium text-app-text-strong">
                         {planLabel}
                       </td>
-                      <td className="owner-members-col-trainer truncate text-app-muted">
+                      <td className="owner-members-col-trainer truncate text-app-dim">
                         {member.trainerName || '—'}
                       </td>
-                      <td className="owner-members-col-duration text-app-muted">
+                      <td className="owner-members-col-duration text-app-dim">
                         {showingFormer ? (
                           <span className="whitespace-nowrap font-semibold text-app-text">
                             {formatDisplayDate(member.deletedAt)}
@@ -987,7 +987,7 @@ export default function Members() {
                         ) : (
                           <>
                             <span className="whitespace-nowrap">{formatDisplayDate(member.startDate)}</span>
-                            <span className="mx-1 text-xs text-app-muted">{t('common.to')}</span>
+                            <span className="mx-1 text-xs text-app-dim">{t('common.to')}</span>
                             <span className="whitespace-nowrap font-semibold text-app-text">{formatDisplayDate(member.endDate)}</span>
                           </>
                         )}

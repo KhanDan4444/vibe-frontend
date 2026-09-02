@@ -9,11 +9,18 @@
   --color-app-surface: #f8fafc;
   --color-app-raised: #ffffff;
   --color-app-sidebar: #121c1a;
+  /** Fixed dark sidebar copy — same in light/dark app theme. */
+  --color-sidebar-text: #cbd5e1;
+  --color-sidebar-muted: #94a3b8;
+  --color-sidebar-text-strong: #f8fafc;
   --color-app-border: #cbd5e1;
   --color-app-border-subtle: #e2e8f0;
   --color-app-text: #334155;
   --color-app-text-strong: #0f172a;
-  --color-app-muted: #64748b;
+  /** Secondary copy, hints, captions — AA on white/light surfaces. */
+  --color-app-muted: #475569;
+  /** Placeholders, inactive meta — light: same as muted; dark: dimmer tier in html.dark. */
+  --color-app-dim: #475569;
   /* White fields on slate surfaces — readable “box” without neon borders */
   --color-app-input: #ffffff;
   --color-app-input-border: #b6c2d1;
@@ -32,9 +39,9 @@
   --color-status-expired: #e11d48;
   --color-status-unpaid: #ea580c;
   --color-status-trialing: #d97706;
-  --color-status-former: #78716c;
+  --color-status-former: #57534e;
   /* New members — muted parchment / soft cream (not bright) */
-  --color-status-new: #8f877c;
+  --color-status-new: #6b7280;
   /* UI body vs display titles / metric figures */
   --font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-display: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
@@ -72,7 +79,8 @@
     --color-app-border-subtle: #e2e8f0;
     --color-app-text: #334155;
     --color-app-text-strong: #0f172a;
-    --color-app-muted: #64748b;
+    --color-app-muted: #475569;
+    --color-app-dim: #475569;
     --color-app-input: #ffffff;
     --color-app-input-border: #b6c2d1;
     --color-brand: #0f766e;
@@ -87,8 +95,8 @@
     --color-status-expired: #e11d48;
     --color-status-unpaid: #ea580c;
     --color-status-trialing: #d97706;
-    --color-status-former: #78716c;
-    --color-status-new: #8f877c;
+    --color-status-former: #57534e;
+    --color-status-new: #6b7280;
   }
 
   html {
@@ -131,9 +139,10 @@
     --color-app-sidebar: #171a21;
     --color-app-border: #343a46;
     --color-app-border-subtle: #2a2f3a;
-    --color-app-text: #c4c9d4;
+    --color-app-text: #e0e4ec;
     --color-app-text-strong: #e4e7ee;
-    --color-app-muted: #8b93a3;
+    --color-app-muted: #9aa3b2;
+    --color-app-dim: #7d8696;
     --color-app-input: #14181f;
     --color-app-input-border: #3f4654;
     --color-brand: #2dd4bf;
@@ -1092,7 +1101,7 @@
   .team-segment .toolbar-chip {
     border-color: transparent;
     background: transparent;
-    color: var(--color-app-muted);
+    color: var(--color-app-dim);
     min-height: 2.25rem;
   }
 
@@ -1137,7 +1146,7 @@
   }
 
   .toolbar-picker:hover:not(.toolbar-picker--open) {
-    border-color: #94a3b8;
+    border-color: var(--color-app-muted);
   }
 
   .toolbar-picker--open,
@@ -1159,7 +1168,7 @@
 
   .ui-select {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.625rem center;
     background-size: 1rem;
@@ -1227,7 +1236,7 @@
 
   .app-field::placeholder,
   .admin-field::placeholder {
-    color: var(--color-app-muted);
+    color: var(--color-app-dim);
   }
 
   .app-field:hover:not(:disabled):not(:focus),

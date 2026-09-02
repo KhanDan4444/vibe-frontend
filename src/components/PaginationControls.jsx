@@ -2,6 +2,8 @@ import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { dimText } from '../utils/surfaceClasses';
+
 export default function PaginationControls({
   page,
   totalPages,
@@ -18,7 +20,7 @@ export default function PaginationControls({
 
   return (
     <div className="safe-bottom flex flex-col gap-3 border-t border-app-border-subtle bg-app-surface/80 px-4 pt-4 [--safe-bottom-base:1rem] sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <p className="text-xs text-app-muted">
+      <p className={`text-xs ${dimText}`}>
         {t('pagination.showing', { from, to, total })}
       </p>
       <div className="flex items-center justify-between gap-2 sm:justify-end">

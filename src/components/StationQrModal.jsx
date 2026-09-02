@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Download, ExternalLink, QrCode, RefreshCw } from 'lucide-react';
+import { Copy, Download, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import ConfirmDialog from './ConfirmDialog';
@@ -155,11 +155,6 @@ export default function StationQrModal({
     }
   };
 
-  const handleTestScan = () => {
-    if (!payload?.check_in_url) return;
-    window.open(payload.check_in_url, '_blank', 'noopener,noreferrer');
-  };
-
   const showBranchPicker = activeBranches.length > 1;
   const busy = loading || regenerating || downloading || copying;
   const gymName = payload?.gym_name;
@@ -296,17 +291,6 @@ export default function StationQrModal({
             >
               {!copying ? <Copy className="h-3.5 w-3.5 shrink-0" aria-hidden /> : null}
               {t('pages.checkIn.stationCopyLink')}
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              disabled={busy || !payload?.check_in_url || !selfCheckInEnabled}
-              onClick={handleTestScan}
-              className="col-span-2 w-full"
-            >
-              <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              {t('pages.checkIn.stationTestScan')}
             </Button>
           </div>
         </div>

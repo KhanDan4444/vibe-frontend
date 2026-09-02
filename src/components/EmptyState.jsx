@@ -1,4 +1,4 @@
-import React from 'react';
+import { dimText } from '../utils/surfaceClasses';
 
 /**
  * Designed empty list state — title, one sentence, optional CTA.
@@ -34,7 +34,7 @@ export default function EmptyState({
       ) : null}
       <h3 className="font-display text-base font-semibold tracking-tight text-app-text-strong">{title}</h3>
       {body ? (
-        <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-app-muted">{body}</p>
+        <p className={`mt-1.5 max-w-sm text-sm leading-relaxed ${dimText}`}>{body}</p>
       ) : null}
       {action ? <div className="mt-4">{action}</div> : null}
     </div>

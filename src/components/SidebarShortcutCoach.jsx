@@ -74,7 +74,7 @@ export default function SidebarShortcutCoach({
         <button
           type="button"
           onClick={onDismiss}
-          className="absolute right-2 top-2 rounded-md p-1 text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+          className="absolute right-2 top-2 rounded-md p-1 text-sidebar-muted transition-colors hover:bg-white/10 hover:text-white"
           aria-label={t('common.close')}
         >
           <X className="h-3.5 w-3.5" />
@@ -82,7 +82,7 @@ export default function SidebarShortcutCoach({
         <p className="pr-6 text-sm font-medium leading-snug text-white">
           {t('common.sidebarShortcutTip', { shortcut: shortcutHint })}
         </p>
-        <p className="mt-1.5 text-[11px] leading-snug text-slate-400">
+        <p className="mt-1.5 text-[11px] leading-snug text-sidebar-muted">
           {t('common.sidebarShortcutTipHint')}
         </p>
         <span
