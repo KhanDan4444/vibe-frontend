@@ -566,22 +566,11 @@
     position: relative;
     width: 100%;
     cursor: text;
-    border-radius: 0.875rem;
-    padding: 0.125rem;
     box-sizing: border-box;
-    transition: box-shadow 150ms ease;
-  }
-
-  .auth-otp-slots-wrap:focus-within {
-    box-shadow: 0 0 0 2px rgb(94 234 212 / 0.28);
   }
 
   .auth-otp-slots-wrap-error .auth-otp-slot {
     border-color: rgb(251 113 133 / 0.55);
-  }
-
-  .auth-otp-slots-wrap-error:focus-within {
-    box-shadow: 0 0 0 2px rgb(251 113 133 / 0.35);
   }
 
   .auth-otp-slots-shake {
