@@ -4,6 +4,7 @@ import { Copy, Download, QrCode, RefreshCw } from 'lucide-react';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import ConfirmDialog from './ConfirmDialog';
+import ToolbarPicker from './ToolbarPicker';
 import { modalBody, modalFooter } from '../utils/modalLayout';
 import { modalTitle, mutedText } from '../utils/surfaceClasses';
 import { parseApiResponse } from '../utils/api';
@@ -155,6 +156,15 @@ export default function StationQrModal({
     }
   };
 
+  const branchOptions = useMemo(
+    () =>
+      activeBranches.map((b) => ({
+        id: String(b.id),
+        label: b.is_default ? `${b.name} ${t('branch.defaultSuffix')}` : b.name,
+      })),
+    [activeBranches, t],
+  );
+
   const showBranchPicker = activeBranches.length > 1;
   const busy = loading || regenerating || downloading || copying;
   const gymName = payload?.gym_name;
@@ -183,23 +193,20 @@ export default function StationQrModal({
           ) : null}
 
           {showBranchPicker ? (
-            <label className="mt-4 block">
+            <div className="mt-4 max-w-xs">
               <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-app-muted">
                 {t('pages.checkIn.stationBranch')}
               </span>
-              <select
-                className="auth-field w-full max-w-xs"
-                value={resolvedBranchId ?? ''}
-                onChange={(e) => setBranchId(Number(e.target.value))}
+              <ToolbarPicker
+                value={String(resolvedBranchId ?? '')}
+                onChange={(id) => setBranchId(Number(id))}
+                options={branchOptions}
+                label={t('pages.checkIn.stationBranch')}
+                size="field"
                 disabled={busy}
-              >
-                {activeBranches.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                className="w-full"
+              />
+            </div>
           ) : null}
 
           {error ? (

@@ -12,7 +12,9 @@ import { parseApiResponse } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import {
   attendanceDayRelative,
-  attendanceWeekRange,
+  ATTENDANCE_HISTORY_WEEK_COUNT,
+  attendanceHistoryWeekLabel,
+  attendanceWeekRangeByOffset,
   formatAttendanceDayLabel,
   formatAttendanceWeekRangeLabel,
   formatDisplayTime,
@@ -32,7 +34,7 @@ function WeekScopeChip({ label, active, onClick }) {
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`inline-flex min-h-8 items-center rounded-full border px-3 py-1 text-[13px] font-medium transition-colors ${
+      className={`inline-flex min-h-8 shrink-0 items-center rounded-full border px-3 py-1 text-[13px] font-medium transition-colors ${
         active
           ? 'border-[color:var(--color-brand)] bg-[color:var(--color-brand-soft)] text-[color:var(--color-brand-text)]'
           : 'border-app-border-subtle bg-transparent text-app-muted hover:bg-app-surface hover:text-app-text'
@@ -55,22 +57,45 @@ export default function AttendanceHistoryModal({
 }) {
   const { t, i18n } = useTranslation();
   const { apiFetch } = useAuth();
-  const [weekScope, setWeekScope] = useState('this');
+  const [weeksBack, setWeeksBack] = useState(0);
   const [selectedDay, setSelectedDay] = useState(null);
   const [dayQuery, setDayQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [checkIns, setCheckIns] = useState([]);
 
   const weekRange = useMemo(
-    () => attendanceWeekRange(weekScope, weekStartsOn),
-    [weekScope, weekStartsOn]
+    () => attendanceWeekRangeByOffset(weeksBack, weekStartsOn),
+    [weeksBack, weekStartsOn]
+  );
+
+  const weekOptions = useMemo(
+    () =>
+      Array.from({ length: ATTENDANCE_HISTORY_WEEK_COUNT }, (_, offset) => {
+        const range = attendanceWeekRangeByOffset(offset, weekStartsOn);
+        return {
+          weeksBack: offset,
+          range,
+          label: attendanceHistoryWeekLabel(offset, weekStartsOn, i18n.language, {
+            thisWeek: t('pages.checkIn.weekThis'),
+            lastWeek: t('pages.checkIn.weekLast'),
+          }),
+        };
+      }),
+    [weekStartsOn, i18n.language, t]
+  );
+
+  const selectedWeekLabel = useMemo(
+    () =>
+      weekOptions.find((option) => option.weeksBack === weeksBack)?.label ??
+      formatAttendanceWeekRangeLabel(weekRange.from, weekRange.to, i18n.language),
+    [weekOptions, weeksBack, weekRange.from, weekRange.to, i18n.language]
   );
 
   useEffect(() => {
     if (!open) {
       setSelectedDay(null);
       setDayQuery('');
-      setWeekScope('this');
+      setWeeksBack(0);
       setCheckIns([]);
       return undefined;
     }
@@ -98,7 +123,7 @@ export default function AttendanceHistoryModal({
     return () => {
       cancelled = true;
     };
-  }, [open, weekRange.from, weekRange.to, apiFetch, getBranchQueryParams, weekScope]);
+  }, [open, weekRange.from, weekRange.to, apiFetch, getBranchQueryParams, weeksBack]);
 
   const byDay = useMemo(() => groupCheckInsByDay(checkIns), [checkIns]);
   const selectedRows = useMemo(() => {
@@ -173,25 +198,23 @@ export default function AttendanceHistoryModal({
             <p className={`mt-1 text-sm ${mutedText}`}>
               {t('pages.checkIn.dayVisitCount', { count: selectedRows.length })}
               {' · '}
-              {weekScope === 'this'
-                ? t('pages.checkIn.weekThis')
-                : t('pages.checkIn.weekLast')}
+              {selectedWeekLabel}
             </p>
           )}
         </div>
 
         {!selectedDay ? (
-          <div className="mt-3 flex flex-wrap gap-2">
-            <WeekScopeChip
-              label={t('pages.checkIn.weekThis')}
-              active={weekScope === 'this'}
-              onClick={() => setWeekScope('this')}
-            />
-            <WeekScopeChip
-              label={t('pages.checkIn.weekLast')}
-              active={weekScope === 'last'}
-              onClick={() => setWeekScope('last')}
-            />
+          <div className="mt-3 -mx-1 overflow-x-auto px-1 pb-0.5">
+            <div className="flex w-max min-w-full gap-2">
+              {weekOptions.map((option) => (
+                <WeekScopeChip
+                  key={option.weeksBack}
+                  label={option.label}
+                  active={weeksBack === option.weeksBack}
+                  onClick={() => setWeeksBack(option.weeksBack)}
+                />
+              ))}
+            </div>
           </div>
         ) : null}
 
@@ -261,27 +284,29 @@ export default function AttendanceHistoryModal({
             </div>
           ) : byDay.length === 0 ? (
             <div
-              key={`empty-${weekScope}`}
+              key={`empty-${weeksBack}`}
               className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
             >
               <EmptyState
                 compact
                 tone="muted"
                 title={
-                  weekScope === 'last'
-                    ? t('pages.checkIn.historyEmptyLastTitle')
-                    : t('pages.checkIn.historyEmptyTitle')
+                  weeksBack === 0
+                    ? t('pages.checkIn.historyEmptyTitle')
+                    : weeksBack === 1
+                      ? t('pages.checkIn.historyEmptyLastTitle')
+                      : t('pages.checkIn.historyEmptyPastTitle')
                 }
                 body={
-                  weekScope === 'last'
-                    ? t('pages.checkIn.historyEmptyLast')
-                    : t('pages.checkIn.historyEmpty')
+                  weeksBack === 0
+                    ? t('pages.checkIn.historyEmpty')
+                    : t('pages.checkIn.historyEmptyLast')
                 }
               />
             </div>
           ) : (
             <ul
-              key={`days-${weekScope}`}
+              key={`days-${weeksBack}`}
               className="space-y-1.5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200"
             >
               {byDay.map(([day, rows]) => (

@@ -18,6 +18,7 @@ export default function ToolbarPicker({
   groups = [],
   label,
   size = 'compact',
+  disabled = false,
   className = '',
 }) {
   const { t } = useTranslation();
@@ -118,12 +119,14 @@ export default function ToolbarPicker({
       <button
         ref={buttonRef}
         type="button"
-        className={`toolbar-picker ${size === 'field' ? 'toolbar-picker--field' : ''} ${open ? 'toolbar-picker--open' : ''}`}
+        disabled={disabled}
+        className={`toolbar-picker ${size === 'field' ? 'toolbar-picker--field' : ''} ${open ? 'toolbar-picker--open' : ''} ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
         aria-label={label}
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={(e) => {
           e.stopPropagation();
+          if (disabled) return;
           setOpen((v) => !v);
         }}
       >

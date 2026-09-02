@@ -474,6 +474,7 @@ export default function CheckIn() {
     const previous = Boolean(settings?.station_self_checkin);
     const next = !previous;
     setSettings((prev) => ({ ...prev, station_self_checkin: next }));
+    if (!next) setStationOpen(false);
     setTogglingSelfCheckIn(true);
     try {
       const res = await updateAttendanceSettings(apiFetch, { station_self_checkin: next });
@@ -498,6 +499,7 @@ export default function CheckIn() {
       : selectedBranchId;
 
   const capValue = String(effectiveVisitsPerWeek(settings?.visits_per_week));
+  const selfCheckInEnabled = Boolean(settings?.station_self_checkin);
 
   return (
     <div className="space-y-5 sm:space-y-6">
@@ -517,7 +519,7 @@ export default function CheckIn() {
                 {t('pages.checkIn.scanAction')}
               </Button>
             ) : null}
-            {!readOnly ? (
+            {!readOnly && selfCheckInEnabled ? (
               <Button
                 type="button"
                 variant="secondary"
@@ -625,7 +627,7 @@ export default function CheckIn() {
                 <p className={`mt-1 text-sm leading-relaxed ${mutedText}`}>
                   {t('pages.checkIn.stationSelfCheckInHint')}
                 </p>
-                {settings?.station_self_checkin ? (
+                {selfCheckInEnabled ? (
                   <button
                     type="button"
                     className="mt-2.5 text-sm font-semibold text-[color:var(--color-brand-text)] transition-opacity hover:opacity-80"
@@ -981,7 +983,7 @@ export default function CheckIn() {
         branches={branches}
         initialBranchId={stationBranchId}
         canRegenerate={owner && canManage}
-        selfCheckInEnabled={Boolean(settings?.station_self_checkin)}
+        selfCheckInEnabled={selfCheckInEnabled}
         onFlash={showFlash}
       />
     </div>
