@@ -2,6 +2,7 @@ import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 're
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import RequiredMark from './RequiredMark';
 import { dimText, placeholderDim } from '../../utils/surfaceClasses';
 
 const MENU_MAX_HEIGHT = 240;
