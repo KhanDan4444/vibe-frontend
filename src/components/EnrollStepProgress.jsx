@@ -2,6 +2,7 @@
  * Light 3-step progress for enroll (and future longer forms).
  * First/last steps sit on the form edges; connectors are straight bars between circles.
  */
+import { Fragment } from 'react';
 import { dimText } from '../utils/surfaceClasses';
 import { useTranslation } from 'react-i18next';
 

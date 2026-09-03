@@ -1,6 +1,7 @@
 // src/pages/owner/Revenue.jsx
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { usePreferences } from '../../context/PreferencesContext';
 import { useGym } from '../../context/GymContext';
 import { isGymOwner } from '../../utils/roles';
