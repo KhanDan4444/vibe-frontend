@@ -57,6 +57,8 @@ export {
 } from './payment';
 export { validateMemberForm } from './member';
 export {
+  validateRequiredCity,
+  validateOptionalGymAddress,
   validateGymSignupDetails,
   validateGymSignupGymStep,
   validateGymSignupAccountStep,

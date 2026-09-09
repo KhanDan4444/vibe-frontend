@@ -15,10 +15,14 @@ import {
   FORM_INPUT_CLASS,
   firstFailure,
   validateRequiredName,
+  validateRequiredCity,
+  validateOptionalGymAddress,
   validateUsername,
   validateOptionalEmail,
   validatePassword,
+  validatePasswordMatch,
   validateRequiredEthiopianPhone,
+  MIN_PASSWORD_LENGTH,
   ok,
   fail,
 } from '../utils/validation';
@@ -32,18 +36,32 @@ import MoneyAmountInput from './ui/MoneyAmountInput';
 import Card from './ui/Card';
 import PageHeader from './PageHeader';
 import EnrollStepProgress from './EnrollStepProgress';
+import PasswordRule from './auth/PasswordRule';
 import { formatMoney } from '../utils/formatMoney';
 import { modalBody, modalHeader, modalFooter, modalStepFooter } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
 
 
-function validateRegisterStep1({ gymName, ownerName, username, email, password, phone }) {
+function validateRegisterStep1({
+  gymName,
+  city,
+  address,
+  ownerName,
+  username,
+  email,
+  password,
+  confirm,
+  phone,
+}) {
   return firstFailure(
     validateRequiredName(gymName, { field: 'gymName' }),
+    validateRequiredCity(city),
+    validateOptionalGymAddress(address),
     validateRequiredName(ownerName, { field: 'ownerName' }),
     validateUsername(username),
     validateOptionalEmail(email),
     validatePassword(password),
+    validatePasswordMatch(password, confirm),
     validateRequiredEthiopianPhone(phone)
   );
 }
@@ -65,11 +83,16 @@ export default function RegisterGymModal({
   const isPage = variant === 'page';
 
   const [gymName, setGymName] = useState('');
+  const [city, setCity] = useState('');
+  const [address, setAddress] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [phone, setPhone] = useState('');
+  const [showLengthRule, setShowLengthRule] = useState(false);
+  const [showMatchRule, setShowMatchRule] = useState(false);
   const [saasPlanId, setSaasPlanId] = useState('');
   const [skipPayment, setSkipPayment] = useState(false);
   const [amount, setAmount] = useState('');
@@ -85,14 +108,21 @@ export default function RegisterGymModal({
   const fieldErrors = localFieldErrors;
   const fc = (field) => inputClass(FORM_INPUT_CLASS, fieldErrors, field);
   const isBusy = saving || submitting;
+  const lengthOk = password.length >= MIN_PASSWORD_LENGTH;
+  const matchOk = confirm.length > 0 && password === confirm;
 
   const initDefaults = useCallback(() => {
     setGymName('');
+    setCity('');
+    setAddress('');
     setOwnerName('');
     setEmail('');
     setUsername('');
     setPassword('');
+    setConfirm('');
     setPhone('');
+    setShowLengthRule(false);
+    setShowMatchRule(false);
     setSaasPlanId('');
     setSkipPayment(false);
     setAmount('');
@@ -127,7 +157,17 @@ export default function RegisterGymModal({
   const validateStep = (step) => {
     if (step === 1) {
       return showValidationError(
-        validateRegisterStep1({ gymName, ownerName, username, email, password, phone }),
+        validateRegisterStep1({
+          gymName,
+          city,
+          address,
+          ownerName,
+          username,
+          email,
+          password,
+          confirm,
+          phone,
+        }),
         setError,
         t,
         { setFieldErrors: setLocalFieldErrors }
@@ -182,8 +222,10 @@ export default function RegisterGymModal({
   const buildPayload = () => {
     const trimmedPhone = phone.trim();
     const trimmedEmail = email.trim().toLowerCase();
+    const trimmedAddress = address.trim();
     const base = {
       gymName: gymName.trim(),
+      city: city.trim(),
       ownerName: ownerName.trim(),
       username: username.trim().toLowerCase(),
       password,
@@ -191,6 +233,7 @@ export default function RegisterGymModal({
       saasPlanId: parseInt(saasPlanId, 10),
     };
     if (trimmedEmail) base.email = trimmedEmail;
+    if (trimmedAddress) base.address = trimmedAddress;
     if (skipPayment) {
       return { ...base, skipPayment: true, start_date: todayString() };
     }
@@ -213,10 +256,13 @@ export default function RegisterGymModal({
 
     const registerResult = validateAdminGymRegister({
       gymName,
+      city,
+      address,
       ownerName,
       username,
       email,
       password,
+      confirm,
       phone,
       saasPlanId,
       skipPayment,
@@ -262,6 +308,7 @@ export default function RegisterGymModal({
 
   const step1Fields = (
     <section className="space-y-4">
+      <p className="text-sm font-semibold text-app-text-strong">{t('auth.signupSectionGym')}</p>
       <div>
         <label className="form-label">
           {t('modals.registerGym.gymName')}
@@ -282,12 +329,53 @@ export default function RegisterGymModal({
       </div>
       <div>
         <label className="form-label">
+          {t('modals.registerGym.gymCity')}
+          <RequiredMark />
+        </label>
+        <input
+          type="text"
+          required={!isPage}
+          autoComplete="address-level2"
+          placeholder={t('modals.registerGym.gymCityPlaceholder')}
+          className={fc('city')}
+          value={city}
+          onChange={(e) => {
+            setCity(e.target.value);
+            clearFieldError(setLocalFieldErrors, 'city');
+          }}
+        />
+        <FieldError message={fieldErrorMessage(fieldErrors, 'city')} />
+      </div>
+      <div>
+        <label className="form-label">
+          {t('modals.registerGym.gymAddress')}
+          <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
+        </label>
+        <input
+          type="text"
+          autoComplete="street-address"
+          placeholder={t('modals.registerGym.gymAddressPlaceholder')}
+          className={fc('address')}
+          value={address}
+          onChange={(e) => {
+            setAddress(e.target.value);
+            clearFieldError(setLocalFieldErrors, 'address');
+          }}
+        />
+        <FieldError message={fieldErrorMessage(fieldErrors, 'address')} />
+      </div>
+
+      <p className="pt-2 text-sm font-semibold text-app-text-strong">{t('auth.signupSectionAccount')}</p>
+      <div>
+        <label className="form-label">
           {t('modals.registerGym.ownerName')}
           <RequiredMark />
         </label>
         <input
           type="text"
           required={!isPage}
+          autoComplete="name"
+          placeholder={t('modals.registerGym.ownerNamePlaceholder')}
           className={fc('ownerName')}
           value={ownerName}
           onChange={(e) => {
@@ -296,22 +384,6 @@ export default function RegisterGymModal({
           }}
         />
         <FieldError message={fieldErrorMessage(fieldErrors, 'ownerName')} />
-      </div>
-      <div>
-        <label className="form-label">
-          {t('modals.registerGym.ownerEmail')}
-          <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
-        </label>
-        <input
-          type="email"
-          className={fc('email')}
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            clearFieldError(setLocalFieldErrors, 'email');
-          }}
-        />
-        <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
       </div>
       <div>
         <label className="form-label">
@@ -335,44 +407,95 @@ export default function RegisterGymModal({
         <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
         <p className="mt-1.5 text-xs text-app-muted">{t('modals.registerGym.usernameHint')}</p>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div>
-          <label className="form-label">
-            {t('auth.password')}
-            <RequiredMark />
-          </label>
-          <input
-            type="password"
-            required={!isPage}
-            className={fc('password')}
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              clearFieldError(setLocalFieldErrors, 'password');
-            }}
-          />
-          <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
-        </div>
-        <div>
-          <label className="form-label">
-            {t('modals.registerGym.phone')}
-            <RequiredMark />
-          </label>
-          <input
-            type="tel"
-            required={!isPage}
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder={t('auth.phonePlaceholder')}
-            className={fc('phone')}
-            value={phone}
-            onChange={(e) => {
-              setPhone(e.target.value);
-              clearFieldError(setLocalFieldErrors, 'phone');
-            }}
-          />
-          <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
-        </div>
+      <div>
+        <label className="form-label">
+          {t('modals.registerGym.ownerEmail')}
+          <span className="ml-1 text-xs font-normal text-app-muted">({t('account.optional')})</span>
+        </label>
+        <input
+          type="email"
+          autoComplete="email"
+          placeholder={t('modals.registerGym.emailPlaceholder')}
+          className={fc('email')}
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            clearFieldError(setLocalFieldErrors, 'email');
+          }}
+        />
+        <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
+      </div>
+      <div>
+        <label className="form-label">
+          {t('auth.password')}
+          <RequiredMark />
+        </label>
+        <input
+          type="password"
+          required={!isPage}
+          autoComplete="new-password"
+          placeholder={t('modals.registerGym.passwordPlaceholder')}
+          className={fc('password')}
+          value={password}
+          onFocus={() => setShowLengthRule(true)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setShowLengthRule(true);
+            clearFieldError(setLocalFieldErrors, 'password');
+          }}
+        />
+        <PasswordRule
+          show={showLengthRule || password.length > 0}
+          ok={lengthOk}
+          label={t('account.passwordMin8')}
+        />
+        <FieldError message={fieldErrorMessage(fieldErrors, 'password')} />
+      </div>
+      <div>
+        <label className="form-label">
+          {t('auth.confirmPassword')}
+          <RequiredMark />
+        </label>
+        <input
+          type="password"
+          required={!isPage}
+          autoComplete="new-password"
+          placeholder={t('modals.registerGym.confirmPasswordPlaceholder')}
+          className={fc('confirmPassword')}
+          value={confirm}
+          onFocus={() => setShowMatchRule(true)}
+          onChange={(e) => {
+            setConfirm(e.target.value);
+            setShowMatchRule(true);
+            clearFieldError(setLocalFieldErrors, 'confirmPassword');
+          }}
+        />
+        <PasswordRule
+          show={showMatchRule || confirm.length > 0}
+          ok={matchOk}
+          label={t('account.passwordsMatch')}
+        />
+        <FieldError message={fieldErrorMessage(fieldErrors, 'confirmPassword')} />
+      </div>
+      <div>
+        <label className="form-label">
+          {t('modals.registerGym.phone')}
+          <RequiredMark />
+        </label>
+        <input
+          type="tel"
+          required={!isPage}
+          inputMode="tel"
+          autoComplete="tel"
+          placeholder={t('auth.phonePlaceholder')}
+          className={fc('phone')}
+          value={phone}
+          onChange={(e) => {
+            setPhone(e.target.value);
+            clearFieldError(setLocalFieldErrors, 'phone');
+          }}
+        />
+        <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
       </div>
     </section>
   );

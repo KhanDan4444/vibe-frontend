@@ -25,7 +25,6 @@ import { formatDisplayDate } from '../../utils/date';
 import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
 
 const STEPS = ['phone', 'gym', 'account'];
-const SIGNUP_TRIAL_DAYS = 30;
 const SIGNUP_STEP_LABEL_KEYS = ['auth.signupStepVerify', 'auth.signupStepGym', 'auth.signupStepAccount'];
 
 function formatSignupLocation(city, address) {
@@ -181,7 +180,6 @@ export default function RegisterGym() {
       if (trimmedAddress) payload.address = trimmedAddress;
 
       const data = await completeGymSignup(payload);
-      const trialDays = data.subscription?.trial_days ?? SIGNUP_TRIAL_DAYS;
       setRegisterDone({
         gymName: gymName.trim(),
         username: username.trim().toLowerCase(),
@@ -189,8 +187,8 @@ export default function RegisterGym() {
         location: formatSignupLocation(city, address),
         phone: normalizeEthiopianPhone(phone.trim()) || phone.trim(),
         email: trimmedEmail || undefined,
-        trialEndDate: data.subscription?.end_date,
-        trialDays,
+        planName: data.subscription?.plan_name,
+        endDate: data.subscription?.end_date,
       });
     } catch (err) {
       setError(err.message);
@@ -206,10 +204,11 @@ export default function RegisterGym() {
       registerDone.phone ? { label: t('auth.accountPhone'), value: registerDone.phone } : null,
       registerDone.email ? { label: t('auth.accountEmail'), value: registerDone.email } : null,
       registerDone.location ? { label: t('auth.accountLocation'), value: registerDone.location } : null,
-      registerDone.trialEndDate
+      registerDone.planName ? { label: t('auth.accountPlan'), value: registerDone.planName } : null,
+      registerDone.endDate
         ? {
-            label: t('auth.accountTrialEnds'),
-            value: formatDisplayDate(registerDone.trialEndDate),
+            label: t('auth.accountAccessUntil'),
+            value: formatDisplayDate(registerDone.endDate),
           }
         : null,
     ].filter(Boolean);
@@ -222,7 +221,7 @@ export default function RegisterGym() {
             hero={registerDone.gymName}
             body={t('auth.signupSuccessBody')}
             rows={rows}
-            hint={t('auth.signupSuccessHint', { days: registerDone.trialDays ?? SIGNUP_TRIAL_DAYS })}
+            hint={t('auth.signupSuccessHint')}
             ctaLabel={t('auth.signIn')}
             onCta={() => navigate('/login', { replace: true })}
           />
@@ -499,7 +498,6 @@ export default function RegisterGym() {
                 className="text-sm text-rose-300"
               />
             </div>
-            <p className="auth-hint">{t('auth.signupTrialNote', { days: SIGNUP_TRIAL_DAYS })}</p>
             <AuthCtaButton loading={loading} busyLabel={t('auth.processing')}>
               {t('auth.createGymAccount')}
             </AuthCtaButton>

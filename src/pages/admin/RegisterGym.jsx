@@ -52,6 +52,7 @@ export default function RegisterGym() {
     try {
       const payload = {
         gym_name: data.gymName,
+        city: data.city,
         owner_name: data.ownerName,
         username: data.username,
         password: data.password,
@@ -60,6 +61,7 @@ export default function RegisterGym() {
         skip_payment: data.skipPayment,
       };
       if (data.email) payload.email = data.email;
+      if (data.address) payload.address = data.address;
       if (!data.skipPayment) {
         payload.amount = data.amount;
         payload.date = data.date;

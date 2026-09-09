@@ -83,10 +83,13 @@ export function validateGymSignupAccountStep({ ownerName, username, email, passw
 /**
  * @param {{
  *   gymName: string,
+ *   city: string,
+ *   address?: string,
  *   ownerName: string,
  *   username: string,
  *   email?: string,
  *   password: string,
+ *   confirm: string,
  *   phone: string,
  *   saasPlanId?: string|number|null,
  *   skipPayment?: boolean,
@@ -96,10 +99,13 @@ export function validateGymSignupAccountStep({ ownerName, username, email, passw
  */
 export function validateAdminGymRegister({
   gymName,
+  city,
+  address,
   ownerName,
   username,
   email,
   password,
+  confirm,
   phone,
   saasPlanId,
   skipPayment,
@@ -108,10 +114,13 @@ export function validateAdminGymRegister({
 }) {
   const base = firstFailure(
     validateRequiredName(gymName, { field: 'gymName' }),
+    validateRequiredCity(city),
+    validateOptionalGymAddress(address),
     validateRequiredName(ownerName, { field: 'ownerName' }),
     validateUsername(username),
     validateOptionalEmail(email),
     validatePassword(password),
+    validatePasswordMatch(password, confirm),
     validateRequiredEthiopianPhone(phone),
     saasPlanId ? ok() : fail('validation.selectSaasPlan', 'saasPlanId')
   );
