@@ -24,6 +24,8 @@ import PaymentMethodBadge from '../../components/PaymentMethodBadge';
 import { exportColumn, translatePaymentMethod } from '../../i18n/helpers';
 import { getPayments } from '../../services/paymentService';
 import { DEFAULT_REVENUE_SORT, REVENUE_SORT_OPTIONS, sortOwnerPaymentsList } from '../../utils/listSort';
+import { usePersistedUiState } from '../../utils/usePersistedUiState';
+import { PAYMENT_METHOD_OPTIONS } from '../../i18n/helpers.js';
 import StatusBadge from '../../components/StatusBadge';
 import { formatMemberStatusForDisplay } from '../../utils/memberStatus';
 import { formatMoney, formatMoneyShort } from '../../utils/formatMoney';
@@ -44,6 +46,32 @@ import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { PaymentCardSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
+const REVENUE_LIST_UI_KEY = 'vibe.revenue.listUi';
+const REVENUE_SORT_IDS = new Set(REVENUE_SORT_OPTIONS.map((o) => o.id));
+const REVENUE_PRESET_IDS = new Set(PERIOD_PRESETS.map((p) => p.id));
+const REVENUE_METHOD_IDS = new Set(['All', ...PAYMENT_METHOD_OPTIONS.map((o) => o.value)]);
+
+const DEFAULT_REVENUE_LIST_UI = {
+  searchQuery: '',
+  methodFilter: 'All',
+  listSort: DEFAULT_REVENUE_SORT,
+  periodPreset: 'this_month',
+  customStart: '',
+  customEnd: '',
+};
+
+function isRevenueListUi(raw) {
+  return (
+    raw &&
+    typeof raw === 'object' &&
+    typeof raw.searchQuery === 'string' &&
+    REVENUE_METHOD_IDS.has(raw.methodFilter) &&
+    REVENUE_SORT_IDS.has(raw.listSort) &&
+    REVENUE_PRESET_IDS.has(raw.periodPreset) &&
+    typeof raw.customStart === 'string' &&
+    typeof raw.customEnd === 'string'
+  );
+}
 
 function methodShareColor(method, colors = PAYMENT_METHOD_COLORS) {
   return colors[method] || colors.Other;
@@ -95,14 +123,36 @@ export default function Revenue() {
   const [listLoading, setListLoading] = useState(true);
 
   const [modalState, setModalState] = useState({ isOpen: false, payment: null });
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [methodFilter, setMethodFilter] = useState('All');
+  const [listUi, setListUi] = usePersistedUiState(REVENUE_LIST_UI_KEY, DEFAULT_REVENUE_LIST_UI, {
+    isValid: isRevenueListUi,
+  });
+  const { searchQuery, methodFilter, listSort, periodPreset, customStart, customEnd } = listUi;
+  const setSearchQuery = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, searchQuery: typeof next === 'function' ? next(prev.searchQuery) : next })),
+    [setListUi]
+  );
+  const setMethodFilter = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, methodFilter: typeof next === 'function' ? next(prev.methodFilter) : next })),
+    [setListUi]
+  );
+  const setListSort = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, listSort: typeof next === 'function' ? next(prev.listSort) : next })),
+    [setListUi]
+  );
+  const setPeriodPreset = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, periodPreset: typeof next === 'function' ? next(prev.periodPreset) : next })),
+    [setListUi]
+  );
+  const setCustomStart = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, customStart: typeof next === 'function' ? next(prev.customStart) : next })),
+    [setListUi]
+  );
+  const setCustomEnd = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, customEnd: typeof next === 'function' ? next(prev.customEnd) : next })),
+    [setListUi]
+  );
+  const [debouncedSearch, setDebouncedSearch] = useState(() => listUi.searchQuery || '');
   const methodFilterRef = useRef(null);
-  const [listSort, setListSort] = useState(DEFAULT_REVENUE_SORT);
-  const [periodPreset, setPeriodPreset] = useState('this_month');
-  const [customStart, setCustomStart] = useState('');
-  const [customEnd, setCustomEnd] = useState('');
   const [paymentToDelete, setPaymentToDelete] = useState(null);
   const [pendingDeleteIds, setPendingDeleteIds] = useState(() => new Set());
   const [saving, setSaving] = useState(false);

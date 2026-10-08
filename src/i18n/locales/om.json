@@ -126,6 +126,7 @@
     "gymProfile": "Profaayilii jimii",
     "changePassword": "Jecha iccitii jijjiiri",
     "logout": "Ba'i",
+    "planBadgeFreeTrial": "Fayyaa Bilisaa",
     "appearance": "Bifa",
     "themeLight": "Ifeensaa (Ifaa)",
     "themeDark": "Dukkana (Gurraacha)",
@@ -517,6 +518,7 @@
     "unpaid": "Hin Kaffalamne",
     "dueSoon": "Dhiyeenyatti kan dhumu",
     "trialEnding": "Fayyaan bilisaa dhumaa jira",
+    "onTrial": "Fayyaa irratti",
     "expired": "Kan dhumate",
     "active": "Si'aawaa",
     "newMember_one": "Miseensa haaraa",
@@ -1403,7 +1405,12 @@
       "title": "Jimii galmeessi",
       "subtitle": "Maamila jimii haarawa saagi.",
       "needSaasPlanFirst": "Dura karoora SaaS uumi, sana booda jimoota galmeessi.",
+      "needSaasPlanOrTrial": "Karoora SaaS kaffaltii hin jiru — ammallee Fayyaa Bilisaa irratti galmeessuu dandeessa, ykn dura karoora uumi.",
       "selectPlan": "Karoora filadhu",
+      "freeTrial": "Fayyaa Bilisaa",
+      "freeTrialOption": "Fayyaa Bilisaa",
+      "freeTrialHint": "Yeroo fayyaa keessatti argannoo guutuu. Galmee irratti kaffaltiin hin jiru.",
+      "freeTrialBanner": "Jimiin kun Fayyaa Bilisaa guyyaa {{days}} argata. Amma kaffaltiin hin galmeeffamu — booda profaayilii irraa gara karoora kaffaltii jijjiiri.",
       "stepGym": "Jimii fi abbaa",
       "stepPlan": "Karoora",
       "stepPayment": "Kaffaltii",
@@ -1438,7 +1445,9 @@
       "unpaidUntilCollect": "Jimiin kun hanga kaffaltii fuula isaanii irraa sassaabdutti akka <strong>Kan Hin Kaffalamne</strong> ta'ee mul'ata",
       "licenseStartHint": "Eeyyamni guyyaa kana jalqaba. Har'a irratti saagameera.",
       "unpaidBanner": "Jimiin kun hanga profaayilii ykn tarree jimii irraa kaffaltii sassaabdutti akka <strong>Kan Hin Kaffalamne</strong> ta'ee mul'ata. Hanga kaffaletti haaromsuu hin danda'an.",
-      "usernameHint": "Seensaa kan fayyadamu. Plaatfoormii irratti Adda ta'uu qaba."
+      "usernameHint": "Seensaa kan fayyadamu. Plaatfoormii irratti Adda ta'uu qaba.",
+      "trialDays": "Dheerina fayyaa (guyyaa)",
+      "trialDaysPlaceholder": "fkn. 14"
     },
     "gymEdit": {
       "title": "Jimii gulaali",
@@ -1677,7 +1686,8 @@
     "branchRequired": "Damee filadhu.",
     "cityRequired": "Magaalaan barbaachisaa dha.",
     "cityTooLong": "Maqaan magaalaa baay'ee dheeraadha.",
-    "addressTooLong": "Teessoon baay'ee dheeraadha."
+    "addressTooLong": "Teessoon baay'ee dheeraadha.",
+    "trialDaysRequired": "Guyyaa fayyaa meeqa akka kennamu galchi."
   },
   "export": {
     "generated": "{{date}} irratti oomishame",

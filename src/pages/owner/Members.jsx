@@ -35,6 +35,7 @@ import { mutationErrorState } from '../../utils/validation';
 import { mapMemberFromApi } from '../../utils/apiMappers';
 import { getMembers, getArchivedMembers, getMember } from '../../services/memberService';
 import { DEFAULT_MEMBER_SORT, MEMBER_SORT_OPTIONS, sortMembersList } from '../../utils/listSort';
+import { usePersistedUiState } from '../../utils/usePersistedUiState';
 import { useLatestRequestGuard } from '../../utils/requestGuard';
 import { useTranslation } from 'react-i18next';
 import { flashFromKey } from '../../i18n/flashToast';
@@ -49,10 +50,22 @@ const NEW = 'New';
 const NO_VISIT = 'No visit';
 const FORMER = 'Former';
 const MEMBER_FILTER_STORAGE_KEY = 'vibe.members.statusFilter';
+const MEMBER_LIST_UI_KEY = 'vibe.members.listUi';
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
 const LIST_AVATAR_CLASS = 'h-10 w-10 rounded-full object-cover';
 const LIST_AVATAR_FALLBACK_CLASS =
   'flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-app-border text-sm font-bold text-app-text';
+const MEMBER_SORT_IDS = new Set(MEMBER_SORT_OPTIONS.map((o) => o.id));
+const MEMBER_FILTER_IDS = new Set([
+  'All',
+  FORMER,
+  UNPAID,
+  NEW,
+  NO_VISIT,
+  DISPLAY_STATUS.ACTIVE,
+  DISPLAY_STATUS.DUE_SOON,
+  DISPLAY_STATUS.EXPIRED,
+]);
 
 function statusFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
@@ -64,26 +77,42 @@ function statusFilterToQuery(statusFilter) {
   return { status: statusFilter };
 }
 
-function readSavedMemberFilter() {
+function normalizeMemberFilter(saved) {
+  if (saved === 'Quiet' || saved === 'At risk') return NO_VISIT;
+  if (MEMBER_FILTER_IDS.has(saved)) return saved;
+  return 'All';
+}
+
+function readInitialMemberListUi() {
+  const defaults = { statusFilter: 'All', listSort: DEFAULT_MEMBER_SORT, searchQuery: '' };
   try {
-    const saved = sessionStorage.getItem(MEMBER_FILTER_STORAGE_KEY);
-    // Migrate older chip labels used as storage ids.
-    if (saved === 'Quiet' || saved === 'At risk') return NO_VISIT;
-    const allowed = new Set([
-      'All',
-      FORMER,
-      UNPAID,
-      NEW,
-      NO_VISIT,
-      DISPLAY_STATUS.ACTIVE,
-      DISPLAY_STATUS.DUE_SOON,
-      DISPLAY_STATUS.EXPIRED,
-    ]);
-    if (allowed.has(saved)) return saved;
+    const raw = localStorage.getItem(MEMBER_LIST_UI_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          statusFilter: normalizeMemberFilter(parsed.statusFilter),
+          listSort: MEMBER_SORT_IDS.has(parsed.listSort) ? parsed.listSort : DEFAULT_MEMBER_SORT,
+          searchQuery: typeof parsed.searchQuery === 'string' ? parsed.searchQuery : '',
+        };
+      }
+    }
+    const legacy = sessionStorage.getItem(MEMBER_FILTER_STORAGE_KEY);
+    if (legacy) return { ...defaults, statusFilter: normalizeMemberFilter(legacy) };
   } catch {
     /* ignore */
   }
-  return 'All';
+  return defaults;
+}
+
+function isMemberListUi(raw) {
+  return (
+    raw &&
+    typeof raw === 'object' &&
+    MEMBER_FILTER_IDS.has(raw.statusFilter) &&
+    MEMBER_SORT_IDS.has(raw.listSort) &&
+    typeof raw.searchQuery === 'string'
+  );
 }
 
 export default function Members() {
@@ -103,10 +132,23 @@ export default function Members() {
   const [totalPages, setTotalPages] = useState(1);
   const [archivedTotal, setArchivedTotal] = useState(0);
   const [listLoading, setListLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState(readSavedMemberFilter);
-  const [listSort, setListSort] = useState(DEFAULT_MEMBER_SORT);
+  const [listUi, setListUi] = usePersistedUiState(MEMBER_LIST_UI_KEY, readInitialMemberListUi(), {
+    isValid: isMemberListUi,
+  });
+  const { statusFilter, listSort, searchQuery } = listUi;
+  const setStatusFilter = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, statusFilter: typeof next === 'function' ? next(prev.statusFilter) : next })),
+    [setListUi]
+  );
+  const setListSort = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, listSort: typeof next === 'function' ? next(prev.listSort) : next })),
+    [setListUi]
+  );
+  const setSearchQuery = useCallback(
+    (next) => setListUi((prev) => ({ ...prev, searchQuery: typeof next === 'function' ? next(prev.searchQuery) : next })),
+    [setListUi]
+  );
+  const [debouncedSearch, setDebouncedSearch] = useState(() => listUi.searchQuery || '');
   const [modalState, setModalState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
   const [renewState, setRenewState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
   const [changePlanState, setChangePlanState] = useState({ isOpen: false, member: null, error: '', fieldErrors: {} });
@@ -216,14 +258,6 @@ export default function Members() {
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch, statusFilter, selectedBranchId]);
-
-  useEffect(() => {
-    try {
-      sessionStorage.setItem(MEMBER_FILTER_STORAGE_KEY, statusFilter);
-    } catch {
-      /* ignore */
-    }
-  }, [statusFilter]);
 
   const displayedMembers = useMemo(
     () =>

@@ -1,5 +1,6 @@
 // src/components/MemberModal.jsx
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { clearLocalStorageDraft, useLocalStorageDraft } from '../utils/useLocalStorageDraft';
 import { X, Upload, User, ArrowLeft, Check, Camera } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { todayString, formatDisplayDate } from '../utils/date';
@@ -162,6 +163,81 @@ export default function MemberModal({
     modeKey: member ? 'edit' : 'enroll',
     initialize: initializeForm,
     saving: saving || submitting || photoProcessing,
+  });
+
+  const enrollDraftValue = useMemo(
+    () => ({
+      name,
+      phone,
+      planId,
+      startDate,
+      branchId,
+      method,
+      paymentDate,
+      skipPayment,
+      trainerId,
+      trainerFee,
+      trainerFeeMethod,
+      enrollStep,
+      enrollMaxStep,
+    }),
+    [
+      name,
+      phone,
+      planId,
+      startDate,
+      branchId,
+      method,
+      paymentDate,
+      skipPayment,
+      trainerId,
+      trainerFee,
+      trainerFeeMethod,
+      enrollStep,
+      enrollMaxStep,
+    ]
+  );
+
+  const applyEnrollStorageDraft = useCallback(
+    (next) => {
+      setName(next.name || '');
+      setPhone(next.phone || '');
+      setPlanId(next.planId || '');
+      setStartDate(next.startDate || todayString());
+      setBranchId(next.branchId || resolvedDefaultBranch);
+      setMethod(next.method || 'Cash');
+      setPaymentDate(next.paymentDate || todayString());
+      setSkipPayment(Boolean(next.skipPayment));
+      setTrainerId(next.trainerId || '');
+      setTrainerFee(next.trainerFee || '');
+      setTrainerFeeMethod(next.trainerFeeMethod || 'Cash');
+      setEnrollStep(Number(next.enrollStep) > 0 ? Number(next.enrollStep) : 1);
+      setEnrollMaxStep(Number(next.enrollMaxStep) > 0 ? Number(next.enrollMaxStep) : 1);
+      markTouched();
+    },
+    [markTouched, resolvedDefaultBranch]
+  );
+
+  const enrollDraftIsDirty = useCallback(
+    (draft) =>
+      Boolean(
+        draft.name?.trim() ||
+          draft.phone?.trim() ||
+          draft.planId ||
+          draft.skipPayment ||
+          Number(draft.enrollStep) > 1 ||
+          (draft.method && draft.method !== 'Cash')
+      ),
+    []
+  );
+
+  const { clearDraft: clearEnrollStorageDraft } = useLocalStorageDraft({
+    key: 'vibe.draft.enroll',
+    enabled: Boolean(isOpen && !isEdit && !enrollDone),
+    value: enrollDraftValue,
+    isDirty: enrollDraftIsDirty,
+    isValid: (raw) => raw && typeof raw === 'object' && typeof raw.name === 'string',
+    apply: applyEnrollStorageDraft,
   });
 
   useEffect(() => {
@@ -421,6 +497,8 @@ export default function MemberModal({
           photo: photoDataUrl,
           ...trainerFields,
         });
+        clearLocalStorageDraft('vibe.draft.enroll');
+        clearEnrollStorageDraft();
         if (variant === 'page') {
           setEnrollDone({
             ...doneSummary,
@@ -449,6 +527,8 @@ export default function MemberModal({
           photo: photoDataUrl,
           ...trainerFields,
         });
+        clearLocalStorageDraft('vibe.draft.enroll');
+        clearEnrollStorageDraft();
         if (variant === 'page') {
           setEnrollDone({
             ...doneSummary,
@@ -823,7 +903,9 @@ export default function MemberModal({
                     </label>
                     <input
                       type="text"
+                      name="name"
                       required
+                      autoComplete="name"
                       placeholder={t('modals.member.namePlaceholder')}
                       className={fc('name')}
                       value={name}
@@ -844,6 +926,7 @@ export default function MemberModal({
                     </label>
                     <input
                       type="tel"
+                      name="tel"
                       required
                       inputMode="tel"
                       autoComplete="tel"
@@ -882,7 +965,9 @@ export default function MemberModal({
               </label>
               <input
                 type="text"
+                name="name"
                 required={!useSteps}
+                autoComplete="name"
                 placeholder={t('modals.member.namePlaceholder')}
                 className={fc('name')}
                 value={name}
@@ -903,6 +988,7 @@ export default function MemberModal({
               </label>
               <input
                 type="tel"
+                name="tel"
                 required={!useSteps}
                 inputMode="tel"
                 autoComplete="tel"

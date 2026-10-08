@@ -108,10 +108,14 @@ export function validateAdminGymRegister({
   confirm,
   phone,
   saasPlanId,
+  trialDays,
   skipPayment,
   amount,
   paymentDate,
 }) {
+  const trialNum = trialDays != null && trialDays !== '' ? Number(trialDays) : NaN;
+  const isTrial = Number.isFinite(trialNum) && trialNum > 0;
+  const wantsTrial = trialDays != null && trialDays !== '';
   const base = firstFailure(
     validateRequiredName(gymName, { field: 'gymName' }),
     validateRequiredCity(city),
@@ -122,9 +126,13 @@ export function validateAdminGymRegister({
     validatePassword(password),
     validatePasswordMatch(password, confirm),
     validateRequiredEthiopianPhone(phone),
-    saasPlanId ? ok() : fail('validation.selectSaasPlan', 'saasPlanId')
+    wantsTrial && !isTrial
+      ? fail('validation.trialDaysRequired', 'trialDays')
+      : isTrial || saasPlanId
+        ? ok()
+        : fail('validation.selectSaasPlan', 'saasPlanId')
   );
-  if (!base.ok || skipPayment) return base;
+  if (!base.ok || isTrial || skipPayment) return base;
   const payment = validateRequiredPayment({ amount, paymentDate });
   if (!payment.ok) return payment;
   return validatePaymentDateNotFuture(paymentDate);

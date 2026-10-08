@@ -2,12 +2,19 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { useGym } from '../context/GymContext';
 import { usePreferences } from '../context/PreferencesContext';
 import { isGymOwner, isGymStaff, isPlatformAdmin } from '../utils/roles';
 import { ProfilePanel, PasswordPanel } from './account/AccountPanels';
 import { useFlash } from '../context/FlashContext';
 import { menuSurface } from '../utils/surfaceClasses';
 import { User, KeyRound, LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
+
+function planBadgeLabel(licensePlanName, isTrial, t) {
+  if (isTrial) return t('profile.planBadgeFreeTrial');
+  const name = (licensePlanName || '').trim();
+  return name || null;
+}
 
 function roleSubtitle(role, t) {
   if (isPlatformAdmin(role)) return t('profile.platformAdmin');
@@ -45,6 +52,7 @@ const iconChip =
  */
 export default function UserProfileMenu({ compact = false }) {
   const { user, logout } = useAuth();
+  const gym = useGym();
   const { theme, cycleTheme } = usePreferences();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -57,6 +65,7 @@ export default function UserProfileMenu({ compact = false }) {
 
   const displayName = user?.name || user?.email || user?.username || 'User';
   const subtitle = roleSubtitle(user?.role, t);
+  const planBadge = planBadgeLabel(gym?.licensePlanName, gym?.isTrial, t);
   const isDark = theme === 'dark';
   const ThemeIcon = isDark ? Sun : Moon;
   const themeActionLabel = isDark ? t('profile.switchToLight') : t('profile.switchToDark');
@@ -140,15 +149,31 @@ export default function UserProfileMenu({ compact = false }) {
             className={`absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden py-2 animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
           >
             <div className="border-b border-app-border-subtle px-4 pb-3 pt-2.5">
-              <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
-              <RoleLabel className="mt-1">
-                {subtitle}
-              </RoleLabel>
-              {user?.username ? (
-                <p className="mt-1.5 truncate text-xs font-medium text-app-text" title={user.username}>
-                  @{user.username}
-                </p>
-              ) : null}
+              <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-app-text-strong">{displayName}</p>
+                  <RoleLabel className="mt-1">
+                    {subtitle}
+                  </RoleLabel>
+                  {user?.username ? (
+                    <p className="mt-1.5 truncate text-xs font-medium text-app-text" title={user.username}>
+                      @{user.username}
+                    </p>
+                  ) : null}
+                </div>
+                {planBadge ? (
+                  <span
+                    className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-tight tracking-wide ${
+                      gym?.isTrial
+                        ? 'bg-[color:var(--color-status-trialing)]/15 text-[color:var(--color-status-trialing)]'
+                        : 'bg-teal-700/10 text-teal-800 dark:bg-teal-400/15 dark:text-teal-300'
+                    }`}
+                    title={planBadge}
+                  >
+                    {planBadge}
+                  </span>
+                ) : null}
+              </div>
             </div>
 
             <div className="px-2 py-2">

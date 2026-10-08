@@ -1,5 +1,6 @@
 // src/components/RenewModal.jsx
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { clearLocalStorageDraft, useLocalStorageDraft } from '../utils/useLocalStorageDraft';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { X, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -66,8 +67,12 @@ export default function RenewModal({
   const fieldErrors = { ...externalFieldErrors, ...localFieldErrors };
   const fc = (field) => inputClass(`${FORM_INPUT_CLASS} cursor-pointer`, fieldErrors, field);
 
+  const skipPlanAmountSync = useRef(false);
+  const storageDraftApplied = useRef(false);
+
   const initDefaults = useCallback(() => {
     if (!member) return;
+    if (storageDraftApplied.current) return;
     const defaultPlanId = member.planId || plans[0]?.id || '';
     const nextStart = defaultRenewStartDate(member);
     setPlanId(String(defaultPlanId));
@@ -88,8 +93,50 @@ export default function RenewModal({
     saving: saving || submitting,
   });
 
+  const renewDraftKey = member?.id ? `vibe.draft.renew:${member.id}` : '';
+  const renewDraftValue = useMemo(
+    () => ({ planId, startDate, amount, paymentDate, method }),
+    [planId, startDate, amount, paymentDate, method]
+  );
+
+  const applyRenewStorageDraft = useCallback(
+    (next) => {
+      storageDraftApplied.current = true;
+      skipPlanAmountSync.current = true;
+      setPlanId(next.planId || '');
+      setStartDate(next.startDate || '');
+      setAmount(next.amount || '');
+      setPaymentDate(next.paymentDate || '');
+      setMethod(next.method || 'Cash');
+      markTouched();
+    },
+    [markTouched]
+  );
+
+  const { clearDraft: clearRenewStorageDraft } = useLocalStorageDraft({
+    key: renewDraftKey,
+    enabled: Boolean(isOpen && member?.id),
+    value: renewDraftValue,
+    isDirty: (draft) =>
+      Boolean(
+        draft.planId ||
+          draft.amount?.trim() ||
+          (draft.method && draft.method !== 'Cash')
+      ),
+    isValid: (raw) => raw && typeof raw === 'object' && typeof raw.amount === 'string',
+    apply: applyRenewStorageDraft,
+  });
+
+  useEffect(() => {
+    if (!isOpen) storageDraftApplied.current = false;
+  }, [isOpen, member?.id]);
+
   useEffect(() => {
     if (!planId) return;
+    if (skipPlanAmountSync.current) {
+      skipPlanAmountSync.current = false;
+      return;
+    }
     const plan = plans.find((p) => p.id === parseInt(planId, 10));
     if (plan) setAmount(String(plan.price));
   }, [planId, plans]);
@@ -134,6 +181,8 @@ export default function RenewModal({
         date: paymentDate,
         method,
       });
+      if (renewDraftKey) clearLocalStorageDraft(renewDraftKey);
+      clearRenewStorageDraft();
     } finally {
       setSubmitting(false);
     }

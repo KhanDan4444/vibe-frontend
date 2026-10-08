@@ -1,5 +1,5 @@
 // src/pages/auth/Login.jsx — cardless glass login matching mobile brand treatment
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Lock, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -19,6 +19,11 @@ import {
   clearAllFieldErrors,
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
+import {
+  LOGIN_LAST_IDENTIFIER_KEY,
+  readStoredString,
+  writeStoredString,
+} from '../../utils/usePersistedUiState';
 
 export default function Login() {
   const { t } = useTranslation();
@@ -35,6 +40,11 @@ export default function Login() {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const saved = readStoredString(LOGIN_LAST_IDENTIFIER_KEY);
+    if (saved) setEmail(saved);
+  }, []);
 
   const inputBase =
     'auth-login-input block w-full rounded-2xl border border-white/[0.14] bg-white/[0.055] py-3.5 pl-11 pr-4 text-base font-normal text-white placeholder:text-white/45 caret-white shadow-none transition-[border-color,background-color] focus:border-teal-300/50 focus:bg-white/[0.08] focus:outline-none focus:ring-0';
@@ -67,6 +77,7 @@ export default function Login() {
 
     try {
       const profile = await login(email.trim(), password, rememberMe);
+      writeStoredString(LOGIN_LAST_IDENTIFIER_KEY, email.trim());
 
       // Keep "Processing…" visible briefly so fast logins don’t flash past it.
       const elapsed = Date.now() - startedAt;
@@ -137,6 +148,7 @@ export default function Login() {
                 <input
                   ref={emailRef}
                   id="login-email"
+                  name="username"
                   type="text"
                   autoComplete="username"
                   aria-invalid={Boolean(emailError)}
@@ -161,6 +173,7 @@ export default function Login() {
                 <input
                   ref={passwordRef}
                   id="login-password"
+                  name="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   aria-invalid={Boolean(passwordError)}

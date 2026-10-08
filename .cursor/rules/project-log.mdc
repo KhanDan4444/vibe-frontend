@@ -1,0 +1,17 @@
+---
+description: Use project-log.md as agent memory for conventions and session history
+alwaysApply: true
+---
+
+# Project log (agent memory)
+
+Before UI, messaging, auth, signup/trial, or cross-repo work:
+
+1. Read `docs/project-log.md` — **Decision index** + **Do not regress** (required).
+2. Use **Before you touch X** to open the right source files; do not invent tokens.
+3. Message channels/copy: `docs/MESSAGE_CATALOG.md` + log messaging table.
+4. Requirements/scope: `docs/SRS.md`.
+
+**End of session:** append a session block to `docs/project-log.md` with the template in that file (Asked / Decided+why / Shipped / Styles / Do-not-regress / Follow-ups). Never rewrite old session entries.
+
+If a standing custom changes, update Decision index + Do not regress + Standing section in the same change.

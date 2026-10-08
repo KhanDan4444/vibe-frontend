@@ -632,7 +632,8 @@
     "branchRequired": "ቅርንጫፍ ይምረጡ።",
     "cityRequired": "ከተማ ያስፈልጋል።",
     "cityTooLong": "የከተማ ስም በጣም ረጅም ነው።",
-    "addressTooLong": "አድራሻው በጣም ረጅም ነው።"
+    "addressTooLong": "አድራሻው በጣም ረጅም ነው።",
+    "trialDaysRequired": "ስንት የሙከራ ቀናት እንደሚሰጡ ያስገቡ።"
   },
   "filters": {
     "active": "ንቁ",
@@ -643,6 +644,7 @@
     "allMethods": "ሁሉም ዘዴዎች",
     "dueSoon": "በቅርብ ጊዜ የሚያልቅ",
     "trialEnding": "ፈተና ያልቅበታል",
+    "onTrial": "በሙከራ ላይ",
     "dueSoonOnly": "በቅርብ ጊዜ የሚያልቅ ብቻ",
     "everyone": "ሁሉም ሰው",
     "expired": "ጊዜው ያለፈበት",
@@ -957,7 +959,12 @@
       "unpaidBanner": "ክፍያ ከመሰብሰብዎ በፊት ጂሙ በመገለጫው ወይም በጂሞች ዝርዝር ላይ <strong>ያልተከፈለ</strong> ተብሎ ይታያል። ክፍያ እስኪሰበሰብ ድረስ ፈቃድ ማደስ አይችሉም።",
       "usernameHint": "ለመግቢያ ያገለግላል። በመላው መድረክ ላይ ልዩ (የማይደገም) መሆን አለበት።",
       "needSaasPlanFirst": "መጀመሪያ የSaaS ዕቅድ ይፍጠሩ፣ ከዚያ ጂሞችን ይመዝግቡ።",
+      "needSaasPlanOrTrial": "ምንም የተከፈለ የSaaS ዕቅድ የለም — አሁንም በነፃ ሙከራ መመዝገብ ይችላሉ፣ ወይም መጀመሪያ ዕቅድ ይፍጠሩ።",
       "selectPlan": "ዕቅድ ይምረጡ",
+      "freeTrial": "ነፃ ሙከራ",
+      "freeTrialOption": "ነፃ ሙከራ",
+      "freeTrialHint": "በሙከራ ጊዜ ሙሉ መዳረሻ። በምዝገባ ጊዜ ክፍያ የለም።",
+      "freeTrialBanner": "ይህ ጂም የ{{days}}-ቀን ነፃ ሙከራ ያገኛል። አሁን ክፍያ አይመዘገብም — በኋላ ከመገለጫቸው ወደ የተከፈለ ዕቅድ ይቀይሩ።",
       "stepGym": "ጂም እና ባለቤት",
       "stepPlan": "ዕቅድ",
       "stepPayment": "ክፍያ",
@@ -967,7 +974,9 @@
       "successPaid": "የፈቃድ ክፍያ ተመዝግቧል።",
       "successUnpaid": "ያለ ክፍያ ተመዝግቧል — በኋላ ከጂም መገለጫ ይሰብስቡ።",
       "backToGyms": "ወደ ጂሞች ተመለስ",
-      "registerAnother": "ሌላ ጂም መዝግብ"
+      "registerAnother": "ሌላ ጂም መዝግብ",
+      "trialDays": "የሙከራ ቆይታ (ቀናት)",
+      "trialDaysPlaceholder": "ለምሳሌ፦ 14"
     },
     "renew": {
       "save": "አባልነት ያድሱ",
@@ -1700,6 +1709,7 @@
     "frontDesk": "የፊት ዴስክ",
     "language": "ቋንቋ",
     "logout": "ውጣ",
+    "planBadgeFreeTrial": "ነፃ ሙከራ",
     "platformAdmin": "የመድረክ አስተዳዳሪ",
     "themeDark": "ጨለማ",
     "themeLight": "ብርሃን",

@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { usePersistedUiState } from '../../utils/usePersistedUiState';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
 import { Edit, UserX, UserCheck, Users, Dumbbell, Trash2, Undo2 } from 'lucide-react';
@@ -102,7 +103,42 @@ export default function Team() {
   const { apiFetch } = useAuth();
   const { showFlash, branches, readOnly, selectedBranchId, error: gymError } = useGym();
 
-  const [tab, setTab] = useState('staff');
+  const [teamUi, setTeamUi] = usePersistedUiState(
+    'vibe.team.listUi',
+    { tab: 'staff', showingFormerTrainers: false, searchQuery: '' },
+    {
+      isValid: (raw) =>
+        Boolean(
+          raw &&
+            typeof raw === 'object' &&
+            (raw.tab === 'staff' || raw.tab === 'trainers') &&
+            typeof raw.showingFormerTrainers === 'boolean' &&
+            typeof raw.searchQuery === 'string'
+        ),
+    }
+  );
+  const { tab, showingFormerTrainers, searchQuery } = teamUi;
+  const setTab = useCallback(
+    (next) =>
+      setTeamUi((prev) => ({
+        ...prev,
+        tab: next,
+        showingFormerTrainers: next === 'staff' ? false : prev.showingFormerTrainers,
+      })),
+    [setTeamUi]
+  );
+  const setShowingFormerTrainers = useCallback(
+    (next) =>
+      setTeamUi((prev) => {
+        const value = typeof next === 'function' ? next(prev.showingFormerTrainers) : next;
+        return { ...prev, showingFormerTrainers: value, tab: value ? 'trainers' : prev.tab };
+      }),
+    [setTeamUi]
+  );
+  const setSearchQuery = useCallback(
+    (next) => setTeamUi((prev) => ({ ...prev, searchQuery: typeof next === 'function' ? next(prev.searchQuery) : next })),
+    [setTeamUi]
+  );
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -113,14 +149,12 @@ export default function Team() {
 
   const [trainers, setTrainers] = useState([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
-  const [showingFormerTrainers, setShowingFormerTrainers] = useState(false);
   const [archivedTrainerTotal, setArchivedTrainerTotal] = useState(0);
   const [liveTrainerTotal, setLiveTrainerTotal] = useState(0);
   const [trainerModal, setTrainerModal] = useState({ isOpen: false, trainer: null });
   const [trainerSaving, setTrainerSaving] = useState(false);
   const [trainerModalError, setTrainerModalError] = useState('');
   const [trainerToArchive, setTrainerToArchive] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
   const visibleStaff = useMemo(() => {
     if (selectedBranchId === 'all') return staff;

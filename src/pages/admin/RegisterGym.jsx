@@ -50,6 +50,7 @@ export default function RegisterGym() {
     setSaving(true);
     setError('');
     try {
+      const isTrial = data.trialDays != null && Number(data.trialDays) > 0;
       const payload = {
         gym_name: data.gymName,
         city: data.city,
@@ -57,18 +58,23 @@ export default function RegisterGym() {
         username: data.username,
         password: data.password,
         phone: data.phone,
-        saas_plan_id: data.saasPlanId,
-        skip_payment: data.skipPayment,
+        skip_payment: isTrial ? true : data.skipPayment,
       };
       if (data.email) payload.email = data.email;
       if (data.address) payload.address = data.address;
-      if (!data.skipPayment) {
-        payload.amount = data.amount;
-        payload.date = data.date;
-        payload.method = data.method;
-        payload.start_date = data.start_date || data.date;
-      } else {
+      if (isTrial) {
+        payload.trial_days = Number(data.trialDays);
         payload.start_date = data.start_date;
+      } else {
+        payload.saas_plan_id = data.saasPlanId;
+        if (!data.skipPayment) {
+          payload.amount = data.amount;
+          payload.date = data.date;
+          payload.method = data.method;
+          payload.start_date = data.start_date || data.date;
+        } else {
+          payload.start_date = data.start_date;
+        }
       }
 
       const res = await enrollGym(apiFetch, payload);
@@ -76,9 +82,13 @@ export default function RegisterGym() {
       if (!res.ok) throw new Error(resData.error || 'Failed to register gym');
 
       showFlash(
-        flashFromKey(t, data.skipPayment ? 'gymRegistered' : 'gymRegisteredWithPayment', {
-          subtitleParams: { name: data.gymName },
-        })
+        flashFromKey(
+          t,
+          isTrial || data.skipPayment ? 'gymRegistered' : 'gymRegisteredWithPayment',
+          {
+            subtitleParams: { name: data.gymName },
+          }
+        )
       );
     } catch (err) {
       const next = mutationErrorState(err);

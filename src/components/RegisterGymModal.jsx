@@ -5,6 +5,7 @@ import { useModalFormDraft } from '../utils/useModalFormDraft';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { boundsForLicensePayment } from '../utils/datePickerBounds';
 import { calculateEndDate } from '../utils/memberDates';
+import { addDays } from '../utils/saasRenew';
 import {
   validateAdminGymRegister,
   showValidationError,
@@ -41,6 +42,8 @@ import { formatMoney } from '../utils/formatMoney';
 import { modalBody, modalHeader, modalFooter, modalStepFooter } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
 
+/** Sentinel value for Free Trial in the plan select (not a SaaS plan id). */
+export const FREE_TRIAL_PLAN_VALUE = 'trial';
 
 function validateRegisterStep1({
   gymName,
@@ -94,6 +97,7 @@ export default function RegisterGymModal({
   const [showLengthRule, setShowLengthRule] = useState(false);
   const [showMatchRule, setShowMatchRule] = useState(false);
   const [saasPlanId, setSaasPlanId] = useState('');
+  const [trialDays, setTrialDays] = useState('');
   const [skipPayment, setSkipPayment] = useState(false);
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('Bank Transfer');
@@ -124,6 +128,7 @@ export default function RegisterGymModal({
     setShowLengthRule(false);
     setShowMatchRule(false);
     setSaasPlanId('');
+    setTrialDays('');
     setSkipPayment(false);
     setAmount('');
     setMethod('Bank Transfer');
@@ -144,7 +149,11 @@ export default function RegisterGymModal({
 
   if (!isOpen) return null;
 
-  const selectedPlan = saasPlans.find((p) => String(p.id) === String(saasPlanId));
+  const isFreeTrial = saasPlanId === FREE_TRIAL_PLAN_VALUE;
+  const trialDaysNum = parseInt(trialDays, 10);
+  const selectedPlan = isFreeTrial
+    ? null
+    : saasPlans.find((p) => String(p.id) === String(saasPlanId));
   const registerSteps = [
     { id: 'gym', label: t('modals.registerGym.stepGym') },
     { id: 'plan', label: t('modals.registerGym.stepPlan') },
@@ -174,16 +183,30 @@ export default function RegisterGymModal({
       );
     }
     if (step === 2) {
+      if (!saasPlanId) {
+        return showValidationError(
+          fail('validation.selectSaasPlan', 'saasPlanId'),
+          setError,
+          t,
+          { setFieldErrors: setLocalFieldErrors }
+        );
+      }
+      if (isFreeTrial) {
+        if (!Number.isFinite(trialDaysNum) || trialDaysNum < 1) {
+          return showValidationError(
+            fail('validation.trialDaysRequired', 'trialDays'),
+            setError,
+            t,
+            { setFieldErrors: setLocalFieldErrors }
+          );
+        }
+        return true;
+      }
       if (saasPlans.length === 0) {
         setError(t('modals.registerGym.needSaasPlanFirst'));
         return false;
       }
-      return showValidationError(
-        saasPlanId ? ok() : fail('validation.selectSaasPlan', 'saasPlanId'),
-        setError,
-        t,
-        { setFieldErrors: setLocalFieldErrors }
-      );
+      return true;
     }
     return true;
   };
@@ -230,15 +253,23 @@ export default function RegisterGymModal({
       username: username.trim().toLowerCase(),
       password,
       phone: trimmedPhone,
-      saasPlanId: parseInt(saasPlanId, 10),
     };
     if (trimmedEmail) base.email = trimmedEmail;
     if (trimmedAddress) base.address = trimmedAddress;
+    if (isFreeTrial) {
+      return {
+        ...base,
+        trialDays: trialDaysNum,
+        skipPayment: true,
+        start_date: todayString(),
+      };
+    }
+    const withPlan = { ...base, saasPlanId: parseInt(saasPlanId, 10) };
     if (skipPayment) {
-      return { ...base, skipPayment: true, start_date: todayString() };
+      return { ...withPlan, skipPayment: true, start_date: todayString() };
     }
     return {
-      ...base,
+      ...withPlan,
       skipPayment: false,
       amount: parseFloat(amount),
       date: paymentDate,
@@ -264,17 +295,21 @@ export default function RegisterGymModal({
       password,
       confirm,
       phone,
-      saasPlanId,
-      skipPayment,
+      saasPlanId: isFreeTrial ? '' : saasPlanId,
+      trialDays: isFreeTrial ? trialDaysNum : undefined,
+      skipPayment: isFreeTrial ? true : skipPayment,
       amount,
       paymentDate,
     });
     if (!showValidationError(registerResult, setError, t, { setFieldErrors: setLocalFieldErrors })) return;
 
     const payload = buildPayload();
-    const endIso = selectedPlan
-      ? calculateEndDate(payload.start_date || todayString(), selectedPlan.duration)
-      : '';
+    const start = payload.start_date || todayString();
+    const endIso = isFreeTrial
+      ? addDays(start, trialDaysNum - 1)
+      : selectedPlan
+        ? calculateEndDate(start, selectedPlan.duration)
+        : '';
 
     setSubmitting(true);
     try {
@@ -284,7 +319,7 @@ export default function RegisterGymModal({
           gymName: payload.gymName,
           ownerName: payload.ownerName,
           username: payload.username,
-          planName: selectedPlan?.name || '',
+          planName: isFreeTrial ? t('modals.registerGym.freeTrial') : selectedPlan?.name || '',
           skipPayment: payload.skipPayment,
           amount: payload.skipPayment ? null : payload.amount,
           method: payload.skipPayment ? null : payload.method,
@@ -503,7 +538,7 @@ export default function RegisterGymModal({
   const step2Fields = (
     <section className="space-y-4">
       {saasPlans.length === 0 ? (
-        <div className="ui-alert-amber">{t('modals.registerGym.needSaasPlanFirst')}</div>
+        <div className="ui-alert-amber">{t('modals.registerGym.needSaasPlanOrTrial')}</div>
       ) : null}
       <div>
         <label className="form-label">
@@ -518,6 +553,10 @@ export default function RegisterGymModal({
             const nextId = e.target.value;
             setSaasPlanId(nextId);
             clearFieldError(setLocalFieldErrors, 'saasPlanId');
+            if (nextId === FREE_TRIAL_PLAN_VALUE) {
+              setSkipPayment(true);
+              return;
+            }
             if (!skipPayment) {
               const plan = saasPlans.find((p) => String(p.id) === String(nextId));
               if (plan) setAmount(String(plan.price));
@@ -525,6 +564,7 @@ export default function RegisterGymModal({
           }}
         >
           <option value="">{t('modals.registerGym.selectPlan')}</option>
+          <option value={FREE_TRIAL_PLAN_VALUE}>{t('modals.registerGym.freeTrialOption')}</option>
           {saasPlans.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name} — {formatMoney(p.price)} / {p.duration}mo
@@ -532,11 +572,41 @@ export default function RegisterGymModal({
           ))}
         </select>
         <FieldError message={fieldErrorMessage(fieldErrors, 'saasPlanId')} />
+        {isFreeTrial ? (
+          <div className="mt-4">
+            <label className="form-label">
+              {t('modals.registerGym.trialDays')}
+              <RequiredMark />
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={366}
+              inputMode="numeric"
+              required={!isPage}
+              className={fc('trialDays')}
+              value={trialDays}
+              placeholder={t('modals.registerGym.trialDaysPlaceholder')}
+              onChange={(e) => {
+                setTrialDays(e.target.value);
+                clearFieldError(setLocalFieldErrors, 'trialDays');
+              }}
+            />
+            <FieldError message={fieldErrorMessage(fieldErrors, 'trialDays')} />
+            <p className="mt-2 text-xs text-app-muted">{t('modals.registerGym.freeTrialHint')}</p>
+          </div>
+        ) : null}
       </div>
     </section>
   );
 
-  const step3Fields = (
+  const step3Fields = isFreeTrial ? (
+    <section className="space-y-4">
+      <div className="ui-alert-emerald">
+        {t('modals.registerGym.freeTrialBanner', { days: trialDaysNum > 0 ? trialDaysNum : '—' })}
+      </div>
+    </section>
+  ) : (
     <section className="space-y-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <h3 className="text-sm font-semibold text-app-text-strong">{t('modals.registerGym.initialPayment')}</h3>
@@ -547,7 +617,7 @@ export default function RegisterGymModal({
             onChange={(e) => {
               const next = e.target.checked;
               setSkipPayment(next);
-              if (!next && saasPlanId) {
+              if (!next && saasPlanId && saasPlanId !== FREE_TRIAL_PLAN_VALUE) {
                 const plan = saasPlans.find((p) => String(p.id) === String(saasPlanId));
                 if (plan) setAmount(String(plan.price));
               }

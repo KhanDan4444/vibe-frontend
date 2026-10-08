@@ -36,4 +36,26 @@ describe('admin gym register validation', () => {
     expect(validateAdminGymRegister({ ...base, confirm: 'nope' }).ok).toBe(false);
     expect(validateAdminGymRegister(base).ok).toBe(true);
   });
+
+  it('allows free trial when trial days are set (no SaaS plan)', () => {
+    expect(
+      validateAdminGymRegister({
+        ...base,
+        saasPlanId: '',
+        trialDays: 14,
+        skipPayment: true,
+      }).ok
+    ).toBe(true);
+  });
+
+  it('rejects free trial without valid trial days', () => {
+    expect(
+      validateAdminGymRegister({
+        ...base,
+        saasPlanId: '',
+        trialDays: 0,
+        skipPayment: true,
+      }).ok
+    ).toBe(false);
+  });
 });

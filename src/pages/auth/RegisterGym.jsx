@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { requestGymSignupOtp, verifyGymSignupOtp, completeGymSignup } from '../../services/authService';
@@ -23,9 +23,36 @@ import AuthOtpField from '../../components/auth/AuthOtpField';
 import PasswordRule from '../../components/auth/PasswordRule';
 import { formatDisplayDate } from '../../utils/date';
 import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
+import { clearLocalStorageDraft, useLocalStorageDraft } from '../../utils/useLocalStorageDraft';
 
 const STEPS = ['phone', 'gym', 'account'];
 const SIGNUP_STEP_LABEL_KEYS = ['auth.signupStepVerify', 'auth.signupStepGym', 'auth.signupStepAccount'];
+const REGISTER_GYM_DRAFT_KEY = 'vibe.draft.register-gym';
+
+function isRegisterGymDraft(raw) {
+  return (
+    raw &&
+    typeof raw === 'object' &&
+    (raw.step === 'phone' || raw.step === 'gym' || raw.step === 'account') &&
+    typeof raw.phone === 'string' &&
+    typeof raw.gymName === 'string'
+  );
+}
+
+function registerGymDraftIsDirty(draft) {
+  return Boolean(
+    draft.phone?.trim() ||
+      draft.verifiedPhone?.trim() ||
+      draft.gymName?.trim() ||
+      draft.city?.trim() ||
+      draft.address?.trim() ||
+      draft.ownerName?.trim() ||
+      draft.username?.trim() ||
+      draft.email?.trim() ||
+      draft.otpVerified ||
+      draft.step !== 'phone'
+  );
+}
 
 function formatSignupLocation(city, address) {
   const cityLabel = city?.trim();
@@ -60,6 +87,58 @@ export default function RegisterGym() {
   const [registerDone, setRegisterDone] = useState(null);
   const { cooldown, startCooldown, canResend } = useOtpResendCooldown();
   const otpRequestInFlight = useRef(false);
+
+  const registerDraft = useMemo(
+    () => ({
+      step,
+      phone,
+      verifiedPhone,
+      sessionId,
+      otpVerified,
+      gymName,
+      city,
+      address,
+      ownerName,
+      username,
+      email,
+    }),
+    [
+      step,
+      phone,
+      verifiedPhone,
+      sessionId,
+      otpVerified,
+      gymName,
+      city,
+      address,
+      ownerName,
+      username,
+      email,
+    ]
+  );
+
+  const applyRegisterDraft = useCallback((next) => {
+    setStep(next.step);
+    setPhone(next.phone || '');
+    setVerifiedPhone(next.verifiedPhone || '');
+    setSessionId(next.sessionId || '');
+    setOtpVerified(Boolean(next.otpVerified));
+    setGymName(next.gymName || '');
+    setCity(next.city || '');
+    setAddress(next.address || '');
+    setOwnerName(next.ownerName || '');
+    setUsername(next.username || '');
+    setEmail(next.email || '');
+  }, []);
+
+  useLocalStorageDraft({
+    key: REGISTER_GYM_DRAFT_KEY,
+    enabled: !registerDone,
+    value: registerDraft,
+    isDirty: registerGymDraftIsDirty,
+    isValid: isRegisterGymDraft,
+    apply: applyRegisterDraft,
+  });
 
   const inputClass = 'auth-field';
   const fc = (field) => fieldInputClass(inputClass, fieldErrors, field);
@@ -180,6 +259,7 @@ export default function RegisterGym() {
       if (trimmedAddress) payload.address = trimmedAddress;
 
       const data = await completeGymSignup(payload);
+      clearLocalStorageDraft(REGISTER_GYM_DRAFT_KEY);
       setRegisterDone({
         gymName: gymName.trim(),
         username: username.trim().toLowerCase(),
@@ -261,6 +341,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-phone"
+                name="tel"
                 type="tel"
                 autoComplete="tel"
                 value={phone}
@@ -322,7 +403,9 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-gym"
+                name="organization"
                 type="text"
+                autoComplete="organization"
                 value={gymName}
                 onChange={(e) => {
                   setGymName(e.target.value);
@@ -340,6 +423,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-city"
+                name="address-level2"
                 type="text"
                 autoComplete="address-level2"
                 value={city}
@@ -359,6 +443,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-address"
+                name="street-address"
                 type="text"
                 autoComplete="street-address"
                 value={address}
@@ -390,6 +475,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-owner"
+                name="name"
                 type="text"
                 autoComplete="name"
                 value={ownerName}
@@ -409,6 +495,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-username"
+                name="username"
                 type="text"
                 autoComplete="username"
                 value={username}
@@ -428,6 +515,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-email"
+                name="email"
                 type="email"
                 autoComplete="email"
                 value={email}
@@ -448,6 +536,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-password"
+                name="new-password"
                 type="password"
                 autoComplete="new-password"
                 value={password}
@@ -475,6 +564,7 @@ export default function RegisterGym() {
               </label>
               <input
                 id="signup-confirm"
+                name="new-password-confirm"
                 type="password"
                 autoComplete="new-password"
                 value={confirm}

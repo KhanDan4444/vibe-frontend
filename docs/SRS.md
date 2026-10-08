@@ -4,9 +4,9 @@
 
 | | |
 |---|---|
-| **Document version** | 1.0 |
-| **Date** | July 20, 2026 |
-| **Status** | Baseline |
+| **Document version** | 1.2 |
+| **Date** | September 14, 2026 |
+| **Status** | Updated (capability inventory sync) |
 | **Product** | Vibe (VibeSaaS) — multi-tenant gym management platform |
 | **Components covered** | REST API (`vibe`), Web application (`vibe-frontend`), Mobile application (`vibe-mobile`) |
 
@@ -62,30 +62,37 @@ The system consists of three deliverables:
 |---|---|
 | **Backend API** | Node.js/Express REST API with a PostgreSQL database. Single source of truth for all business logic, authentication, authorization, multi-tenancy, and scheduled jobs. |
 | **Web application** | React single-page application serving two portals: the Platform Admin console and the Gym Owner/Staff portal. Optimized for desktop use, dense tables, and exports. |
-| **Mobile application** | React Native (Expo) app for gym owners and staff. Supports offline operation, English/Amharic localization, dark/light themes, and phone/tablet layouts. Platform Admin is not supported on mobile. |
+| **Mobile application** | React Native (Expo) app for gym owners and staff. Supports offline operation, English / Amharic / Afaan Oromoo localization, dark/light themes, and phone/tablet layouts. Platform Admin is not supported on mobile. |
 
 **In scope:**
 
-- Gym self-registration with phone OTP verification and SaaS plan selection
-- Member lifecycle management (enroll, renew, change plan, transfer, edit, delete)
-- Manual payment recording (cash, card, bank transfer) — member payments and SaaS license payments
+- Gym self-registration with phone OTP verification, gym location (city + optional address), and owner account creation (no payment collected at signup)
+- Platform Admin gym enrollment with the same gym/owner identity fields as self-registration, plus SaaS plan and optional initial payment
+- Member lifecycle management (enroll, renew, change plan, transfer, edit, soft-archive / restore as “former”)
+- **Trainers** (non-login employees): CRUD, archive/restore, assign to members, optional trainer-fee payment
+- **Desk check-in** and **visit history** with gym attendance settings (weekly caps, one-per-day, over-limit policy)
+- **Member QR passes** (view/print/share/regenerate) and **staff scan check-in**
+- **Station self check-in** (branch wall QR + member Telegram OTP / trusted device)
+- **Telegram** linking for members (bot + preferred delivery channel for member notices)
+- Manual payment recording (cash, card, bank transfer) — member payments, trainer fees, and SaaS license payments
 - Multi-branch operation per gym with branch-scoped staff
 - Dashboards, revenue analytics, reports with CSV/PDF export
-- Automated SMS reminders for expiring memberships and gym licenses
+- Automated member notices (Telegram when linked; SMS for OTP and gym-license reminders) and SMS/message logs
 - Subscription enforcement (active / suspended read-only / expired lockout)
+- Soft-archive / restore of gyms (admin) and members (owner)
 - Audit logging of gym operations
-- Offline-first mobile operation with a write queue and sync
-- Desk check-in: staff search members and record visits (web + mobile), with optional weekly visit caps and dashboards showing who checked in today
+- Offline-first mobile operation with a write queue and sync; web gym portal offline queue
+- Tablet-adapted mobile layouts (filters, lists, sheets, dashboards)
 
-**Out of scope (explicitly not provided):**
+**Out of scope (explicitly not provided in v1):**
 
 - Online payment gateway integration (all payments are recorded manually)
-- Member-facing self-service portal or member mobile app
-- Push notifications (notifications are in-app and SMS only)
-- Class/session scheduling or access-control hardware integration
-- QR / barcode member passes and staff scan check-in (planned later)
+- Member-facing self-service portal or member mobile app (members use pass links / Telegram / station QR only)
+- Push notifications (notifications are in-app, SMS, and Telegram)
+- Class/session scheduling or access-control hardware integration (turnstiles)
 - Automated absence SMS based on missed visits
 - Payroll or inventory management
+- **Free trial / trialing license for self-service signup** (deferred to **version 2**; trial code paths may remain env-gated — see FR-REG and Appendix 7.5)
 
 ### 1.3 Definitions, Acronyms, and Abbreviations
 
@@ -106,6 +113,12 @@ The system consists of three deliverables:
 | **OTP** | One-Time Password delivered by SMS. |
 | **JWT** | JSON Web Token, the authentication token format used by the API. |
 | **ETB** | Ethiopian Birr, the currency used for member payments. |
+| **Gym city** | Required city/locality for a gym tenant at registration (max 100 characters). |
+| **Gym address** | Optional street/area detail for a gym tenant (max 500 characters). |
+| **Trainer** | A personal trainer record at a gym (not a login user); may be assigned to members. |
+| **Check-in** | A recorded member visit at a branch (desk, scan, or station self check-in). |
+| **Member pass** | Signed QR / public link identifying a member for check-in and sharing. |
+| **Station check-in** | Public flow where a member uses a branch wall QR and Telegram OTP (or trusted device) to check in. |
 | **SRS** | Software Requirements Specification. |
 | **API** | Application Programming Interface. |
 | **SPA** | Single-Page Application. |
@@ -118,7 +131,7 @@ The system consists of three deliverables:
 
 ### 1.5 Document Overview
 
-Section 2 gives a high-level description of the product, its users, and constraints. Section 3 enumerates functional requirements grouped by module, each with a unique identifier. Section 4 specifies external interfaces. Section 5 specifies non-functional requirements. Section 6 describes the data model. Section 7 contains appendices.
+Section 2 gives a high-level description of the product, its users, and constraints. Section 3 enumerates functional requirements grouped by module, each with a unique identifier. Section 4 specifies external interfaces. Section 5 specifies non-functional requirements. Section 6 describes the data model. Section 7 contains appendices, including revision history.
 
 Requirement priority is indicated as **M** (Must have), **S** (Should have), or **C** (Could have). Unless otherwise stated, requirements are Must have.
 
@@ -157,20 +170,22 @@ Vibe is a new, self-contained system. It follows a client–server architecture:
 ### 2.2 Product Functions (summary)
 
 1. **Platform administration** — gym registry, license enrollment/renewal/plan change, SaaS payment ledger, platform dashboards and reports, SMS audit log, owner password reset.
-2. **Gym self-registration** — public signup with phone OTP and SaaS plan selection.
+2. **Gym self-registration** — public signup with phone OTP, gym location (city + optional address), and owner account; system assigns a default SaaS plan (no payment and no free trial at signup in v1).
 3. **Authentication and account management** — login, password change/reset (email link and SMS OTP flows), role-based access.
-4. **Member management** — enroll (with optional photo and payment), search/filter/sort lists, renew, collect payment, change plan mid-term, transfer between branches, edit, delete.
-5. **Membership plan management** — CRUD of plans (name, duration, price).
-6. **Payment recording** — member payments (enroll/renew/collect/change-plan sources; cash/card/bank transfer methods) with owner-level correction/deletion.
-7. **Multi-branch operation** — branch CRUD, default branch, staff and member branch assignment, branch-scoped views, branch comparison dashboard.
-8. **Team management** — Help Desk staff account CRUD, enable/disable, branch reassignment, password reset.
-9. **Dashboards and analytics** — status counts, monthly income with trend, revenue charts, needs-attention lists, unpaid tracking.
-10. **Reports and exports** — member and revenue reports with CSV and PDF export.
-11. **Notifications** — in-app notification inbox; automated SMS reminders to members (due soon / expires today / expired) and to gyms (license reminders); SMS logs.
-12. **Audit logging** — recorded actions across members, payments, plans, staff, and branches, filterable by actor and branch.
-13. **Subscription enforcement** — active / suspended (read-only) / expired (lockout) license states enforced server-side and reflected in both clients.
-14. **Offline operation** — cached reads and a queued-write sync mechanism on mobile and in the web gym portal (PWA service worker + IndexedDB).
-15. **Personalization** — dark/light theme and English/Amharic language selection.
+4. **Member management** — enroll (with optional photo, trainer, and payment), search/filter/sort lists (including new / no-visit / former), renew, collect payment, change plan mid-term, transfer between branches, edit, soft-archive / restore.
+5. **Trainers** — non-login trainer roster with specialty/certification, archive/restore, assign on enroll/edit, optional trainer-fee payment.
+6. **Check-in & passes** — desk search check-in, visit history, attendance settings; member QR pass; staff scan; station self check-in via Telegram.
+7. **Membership plan management** — CRUD of plans (name, duration, price).
+8. **Payment recording** — member payments (enroll/renew/collect/change-plan/trainer sources; cash/card/bank transfer methods) with owner-level correction/deletion.
+9. **Multi-branch operation** — branch CRUD, default branch, staff and member branch assignment, branch-scoped views, branch comparison dashboard, station pass per branch.
+10. **Team management** — Help Desk staff account CRUD, enable/disable, branch reassignment, password reset.
+11. **Dashboards and analytics** — status counts, monthly income with trend, revenue charts, needs-attention lists, unpaid tracking, today’s check-ins.
+12. **Reports and exports** — member and revenue reports with CSV and PDF export.
+13. **Notifications & messaging** — in-app notification inbox; member notices via Telegram when linked; SMS for OTPs and gym license reminders; message logs.
+14. **Audit logging** — recorded actions across members, payments, plans, staff, trainers, branches, and check-ins, filterable by actor and branch.
+15. **Subscription enforcement** — active / suspended (read-only) / expired (lockout) license states enforced server-side and reflected in both clients.
+16. **Offline operation** — cached reads and a queued-write sync mechanism on mobile and in the web gym portal (PWA service worker + IndexedDB).
+17. **Personalization** — dark/light theme and English / Amharic / Afaan Oromoo language selection.
 
 ### 2.3 User Classes and Characteristics
 
@@ -186,8 +201,8 @@ Vibe is a new, self-contained system. It follows a client–server architecture:
 | Component | Environment |
 |---|---|
 | Backend API | Node.js (v16+; developed on v22), Express 5, PostgreSQL. Deployable to Railway/Render or any Node + Postgres host. |
-| Web app | Modern evergreen browsers (Chrome, Firefox, Safari, Edge). React 19 + Vite SPA; deployable to static hosting (Vercel). |
-| Mobile app | Android and iOS via Expo SDK 54 / React Native 0.81. Phones and tablets (portrait-first; tablet ≥600 dp gets adapted layouts). Built with EAS. |
+| Web app | Modern evergreen browsers (Chrome, Firefox, Safari, Edge). React 19 + Vite SPA; deployable to static hosting (Vercel). Production origin is configured via API `ALLOWED_ORIGINS` / `FRONTEND_URL` (hostname is environment-specific, not hardcoded). |
+| Mobile app | Android and iOS via Expo SDK 54 / React Native 0.81. Phones and tablets (portrait-first; tablet ≥600 dp gets adapted layouts, wider bottom sheets, denser lists). Built with EAS. |
 | External services | Afro Message (SMS), SMTP server (password-reset email). Both degrade to console logging in development when unconfigured. |
 
 ### 2.5 Design and Implementation Constraints
@@ -195,7 +210,7 @@ Vibe is a new, self-contained system. It follows a client–server architecture:
 - **C-1** All persistent data must reside in a single PostgreSQL database; tenancy is enforced by a `gym_id` column on business tables, not by separate schemas/databases.
 - **C-2** Authentication must use stateless JWT Bearer tokens; no server-side sessions.
 - **C-3** Payments are recorded manually; the system must not depend on any payment gateway.
-- **C-4** SMS delivery depends on the Afro Message service; the system must function (minus SMS) when the provider is unconfigured or unavailable.
+- **C-4** SMS delivery depends on Afro Message and/or Hahu; Telegram delivery depends on bot configuration. The system must function (minus outbound messaging) when providers are unconfigured or unavailable.
 - **C-5** Scheduled work runs in-process via node-cron; no external queue/worker infrastructure is assumed.
 - **C-6** Member payment amounts are denominated in ETB.
 - **C-7** The mobile app must not offer Platform Admin functionality.
@@ -208,7 +223,8 @@ Vibe is a new, self-contained system. It follows a client–server architecture:
 - **A-2** Gym staff devices have intermittent but generally available internet; the offline queues (mobile and web gym portal) cover short outages, not permanently disconnected operation.
 - **A-3** The platform operator handles license payment collection out-of-band (cash/bank) and records it in the system.
 - **A-4** One owner account exists per gym.
-- **A-5** Amharic and English cover the target user base's language needs.
+- **A-5** English, Amharic, and Afaan Oromoo cover the target user base's language needs.
+- **A-6** Members who use Telegram can receive pass links and visit reminders there; others rely on desk/pass sharing and SMS OTP where required.
 
 ---
 
@@ -230,18 +246,20 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 | FR-AUTH-8 | The system shall provide owner password reset via SMS OTP sent to the gym's registered phone (request OTP → verify → set new password). | M |
 | FR-AUTH-9 | The Platform Admin shall be able to reset a gym owner's password from the gym detail view. | M |
 | FR-AUTH-10 | The mobile app shall reject Platform Admin logins with a message directing them to the web dashboard. | M |
-| FR-AUTH-11 | The system shall rate-limit login, OTP, signup, and password-reset endpoints, plus a global API rate limit. | M |
-| FR-AUTH-12 | The mobile app shall store the session token in secure device storage (Expo SecureStore); the web app shall store it in localStorage (remember me) or sessionStorage. | M |
+| FR-AUTH-11 | The system shall rate-limit login, OTP, signup, and password-reset endpoints, plus a global API rate limit. Public gym-signup limiter shall be strict in production and relaxed in non-production so full OTP→verify→complete flows can be smoke-tested. | M |
+| FR-AUTH-12 | The mobile app shall store the session token in secure device storage (Expo SecureStore). The web app shall prefer HttpOnly cookie sessions with Bearer/localStorage fallback when cookies are unavailable. | M |
 
 ### 3.2 Gym Self-Registration (FR-REG)
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-REG-1 | The system shall expose a public catalog of active SaaS plans for signup. | M |
-| FR-REG-2 | A prospective owner shall register a gym by: requesting an SMS OTP to their phone, verifying the OTP, then submitting gym name, owner details, username/password, and a selected SaaS plan. | M |
-| FR-REG-3 | Successful signup shall create the gym, its owner account, a default "Main" branch, and a license term for the chosen plan; the initial term may be unpaid. | M |
-| FR-REG-4 | Signup shall be available from both the web and the mobile app. | M |
-| FR-REG-5 | Platform-side gym enrollment (admin creates gym + owner, optionally recording payment) shall also be supported. | M |
+| FR-REG-1 | The system shall support a public gym signup flow that can be enabled/disabled by configuration (`PUBLIC_GYM_SIGNUP_ENABLED`). | M |
+| FR-REG-2 | A prospective owner shall register a gym by: (1) requesting an SMS OTP to their Ethiopian phone, (2) verifying the OTP while providing **gym name**, **city** (required), and **address** (optional), then (3) submitting owner name, username, password with confirmation, and optional email. | M |
+| FR-REG-3 | Successful signup shall create the gym (including city and optional address), its owner account, a default "Main" branch, and an **active SaaS license** for a default plan (configured plan id, or the cheapest active SaaS plan). No payment shall be collected at signup. | M |
+| FR-REG-4 | **v1:** Self-service signup shall **not** create a free-trial / "trialing" license. Free-trial signup (e.g. configurable `GYM_SIGNUP_TRIAL_DAYS`) is deferred to **version 2**. | M |
+| FR-REG-5 | Signup shall be available from both the web and the mobile app, with equivalent fields and validation. | M |
+| FR-REG-6 | Platform Admin gym enrollment shall collect the same gym identity fields as self-registration (**gym name**, **city**, **address** optional) plus owner account fields (including password confirmation on the web form), then a SaaS plan and optional initial payment (or skip payment). | M |
+| FR-REG-7 | Admin enroll and public signup shall validate city/address length limits and persist location on the gym record. | M |
 
 ### 3.3 Roles & Authorization (FR-ROLE)
 
@@ -267,30 +285,32 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-MEM-1 | Users shall enroll a member with name, phone, plan, start date, branch (owner-selectable when multi-branch; staff fixed to own branch), optional photo, and either an initial payment (amount, date, method) or an explicit "skip payment" leaving the term unpaid. | M |
+| FR-MEM-1 | Users shall enroll a member with name, phone, plan, start date, branch (owner-selectable when multi-branch; staff fixed to own branch), optional photo, optional trainer (+ optional trainer fee), optional Telegram link prompt, and either an initial payment (amount, date, method) or an explicit "skip payment" leaving the term unpaid. | M |
 | FR-MEM-2 | The system shall compute the member's end date automatically from the plan duration and start date. | M |
 | FR-MEM-3 | The system shall derive member status: **active**, **due soon** (≤ 7 days to expiry), **expired**; and track **unpaid** (current term has no payment) independently. Dashboard Needs attention shall surface due-soon members with ≤ 3 days remaining. Renew shall be available on the membership end date or after expiry. | M |
-| FR-MEM-4 | Member lists shall support text search, status filters (all/active/unpaid/due soon/expired), sorting, and pagination (infinite scroll on mobile). | M |
-| FR-MEM-5 | Member detail shall show photo, current status, plan, term dates, branch, and full payment history. | M |
+| FR-MEM-4 | Member lists shall support text search; status/segment filters (**all**, **active**, **unpaid**, **due soon**, **expired**, **new members**, **no visit**, **former**); sorting; and pagination (infinite scroll on mobile). Selected filter chips shall use a consistent accent (green) highlight; status dots may retain per-status colors. | M |
+| FR-MEM-5 | Member detail shall show photo, current status, plan, term dates, branch, trainer, Telegram link state, pass actions, visit summary, and full payment history. | M |
 | FR-MEM-6 | Users shall renew a member (new term with plan, start date, payment amount/date/method). | M |
 | FR-MEM-7 | Users shall collect a payment against an unpaid current term. | M |
 | FR-MEM-8 | Users shall change a member's plan mid-term; the system shall present a payment summary with a suggested amount reflecting credit for the unused portion of the current term, and allow an optional custom term start. | M |
 | FR-MEM-9 | A Gym Owner shall transfer a member between branches. | M |
-| FR-MEM-10 | Users shall edit member name, phone, and photo; owners may additionally change the member's branch. | M |
-| FR-MEM-11 | Only a Gym Owner shall delete a member; deletion shall require confirmation. | M |
+| FR-MEM-10 | Users shall edit member name, phone, photo, and trainer assignment; owners may additionally change the member's branch. | M |
+| FR-MEM-11 | Only a Gym Owner shall **soft-archive** (remove) a member; the member appears under **Former**, payment/report history is retained, and the owner may **restore** the member. Hard cascade-delete of member rows is not the primary UX. | M |
 | FR-MEM-12 | Member photos shall be compressed client-side before upload and cached on device for display. | S |
+| FR-MEM-13 | The system shall enforce unique member phones per gym (normalized Ethiopian numbers) and provide a phone-availability check during enroll/edit. | M |
 
 ### 3.6 Payments — Member Revenue (FR-PAY)
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-PAY-1 | Every recorded payment shall capture member, amount, date, method, and source (`enroll`, `collect`, `renew`, `change_plan`). | M |
+| FR-PAY-1 | Every recorded payment shall capture member, amount, date, method, and source (`enroll`, `collect`, `renew`, `change_plan`, `trainer`). | M |
 | FR-PAY-2 | Supported payment methods shall include Cash, Card, and Bank Transfer (Cash default). | M |
 | FR-PAY-3 | The revenue view shall list payments with period presets (this month, last month, last 30 days, all time, custom range), method filter, search, sort, and totals per method. | M |
 | FR-PAY-4 | The revenue view shall surface unpaid members needing attention with a shortcut to collect payment. | M |
 | FR-PAY-5 | The revenue view shall show the month-over-month revenue trend percentage. | M |
 | FR-PAY-6 | Only a Gym Owner shall edit (amount/date/method) or delete a payment record. | M |
 | FR-PAY-7 | The revenue list shall be exportable to CSV (web download; mobile share sheet). | M |
+| FR-PAY-8 | Trainer-fee payments (`source=trainer`) shall not mark a membership term as paid and shall be excluded from membership-paid / membership revenue totals as applicable. | M |
 
 ### 3.7 Branch Management (FR-BR)
 
@@ -318,8 +338,8 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 | FR-DASH-1 | The gym dashboard shall show member status counts (active, due soon, expired, unpaid), monthly income with month-over-month trend, total and new-this-month member counts. | M |
 | FR-DASH-2 | Status stat cards shall navigate to the member list pre-filtered by that status. | M |
 | FR-DASH-3 | Owners shall see a revenue chart of daily collections for the current month (mobile: line chart; web: area chart). | M |
-| FR-DASH-4 | The dashboard shall show a "needs attention" list (due soon / expired / unpaid members) with one-tap renew/collect actions; when empty on tablet/desktop it shall be visually de-emphasized or hidden. | M |
-| FR-DASH-5 | The system shall provide an in-app notification inbox (bell with unread badge) fed by dashboard alerts (due soon, expired, unpaid), supporting mark-read, mark-all-read, and dismiss, with deep links to renew/collect screens. Read/dismiss state persists per user on device. | M |
+| FR-DASH-4 | The dashboard shall show a "needs attention" list (due soon / expired / unpaid members) with one-tap renew/collect actions; when empty on tablet/desktop it shall be visually de-emphasized or hidden. Renew actions under status badges shall be slightly inset from the trailing edge for alignment. | M |
+| FR-DASH-5 | The system shall provide an in-app notification inbox (bell with unread badge) fed by dashboard alerts (due soon, expired, unpaid) and activity items (e.g. payment recorded), supporting mark-read, mark-all-read, dismiss, stacking/grouping of attention items, and deep links. Read/dismiss state persists per user on device. | M |
 | FR-DASH-6 | All primary list/dashboard screens on mobile shall support pull-to-refresh. | M |
 
 ### 3.10 Reports & Exports (FR-RPT)
@@ -331,38 +351,63 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 | FR-RPT-3 | Reports shall be exportable as CSV and PDF: members-only, revenue-only, or a combined full report. Web downloads files; mobile uses print-to-PDF and the native share sheet. | M |
 | FR-RPT-4 | Platform Admin shall have equivalent cross-gym reports (gym registry, platform revenue) with CSV/PDF export. | M |
 
-### 3.11 SMS & Messaging (FR-SMS)
+### 3.11 Messaging — SMS & Telegram (FR-SMS / FR-TG)
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-SMS-1 | The system shall send automated SMS to members: due-soon reminder (**≤ 3 days** before end date), expires-today notice, and expired notice, via the Afro Message provider. The 7-day due-soon status chip remains for list filters and does not trigger SMS. | M |
-| FR-SMS-2 | The system shall send automated SMS to gym contacts about their license: due in 3 days, expires today, expired. | M |
-| FR-SMS-3 | SMS sending shall be deduplicated so a given notice type is sent at most once per day per recipient (unique daily log index). | M |
-| FR-SMS-4 | OTP SMS shall support gym signup verification and owner password reset. | M |
-| FR-SMS-5 | Gym Owners shall have a read-only log of member SMS sent for their gym, with links to the member. | M |
+| FR-SMS-1 | When a member is linked on Telegram with Telegram as preferred channel, automated **member** notices (due soon ≤ 3 days, expires today, expired, enroll/renew/pass-related notices) shall be delivered via **Telegram**. Otherwise member expiry notices may fall back per routing rules; SMS remains available for OTP and gym-license traffic. | M |
+| FR-SMS-2 | The system shall send automated SMS to gym contacts about their license: due in 3 days, expires today, expired (and related trial notices when trial mode is enabled). | M |
+| FR-SMS-3 | Outbound messages shall be logged (SmsLog) with type and channel (`sms` / `telegram`) and deduplicated so a given notice type is sent at most once per day per recipient where applicable. | M |
+| FR-SMS-4 | OTP SMS shall support gym signup verification, owner password reset, and station/Telegram verification flows that require SMS OTP when configured. | M |
+| FR-SMS-5 | Gym Owners shall have a read-only log of member messages for their gym, with links to the member. | M |
 | FR-SMS-6 | Platform Admin shall have a read-only log of platform SMS (license reminders, OTPs) filterable by type and gym. | M |
-| FR-SMS-7 | When the SMS provider is unconfigured, messages shall be logged to console instead of failing operations. | M |
+| FR-SMS-7 | SMS providers shall include **Afro Message** and optional **Hahu** (Android gateway); provider selection via `SMS_PROVIDER` or auto-detect. When unconfigured, messages shall be logged to console instead of failing operations. | M |
+| FR-TG-1 | Members shall be able to **link Telegram** via a time-limited deep link / QR shown at the desk (or from the pass flow); staff may unlink. | M |
+| FR-TG-2 | A Telegram bot shall support member commands such as viewing pass/status and unlink, and shall receive webhook updates when configured. | M |
+| FR-TG-3 | Linked members may receive pass links and transactional notices on Telegram; preferred channel is stored on the member. | M |
 
 ### 3.12 Audit Logging (FR-AUD)
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-AUD-1 | The system shall record an audit entry for significant gym actions (member create/update/delete, payments, renewals, plan changes, staff and branch changes) including actor, action, and branch where applicable. | M |
+| FR-AUD-1 | The system shall record an audit entry for significant gym actions (member create/update/archive, payments, renewals, plan changes, staff/trainer and branch changes, check-ins where configured) including actor, action, and branch where applicable. | M |
 | FR-AUD-2 | A Gym Owner shall view a paginated activity log filterable by actor type (owner/staff/all) and branch. | M |
 
 ### 3.13 Platform Administration (FR-ADM)
 
 | ID | Requirement | Priority |
 |---|---|---|
-| FR-ADM-1 | Platform Admin shall view a platform dashboard: active/suspended/expired gym counts, unpaid gyms, SaaS revenue and estimated MRR, new gyms, due-soon licenses, and top gyms by members. | M |
-| FR-ADM-2 | Platform Admin shall manage the gym registry: search, filter by status (all/active/unpaid/due soon/expired), sort, paginate; view gym detail; edit gym profile; delete a gym (cascades all tenant data). | M |
-| FR-ADM-3 | Platform Admin shall enroll a gym (create gym + owner, optionally with initial license payment). | M |
+| FR-ADM-1 | Platform Admin shall view a platform dashboard: active/suspended/expired gym counts, unpaid gyms, SaaS revenue and estimated MRR, new gyms, due-soon licenses, optional trial-ending metrics when trial data exists, and top gyms by members. | M |
+| FR-ADM-2 | Platform Admin shall manage the gym registry: search, filter by status/segment (all/active/unpaid/due soon/expired/needs renewal; trial-ending when applicable), sort, paginate; view gym detail; edit gym profile. | M |
+| FR-ADM-3 | Platform Admin shall enroll a gym (create gym + owner with location fields, SaaS plan, optionally with initial license payment) via a stepped form aligned with owner signup fields. | M |
 | FR-ADM-4 | Platform Admin shall renew a gym's license and change its SaaS plan, with proration credit hints for unused term. | M |
 | FR-ADM-5 | Platform Admin shall manage the SaaS plan catalog (create/edit/delete); deleting a plan with subscribed gyms shall be blocked. | M |
 | FR-ADM-6 | Platform Admin shall manage the SaaS payment ledger: record, edit, and revoke license payments, filter by period/method/gym, export CSV. | M |
 | FR-ADM-7 | Platform Admin shall set a gym's subscription status directly (active/suspended/expired). | M |
+| FR-ADM-8 | Platform Admin “delete gym” shall **soft-archive** the gym (hidden from the live registry, payments history retained); an **archived** list and **restore** action shall be provided. Hard cascade wipe is not the default admin UX. | M |
 
-### 3.14 Subscription Enforcement (FR-SUB)
+### 3.14 Trainers (FR-TRAIN)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-TRAIN-1 | A Gym Owner shall create and edit trainers (name, phone, branch, specialty, optional certification file). Trainers are **not** login users. | M |
+| FR-TRAIN-2 | Staff shall list trainers for assignment; only owners may create/update/archive/restore trainers. | M |
+| FR-TRAIN-3 | Trainers may be soft-archived and restored (former trainers list). | M |
+| FR-TRAIN-4 | Members may be assigned a trainer on enroll or edit; optional trainer fee may be recorded as a payment with source `trainer`. | M |
+
+### 3.15 Check-in, Passes & Station (FR-CHK / FR-PASS)
+
+| ID | Requirement | Priority |
+|---|---|---|
+| FR-CHK-1 | Gym users shall check in members from a dedicated Check-in screen by search/select; today’s check-ins and visit history shall be visible. | M |
+| FR-CHK-2 | A Gym Owner shall configure attendance settings: weekly visit cap, week-start day, one-check-in-per-day, over-limit warn vs block, and whether station self check-in is enabled. | M |
+| FR-CHK-3 | Check-in shall respect membership status and attendance rules; blocked attempts shall return a clear reason. | M |
+| FR-PASS-1 | Each member shall have a **member pass** (signed QR / public URL) viewable and shareable from web and mobile; owners may regenerate (invalidate prior pass version). | M |
+| FR-PASS-2 | Staff shall check in a member by scanning the member pass QR (camera). | M |
+| FR-PASS-3 | Each branch may expose a **station pass** (wall QR) for public self check-in when enabled. | M |
+| FR-PASS-4 | Station self check-in shall identify the member (phone/search), verify via Telegram OTP (or trusted device token when applicable), and record a check-in against the station’s branch. | M |
+
+### 3.16 Subscription Enforcement (FR-SUB)
 
 | ID | Requirement | Priority |
 |---|---|---|
@@ -371,7 +416,7 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 | FR-SUB-3 | Clients shall reflect these states: read-only banners with disabled mutations when suspended; a full-screen lockout when expired. | M |
 | FR-SUB-4 | Platform Admin operations shall bypass gym subscription guards. | M |
 
-### 3.15 Offline Operation (FR-OFF)
+### 3.17 Offline Operation (FR-OFF)
 
 #### Mobile app
 
@@ -395,13 +440,13 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 | FR-OFF-11 | After a successful queue sync, the web app shall automatically refresh dashboard and list data. | M |
 | FR-OFF-12 | The platform admin console remains online-only. | M |
 
-### 3.16 Personalization & Localization (FR-PERS)
+### 3.18 Personalization & Localization (FR-PERS)
 
 | ID | Requirement | Priority |
 |---|---|---|
 | FR-PERS-1 | Users shall toggle between dark and light themes; the choice persists across sessions (mobile defaults to dark; system chrome follows theme). | M |
-| FR-PERS-2 | Users shall switch the interface language between English and Amharic; the choice persists. On first launch the mobile app defaults to Amharic when the device locale is Amharic. | M |
-| FR-PERS-3 | Amharic text shall render with an appropriate Ethiopic font (Noto Sans Ethiopic). | M |
+| FR-PERS-2 | Users shall switch the interface language among **English**, **Amharic**, and **Afaan Oromoo**; the choice persists. On first launch the mobile app defaults to Amharic when the device locale is Amharic. | M |
+| FR-PERS-3 | Amharic (and other Ethiopic) text shall render with an appropriate Ethiopic font (Noto Sans Ethiopic). | M |
 | FR-PERS-4 | A Gym Owner shall edit the gym profile: gym name, owner name, phone, email, username. | M |
 
 ---
@@ -411,17 +456,19 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 ### 4.1 User Interfaces
 
 - **UI-1 Web:** Responsive SPA with two shells — Platform Admin console and Gym portal. Dense data tables with filter chips, sort dropdowns, search, pagination, modal/drawer forms, confirmation dialogs, flash banners, and skeleton loading states.
-- **UI-2 Mobile:** Tab-based navigation (Dashboard, Members, Revenue, Plans, More) with stack screens for forms and detail views. Bottom sheets for filters/notifications, floating action buttons for creation, swipe between tabs, pull-to-refresh.
-- **UI-3 Tablet:** At widths ≥ 600 dp the mobile app applies tablet layouts: constrained content width, adapted grids/columns, larger charts and touch targets.
+- **UI-2 Mobile:** Tab-based navigation (**Dashboard**, **Members**, **Revenue**, **Check-in**, **More**) with stack screens for forms and detail views. Bottom sheets for filters/notifications/passes, floating action buttons for creation, swipe between tabs, pull-to-refresh.
+- **UI-3 Tablet:** At widths ≥ 600 dp the mobile app applies tablet layouts: constrained content width, adapted grids/columns, larger charts and touch targets, wider bottom sheets (Sort, Notifications, pickers) on portrait (~94% of width up to content max), and filter/action alignment under status badges.
 - **UI-4** Both clients shall present read-only and lockout subscription states clearly (banners / blocking screens).
 - **UI-5** All destructive actions (delete member, delete plan, revoke payment, disable staff, delete gym) require an explicit confirmation dialog.
+- **UI-6** Due-soon "n days left" and no-visit day labels under status badges shall be slightly inset from the trailing edge for visual balance with badges/actions.
 
 ### 4.2 Software Interfaces
 
-- **SI-1 REST API:** JSON over HTTP(S) under `/api/*`; authentication via `Authorization: Bearer <JWT>`; errors returned as JSON with machine-readable codes (e.g. `SUBSCRIPTION_READ_ONLY`, `SUBSCRIPTION_EXPIRED`). A health endpoint (`/api/health`) reports API + database status.
+- **SI-1 REST API:** JSON over HTTP(S) under `/api/*`; authentication via `Authorization: Bearer <JWT>` and/or HttpOnly session cookie for web; errors returned as JSON with machine-readable codes (e.g. `SUBSCRIPTION_READ_ONLY`, `SUBSCRIPTION_EXPIRED`). Public routes serve member pass and station check-in pages. A health endpoint (`/api/health`) reports API + database status.
 - **SI-2 PostgreSQL:** Accessed exclusively by the API via the `pg` driver; connection by `DATABASE_URL` or discrete host credentials; TLS optional.
-- **SI-3 Afro Message SMS:** Outbound HTTP API for OTP and reminder SMS; failures must not abort the triggering business operation.
+- **SI-3 SMS providers:** Afro Message and optional Hahu Android gateway for OTP / SMS; failures must not abort the triggering business operation.
 - **SI-4 SMTP:** Outbound email for password-reset links via Nodemailer.
+- **SI-5 Telegram Bot API:** Webhook or polling for member link/commands and Telegram message delivery when configured.
 
 ### 4.3 Communications Interfaces
 
@@ -431,7 +478,7 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 ### 4.4 Hardware Interfaces
 
-- **HI-1** Mobile: device camera / photo library (member photos), secure keystore (token storage), network state detection. No dedicated gym hardware (turnstiles, scanners) is interfaced.
+- **HI-1** Mobile: device camera / photo library (member photos, QR scan for check-in/Telegram link), secure keystore (token storage), network state detection. No dedicated gym hardware (turnstiles) is interfaced.
 
 ---
 
@@ -465,7 +512,7 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 ### 5.4 Usability
 
-- **NFR-USE-1** The UI shall be fully usable in English and Amharic; all user-facing strings are externalized for translation.
+- **NFR-USE-1** The UI shall be fully usable in English, Amharic, and Afaan Oromoo; all user-facing strings are externalized for translation.
 - **NFR-USE-2** Status semantics use consistent color coding across clients (active=green, due soon=amber, expired=red, unpaid=orange).
 - **NFR-USE-3** Frequent front-desk tasks (enroll, renew, collect payment) shall be reachable within two taps/clicks from the dashboard or member list.
 - **NFR-USE-4** Touch targets on mobile shall be at least 44×44 pt; forms shall scroll clear of the on-screen keyboard.
@@ -475,8 +522,8 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 - **NFR-MNT-1** Business rules live only in the API; clients shall not duplicate authorization or pricing logic beyond display hints.
 - **NFR-MNT-2** Code organization: API routes per domain module; clients organized by screen/page with shared component and API-client layers.
-- **NFR-MNT-3** Configuration via environment variables (`DATABASE_URL`, JWT secret, SMS token, SMTP, CORS origins, `VITE_API_URL` / mobile API URL); no environment-specific values hardcoded.
-- **NFR-MNT-4** Web unit tests run under Vitest; API provides a smoke-test script.
+- **NFR-MNT-3** Configuration via environment variables (`DATABASE_URL`, JWT secret, SMS token, SMTP, `ALLOWED_ORIGINS`, `FRONTEND_URL`, `PUBLIC_GYM_SIGNUP_ENABLED`, `GYM_SIGNUP_TRIAL_DAYS` (v2), `GYM_SIGNUP_DEFAULT_SAAS_PLAN_ID`, `VITE_API_URL` / mobile API URL); no environment-specific hostnames hardcoded in application logic.
+- **NFR-MNT-4** Web unit tests run under Vitest; API provides smoke-test scripts including core flows (`smoke:test`) and gym signup/admin enroll (`smoke:gym-signup`).
 
 ### 5.6 Portability
 
@@ -486,7 +533,7 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 ### 5.7 Data Integrity
 
-- **NFR-DATA-1** Deleting a gym shall cascade-delete all tenant data (users, branches, plans, members, payments, logs).
+- **NFR-DATA-1** Soft-archiving a gym or member shall hide them from live lists while retaining payment/report history; hard cascade wipe is not the default admin/owner UX.
 - **NFR-DATA-2** Referential integrity between members↔plans/branches, payments↔members, subscriptions↔SaaS plans is enforced by foreign keys.
 - **NFR-DATA-3** Monetary values shall be stored and computed with appropriate numeric precision (no floating-point currency drift in stored data).
 
@@ -498,33 +545,39 @@ Requirements are grouped by module. Identifier format: `FR-<MODULE>-<n>`.
 
 ```
 Gyms 1──* Users            (owner + staff; Platform Admin has gym_id NULL)
-Gyms 1──* Branches         (one default "Main" per gym)
+Gyms 1──* Branches         (one default "Main" per gym; station pass metadata)
 Gyms 1──* Plans            (membership products: name, duration months, price)
-Gyms 1──* Members          (→ Plans, → Branches; name, phone, photo, term dates)
-Gyms 1──* Payments         (→ Members; amount, date, method, source)
+Gyms 1──* Trainers         (non-login; branch, specialty, certification, soft-archive)
+Gyms 1──* Members          (→ Plans, → Branches, → Trainers; photo; pass_version;
+                          telegram_chat_id; preferred_channel; soft-archive)
+Gyms 1──* Payments         (→ Members; amount, date, method, source incl. trainer)
+Gyms 1──* CheckIns         (→ Members, → Branches; source desk/scan/station)
 Gyms 1──1 GymSubscriptions (→ SaaSPlans; license term start/end)
 Gyms 1──* SaaSPayments     (→ SaaSPlans; platform revenue)
 Gyms 1──* AuditLogs        (actor, action, optional branch)
 Users 1──* PasswordResetTokens
-PhoneOtpSessions           (signup / password-reset OTPs)
-SmsLog                     (all outbound SMS; unique daily dedup index)
+PhoneOtpSessions           (signup / password-reset / station OTPs)
+SmsLog                     (outbound SMS + Telegram notices; channel; dedup)
+Telegram link tokens       (time-limited member ↔ Telegram binding)
 ```
 
 ### 6.2 Key Entities
 
 | Entity | Purpose | Notable attributes |
 |---|---|---|
-| **Gyms** | Tenant record | name, phone, `subscription_status` (active/suspended/expired) |
+| **Gyms** | Tenant record | name, phone, **city**, **address** (optional), attendance/station settings, `subscription_status` (active/suspended/expired), soft-archive timestamp |
 | **Users** | Login accounts | role, gym_id, branch_id (staff), is_active, password hash, password_changed_at |
-| **Branches** | Gym locations | name, phone, address, is_default, is_active |
+| **Branches** | Gym locations | name, phone, address, is_default, is_active, station version |
 | **Plans** | Membership products | name, duration (months), price (ETB) |
-| **Members** | Gym customers | name, phone, plan_id, branch_id, start/end dates, photo |
-| **Payments** | Member revenue | member_id, amount, date, method, source |
+| **Trainers** | PT roster (no login) | name, phone, branch, specialty, certification, archived_at |
+| **Members** | Gym customers | name, phone, plan_id, branch_id, trainer_id, start/end dates, photo, pass_version, telegram fields, deleted_at (former) |
+| **Payments** | Member / trainer revenue | member_id, amount, date, method, source |
+| **CheckIns** | Visits | member_id, branch_id, checked_in_at, source |
 | **SaaSPlans** | License tiers | name, duration, price |
-| **GymSubscriptions** | Current license term | gym_id, saas_plan_id, start/end date |
+| **GymSubscriptions** | Current license term | gym_id, saas_plan_id, start/end date, trial marker when applicable |
 | **SaaSPayments** | Platform revenue | gym_id, plan, amount, date, method |
 | **AuditLogs** | Gym activity trail | actor, action, entity, branch, timestamp |
-| **SmsLog** | SMS audit + dedup | recipient, type, gym/member link, sent date |
+| **SmsLog** | Message audit + dedup | recipient, type, channel, gym/member link, sent date |
 
 ### 6.3 Data Retention
 
@@ -555,19 +608,24 @@ SmsLog                     (all outbound SMS; unique daily dedup index)
 | Capability | Web (Admin) | Web (Gym) | Mobile (Gym) |
 |---|---|---|---|
 | Platform gym registry / licenses / SaaS revenue | ✔ | — | — |
+| Gym soft-archive / restore | ✔ | — | — |
 | Dashboard, members, payments, plans, reports | — | ✔ | ✔ |
-| Team, branches, activity, SMS logs (owner) | — | ✔ | ✔ |
+| Team (staff), trainers, branches, activity, messages | — | ✔ | ✔ |
+| Desk check-in / visit history / attendance settings | — | ✔ | ✔ |
+| Member QR pass / regenerate / staff scan | — | ✔ | ✔ |
+| Station self check-in (branch QR) | — | ✔ (public page) | ✔ (manage station) |
+| Telegram member link / bot delivery | — | ✔ | ✔ |
 | CSV export | ✔ | ✔ | ✔ (share) |
 | PDF export | ✔ | ✔ | ✔ (print/share) |
 | Offline operation (cached reads + queued writes) | — | ✔ | ✔ |
-| Dark/light theme, EN/AM | ✔ | ✔ | ✔ |
+| Dark/light theme; EN / AM / Om | ✔ | ✔ | ✔ |
 | Gym self-registration | public route | public route | ✔ |
 
 ### 7.3 Scheduled Jobs
 
 | Job | Schedule | Actions |
 |---|---|---|
-| Expiry check | Daily 00:00 UTC + on API startup | Sync member statuses; expire members and gym licenses past end date; send member SMS at ≤3 days left / expires today / expired, and gym license SMS (deduplicated) |
+| Expiry check | Daily 00:00 UTC + on API startup | Sync member statuses; expire members and gym licenses past end date; send member notices (Telegram when linked) at ≤3 days left / expires today / expired; gym license SMS (deduplicated); optional trial digests when trial data exists |
 
 ### 7.4 Error Codes (representative)
 
@@ -577,6 +635,34 @@ SmsLog                     (all outbound SMS; unique daily dedup index)
 | `SUBSCRIPTION_EXPIRED` | Access denied: gym license expired |
 | 401 | Missing/invalid/expired token (clients force logout) |
 | 403 | Role/branch/disabled-account authorization failure |
+
+### 7.5 Versioning notes (v1 → v2)
+
+| Topic | v1 (current) | v2 (planned) |
+|---|---|---|
+| Public signup license | Assign default/active SaaS plan; no payment at signup | Optional free-trial license via `GYM_SIGNUP_TRIAL_DAYS` > 0 |
+| Trial UI | Trial assign path / banners / admin trial-ending filters may exist but are **not** the default product path for new signups | Restore trial messaging, owner trial banner, admin trial-ending metrics as first-class |
+| Gym location | City required; address optional on public signup and admin enroll | Same fields unless product expands geolocation |
+| Member messaging | Telegram-first for linked members; SMS for OTP + gym license | Expand channels / templates as needed |
+
+### 7.6 Still deferred / not shipped
+
+| Item | Notes |
+|---|---|
+| Payment gateway | Manual recording only |
+| Member mobile app | Pass / Telegram / station only |
+| Push notifications | In-app + SMS + Telegram |
+| Absence SMS | Not implemented |
+| Payroll / inventory | Not implemented |
+| Turnstile / access hardware | Not implemented |
+
+### 7.7 Document revision history
+
+| Version | Date | Summary |
+|---|---|---|
+| 1.0 | 2026-07-20 | Baseline SRS |
+| 1.1 | 2026-09-14 | Gym city/address; free trial deferred; default SaaS plan on signup; tablet sheets; smoke tests |
+| 1.2 | 2026-09-14 | Inventory sync: trainers, check-in, QR/station passes, Telegram messaging, soft-archive, Oromo, dual SMS providers, expanded data model & feature matrix |
 
 ---
 

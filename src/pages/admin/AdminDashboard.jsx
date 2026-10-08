@@ -60,6 +60,7 @@ import PageHeader from '../../components/PageHeader';
 
 const UNPAID = 'Unpaid';
 const DUE_SOON = 'Due Soon';
+const ON_TRIAL = 'On Trial';
 const EXPIRED = 'Expired';
 const FORMER = 'Former';
 const GYM_FILTER_STORAGE_KEY = 'vibe.admin.gyms.statusFilter';
@@ -68,6 +69,7 @@ const GYM_PAGE_SIZE = DEFAULT_PAGE_SIZE;
 function gymFilterToQuery(statusFilter) {
   if (statusFilter === UNPAID) return { filter: 'unpaid' };
   if (statusFilter === DUE_SOON) return { filter: 'due_soon' };
+  if (statusFilter === ON_TRIAL) return { filter: 'on_trial' };
   if (statusFilter === EXPIRED) return { filter: 'expired' };
   if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
@@ -76,7 +78,7 @@ function gymFilterToQuery(statusFilter) {
 function readSavedGymFilter() {
   try {
     const saved = sessionStorage.getItem(GYM_FILTER_STORAGE_KEY);
-    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, EXPIRED]);
+    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, ON_TRIAL, EXPIRED]);
     if (allowed.has(saved)) return saved;
   } catch {
     /* ignore */
@@ -106,7 +108,7 @@ export default function AdminDashboard() {
   const [gymTotal, setGymTotal] = useState(0);
   const [gymTotalPages, setGymTotalPages] = useState(1);
   const [gymCounts, setGymCounts] = useState({
-    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0, trialEnding: 0,
+    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0, trialEnding: 0, onTrial: 0,
   });
 
   const [saasPayments, setSaasPayments] = useState([]);
@@ -598,7 +600,8 @@ export default function AdminDashboard() {
 
   const gymsFiltered = statusFilter !== 'All' || Boolean(debouncedSearch);
   const noGymsYet = !loading && !gymsFiltered && gyms.length === 0 && archivedTotal === 0;
-  const canRegisterGym = !(saasPlansLoaded && saasPlans.length === 0);
+  /** Free Trial enroll works without SaaS plans. */
+  const canRegisterGym = true;
   const openRegisterGym = () => navigate(`${ADMIN_SECTION_PATH.gyms}/register`);
 
   return (
@@ -929,6 +932,16 @@ export default function AdminDashboard() {
                     onClick={() => {
                       setGymPage(1);
                       setStatusFilter(DUE_SOON);
+                    }}
+                  />
+                  <FilterChip
+                    variant="on_trial"
+                    label={t('filters.onTrial')}
+                    count={gymCounts.onTrial ?? 0}
+                    active={statusFilter === ON_TRIAL}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(ON_TRIAL);
                     }}
                   />
                   <FilterChip
