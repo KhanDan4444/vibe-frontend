@@ -18,7 +18,8 @@
 |---|---|---|
 | Free trial on self-signup | **Off** unless `GYM_SIGNUP_TRIAL_DAYS` > 0 | 2026-10-08 |
 | Admin enroll Free Trial | Plan select includes Free Trial; admin enters trial days (no fixed length) | 2026-10-08 |
-| Plan badge (owner UI) | Web profile menu + mobile Account show `licensePlanName` / Free Trial | 2026-10-08 |
+| Plan badge (owner UI) | Free Trial as-is; paid → Monthly/Quarterly/Yearly Plan; trial shows days left under badge | 2026-10-08 |
+| Admin trial visibility | List + detail: day used / total / days left / end date for Free Trial gyms | 2026-10-08 |
 | Signup / admin enroll fields | City required; address optional; confirm password | 2026-09-14 |
 | Member notices channel | **Telegram only** (linked); no SMS fallback | 2026-09-14 |
 | SMS reserved for | OTP + gym SaaS/trial license alerts | 2026-09-15 |
@@ -325,6 +326,20 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Decided / why:** Keep Free Trial in admin plan select; admin types the trial length — no hardcoded 30.
 - **Shipped:** Restored Free Trial option + trial-days field on admin register.
 - **Do-not-regress:** never default admin trial to 30 days.
+
+### 2026-10-08 — Plan badge labels (X Plan)
+
+- **Asked:** Badge should say Quarterly Plan, Yearly Plan, etc.; Free Trial unchanged.
+- **Decided / why:** Format from duration/name; Free Trial has no “Plan” suffix.
+- **Shipped:** `formatLicensePlanBadge` (web + mobile); API `licensePlanDuration`.
+- **Do-not-regress:** Free Trial label never becomes “Free Trial Plan”.
+
+### 2026-10-08 — Trial days used / days left
+
+- **Asked:** Admin should see how long a gym has been on Free Trial; gym should see duration/end; show n days left under plan badge (urgent ~7 days).
+- **Decided / why:** Compute from license start/end; badge subtitle always when on trial; emphasize ≤7 days left.
+- **Shipped:** API trialDaysUsed/Total/Left + start; admin list/detail progress line; web/mobile badge “n days left”.
+- **Do-not-regress:** Free Trial badge still not “Free Trial Plan”.
 
 ---
 

@@ -127,6 +127,12 @@
     "changePassword": "Change password",
     "logout": "Logout",
     "planBadgeFreeTrial": "Free Trial",
+    "planBadgeMonthly": "Monthly Plan",
+    "planBadgeQuarterly": "Quarterly Plan",
+    "planBadgeSixMonth": "6-Month Plan",
+    "planBadgeYearly": "Yearly Plan",
+    "planBadgeMonths": "{{count}}-Month Plan",
+    "planBadgeNamed": "{{name}} Plan",
     "appearance": "Appearance",
     "themeLight": "Light",
     "themeDark": "Dark",
@@ -135,7 +141,11 @@
     "language": "Language",
     "english": "English",
     "amharic": "አማርኛ",
-    "afanOromo": "Afaan Oromoo"
+    "afanOromo": "Afaan Oromoo",
+    "planBadgeDaysLeft": "{{count}} days left",
+    "planBadgeDaysLeft_one": "{{count}} day left",
+    "planBadgeEndsToday": "Ends today",
+    "planBadgeDaysLeft_other": "{{count}} days left"
   },
   "roles": {
     "frontDesk": "Front Desk"
@@ -288,7 +298,8 @@
     "newGyms": "New gyms",
     "saasRevenue": "SaaS Revenue",
     "estMrr": "Est. MRR",
-    "recentExpiringGyms": "Recent Expiring & Expired Gyms"
+    "recentExpiringGyms": "Recent Expiring & Expired Gyms",
+    "trialProgressLine": "Day {{used}} of {{total}} · {{left}} left · ends {{date}}"
   },
   "smsLog": {
     "filterLabel": "Message type",
@@ -1529,7 +1540,12 @@
       "alertPaidChangeOrRenew": "Paid through {{date}}. Use Change plan to switch mid-term, or Renew when the license ends.",
       "alertPaidThrough": "Paid through {{date}}.",
       "alertUnpaidChangeOrCollect": "No payment for this license term — change plan or collect payment below.",
-      "alertUnpaidCollect": "No payment for this license term — collect the fee below before renewing."
+      "alertUnpaidCollect": "No payment for this license term — collect the fee below before renewing.",
+      "trialDaysUsed": "Trial days used",
+      "trialDayOfTotal": "Day {{used}} of {{total}}",
+      "trialDaysLeft": "Trial days left",
+      "trialDaysLeftValue": "{{count}} days",
+      "trialEndsToday": "Ends today"
     },
     "renewGym": {
       "title": "Renew license",

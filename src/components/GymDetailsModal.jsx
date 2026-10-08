@@ -23,6 +23,7 @@ import { paymentSourceLabel } from '../utils/paymentSources';
 import PaymentMethodBadge from './PaymentMethodBadge';
 import { toDateString, formatDisplayDate } from '../utils/date';
 import { formatMoney } from '../utils/formatMoney';
+import { getGymTrialProgress, isGymOnTrial } from '../utils/trialProgress';
 import StatusBadge from './StatusBadge';
 import InitialsAvatar from './InitialsAvatar';
 import { canRenewGym, canChangeSaasPlan } from '../utils/saasRenew';
@@ -115,6 +116,8 @@ export default function GymDetailsModal({
         saas_plan_id: gymDetail.saas_subscription?.saas_plan_id,
       }
     : null;
+  const onTrial = gymDetail ? isGymOnTrial(gymDetail) : false;
+  const trialProgress = gymDetail ? getGymTrialProgress(gymDetail) : null;
   const termPaid = termPayments.reduce((s, p) => s + Number(p.amount), 0);
   const termPaymentCount = termPayments.length;
   const totalPaid = saasPayments.reduce((s, p) => s + Number(p.amount), 0);
@@ -365,6 +368,35 @@ export default function GymDetailsModal({
                   value={formatDisplayDate(gymDetail.saas_subscription?.end_date)}
                   valueClassName="text-sm font-semibold text-app-text-strong"
                 />
+                {onTrial && trialProgress ? (
+                  <>
+                    <SlidePanelRow
+                      icon={Calendar}
+                      label={t('modals.gymDetails.trialDaysUsed')}
+                      value={t('modals.gymDetails.trialDayOfTotal', {
+                        used: trialProgress.daysUsed,
+                        total: trialProgress.totalDays,
+                      })}
+                      valueClassName="text-sm font-medium text-app-text"
+                    />
+                    <SlidePanelRow
+                      icon={CalendarRange}
+                      label={t('modals.gymDetails.trialDaysLeft')}
+                      value={
+                        trialProgress.daysLeft <= 0
+                          ? t('modals.gymDetails.trialEndsToday')
+                          : t('modals.gymDetails.trialDaysLeftValue', {
+                              count: trialProgress.daysLeft,
+                            })
+                      }
+                      valueClassName={`text-sm font-semibold ${
+                        trialProgress.daysLeft <= 7
+                          ? 'text-[color:var(--color-status-trialing)]'
+                          : 'text-app-text-strong'
+                      }`}
+                    />
+                  </>
+                ) : null}
                 {isFormer && gymDetail.deleted_at ? (
                   <SlidePanelRow
                     icon={Calendar}

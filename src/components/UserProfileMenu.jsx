@@ -8,13 +8,9 @@ import { isGymOwner, isGymStaff, isPlatformAdmin } from '../utils/roles';
 import { ProfilePanel, PasswordPanel } from './account/AccountPanels';
 import { useFlash } from '../context/FlashContext';
 import { menuSurface } from '../utils/surfaceClasses';
+import { formatLicensePlanBadge } from '../utils/formatLicensePlanBadge';
+import { TRIAL_DAYS_LEFT_URGENCY } from '../utils/trialProgress';
 import { User, KeyRound, LogOut, ChevronDown, Sun, Moon } from 'lucide-react';
-
-function planBadgeLabel(licensePlanName, isTrial, t) {
-  if (isTrial) return t('profile.planBadgeFreeTrial');
-  const name = (licensePlanName || '').trim();
-  return name || null;
-}
 
 function roleSubtitle(role, t) {
   if (isPlatformAdmin(role)) return t('profile.platformAdmin');
@@ -65,7 +61,21 @@ export default function UserProfileMenu({ compact = false }) {
 
   const displayName = user?.name || user?.email || user?.username || 'User';
   const subtitle = roleSubtitle(user?.role, t);
-  const planBadge = planBadgeLabel(gym?.licensePlanName, gym?.isTrial, t);
+  const planBadge = formatLicensePlanBadge(
+    gym?.licensePlanName,
+    { isTrial: gym?.isTrial, durationMonths: gym?.licensePlanDuration },
+    t
+  );
+  const trialDaysLeft = gym?.isTrial ? gym?.trialDaysLeft : null;
+  const showTrialDaysLeft =
+    gym?.isTrial && trialDaysLeft != null && trialDaysLeft >= 0;
+  const trialDaysUrgent =
+    showTrialDaysLeft && trialDaysLeft <= TRIAL_DAYS_LEFT_URGENCY;
+  const trialDaysLeftLabel = showTrialDaysLeft
+    ? trialDaysLeft === 0
+      ? t('profile.planBadgeEndsToday')
+      : t('profile.planBadgeDaysLeft', { count: trialDaysLeft })
+    : null;
   const isDark = theme === 'dark';
   const ThemeIcon = isDark ? Sun : Moon;
   const themeActionLabel = isDark ? t('profile.switchToLight') : t('profile.switchToDark');
@@ -162,16 +172,29 @@ export default function UserProfileMenu({ compact = false }) {
                   ) : null}
                 </div>
                 {planBadge ? (
-                  <span
-                    className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold leading-tight tracking-wide ${
-                      gym?.isTrial
-                        ? 'bg-[color:var(--color-status-trialing)]/15 text-[color:var(--color-status-trialing)]'
-                        : 'bg-teal-700/10 text-teal-800 dark:bg-teal-400/15 dark:text-teal-300'
-                    }`}
-                    title={planBadge}
-                  >
-                    {planBadge}
-                  </span>
+                  <div className="mt-0.5 flex shrink-0 flex-col items-end gap-0.5">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-semibold leading-tight tracking-wide ${
+                        gym?.isTrial
+                          ? 'bg-[color:var(--color-status-trialing)]/15 text-[color:var(--color-status-trialing)]'
+                          : 'bg-teal-700/10 text-teal-800 dark:bg-teal-400/15 dark:text-teal-300'
+                      }`}
+                      title={planBadge}
+                    >
+                      {planBadge}
+                    </span>
+                    {trialDaysLeftLabel ? (
+                      <span
+                        className={`max-w-[7.5rem] text-right text-[10px] font-semibold leading-tight ${
+                          trialDaysUrgent
+                            ? 'text-[color:var(--color-status-trialing)]'
+                            : 'text-app-muted'
+                        }`}
+                      >
+                        {trialDaysLeftLabel}
+                      </span>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
             </div>

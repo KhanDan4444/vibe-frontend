@@ -34,6 +34,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { formatDisplayDate } from '../../utils/date';
+import { getGymTrialProgress } from '../../utils/trialProgress';
 import { getGyms, getArchivedGyms, getGymDetail, updateGym, deleteGym, restoreGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
 import { getSaasPlans } from '../../services/saasPlanService';
 import { gymNeedsCatchUpPayment } from '../../utils/saasPaymentReport';
@@ -73,6 +74,26 @@ function gymFilterToQuery(statusFilter) {
   if (statusFilter === EXPIRED) return { filter: 'expired' };
   if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
+}
+
+function GymPlanCell({ gym, t }) {
+  const planName = gym.saas_plan_name || '—';
+  const trial = getGymTrialProgress(gym);
+  return (
+    <div className="min-w-0">
+      <p className="truncate text-sm text-teal-700 dark:text-teal-300/90">{planName}</p>
+      {trial ? (
+        <p className="mt-0.5 text-xs text-app-muted">
+          {t('admin.trialProgressLine', {
+            used: trial.daysUsed,
+            total: trial.totalDays,
+            left: Math.max(0, trial.daysLeft),
+            date: formatDisplayDate(trial.endDate),
+          })}
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
 function readSavedGymFilter() {
@@ -772,10 +793,14 @@ export default function AdminDashboard() {
                               <InitialsAvatar name={gym.name} size="sm" />
                               <span className="font-semibold text-app-text-strong truncate">{gym.name}</span>
                             </div>
-                            <p className="mt-1 text-sm text-app-muted">{gym.saas_plan_name || '—'}</p>
-                            <p className="mt-0.5 text-xs text-app-muted">
-                              {t('admin.expiresOn', { date: formatDisplayDate(gym.saas_end_date) })}
-                            </p>
+                            <div className="mt-1">
+                              <GymPlanCell gym={gym} t={t} />
+                            </div>
+                            {!getGymTrialProgress(gym) ? (
+                              <p className="mt-0.5 text-xs text-app-muted">
+                                {t('admin.expiresOn', { date: formatDisplayDate(gym.saas_end_date) })}
+                              </p>
+                            ) : null}
                             <div className="mt-2">
                               <StatusBadge status={gym.subscription_status} />
                             </div>
@@ -813,8 +838,8 @@ export default function AdminDashboard() {
                                   <span className="truncate font-semibold text-app-text-strong">{gym.name}</span>
                                 </div>
                               </td>
-                              <td className="truncate text-app-muted">
-                                {gym.saas_plan_name || '—'}
+                              <td className="text-app-muted">
+                                <GymPlanCell gym={gym} t={t} />
                               </td>
                               <td className="whitespace-nowrap text-app-text">
                                 {formatDisplayDate(gym.saas_end_date)}
@@ -1026,7 +1051,9 @@ export default function AdminDashboard() {
                                     <StatusBadge status={showingFormer ? 'Former' : gym.subscription_status} />
                                   </div>
                                   <p className="mt-1 text-sm text-app-text">{gym.owner_name}</p>
-                                  <p className="mt-0.5 text-sm text-teal-700">{gym.saas_plan_name || '—'}</p>
+                                  <div className="mt-0.5">
+                                    <GymPlanCell gym={gym} t={t} />
+                                  </div>
                                   <p className="mt-1 text-xs text-app-muted">
                                     {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
                                   </p>
@@ -1116,8 +1143,8 @@ export default function AdminDashboard() {
                                 </div>
                               </td>
                               <td className="truncate text-app-text">{gym.owner_name}</td>
-                              <td className="truncate text-app-text">
-                                {gym.saas_plan_name || '—'}
+                              <td className="text-app-text">
+                                <GymPlanCell gym={gym} t={t} />
                               </td>
                               <td>
                                 <span className="inline-flex items-center gap-1.5 text-sm text-app-text">

@@ -135,7 +135,15 @@
     "language": "Afaan",
     "english": "English",
     "amharic": "አማርኛ",
-    "afanOromo": "Afaan Oromoo"
+    "afanOromo": "Afaan Oromoo",
+    "planBadgeMonthly": "Karoora Ji'aa",
+    "planBadgeQuarterly": "Karoora Rubaa",
+    "planBadgeSixMonth": "Karoora Ji'a 6",
+    "planBadgeYearly": "Karoora Waggaa",
+    "planBadgeMonths": "Karoora Ji'a {{count}}",
+    "planBadgeNamed": "Karoora {{name}}",
+    "planBadgeDaysLeft": "Guyyaa {{count}} hafe",
+    "planBadgeEndsToday": "Har'a xumura"
   },
   "roles": {
     "frontDesk": "Deskii Fuulduraa"
@@ -288,7 +296,8 @@
     "newGyms": "Jimiilee Haaraa",
     "saasRevenue": "Galii SaaS",
     "estMrr": "Tilmaama MRR",
-    "recentExpiringGyms": "Jimiilee Dhiyeenyatti Dhumanii fi Dhumatan"
+    "recentExpiringGyms": "Jimiilee Dhiyeenyatti Dhumanii fi Dhumatan",
+    "trialProgressLine": "Guyyaa {{used}} / {{total}} · {{left}} hafe · {{date}} xumura"
   },
   "smsLog": {
     "filterLabel": "Gosa ergaa",
@@ -1501,7 +1510,12 @@
       "alertPaidChangeOrRenew": "{{date}} hanga kaffalameera. Walakkaa yeroo jijjiiruuf Karoora Jijjiiri, ykn yeroo eeyyamni dhumu Haaromsi fayyadami.",
       "alertPaidThrough": "{{date}} hanga kaffalameera.",
       "alertUnpaidChangeOrCollect": "Yeroo eeyyama kanaaf kaffaltiin hin jiru — karoora jijjiiri ykn kaffaltii armaan gadii sassaabi.",
-      "alertUnpaidCollect": "Yeroo eeyyama kanaaf kaffaltiin hin jiru — haaromsuu kee dura gatii armaan gadii sassaabi."
+      "alertUnpaidCollect": "Yeroo eeyyama kanaaf kaffaltiin hin jiru — haaromsuu kee dura gatii armaan gadii sassaabi.",
+      "trialDaysUsed": "Guyyaa fayyaa fayyadaman",
+      "trialDayOfTotal": "Guyyaa {{used}} / {{total}}",
+      "trialDaysLeft": "Guyyaa fayyaa hafan",
+      "trialDaysLeftValue": "Guyyaa {{count}}",
+      "trialEndsToday": "Har'a xumura"
     },
     "renewGym": {
       "title": "Eeyyama haaromsi",

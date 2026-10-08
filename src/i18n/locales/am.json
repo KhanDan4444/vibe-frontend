@@ -249,7 +249,8 @@
     "unpaidLicensesBanner": "ያልተከፈሉ የጂም ፈቃዶች — መጀመሪያ ክፍያ ይቀበሉ",
     "unpaidLicensesBody": "እነዚህ ንቁ ጂሞች ለአሁኑ የፈቃድ ጊዜ ምንም ክፍያ አልፈጸሙም። ፈቃድ ከማደስ ወይም ዕቅድ ከመቀየርዎ በፊት ክፍያ ይቀበሉ።",
     "unpaidStatusHint": "ያልተከፈለ (የተመዘገበ፣ ግን ክፍያ የሌለው)",
-    "viewAll": "ሁሉንም ይመልከቱ"
+    "viewAll": "ሁሉንም ይመልከቱ",
+    "trialProgressLine": "ቀን {{used}} ከ {{total}} · {{left}} ቀርቷል · እስከ {{date}}"
   },
   "alerts": {
     "branchReadOnlyBody": "{{name}} ንቁ አይደለም። የአባል ታሪክ ይታያል ነገር ግን መመዝገብ እና ማስተካከል ተሰናክሏል። ለውጦችን ለማድረግ በ\"ቅርንጫፎች\" በኩል እንደገና ያንቁ።",
@@ -829,7 +830,12 @@
       "alertPaidChangeOrRenew": "እስከ {{date}} ተከፍሏል። በጊዜያት መካከል ለመቀየር \"ዕቅድ ቀይር\"ን ይጠቀሙ፣ ወይም ፈቃዱ ሲያልቅ ያድሱ።",
       "alertPaidThrough": "እስከ {{date}} ተከፍሏል።",
       "alertUnpaidChangeOrCollect": "ለዚህ የፈቃድ ዘመን ምንም ክፍያ የለም — ዕቅድ ይቀይሩ ወይም ከታች ክፍያ ይቀበሉ።",
-      "alertUnpaidCollect": "ለዚህ የፈቃድ ዘመን ምንም ክፍያ የለም — ፈቃዱን ከማደስዎ በፊት ክፍያውን ከታች ይቀበሉ።"
+      "alertUnpaidCollect": "ለዚህ የፈቃድ ዘመን ምንም ክፍያ የለም — ፈቃዱን ከማደስዎ በፊት ክፍያውን ከታች ይቀበሉ።",
+      "trialDaysUsed": "የተጠቀሙ የሙከራ ቀናት",
+      "trialDayOfTotal": "ቀን {{used}} ከ {{total}}",
+      "trialDaysLeft": "የቀሩ የሙከራ ቀናት",
+      "trialDaysLeftValue": "{{count}} ቀናት",
+      "trialEndsToday": "ዛሬ ያልቃል"
     },
     "gymEdit": {
       "gymName": "የጂም ስም",
@@ -1714,7 +1720,15 @@
     "themeDark": "ጨለማ",
     "themeLight": "ብርሃን",
     "switchToLight": "ወደ ብርሃን ቀይር",
-    "switchToDark": "ወደ ጨለማ ቀይር"
+    "switchToDark": "ወደ ጨለማ ቀይር",
+    "planBadgeMonthly": "ወርሃዊ ዕቅድ",
+    "planBadgeQuarterly": "የሩብ ዓመት ዕቅድ",
+    "planBadgeSixMonth": "የ6 ወር ዕቅድ",
+    "planBadgeYearly": "ዓመታዊ ዕቅድ",
+    "planBadgeMonths": "የ{{count}} ወር ዕቅድ",
+    "planBadgeNamed": "{{name}} ዕቅድ",
+    "planBadgeDaysLeft": "{{count}} ቀን ቀርቷል",
+    "planBadgeEndsToday": "ዛሬ ያልቃል"
   },
   "roles": {
     "frontDesk": "የፊት ዴስክ"
