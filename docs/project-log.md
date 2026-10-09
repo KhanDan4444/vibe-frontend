@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-08 (trial opt-in, no 30-day default) |
+| **Standing section last updated** | 2026-10-09 (draft TTL 1 min; new gym/member = created_at) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -37,6 +37,7 @@
 | Mobile list UI persist | Members filter/sort/search; revenue list UI; team tab/search | 2026-10-08 |
 | Mobile autofill | `Field` forwards `textContentType` / `autoComplete`; login remembers last identifier | 2026-10-08 |
 | Web form drafts / list UI | localStorage drafts (TTL **1 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
+| Error monitoring | **Sentry** on API when `SENTRY_DSN` set; uptime via external ping of `/api/health` | 2026-10-09 |
 
 ---
 
@@ -66,6 +67,7 @@
 | **Mobile UI / layout / FAB / sheets** | `vibe-mobile/src/hooks/useResponsiveLayout.ts`, `vibe-mobile/src/theme/tokens.ts` → match §Standing mobile |
 | **Web UI / theme / chips / surfaces** | `vibe-frontend/src/index.css`, `src/utils/surfaceClasses.js` |
 | **Outbound SMS / Telegram / email copy** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md), `vibe/utils/notificationSms.js`, `phoneOtp.js`, `notificationEmail.js` |
+| **Monitoring / Sentry** | [`vibe/docs/MONITORING.md`](../../vibe/docs/MONITORING.md), `vibe/instrument.js`, `SENTRY_DSN` |
 | **Signup / enroll / trial** | `vibe/utils/registerGymCore.js`, `GYM_SIGNUP_*` env, SRS §7.5 |
 | **Auth / roles / license gate** | API middleware + SRS roles; mobile must reject Platform Admin |
 | **Check-in / QR / station / trainers** | `docs/CHECKIN_AND_TRAINERS_PLAN.md` + SRS (prefer SRS if plan stale) |
@@ -390,6 +392,33 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 
 - **Asked:** Free Trial / Yearly Plan badge text one step larger.
 - **Shipped:** Mobile Account + web profile menu badge (and days-left) 10 → 11px.
+
+### 2026-10-09 — Session wrap (ops + security Qs)
+
+- **Asked:** Log this session; also Neon backup for later self-hosted Postgres; whether RLS is needed; whether frontend has API keys.
+- **Decided / why:**
+  - Neon → own server: use `pg_dump -Fc` (direct URL) now; `pg_restore --no-owner --no-acl` later; same-or-newer Postgres major.
+  - RLS **not required** for v1 — tenancy is app-layer JWT/`gym_id`; add later only for defense-in-depth.
+  - Frontend has **no secret API keys** — only public `VITE_API_URL` + session JWT; secrets stay on API env.
+- **Shipped (this day, detail entries above):** new-members ≠ renewals; gym-profile gap; admin New gym chip; Free Trial amber badge; admin register-gym draft; draft TTL 1 min; plan badge +1px.
+- **Styles / customs:** Free Trial badge amber; paid plan badges teal; draft TTL 1 minute (web + mobile).
+- **Do-not-regress:** renew must not inflate new-member/new-gym counts; no passwords in drafts; paid badges stay teal.
+- **Follow-ups:** optional — test `pg_restore` on a spare DB before cutover; restart API so `Members.created_at` / schema changes apply in prod.
+
+### 2026-10-09 — Sentry on API
+
+- **Asked:** How to set up monitoring (Sentry vs Prometheus/Grafana).
+- **Decided / why:** Sentry for errors now; Prometheus/Grafana later for infra metrics; uptime = external ping of `/api/health`.
+- **Shipped:** `vibe/instrument.js` + `@sentry/node`; wire in `server.js` / `errorHandler`; `SENTRY_*` in `.env.example`; `vibe/docs/MONITORING.md`. Off unless `SENTRY_DSN` set.
+- **Do-not-regress:** do not send passwords/OTP/Authorization/Cookie to Sentry; do not require DSN in local/dev.
+- **Follow-ups:** create Sentry project → set Railway `SENTRY_DSN`; add UptimeRobot; optional web/mobile Sentry later.
+
+### 2026-10-09 — API uptime check
+
+- **Asked:** Do the uptime check.
+- **Decided / why:** Automate probe of production `/api/health` without waiting on UptimeRobot signup; optional UptimeRobot still documented.
+- **Shipped:** `vibe/.github/workflows/uptime.yml` (every 5 min); `scripts/uptime-check.sh`; confirmed live health `200 {"ok":true}`; MONITORING.md updated.
+- **Follow-ups:** push `vibe` so Actions run; enable GitHub Actions failure emails; optional UptimeRobot for SMS.
 
 ---
 
