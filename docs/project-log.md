@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-09 (draft TTL 1 min; new gym/member = created_at) |
+| **Standing section last updated** | 2026-10-09 (Sentry + GH uptime; draft TTL 1 min) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -419,6 +419,18 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Decided / why:** Automate probe of production `/api/health` without waiting on UptimeRobot signup; optional UptimeRobot still documented.
 - **Shipped:** `vibe/.github/workflows/uptime.yml` (every 5 min); `scripts/uptime-check.sh`; confirmed live health `200 {"ok":true}`; MONITORING.md updated.
 - **Follow-ups:** push `vibe` so Actions run; enable GitHub Actions failure emails; optional UptimeRobot for SMS.
+
+### 2026-10-09 — Session wrap (Sentry + uptime live + ops teach)
+
+- **Asked:** Log session; finish Sentry/uptime notifications; explain API↔Railway, replicas, volume for member photos.
+- **Decided / why:**
+  - Skip Sentry agent/repo/Slack onboarding — DSN on Railway only; Error monitoring enough; free Developer after 14-day trial (no pay unless Upgrade).
+  - Uptime = GitHub Actions on `vibe` (`API uptime`); email = GitHub “failed workflows only.” Errors = Sentry Issue Alerts email.
+  - Replicas = 1 (volume attached blocks multi-replica); volume keeps `uploads/` member photos across deploys (DB holds path only).
+- **Shipped / ops done:** Sentry Express project + `SENTRY_DSN` / `SENTRY_ENVIRONMENT` on Railway; first uptime run green; GH + Sentry email alerts on; MONITORING.md / workflow already in `vibe`.
+- **Styles / customs:** none.
+- **Do-not-regress:** never commit real `SENTRY_DSN`; keep volume (or equivalent) if photos stay on disk; don’t require multi-replica while volume attached.
+- **Follow-ups:** pay Railway past-due if still billed; optional UptimeRobot/SMS; object storage later if scaling past 1 replica; rotate DSN if chat exposure is a concern.
 
 ---
 
