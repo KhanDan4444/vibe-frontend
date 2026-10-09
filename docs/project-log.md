@@ -18,8 +18,10 @@
 |---|---|---|
 | Free trial on self-signup | **Off** unless `GYM_SIGNUP_TRIAL_DAYS` > 0 | 2026-10-08 |
 | Admin enroll Free Trial | Plan select includes Free Trial; admin enters trial days (no fixed length) | 2026-10-08 |
-| Plan badge (owner UI) | Free Trial as-is; paid → Monthly/Quarterly/Yearly Plan; trial shows days left under badge | 2026-10-08 |
+| Plan badge (owner UI) | Free Trial as-is (amber); paid → Monthly/Quarterly/Yearly Plan (teal); trial shows days left under badge | 2026-10-08 |
 | Admin trial visibility | List + detail: day used / total / days left / end date for Free Trial gyms | 2026-10-08 |
+| New members metric/filter | **Registered this month** via `created_at` (not renew `start_date`) | 2026-10-09 |
+| Admin New gym filter | Gyms registered this month (`Gyms.created_at`); chip after Expired | 2026-10-09 |
 | Signup / admin enroll fields | City required; address optional; confirm password | 2026-09-14 |
 | Member notices channel | **Telegram only** (linked); no SMS fallback | 2026-09-14 |
 | SMS reserved for | OTP + gym SaaS/trial license alerts | 2026-09-15 |
@@ -31,10 +33,10 @@
 | Platform Admin on mobile | **Not supported** (reject login) | ongoing |
 | Payments | Manual only (no gateway) | v1 |
 | Agent memory file | This log + Cursor rule | 2026-10-08 |
-| Mobile form drafts | AsyncStorage drafts (no passwords/photos); enroll + register-gym + renew | 2026-10-08 |
+| Mobile form drafts | AsyncStorage drafts (no passwords/photos); enroll + register-gym + renew; **TTL 1 min** | 2026-10-08 |
 | Mobile list UI persist | Members filter/sort/search; revenue list UI; team tab/search | 2026-10-08 |
 | Mobile autofill | `Field` forwards `textContentType` / `autoComplete`; login remembers last identifier | 2026-10-08 |
-| Web form drafts / list UI | localStorage drafts + persisted list UI (mirror mobile); keep in-memory modal draft for short modals | 2026-10-08 |
+| Web form drafts / list UI | localStorage drafts (TTL **1 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
 
 ---
 
@@ -53,6 +55,7 @@
 - Do **not** fork business rules into clients — API is source of truth.
 - Language selected on login (EN / AM / Om) must persist after sign-in (web + mobile).
 - Admin enroll must keep city/address parity with public signup.
+- Do **not** count renewals as new members — use `created_at` / registration month only.
 
 ---
 
@@ -340,6 +343,48 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Decided / why:** Compute from license start/end; badge subtitle always when on trial; emphasize ≤7 days left.
 - **Shipped:** API trialDaysUsed/Total/Left + start; admin list/detail progress line; web/mobile badge “n days left”.
 - **Do-not-regress:** Free Trial badge still not “Free Trial Plan”.
+
+### 2026-10-09 — New members ≠ renewals
+
+- **Asked:** Renewing membership was counting on the New members chip; should only be newly registered that month; also fix dashboard member cards.
+- **Decided / why:** New = registration month (`Members.created_at`), never current-term `start_date` (renew overwrites it).
+- **Shipped:** `created_at` + backfill; dashboard/list/branch-compare use `MEMBER_NEW_THIS_MONTH_SQL`; attention cards show phone/branch.
+- **Do-not-regress:** renew must not change `created_at` or inflate new-member counts.
+
+### 2026-10-09 — Gym profile top gap
+
+- **Asked:** Large empty gap above the GYM label on mobile Gym profile.
+- **Decided / why:** `TabScreenFrame` already pads under the nav; scroll + first section were stacking more top space.
+- **Shipped:** `profile.tsx` — zero content/first-section top margin; keep spacing before LOGIN.
+- **Do-not-regress:** don’t re-add paddingVertical on profile content above TabScreenFrame inset.
+
+### 2026-10-09 — Admin New gym filter chip
+
+- **Asked:** Add New Gym filter chip after Expired on admin Gyms.
+- **Decided / why:** Same rule as new members — registered this calendar month via `Gyms.created_at` (not license renewals).
+- **Shipped:** API `filter=new` + `counts.new`; chip after Expired; New gyms metric card opens that filter; EN/AM/Om labels.
+- **Do-not-regress:** New gym ≠ license renew / plan change.
+
+### 2026-10-09 — Free Trial badge amber
+
+- **Asked:** Free Trial badge only — make it amber (Account screenshot).
+- **Decided / why:** Distinguish trial from paid plan badges; paid stays teal.
+- **Shipped:** Mobile Account uses `warning` for trial badge; web profile menu Free Trial uses amber classes.
+- **Do-not-regress:** paid plan badges remain teal.
+
+### 2026-10-09 — Admin register-gym draft
+
+- **Asked:** Hold admin register-gym stepper inputs like member enroll / mobile.
+- **Decided / why:** Same localStorage draft pattern; never store passwords.
+- **Shipped:** `RegisterGymModal` → `vibe.draft.admin-register-gym` (fields + step); clear on success; re-enter password if submitting after restore.
+- **Do-not-regress:** no passwords in drafts; key distinct from public `vibe.draft.register-gym`.
+
+### 2026-10-09 — Draft TTL 1 minute
+
+- **Asked:** How long to hold drafts; then set to about a minute (not 7 days).
+- **Decided / why:** Short resume window only — drop stale drafts after 1 min from last save.
+- **Shipped:** `DRAFT_TTL_MS = 60_000` in web `useLocalStorageDraft` + mobile `useAsyncStorageDraft`; `_savedAt` on save; expired/legacy without stamp cleared on load.
+- **Do-not-regress:** still no passwords/OTP/photos in drafts.
 
 ---
 

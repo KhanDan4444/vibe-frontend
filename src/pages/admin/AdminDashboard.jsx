@@ -63,6 +63,7 @@ const UNPAID = 'Unpaid';
 const DUE_SOON = 'Due Soon';
 const ON_TRIAL = 'On Trial';
 const EXPIRED = 'Expired';
+const NEW_GYM = 'New';
 const FORMER = 'Former';
 const GYM_FILTER_STORAGE_KEY = 'vibe.admin.gyms.statusFilter';
 const GYM_PAGE_SIZE = DEFAULT_PAGE_SIZE;
@@ -72,6 +73,7 @@ function gymFilterToQuery(statusFilter) {
   if (statusFilter === DUE_SOON) return { filter: 'due_soon' };
   if (statusFilter === ON_TRIAL) return { filter: 'on_trial' };
   if (statusFilter === EXPIRED) return { filter: 'expired' };
+  if (statusFilter === NEW_GYM) return { filter: 'new' };
   if (statusFilter === 'All' || statusFilter === FORMER) return {};
   return { status: statusFilter };
 }
@@ -99,7 +101,7 @@ function GymPlanCell({ gym, t }) {
 function readSavedGymFilter() {
   try {
     const saved = sessionStorage.getItem(GYM_FILTER_STORAGE_KEY);
-    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, ON_TRIAL, EXPIRED]);
+    const allowed = new Set(['All', FORMER, UNPAID, 'active', DUE_SOON, ON_TRIAL, EXPIRED, NEW_GYM]);
     if (allowed.has(saved)) return saved;
   } catch {
     /* ignore */
@@ -129,7 +131,7 @@ export default function AdminDashboard() {
   const [gymTotal, setGymTotal] = useState(0);
   const [gymTotalPages, setGymTotalPages] = useState(1);
   const [gymCounts, setGymCounts] = useState({
-    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0, trialEnding: 0, onTrial: 0,
+    all: 0, unpaid: 0, active: 0, suspended: 0, expired: 0, dueSoon: 0, trialEnding: 0, onTrial: 0, new: 0,
   });
 
   const [saasPayments, setSaasPayments] = useState([]);
@@ -717,8 +719,8 @@ export default function AdminDashboard() {
                   trendCaption={platformMetrics?.newGymsDeltaLabel || t('metrics.vsLastMonth')}
                   onClick={() => {
                     setGymPage(1);
-                    setStatusFilter('All');
-                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: 'All' } });
+                    setStatusFilter(NEW_GYM);
+                    navigate(ADMIN_SECTION_PATH.gyms, { state: { filter: NEW_GYM } });
                   }}
                 />
                 <MetricCard
@@ -977,6 +979,16 @@ export default function AdminDashboard() {
                     onClick={() => {
                       setGymPage(1);
                       setStatusFilter(EXPIRED);
+                    }}
+                  />
+                  <FilterChip
+                    variant="new"
+                    label={t('filters.newGym', { count: gymCounts.new ?? 0 })}
+                    count={gymCounts.new ?? 0}
+                    active={statusFilter === NEW_GYM}
+                    onClick={() => {
+                      setGymPage(1);
+                      setStatusFilter(NEW_GYM);
                     }}
                   />
                   <span className="filter-chip-archive-rule" aria-hidden />

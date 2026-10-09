@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
+import { clearLocalStorageDraft, useLocalStorageDraft } from '../utils/useLocalStorageDraft';
 import { todayString, formatDisplayDate } from '../utils/date';
 import { boundsForLicensePayment } from '../utils/datePickerBounds';
 import { calculateEndDate } from '../utils/memberDates';
@@ -44,6 +45,37 @@ import { modalTitle } from '../utils/surfaceClasses';
 
 /** Sentinel value for Free Trial in the plan select (not a SaaS plan id). */
 export const FREE_TRIAL_PLAN_VALUE = 'trial';
+
+/** Admin enroll only — distinct from public signup `vibe.draft.register-gym`. */
+const ADMIN_REGISTER_GYM_DRAFT_KEY = 'vibe.draft.admin-register-gym';
+
+function isAdminRegisterGymDraft(raw) {
+  return (
+    raw &&
+    typeof raw === 'object' &&
+    typeof raw.gymName === 'string' &&
+    typeof raw.phone === 'string' &&
+    Number(raw.registerStep) >= 1
+  );
+}
+
+function adminRegisterGymDraftIsDirty(draft) {
+  return Boolean(
+    draft.gymName?.trim() ||
+      draft.city?.trim() ||
+      draft.address?.trim() ||
+      draft.ownerName?.trim() ||
+      draft.username?.trim() ||
+      draft.email?.trim() ||
+      draft.phone?.trim() ||
+      draft.saasPlanId ||
+      draft.trialDays?.toString?.().trim?.() ||
+      draft.skipPayment ||
+      Number(draft.registerStep) > 1 ||
+      (draft.method && draft.method !== 'Bank Transfer') ||
+      draft.amount?.toString?.().trim?.()
+  );
+}
 
 function validateRegisterStep1({
   gymName,
@@ -145,6 +177,77 @@ export default function RegisterGymModal({
     scopeKey: 'register',
     initialize: initDefaults,
     saving: isBusy,
+  });
+
+  const adminRegisterDraftValue = useMemo(
+    () => ({
+      gymName,
+      city,
+      address,
+      ownerName,
+      email,
+      username,
+      phone,
+      saasPlanId,
+      trialDays,
+      skipPayment,
+      amount,
+      method,
+      paymentDate,
+      registerStep,
+      registerMaxStep,
+    }),
+    [
+      gymName,
+      city,
+      address,
+      ownerName,
+      email,
+      username,
+      phone,
+      saasPlanId,
+      trialDays,
+      skipPayment,
+      amount,
+      method,
+      paymentDate,
+      registerStep,
+      registerMaxStep,
+    ]
+  );
+
+  const applyAdminRegisterDraft = useCallback(
+    (next) => {
+      setGymName(next.gymName || '');
+      setCity(next.city || '');
+      setAddress(next.address || '');
+      setOwnerName(next.ownerName || '');
+      setEmail(next.email || '');
+      setUsername(next.username || '');
+      setPhone(next.phone || '');
+      setSaasPlanId(next.saasPlanId || '');
+      setTrialDays(next.trialDays != null ? String(next.trialDays) : '');
+      setSkipPayment(Boolean(next.skipPayment));
+      setAmount(next.amount != null ? String(next.amount) : '');
+      setMethod(next.method || 'Bank Transfer');
+      setPaymentDate(next.paymentDate || todayString());
+      setRegisterStep(Number(next.registerStep) > 0 ? Number(next.registerStep) : 1);
+      setRegisterMaxStep(Number(next.registerMaxStep) > 0 ? Number(next.registerMaxStep) : 1);
+      // Passwords never drafted — user re-enters on step 1 before submit.
+      setPassword('');
+      setConfirm('');
+      markTouched();
+    },
+    [markTouched]
+  );
+
+  const { clearDraft: clearAdminRegisterStorageDraft } = useLocalStorageDraft({
+    key: ADMIN_REGISTER_GYM_DRAFT_KEY,
+    enabled: Boolean(isOpen && !registerDone),
+    value: adminRegisterDraftValue,
+    isDirty: adminRegisterGymDraftIsDirty,
+    isValid: isAdminRegisterGymDraft,
+    apply: applyAdminRegisterDraft,
   });
 
   if (!isOpen) return null;
@@ -301,7 +404,18 @@ export default function RegisterGymModal({
       amount,
       paymentDate,
     });
-    if (!showValidationError(registerResult, setError, t, { setFieldErrors: setLocalFieldErrors })) return;
+    if (!showValidationError(registerResult, setError, t, { setFieldErrors: setLocalFieldErrors })) {
+      // After draft restore, password is empty — send user back to re-enter it.
+      if (
+        registerResult?.field === 'password' ||
+        registerResult?.field === 'confirm' ||
+        !password
+      ) {
+        setRegisterStep(1);
+        setRegisterMaxStep((m) => Math.max(m, 1));
+      }
+      return;
+    }
 
     const payload = buildPayload();
     const start = payload.start_date || todayString();
@@ -314,6 +428,8 @@ export default function RegisterGymModal({
     setSubmitting(true);
     try {
       await onSubmit(payload);
+      clearLocalStorageDraft(ADMIN_REGISTER_GYM_DRAFT_KEY);
+      clearAdminRegisterStorageDraft();
       if (isPage) {
         setRegisterDone({
           gymName: payload.gymName,
@@ -326,6 +442,8 @@ export default function RegisterGymModal({
           startDate: payload.start_date,
           endDate: endIso && endIso !== '—' ? endIso : '',
         });
+      } else {
+        resetDraft();
       }
     } catch {
       // Parent sets externalError / throws; keep form open.
@@ -335,6 +453,8 @@ export default function RegisterGymModal({
   };
 
   const startAnother = () => {
+    clearLocalStorageDraft(ADMIN_REGISTER_GYM_DRAFT_KEY);
+    clearAdminRegisterStorageDraft();
     resetDraft();
     setRegisterDone(null);
     setRegisterStep(1);

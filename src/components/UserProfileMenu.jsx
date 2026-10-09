@@ -176,7 +176,7 @@ export default function UserProfileMenu({ compact = false }) {
                     <span
                       className={`rounded-full px-2 py-0.5 text-[10px] font-semibold leading-tight tracking-wide ${
                         gym?.isTrial
-                          ? 'bg-[color:var(--color-status-trialing)]/15 text-[color:var(--color-status-trialing)]'
+                          ? 'bg-amber-500/15 text-amber-700 dark:bg-amber-400/15 dark:text-amber-300'
                           : 'bg-teal-700/10 text-teal-800 dark:bg-teal-400/15 dark:text-teal-300'
                       }`}
                       title={planBadge}
@@ -187,7 +187,7 @@ export default function UserProfileMenu({ compact = false }) {
                       <span
                         className={`max-w-[7.5rem] text-right text-[10px] font-semibold leading-tight ${
                           trialDaysUrgent
-                            ? 'text-[color:var(--color-status-trialing)]'
+                            ? 'text-amber-700 dark:text-amber-300'
                             : 'text-app-muted'
                         }`}
                       >

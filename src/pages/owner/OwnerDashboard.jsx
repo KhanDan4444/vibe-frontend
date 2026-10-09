@@ -361,6 +361,10 @@ export default function OwnerDashboard() {
                                 {member.name}
                               </span>
                               <p className="truncate text-xs text-app-dim">
+                                {[member.phone, member.branchName].filter(Boolean).join(' · ') ||
+                                  planLabel}
+                              </p>
+                              <p className="truncate text-xs text-app-dim">
                                 {planLabel}
                                 {' · '}
                                 {attentionEndLabel(member, t)}
