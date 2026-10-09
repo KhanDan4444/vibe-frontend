@@ -876,7 +876,7 @@ export default function AdminDashboard() {
                   <h2 className={`mb-3 sm:mb-4 ${sectionTitle}`}>
                     {t('admin.topGymsByMembers')}
                   </h2>
-                  <div className="min-h-[200px] flex-1 sm:min-h-[250px]">
+                  <div className="h-52 w-full min-w-0 sm:h-60 md:h-64">
                     <Suspense
                       fallback={
                         <p className="flex h-full items-center justify-center text-sm text-app-muted">
