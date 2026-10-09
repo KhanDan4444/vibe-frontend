@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-09 (Sentry + GH uptime; draft TTL 1 min) |
+| **Standing section last updated** | 2026-10-09 (Sentry + GH uptime; draft TTL 5 min) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -20,6 +20,7 @@
 | Admin enroll Free Trial | Plan select includes Free Trial; admin enters trial days (no fixed length) | 2026-10-08 |
 | Plan badge (owner UI) | Free Trial as-is (amber); paid → Monthly/Quarterly/Yearly Plan (teal); trial shows days left under badge | 2026-10-08 |
 | Admin trial visibility | List + detail: day used / total / days left / end date for Free Trial gyms | 2026-10-08 |
+| Free Trial vs Unpaid / Collect | Trial ≠ unpaid; no Collect — use Change plan to go paid | 2026-10-09 |
 | New members metric/filter | **Registered this month** via `created_at` (not renew `start_date`) | 2026-10-09 |
 | Admin New gym filter | Gyms registered this month (`Gyms.created_at`); chip after Expired | 2026-10-09 |
 | Signup / admin enroll fields | City required; address optional; confirm password | 2026-09-14 |
@@ -33,10 +34,10 @@
 | Platform Admin on mobile | **Not supported** (reject login) | ongoing |
 | Payments | Manual only (no gateway) | v1 |
 | Agent memory file | This log + Cursor rule | 2026-10-08 |
-| Mobile form drafts | AsyncStorage drafts (no passwords/photos); enroll + register-gym + renew; **TTL 1 min** | 2026-10-08 |
+| Mobile form drafts | AsyncStorage drafts (no passwords/photos); enroll + register-gym + renew; **TTL 5 min** | 2026-10-08 |
 | Mobile list UI persist | Members filter/sort/search; revenue list UI; team tab/search | 2026-10-08 |
 | Mobile autofill | `Field` forwards `textContentType` / `autoComplete`; login remembers last identifier | 2026-10-08 |
-| Web form drafts / list UI | localStorage drafts (TTL **1 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
+| Web form drafts / list UI | localStorage drafts (TTL **5 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
 | Error monitoring | **Sentry** on API when `SENTRY_DSN` set; uptime via external ping of `/api/health` | 2026-10-09 |
 
 ---
@@ -57,6 +58,7 @@
 - Language selected on login (EN / AM / Om) must persist after sign-in (web + mobile).
 - Admin enroll must keep city/address parity with public signup.
 - Do **not** count renewals as new members — use `created_at` / registration month only.
+- Do **not** treat Free Trial gyms as Unpaid or show Collect — trial → paid is Change plan.
 
 ---
 
@@ -431,6 +433,28 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** none.
 - **Do-not-regress:** never commit real `SENTRY_DSN`; keep volume (or equivalent) if photos stay on disk; don’t require multi-replica while volume attached.
 - **Follow-ups:** pay Railway past-due if still billed; optional UptimeRobot/SMS; object storage later if scaling past 1 replica; rotate DSN if chat exposure is a concern.
+
+### 2026-10-09 — Draft TTL 5 minutes
+
+- **Asked:** Change draft hold time to 5 minutes (was 1).
+- **Decided / why:** Slightly longer resume window without going to multi-day retention.
+- **Shipped:** `DRAFT_TTL_MS = 5 * 60 * 1000` in web `useLocalStorageDraft` + mobile `useAsyncStorageDraft`.
+
+### 2026-10-09 — Mobile boot fail after skeleton
+
+- **Asked:** Mobile stuck on “Could not load gym data” after skeleton (last preview APK).
+- **Decided / why:** Last build is `preview` → Railway URL OK. Dashboard uses `Members.created_at` for new-member metrics, but column was only in `schema.sql` (skipped in production bootstrap) — missing column → API 500 → generic boot error.
+- **Shipped:** `vibe/migrations/027_member_created_at.sql`; clearer `GymBootError` (license vs network). **Must apply 027 on Neon/production.**
+- **Do-not-regress:** schema changes that production needs must ship as `migrations/*.sql`, not only `schema.sql`.
+- **Follow-ups:** run migrate against Railway `DATABASE_URL`; then Retry on mobile (no rebuild required for DB fix).
+
+### 2026-10-09 — Collect / Unpaid on Free Trial
+
+- **Asked:** Why does Collect (and Unpaid) show for a Free Trial gym (e.g. Rise up)?
+- **Decided / why:** Unpaid meant “no SaaS payment for current term.” Trial gyms correctly have no payment, so they were mis-flagged. Collect is only for paid-plan gyms that never paid; trial → paid uses **Change plan**.
+- **Shipped:** Hide Collect + Unpaid badge when `isGymOnTrial`; block collect submit with `admin.useChangePlanForTrial` (API unpaid filter should also exclude trial).
+- **Do-not-regress:** Free Trial gyms must not appear in Unpaid / Collect paths.
+- **Follow-ups:** deploy API unpaid-SQL exclude + this web UI.
 
 ---
 

@@ -1,6 +1,7 @@
 import { ArrowLeftRight, Edit, Trash2, RefreshCw, DollarSign, PanelRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { canRenewGym, canChangeSaasPlan } from '../utils/saasRenew';
+import { isGymOnTrial } from '../utils/trialProgress';
 import { renewActionBtn, collectActionBtn, iconActionIdle } from '../utils/surfaceClasses';
 import RowMoreMenu from './RowMoreMenu';
 
@@ -55,6 +56,7 @@ export default function GymListRowActions({
 
   const showCollect =
     Boolean(gym.isUnpaid) &&
+    !isGymOnTrial(gym) &&
     gym.subscription_status?.toLowerCase() === 'active' &&
     !canRenewGym(gym);
   const showRenew = canRenewGym(gym);

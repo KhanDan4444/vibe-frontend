@@ -116,6 +116,7 @@
     "changePlanShort": "ዕቅድ",
     "changeSaasPlanTitle": "የSaaS ዕቅድ ቀይር",
     "collectPaymentActiveOnly": "ክፍያ ማሰባሰብ የሚቻለው ክፍያ ሳይከፍሉ ለተመዘገቡ ንቁ ጂሞች ብቻ ነው።",
+    "useChangePlanForTrial": "በነጻ ሙከራ ያሉ ጂሞች የሚሰበሰብ ክፍያ የላቸውም። ወደ የሚከፈል ዕቅድ ለማስገባት \"ዕቅድ ቀይር\" ይጠቀሙ።",
     "useRenewForLicense": "ለፈቃድ ማራዘሚያ \"ያድሱ\" የሚለውን ይጠቀሙ። ዳግም ማደስ ክፍያውንም ጭምር ይመዘግባል።",
     "createSaasPlan": "የSaaS ዕቅድ ይፍጠሩ",
     "dailyTotals": "ዕለታዊ ጠቅላላ ድምር",

@@ -34,7 +34,7 @@ import ConfirmDialog from '../../components/ConfirmDialog';
 import PaginationControls from '../../components/PaginationControls';
 import { DEFAULT_PAGE_SIZE } from '../../utils/pagination';
 import { formatDisplayDate } from '../../utils/date';
-import { getGymTrialProgress } from '../../utils/trialProgress';
+import { getGymTrialProgress, isGymOnTrial } from '../../utils/trialProgress';
 import { getGyms, getArchivedGyms, getGymDetail, updateGym, deleteGym, restoreGym, renewGym, changeGymPlan, collectGymPayment, getSaasPayments, getAdminDashboard, resetOwnerPassword } from '../../services/gymAdminService';
 import { getSaasPlans } from '../../services/saasPlanService';
 import { gymNeedsCatchUpPayment } from '../../utils/saasPaymentReport';
@@ -539,6 +539,13 @@ export default function AdminDashboard() {
       setCollectState((s) => ({
         ...s,
         error: t('admin.useRenewForLicense'),
+      }));
+      return;
+    }
+    if (gym && isGymOnTrial(gym)) {
+      setCollectState((s) => ({
+        ...s,
+        error: t('admin.useChangePlanForTrial'),
       }));
       return;
     }
@@ -1167,7 +1174,7 @@ export default function AdminDashboard() {
                               <td>
                                 <div className="flex flex-wrap items-center gap-1.5">
                                   <StatusBadge status={showingFormer ? 'Former' : gym.subscription_status} />
-                                  {isUnpaid && !showingFormer && <UnpaidBadge />}
+                                  {isUnpaid && !showingFormer && !isGymOnTrial(gym) && <UnpaidBadge />}
                                 </div>
                               </td>
                               <td>

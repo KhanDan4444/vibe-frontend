@@ -97,7 +97,12 @@ export default function GymDetailsModal({
     : false;
   const isUnpaid = gymDetail?.is_unpaid ?? (termStart ? !paidForCurrentTerm : false);
   const isFormer = Boolean(gymDetail?.deleted_at);
-  const canCollect = !isFormer && isUnpaid && gymDetail?.subscription_status?.toLowerCase() === 'active';
+  const onTrial = gymDetail ? isGymOnTrial(gymDetail) : false;
+  const canCollect =
+    !isFormer &&
+    isUnpaid &&
+    !onTrial &&
+    gymDetail?.subscription_status?.toLowerCase() === 'active';
   const endDate = gymDetail?.saas_subscription?.end_date;
   const endDisplay = toDateString(endDate);
   const licenseStart = gymDetail?.saas_subscription?.start_date
@@ -116,7 +121,6 @@ export default function GymDetailsModal({
         saas_plan_id: gymDetail.saas_subscription?.saas_plan_id,
       }
     : null;
-  const onTrial = gymDetail ? isGymOnTrial(gymDetail) : false;
   const trialProgress = gymDetail ? getGymTrialProgress(gymDetail) : null;
   const termPaid = termPayments.reduce((s, p) => s + Number(p.amount), 0);
   const termPaymentCount = termPayments.length;

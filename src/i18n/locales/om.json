@@ -216,6 +216,7 @@
     "expiredOnly": "Kan Dhumatan Qofa",
     "activeMembersCount": "Miseensota si'aawaa {{count}}",
     "collectPaymentActiveOnly": "Kaffaltii sassaabuun jimiilee si'aawaa kan kaffaltii malee galmaa'aniif qofa.",
+    "useChangePlanForTrial": "Jimiileen Free Trial kaffaltii sassaabamu hin qaban. Karoora kaffaltii qabuuf 'Karoora jijjiiri' fayyadamaa.",
     "useRenewForLicense": "Dheereffama hayyamaatiif 'Haaromsi' fayyadamaa. Haaromsuun kaffaltiis ni galmeessa.",
     "unpaidLicensesBanner": "Hayyama jimii kan kaffaltiin hin raawwatamne — dursi kaffaltii sassaabi",
     "unpaidLicensesBody": "Jimiileen si'aawaa kunniin yeroo hayyama ammatiif kaffaltii hin qaban. Haaromsuu ykn karoora jijjiiruu dura sassaabaa.",

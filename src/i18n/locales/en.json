@@ -218,6 +218,7 @@
     "expiredOnly": "Expired only",
     "activeMembersCount": "{{count}} active members",
     "collectPaymentActiveOnly": "Collect payment is only for active gyms registered without paying.",
+    "useChangePlanForTrial": "Free Trial gyms have no payment to collect. Use Change plan to put them on a paid plan.",
     "useRenewForLicense": "Use Renew for license extensions. Renewal records the payment too.",
     "unpaidLicensesBanner": "Unpaid gym licenses — collect payment first",
     "unpaidLicensesBody": "These active gyms have no payment for their current license term. Collect before renewing or changing plan.",
