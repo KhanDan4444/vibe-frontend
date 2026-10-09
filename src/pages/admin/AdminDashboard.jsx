@@ -658,18 +658,18 @@ export default function AdminDashboard() {
                 <ErrorRetryBanner message={error} onRetry={retryAdminLoad} />
               ) : null}
 
-              <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-6">
+              <div className="app-metric-grid grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-6">
                 {adminBooting ? (
                   <>
-                    <MetricCardSkeleton variant="emphasis" className="col-span-2" />
-                    {Array.from({ length: 4 }).map((_, i) => (
+                    <MetricCardSkeleton variant="emphasis" className="col-span-2 md:col-span-1" />
+                    {Array.from({ length: 5 }).map((_, i) => (
                       <MetricCardSkeleton key={i} variant="dense" />
                     ))}
                   </>
                 ) : (
                 <>
                 <MetricCard
-                  className="col-span-2 cursor-pointer"
+                  className="col-span-2 cursor-pointer md:col-span-1"
                   variant="emphasis"
                   label={t('admin.activeGyms')}
                   value={activeGyms}

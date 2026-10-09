@@ -186,9 +186,9 @@ export default function AdminLayout() {
   );
 
   return (
-    <div className={shellPage}>
+    <div className={`${shellPage} flex h-[100dvh] flex-col overflow-hidden`}>
       <header
-        className={`safe-top sticky top-0 z-40 flex h-14 min-h-[3.5rem] items-center justify-between px-4 lg:hidden ${shellHeader}`}
+        className={`safe-top z-40 flex h-14 min-h-[3.5rem] shrink-0 items-center justify-between px-4 lg:hidden ${shellHeader}`}
       >
         <button
           type="button"
@@ -262,15 +262,17 @@ export default function AdminLayout() {
         </nav>
       </aside>
 
-      <div className={`transition-[padding] duration-[180ms] ease-out motion-reduce:transition-none ${contentPadClass}`}>
-        <div className={`sticky top-0 z-10 hidden h-16 items-center justify-end px-8 lg:flex ${shellHeader}`}>
+      <div
+        className={`flex min-h-0 flex-1 flex-col transition-[padding] duration-[180ms] ease-out motion-reduce:transition-none ${contentPadClass}`}
+      >
+        <div className={`z-10 hidden h-16 shrink-0 items-center justify-end px-8 lg:flex ${shellHeader}`}>
           <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <UserProfileMenu />
           </div>
         </div>
 
-        <main className="safe-bottom app-page space-y-8 p-4 sm:p-6 lg:p-8">
+        <main className="safe-bottom app-page min-h-0 flex-1 space-y-8 overflow-y-auto overscroll-y-contain p-4 sm:p-6 lg:p-8">
           <Suspense fallback={<AdminRouteFallback />}>
             <Outlet />
           </Suspense>
