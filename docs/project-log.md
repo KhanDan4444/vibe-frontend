@@ -386,6 +386,11 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Shipped:** `DRAFT_TTL_MS = 60_000` in web `useLocalStorageDraft` + mobile `useAsyncStorageDraft`; `_savedAt` on save; expired/legacy without stamp cleared on load.
 - **Do-not-regress:** still no passwords/OTP/photos in drafts.
 
+### 2026-10-09 — Plan badge text +1px
+
+- **Asked:** Free Trial / Yearly Plan badge text one step larger.
+- **Shipped:** Mobile Account + web profile menu badge (and days-left) 10 → 11px.
+
 ---
 
 *Append new sessions below. Do not edit older entries except factual typo fixes.*
