@@ -150,7 +150,6 @@ export default function GymEditModal({
               required
               inputMode="tel"
               autoComplete="tel"
-              placeholder={t('auth.phonePlaceholder')}
               className={fc('phone')}
               value={phone}
               onChange={(e) => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import SupportContactLine from './SupportContactLine';
 
 /**
  * Full lockout screen when the gym SaaS license is expired.
@@ -31,6 +32,8 @@ export default function SubscriptionLockout({ gymName }) {
         <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-white/60">
           {t('lockout.body')}
         </p>
+
+        <SupportContactLine variant="auth" className="mx-auto mt-4 max-w-sm text-center" />
 
         <details className="mx-auto mt-4 max-w-sm group">
           <summary className="auth-link cursor-pointer list-none text-center text-sm [&::-webkit-details-marker]:hidden">

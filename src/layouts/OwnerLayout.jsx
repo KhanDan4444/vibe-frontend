@@ -29,6 +29,7 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import BranchSwitcher from '../components/BranchSwitcher';
 import BrandLogo from '../components/BrandLogo';
 import ErrorRetryBanner from '../components/ErrorRetryBanner';
+import SupportContactLine from '../components/SupportContactLine';
 import { SlidePanel } from '../components/SlidePanel';
 import NotificationInbox from '../components/NotificationInbox';
 import SidebarBrandHeader from '../components/SidebarBrandHeader';
@@ -392,6 +393,7 @@ export default function OwnerLayout() {
                   <p className="mt-1 text-sm leading-relaxed text-amber-900/80 dark:text-amber-100/80">
                     {t('alerts.readOnlyBody')}
                   </p>
+                  <SupportContactLine variant="banner" className="mt-2" />
                 </div>
               </div>
             </div>

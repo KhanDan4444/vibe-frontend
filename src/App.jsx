@@ -12,7 +12,6 @@ import { isPlatformAdmin, isGymOwner, hasGymPortalAccess } from './utils/roles';
 const Login = lazyWithRetry(() => import('./pages/auth/Login'));
 const ForgotPassword = lazyWithRetry(() => import('./pages/auth/ForgotPassword'));
 const RegisterGym = lazyWithRetry(() => import('./pages/auth/RegisterGym'));
-const ResetPassword = lazyWithRetry(() => import('./pages/auth/ResetPassword'));
 const MemberPassPage = lazyWithRetry(() => import('./pages/public/MemberPassPage'));
 const StationCheckInPage = lazyWithRetry(() => import('./pages/public/StationCheckInPage'));
 const OwnerLayout = lazyWithRetry(() => import('./layouts/OwnerLayout'));
@@ -102,7 +101,6 @@ export default function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/register-gym" element={<RegisterGym />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/pass" element={<MemberPassPage />} />
               <Route path="/p/:code" element={<MemberPassPage />} />
               <Route path="/check-in" element={<StationCheckInPage />} />

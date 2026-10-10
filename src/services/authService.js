@@ -1,6 +1,6 @@
 /**
  * @file authService.js
- * @description Auth API — password reset (OTP + email), gym signup, SaaS plans.
+ * @description Auth API — password reset OTP, gym signup, SaaS plans.
  */
 
 import { API_BASE_URL, API_FETCH_CREDENTIALS } from '../config/api';
@@ -20,11 +20,6 @@ async function postJson(path, body) {
   return data;
 }
 
-/** @deprecated Email reset — prefer OTP flow for gym owners */
-export async function forgotPassword(email) {
-  return postJson('/auth/forgot-password', { email: email.trim().toLowerCase() });
-}
-
 /** @param {string} identifier Username or Ethiopian gym phone */
 export async function requestForgotPasswordOtp(identifier) {
   const trimmed = String(identifier ?? '').trim();
@@ -36,10 +31,6 @@ export async function requestForgotPasswordOtp(identifier) {
 
 export async function resetPasswordWithOtp({ sessionId, code, password }) {
   return postJson('/auth/forgot-password/reset-otp', { sessionId, code: code.trim(), password });
-}
-
-export async function resetPassword(token, password) {
-  return postJson('/auth/reset-password', { token, password });
 }
 
 export async function getPublicSaasPlans() {

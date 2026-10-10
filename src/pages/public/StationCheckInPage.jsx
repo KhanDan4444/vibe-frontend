@@ -302,8 +302,7 @@ export default function StationCheckInPage() {
                     autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder={t('publicStationCheckIn.phonePlaceholder')}
-                    className="auth-field w-full !border-white/15 !bg-white/5 !text-white placeholder:!text-white/35"
+                    className="auth-field w-full !border-white/15 !bg-white/5 !text-white"
                   />
                 </label>
                 {genericNotice ? (

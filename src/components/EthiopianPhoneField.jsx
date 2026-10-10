@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { ethiopianNationalDigits } from '../utils/validation/phone';
 import { FIELD_INPUT_ERROR_CLASS } from '../utils/validation/fieldErrors';
 
@@ -18,7 +17,6 @@ export default function EthiopianPhoneField({
   variant = 'app',
   'aria-invalid': ariaInvalid,
 }) {
-  const { t } = useTranslation();
   const national = ethiopianNationalDigits(value);
   const fieldClass = variant === 'auth' ? 'auth-field' : 'app-field';
   const errorClass = error ? FIELD_INPUT_ERROR_CLASS : '';
@@ -57,7 +55,6 @@ export default function EthiopianPhoneField({
         disabled={disabled}
         inputMode="numeric"
         autoComplete="tel-national"
-        placeholder={t('common.phoneNationalPlaceholder')}
         className={[fieldClass, '!mt-0 min-w-0 !w-auto flex-1', errorClass].filter(Boolean).join(' ')}
         value={national}
         onChange={handleNationalChange}
@@ -65,7 +62,6 @@ export default function EthiopianPhoneField({
         aria-invalid={ariaInvalid ?? error}
         maxLength={9}
       />
-
     </div>
   );
 }

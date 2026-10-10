@@ -7,7 +7,7 @@
 | **Document version** | 1.2 |
 | **Date** | September 14, 2026 |
 | **Status** | Updated (capability inventory sync) |
-| **Product** | Vibe (VibeSaaS) — multi-tenant gym management platform |
+| **Product** | Niku (ንቁ) — multi-tenant gym management platform |
 | **Components covered** | REST API (`vibe`), Web application (`vibe-frontend`), Mobile application (`vibe-mobile`) |
 
 ---

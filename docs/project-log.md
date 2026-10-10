@@ -1,8 +1,8 @@
-# Project Log — Vibe / ንቁ / Niku
+# Project Log — Niku / ንቁ
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-10 (ET phone +251 split field) |
+| **Standing section last updated** | 2026-10-10 (platform SUPPORT_PHONE for owners) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -25,7 +25,8 @@
 | Admin New gym filter | Gyms registered this month (`Gyms.created_at`); chip after Expired | 2026-10-09 |
 | Signup / admin enroll fields | City required; address optional; confirm password | 2026-09-14 |
 | Member notices channel | **Telegram only** (linked); no SMS fallback | 2026-09-14 |
-| SMS reserved for | OTP + gym SaaS/trial license alerts | 2026-09-15 |
+| SMS reserved for | **OTP only** (signup + forgot password) | 2026-10-10 |
+| Gym license / trial alerts | **Telegram** (owner links gym chat); email backup from cron | 2026-10-10 |
 | SMS brand prefix | **ንቁ** | ongoing |
 | Mobile FAB phone / tablet | **56** / **68** (radius 17/20, plus 30/36) | 2026-09-15 |
 | FAB vs tab bar gap | **Do not change** when resizing FAB | 2026-09-15 |
@@ -39,7 +40,10 @@
 | Mobile autofill | `Field` forwards `textContentType` / `autoComplete`; login remembers last identifier | 2026-10-08 |
 | Web form drafts / list UI | localStorage drafts (TTL **5 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
 | Error monitoring | **Sentry** on API when `SENTRY_DSN` set; uptime via external ping of `/api/health` | 2026-10-09 |
-| Ethiopian phone input (web enroll / gym register) | Split `+251` + national digits; mobile must start with **9** or **7** | 2026-10-10 |
+| Ethiopian phone input (web + mobile) | Split `+251` + national digits; mobile must start with **9** or **7**; no phone placeholders | 2026-10-10 |
+| Product brand (user-facing) | **Niku** (SMS Amharic still **ንቁ**); no Vibe / VibeSaaS in UI or email | 2026-10-10 |
+| Password reset | **SMS OTP only** (email link reset removed) | 2026-10-10 |
+| Owner support contact | Env `SUPPORT_PHONE` (+ optional `SUPPORT_TELEGRAM`); public `/api/public/support` | 2026-10-10 |
 
 ---
 
@@ -47,6 +51,7 @@
 
 - Do **not** persist passwords, OTP codes, or photos in form drafts (AsyncStorage / localStorage).
 - Do **not** send member lifecycle/pass notices over SMS; Telegram-linked only.
+- Do **not** send gym SaaS/trial license alerts over SMS; Telegram-linked gym only (+ email backup).
 - Do **not** auto-enable public free trial — only via `GYM_SIGNUP_TRIAL_DAYS` > 0; admin trial length is entered per enroll.
 - Do **not** change FAB bottom/tab clearance when changing `fabSize`.
 - Do **not** invent one-off FAB sizes per screen — use `useResponsiveLayout`.
@@ -61,6 +66,9 @@
 - Do **not** count renewals as new members — use `created_at` / registration month only.
 - Do **not** treat Free Trial gyms as Unpaid or show Collect — trial → paid is Change plan.
 - Do **not** accept Ethiopian mobiles that do not start with 9 or 7 (Ethio Telecom / Safaricom).
+- Do **not** reintroduce email password-reset links; owner reset is SMS OTP only.
+- Do **not** use Vibe / VibeSaaS in user-facing UI or email copy — brand is **Niku** (SMS: ንቁ).
+- Do **not** hardcode the platform support phone in clients — use `SUPPORT_PHONE` / `/api/public/support`.
 
 ---
 
@@ -114,9 +122,10 @@
 
 | Surface | Name |
 |---|---|
-| Docs / email | Vibe / VibeSaaS |
+| Product / email / UI | **Niku** |
 | SMS / Amharic | **ንቁ** (`vibe/utils/brand.js`) |
 | Mobile store | **Niku** (`com.niku.mobile`, scheme `niku`) |
+| Repo folders | `vibe` / `vibe-frontend` / `vibe-mobile` (internal paths only) |
 
 **Stack:** API Express 5/`pg`/Zod/JWT · Web React 19/Vite 8/Tailwind 4/RR7/i18next · Mobile Expo 54/RN 0.81/Expo Router/TanStack Query.
 
@@ -134,8 +143,8 @@
 | Audience | Channel |
 |---|---|
 | Member notices | Telegram if linked — **no SMS fallback** |
-| Owner OTP | SMS (`ንቁ: …`) |
-| Gym license / trial | SMS (+ owner email from cron) |
+| Owner OTP | SMS (`ንቁ: …`) only |
+| Gym license / trial | Telegram if gym linked (+ owner email from cron) |
 | Station check-in OTP | Telegram |
 | Admin trial digest | Email |
 
@@ -463,9 +472,44 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Asked:** On web member enroll + gym register, split phone like contact UI: small `+251` box + empty national box starting with 9 or 7 (`+251 9…` / `+251 7…`).
 - **Decided / why:** Match Ethiopian mobile formats (Ethio Telecom 9, Safaricom 7); country code fixed so users only type the 9 national digits.
 - **Shipped:** `EthiopianPhoneField`; wired into `MemberModal`, `RegisterGymModal`, public `RegisterGym`; normalize/validate requires national `[79]\d{8}` (web + API `phone.js`).
-- **Styles / customs:** Two adjacent inputs; left `+251` read-only chrome; right placeholder `9xxxxxxxx`.
+- **Styles / customs:** Two adjacent inputs; left `+251` read-only chrome; no phone placeholders.
 - **Do-not-regress:** Ethiopian mobiles must start with 9 or 7.
-- **Follow-ups:** optional same split on trainer / gym edit / account / mobile later.
+- **Follow-ups:** mobile parity.
+
+### 2026-10-10 — Split Ethiopian phone field on mobile
+
+- **Asked:** Same `+251` + national split (no placeholder) on mobile.
+- **Decided / why:** Match web enroll / gym register phone UX and 9/7 validation.
+- **Shipped:** `vibe-mobile` `EthiopianPhoneField` + phone util `[79]\d{8}`; wired enroll, register-gym, member edit, trainers, profile, station check-in.
+- **Do-not-regress:** Ethiopian mobiles must start with 9 or 7 (web + mobile + API).
+- **Follow-ups:** optional branch phone field if/when shown as a dedicated input.
+
+### 2026-10-10 — Gym license alerts via Telegram; SMS OTP-only
+
+- **Asked:** Stop relying on SMS gateway for gym license/trial pay alerts; use Telegram; keep SMS for OTP only.
+- **Decided / why:** Phone gateway unreliable for ops alerts; owners already use Telegram for members; OTP stays SMS.
+- **Shipped:** `vibe` `028_gym_telegram.sql`, gym link tokens, `deliverGymMessage` → Telegram; web Account + mobile Profile link/unlink; `MESSAGE_CATALOG` + Decision index updated.
+- **Styles / customs:** none
+- **Do-not-regress:** no gym license SMS; SMS = OTP only; suspended owners may still link Telegram (expired still lockout).
+- **Follow-ups:** apply migration `028` on Neon/production; ensure `TELEGRAM_BOT_*` env set.
+
+### 2026-10-10 — Brand Niku; drop email password reset
+
+- **Asked:** Don’t use Vibe/VibeSaaS; use Niku; clarify unused email reset.
+- **Decided / why:** Product brand is Niku (SMS stays ንቁ); email link reset unused — OTP only.
+- **Shipped:** Removed `POST /auth/forgot-password` + `/auth/reset-password` and web `/reset-password`; email subjects/bodies → Niku; UI i18n VibeSaaS → Niku; catalog updated.
+- **Styles / customs:** none
+- **Do-not-regress:** no email reset links; no Vibe/VibeSaaS in UI/email.
+- **Follow-ups:** optional full docs/SRS rename pass (repos stay `vibe*`).
+
+### 2026-10-10 — Platform support phone for gym owners
+
+- **Asked:** Best way for gym owners to reach support.
+- **Decided / why:** One env-configured phone (optional Telegram); show where owners get stuck — not a ticket system.
+- **Shipped:** `SUPPORT_PHONE` / `SUPPORT_TELEGRAM` → `GET /api/public/support`; web + mobile on forgot-password, lockout, read-only/trial banners, Account/Profile.
+- **Styles / customs:** none
+- **Do-not-regress:** no hardcoded support number in clients.
+- **Follow-ups:** set `SUPPORT_PHONE` on Railway/production.
 
 ---
 

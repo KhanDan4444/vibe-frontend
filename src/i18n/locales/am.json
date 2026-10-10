@@ -32,7 +32,15 @@
     "yourName": "ሙሉ ስም",
     "passwordSuccessHero": "የይለፍ ቃል ተዘምኗል",
     "passwordSuccessBody": "አዲሱ የይለፍ ቃል ዝግጁ ነው። በሚቀጥለው ጊዜ ሲገቡ ይጠቀሙበት።",
-    "profileSuccessBody": "የጂም መገለጫዎ ተቀምጧል።"
+    "profileSuccessBody": "የጂም መገለጫዎ ተቀምጧል።",
+    "sectionTelegram": "የፈቃድ ማስታወቂያ (Telegram)",
+    "telegramLicenseHint": "የመድረክ ፈቃድና የሙከራ ማስታወቂያ ለማግኛት Telegram ያገናኙ። SMS ለመግቢያ ኮድ ብቻ ነው።",
+    "telegramLinked": "Telegram ለፈቃድ ማስታወቂያ ተገናኝቷል",
+    "telegramUnlink": "አትሰናክል",
+    "telegramGetLink": "የTelegram አገናኝ ያግኙ",
+    "telegramLinkFailed": "የTelegram አገናኝ መፍጠር አልተቻለም።",
+    "telegramUnlinkFailed": "Telegramን ማ቉ረጥ አልተቻለም።",
+    "telegramNotConfigured": "Telegram በዚህ አገልጋይ ላይ አልተዋቀረም።"
   },
   "actions": {
     "activate": "አንቃ",
@@ -204,7 +212,7 @@
     "planDistribution": "የዕቅድ ስርጭት",
     "planNotes": "ዕቅድ / ማስታወሻዎች",
     "platformAdmin": "የመድረክ አስተዳዳሪ",
-    "platformCore": "VibeSaaS Core",
+    "platformCore": "Niku Core",
     "platformMembers": "የመድረክ አባላት",
     "platformMembersHint": "ከተጣሩ ጂሞች ውስጥ ያሉ ንቁ አባላት",
     "recentExpiringGyms": "በቅርብ ጊዜ የሚያልቁ እና ጊዜያቸው ያለፈባቸው ጂሞች",
@@ -358,7 +366,7 @@
     "signupUnavailable": "የጂም ምዝገባ በአሁኑ ጊዜ አይገኝም። እባክዎ የመድረክ አስተዳዳሪውን ያግኙ።",
     "createGymAccount": "የጂም መለያ ፍጠር",
     "ownerPhone": "የባለቤት ስልክ",
-    "phonePlaceholder": "0912345678",
+    "phonePlaceholder": "",
     "noAccount": "አዲስ የጂም ባለቤት ነዎት?",
     "registerGymLink": "ጂምዎን ይመዝግቡ",
     "forgotTitle": "የይለፍ ቃል ረስተዋል",
@@ -381,7 +389,7 @@
     "brandSlogan": "ተነስ . አድርገው . ንቁ ሁን !",
     "brandDescription": "አባላት፣ እድሳት እና ክፍያዎችዎን በአንድ መተግበሪያ ያስቀምጡ።",
     "signInSubtitle": "የስራ ቦታዎን ለማስተዳደር ይግቡ",
-    "signInTitle": "VibeSaaS Gyms",
+    "signInTitle": "Niku Gyms",
     "updatePassword": "የይለፍ ቃል ያዘምኑ"
   },
   "branch": {
@@ -441,7 +449,6 @@
     "sidebarShortcutTip": "በማንኛውም ጊዜ በ {{shortcut}} ቀይር",
     "sidebarShortcutTipHint": "በዴስክቶፕ ዳሽቦርድ ላይ ከየትኛውም ቦታ ይሰራል።",
     "pickDate": "ቀን ይምረጡ",
-    "phoneNationalPlaceholder": "9xxxxxxxx",
     "processing": "በማስኬድ ላይ…",
     "saving": "በማስቀመጥ ላይ…",
     "refresh": "አድስ",
@@ -550,7 +557,7 @@
     "gymRevenue": "የጂም ገቢ",
     "gymReport": "የጂም ሪፖርት",
     "platformRevenue": "የመድረክ ገቢ",
-    "platformReport": "የVibeSaaS መድረክ ሪፖርት",
+    "platformReport": "የNiku መድረክ ሪፖርት",
     "memberDirectorySection": "የአባላት ዝርዝር",
     "memberDirectorySectionUpper": "የአባላት ዝርዝር",
     "gymDirectorySection": "የጂም ዝርዝር",
@@ -565,7 +572,7 @@
     "revenueSummaryMetaGym": "ጠቅላላ {{total}} · {{count}} ክፍያ(ዎች) · በጂም ከA–Z",
     "gymReportCsvHeader": "# የጂም ሪፖርት · የተፈጠረው፦ {{date}}",
     "gymReportCsvMeta": "# አባላት፦ {{members}} · ገቢ፦ {{period}}{{branch}} · በA-Z የተደረደረ",
-    "platformReportCsvHeader": "# የVibeSaaS መድረክ ሪፖርት · የተፈጠረው፦ {{date}}",
+    "platformReportCsvHeader": "# የNiku መድረክ ሪፖርት · የተፈጠረው፦ {{date}}",
     "platformReportCsvMeta": "# ጂሞች፦ {{gyms}} · ገቢ፦ {{period}} · በA-Z የተደረደረ",
     "fullReportMembersRevenue": "አባላት፦ {{members}} · ገቢ፦ {{period}}",
     "fullReportGymsRevenue": "ጂሞች፦ {{gyms}} · ገቢ፦ {{period}}",
@@ -897,7 +904,7 @@
       "enrollAnother": "ሌላ አባል መዝግብ",
       "viewMembers": "አባላትን ይመልከቱ",
       "phone": "ስልክ",
-      "phonePlaceholder": "09xxxxxxxx",
+      "phonePlaceholder": "",
       "phoneHint": "ለSMS ማስታወሻ ስልክ ቁጥር ያስፈልጋል። 09… ወይም +251… ይጠቀሙ።",
       "photo": "ፎቶ",
       "photoSizeError": "የፎቶው መጠን ከ2 MB መብለጥ የለበትም።",
@@ -1042,7 +1049,7 @@
       "subtitle": "አሰልጣኞች ሰራተኞች ናቸው፤ መግቢያ የላቸውም። ሰራተኞች አሁንም አባላትን ያስገባሉ።",
       "name": "ሙሉ ስም",
       "phone": "ስልክ",
-      "phonePlaceholder": "09xxxxxxxx",
+      "phonePlaceholder": "",
       "specialty": "ልዩ ችሎታ",
       "specialtyPlaceholder": "ለምሳሌ ጥንካሬ፣ ካርዲዮ",
       "branch": "ቅርንጫፍ",
@@ -2032,7 +2039,7 @@
     "selfCheckinDisabled": "በዚህ ጂም ራስ-ሰር መግቢያ ጠፍቷል። በዴስክ ይጠይቁ።",
     "phoneBody": "በአባልነትዎ ላይ ያለውን ስልክ ያስገቡ። ኮድ ወደ ቴሌግራምዎ እንልካለን።",
     "phoneLabel": "ስልክ ቁጥር",
-    "phonePlaceholder": "09xxxxxxxx",
+    "phonePlaceholder": "",
     "sendCode": "ኮድ ወደ ቴሌግራም ላክ",
     "sendingCode": "በመላክ ላይ…",
     "otpDestination": "ቴሌግራምዎ",
@@ -2055,5 +2062,11 @@
     "trustedHint": "ቴሌግራም እስኪለያዩ ድረስ ይህ መሣሪያ ይታወሳል።",
     "alreadyToday": "ዛሬ ቀድሞውኑ ተመዝግበዋል።",
     "weeklyLimit": "የሳምንት ጉዞ ገደብ ተሞልቷል። በዴስክ ይጠይቁ።"
+  },
+  "support": {
+    "sectionTitle": "ድጋፍ",
+    "needHelp": "እርዳታ ይፈልጋል?",
+    "callPhone": "{{phone}} ይደውሉ",
+    "telegram": "Telegram @{{handle}}"
   }
 }

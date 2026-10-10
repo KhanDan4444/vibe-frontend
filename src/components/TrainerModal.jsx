@@ -225,7 +225,6 @@ export default function TrainerModal({
               required
               inputMode="tel"
               className={fc('phone')}
-              placeholder={t('modals.trainer.phonePlaceholder')}
               value={phone}
               onChange={(e) => {
                 setPhone(e.target.value);

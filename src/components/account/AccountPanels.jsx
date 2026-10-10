@@ -2,11 +2,19 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { changePassword } from '../../services/authService';
-import { getGymProfile, updateGymProfile } from '../../services/gymProfileService';
+import {
+  getGymProfile,
+  updateGymProfile,
+  createGymTelegramLink,
+  unlinkGymTelegram,
+} from '../../services/gymProfileService';
 import { parseApiResponse } from '../../utils/api';
 import { formatPhoneForInput, validateOwnerProfile, validatePasswordChange, showValidationError, inputClass as fieldInputClass, fieldErrorMessage, clearFieldError, clearAllFieldErrors } from '../../utils/validation';
 import FieldError from '../FieldError';
 import RequiredMark from '../ui/RequiredMark';
+import EthiopianPhoneField from '../EthiopianPhoneField';
+import TelegramLinkShareRow from '../TelegramLinkShareRow';
+import SupportContactLine from '../SupportContactLine';
 import { useModalFormDraft } from '../../utils/useModalFormDraft';
 import { isGymOwner, isGymStaff } from '../../utils/roles';
 import { Eye, EyeOff, X as XIcon } from 'lucide-react';
@@ -141,6 +149,11 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
   const [username, setUsername] = useState(user?.username || '');
   const [savedProfile, setSavedProfile] = useState(null);
   const [profileDone, setProfileDone] = useState(null);
+  const [telegramLinked, setTelegramLinked] = useState(false);
+  const [telegramConfigured, setTelegramConfigured] = useState(false);
+  const [telegramLink, setTelegramLink] = useState(null);
+  const [telegramBusy, setTelegramBusy] = useState(false);
+  const [telegramError, setTelegramError] = useState('');
 
   const profileDirty = useMemo(() => {
     if (!savedProfile) return false;
@@ -172,6 +185,10 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
         email: nextEmail.trim().toLowerCase(),
         username: nextUsername.trim().toLowerCase(),
       });
+      setTelegramLinked(Boolean(data.gym?.telegram_linked || data.gym?.telegram_chat_id));
+      setTelegramConfigured(Boolean(data.telegram_configured));
+      setTelegramLink(null);
+      setTelegramError('');
       if (nextOwner || nextEmail || nextUsername) {
         updateUser({ name: nextOwner, email: nextEmail, username: nextUsername });
       }
@@ -360,24 +377,91 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
                   <FieldLabel htmlFor="modal-gym-phone" required>
                     {t('account.gymPhone')}
                   </FieldLabel>
-                  <input
+                  <EthiopianPhoneField
                     id="modal-gym-phone"
-                    type="tel"
                     required
-                    inputMode="tel"
-                    autoComplete="tel"
-                    placeholder={t('auth.phonePlaceholder')}
                     value={phone}
-                    onChange={(e) => {
-                      setPhone(e.target.value);
+                    error={Boolean(fieldErrors.phone)}
+                    onChange={(next) => {
+                      setPhone(next);
                       clearFieldError(setFieldErrors, 'phone');
                     }}
-                    className={fc('phone')}
                   />
                   <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
                 </div>
               </div>
             </section>
+
+            {showGymProfile ? (
+              <section className="space-y-3 border-t border-app-border-subtle pt-5">
+                <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionTelegram')}</h3>
+                <p className="text-xs text-app-muted">{t('account.telegramLicenseHint')}</p>
+                {telegramError ? <Alert>{telegramError}</Alert> : null}
+                {telegramLinked ? (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-sm font-medium text-teal-700 dark:text-teal-300">
+                      {t('account.telegramLinked')}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={telegramBusy}
+                      onClick={async () => {
+                        setTelegramBusy(true);
+                        setTelegramError('');
+                        try {
+                          const res = await unlinkGymTelegram(apiFetch);
+                          const data = await parseApiResponse(res);
+                          if (!res.ok) throw new Error(data.error || t('account.telegramUnlinkFailed'));
+                          setTelegramLinked(false);
+                          setTelegramLink(null);
+                        } catch (err) {
+                          setTelegramError(err.message || t('account.telegramUnlinkFailed'));
+                        } finally {
+                          setTelegramBusy(false);
+                        }
+                      }}
+                    >
+                      {t('account.telegramUnlink')}
+                    </Button>
+                  </div>
+                ) : telegramConfigured ? (
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={telegramBusy}
+                      onClick={async () => {
+                        setTelegramBusy(true);
+                        setTelegramError('');
+                        try {
+                          const res = await createGymTelegramLink(apiFetch);
+                          const data = await parseApiResponse(res);
+                          if (!res.ok) throw new Error(data.error || t('account.telegramLinkFailed'));
+                          if (data.already_linked) {
+                            setTelegramLinked(true);
+                            setTelegramLink(null);
+                          } else if (data.link) {
+                            setTelegramLink({ link: data.link });
+                          }
+                        } catch (err) {
+                          setTelegramError(err.message || t('account.telegramLinkFailed'));
+                        } finally {
+                          setTelegramBusy(false);
+                        }
+                      }}
+                    >
+                      {t('account.telegramGetLink')}
+                    </Button>
+                    {telegramLink?.link ? <TelegramLinkShareRow link={telegramLink.link} /> : null}
+                  </div>
+                ) : (
+                  <p className="text-xs text-app-muted">{t('account.telegramNotConfigured')}</p>
+                )}
+              </section>
+            ) : null}
+
+            <SupportContactLine withSection />
 
             <section className="space-y-4 border-t border-app-border-subtle pt-5">
               <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionSignIn')}</h3>

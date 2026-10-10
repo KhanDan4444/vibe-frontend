@@ -22,6 +22,7 @@ import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
 import AuthCtaButton from '../../components/auth/AuthCtaButton';
 import AuthOtpField from '../../components/auth/AuthOtpField';
 import PasswordRule from '../../components/auth/PasswordRule';
+import SupportContactLine from '../../components/SupportContactLine';
 import { useOtpResendCooldown } from '../../hooks/useOtpResendCooldown';
 
 export default function ForgotPassword() {
@@ -289,6 +290,7 @@ export default function ForgotPassword() {
           <div className="space-y-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/50">
             <p className="font-semibold tracking-tight text-white/85">{t('auth.supportResetTitle')}</p>
             <p>{t('auth.supportResetBody')}</p>
+            <SupportContactLine variant="auth" className="pt-1" />
             <p>{t('auth.supportResetAfter')}</p>
             <p className="pt-1 text-xs text-white/40">{t('auth.forgotAdminHint')}</p>
             <p className="text-center pt-1">
