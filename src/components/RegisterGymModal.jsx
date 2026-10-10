@@ -34,6 +34,7 @@ import { PAYMENT_METHOD_OPTIONS, translatePaymentMethod } from '../i18n/helpers.
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import EthiopianPhoneField from './EthiopianPhoneField';
 import MoneyAmountInput from './ui/MoneyAmountInput';
 import Card from './ui/Card';
 import PageHeader from './PageHeader';
@@ -637,16 +638,12 @@ export default function RegisterGymModal({
           {t('modals.registerGym.phone')}
           <RequiredMark />
         </label>
-        <input
-          type="tel"
+        <EthiopianPhoneField
           required={!isPage}
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder={t('auth.phonePlaceholder')}
-          className={fc('phone')}
           value={phone}
-          onChange={(e) => {
-            setPhone(e.target.value);
+          error={Boolean(fieldErrors.phone)}
+          onChange={(next) => {
+            setPhone(next);
             clearFieldError(setLocalFieldErrors, 'phone');
           }}
         />

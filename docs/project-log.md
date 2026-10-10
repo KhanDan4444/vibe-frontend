@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-09 (Sentry + GH uptime; draft TTL 5 min) |
+| **Standing section last updated** | 2026-10-10 (ET phone +251 split field) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -39,6 +39,7 @@
 | Mobile autofill | `Field` forwards `textContentType` / `autoComplete`; login remembers last identifier | 2026-10-08 |
 | Web form drafts / list UI | localStorage drafts (TTL **5 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
 | Error monitoring | **Sentry** on API when `SENTRY_DSN` set; uptime via external ping of `/api/health` | 2026-10-09 |
+| Ethiopian phone input (web enroll / gym register) | Split `+251` + national digits; mobile must start with **9** or **7** | 2026-10-10 |
 
 ---
 
@@ -59,6 +60,7 @@
 - Admin enroll must keep city/address parity with public signup.
 - Do **not** count renewals as new members — use `created_at` / registration month only.
 - Do **not** treat Free Trial gyms as Unpaid or show Collect — trial → paid is Change plan.
+- Do **not** accept Ethiopian mobiles that do not start with 9 or 7 (Ethio Telecom / Safaricom).
 
 ---
 
@@ -455,6 +457,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Shipped:** Hide Collect + Unpaid badge when `isGymOnTrial`; block collect submit with `admin.useChangePlanForTrial` (API unpaid filter should also exclude trial).
 - **Do-not-regress:** Free Trial gyms must not appear in Unpaid / Collect paths.
 - **Follow-ups:** deploy API unpaid-SQL exclude + this web UI.
+
+### 2026-10-10 — Split Ethiopian phone field on web register
+
+- **Asked:** On web member enroll + gym register, split phone like contact UI: small `+251` box + empty national box starting with 9 or 7 (`+251 9…` / `+251 7…`).
+- **Decided / why:** Match Ethiopian mobile formats (Ethio Telecom 9, Safaricom 7); country code fixed so users only type the 9 national digits.
+- **Shipped:** `EthiopianPhoneField`; wired into `MemberModal`, `RegisterGymModal`, public `RegisterGym`; normalize/validate requires national `[79]\d{8}` (web + API `phone.js`).
+- **Styles / customs:** Two adjacent inputs; left `+251` read-only chrome; right placeholder `9xxxxxxxx`.
+- **Do-not-regress:** Ethiopian mobiles must start with 9 or 7.
+- **Follow-ups:** optional same split on trainer / gym edit / account / mobile later.
 
 ---
 

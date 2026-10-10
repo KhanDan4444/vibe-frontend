@@ -2,6 +2,7 @@ export { ok, fail, firstFailure, showValidationError } from './result';
 export {
   normalizeEthiopianPhone,
   isValidEthiopianPhone,
+  ethiopianNationalDigits,
   formatPhoneForInput,
   maskPhoneForDisplay,
   validateRequiredEthiopianPhone,

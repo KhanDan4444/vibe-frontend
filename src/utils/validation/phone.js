@@ -5,6 +5,18 @@
 
 import { ok, fail } from './result';
 
+/** Ethio Telecom (9…) and Safaricom (7…) mobile national numbers. */
+const NATIONAL_MOBILE_RE = /^[79]\d{8}$/;
+
+/** @param {string|null|undefined} input */
+export function ethiopianNationalDigits(input) {
+  if (input == null || input === '') return '';
+  let digits = String(input).replace(/\D/g, '');
+  if (digits.startsWith('251')) digits = digits.slice(3);
+  if (digits.startsWith('0')) digits = digits.slice(1);
+  return digits.slice(0, 9);
+}
+
 /** @param {string|null|undefined} input */
 export function normalizeEthiopianPhone(input) {
   if (input == null || input === '') return null;
@@ -21,6 +33,8 @@ export function normalizeEthiopianPhone(input) {
   }
 
   if (digits.length !== 12) return null;
+  const national = digits.slice(3);
+  if (!NATIONAL_MOBILE_RE.test(national)) return null;
   return `+${digits}`;
 }
 
@@ -28,7 +42,7 @@ export function isValidEthiopianPhone(input) {
   return normalizeEthiopianPhone(input) != null;
 }
 
-/** Show stored E.164 as local 09… for form inputs. */
+/** Show stored E.164 as local 09… / 07… for legacy single-box inputs. */
 export function formatPhoneForInput(phone) {
   if (!phone) return '';
   const normalized = normalizeEthiopianPhone(phone);

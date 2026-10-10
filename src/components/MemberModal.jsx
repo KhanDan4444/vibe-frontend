@@ -36,6 +36,7 @@ import Card from './ui/Card';
 import PageHeader from './PageHeader';
 import SearchableSelect from './ui/SearchableSelect';
 import RequiredMark from './ui/RequiredMark';
+import EthiopianPhoneField from './EthiopianPhoneField';
 import EnrollStepProgress from './EnrollStepProgress';
 import EnrollTelegramPrompt from './EnrollTelegramPrompt';
 import { useModalFormDraft } from '../utils/useModalFormDraft';
@@ -924,17 +925,12 @@ export default function MemberModal({
                       {t('modals.member.phone')}
                       <RequiredMark />
                     </label>
-                    <input
-                      type="tel"
+                    <EthiopianPhoneField
                       name="tel"
                       required
-                      inputMode="tel"
-                      autoComplete="tel"
-                      placeholder={t('modals.member.phonePlaceholder')}
-                      className={fc('phone')}
                       value={phone}
-                      onChange={(e) => {
-                        const next = e.target.value;
+                      error={Boolean(fieldErrors.phone)}
+                      onChange={(next) => {
                         setPhone(next);
                         markEnrollTouched();
                         const trimmed = next.trim();
@@ -950,7 +946,6 @@ export default function MemberModal({
                         }
                       }}
                       onBlur={handlePhoneBlur}
-                      aria-invalid={Boolean(fieldErrors.phone)}
                     />
                     <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
                   </div>
@@ -986,17 +981,12 @@ export default function MemberModal({
                 {t('modals.member.phone')}
                 <RequiredMark />
               </label>
-              <input
-                type="tel"
+              <EthiopianPhoneField
                 name="tel"
                 required={!useSteps}
-                inputMode="tel"
-                autoComplete="tel"
-                placeholder={t('modals.member.phonePlaceholder')}
-                className={fc('phone')}
                 value={phone}
-                onChange={(e) => {
-                  const next = e.target.value;
+                error={Boolean(fieldErrors.phone)}
+                onChange={(next) => {
                   setPhone(next);
                   markEnrollTouched();
                   const trimmed = next.trim();
@@ -1012,7 +1002,6 @@ export default function MemberModal({
                   }
                 }}
                 onBlur={handlePhoneBlur}
-                aria-invalid={Boolean(fieldErrors.phone)}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
             </div>

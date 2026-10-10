@@ -15,6 +15,7 @@ import {
 } from '../../utils/validation';
 import FieldError from '../../components/FieldError';
 import RequiredMark from '../../components/ui/RequiredMark';
+import EthiopianPhoneField from '../../components/EthiopianPhoneField';
 import AuthScreen from '../../components/auth/AuthScreen';
 import AuthFormShell, { AuthStepDots } from '../../components/auth/AuthFormShell';
 import AuthSuccessPanel from '../../components/auth/AuthSuccessPanel';
@@ -339,19 +340,16 @@ export default function RegisterGym() {
                 {t('auth.ownerPhone')}
                 <RequiredMark />
               </label>
-              <input
+              <EthiopianPhoneField
                 id="signup-phone"
                 name="tel"
-                type="tel"
-                autoComplete="tel"
+                variant="auth"
                 value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
+                error={Boolean(fieldErrorMessage(fieldErrors, 'phone'))}
+                onChange={(next) => {
+                  setPhone(next);
                   clearFieldError(setFieldErrors, 'phone');
                 }}
-                className={fc('phone')}
-                placeholder={t('auth.phonePlaceholder')}
-                aria-invalid={Boolean(fieldErrorMessage(fieldErrors, 'phone'))}
               />
               <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} className="text-sm text-rose-300" />
               <p className="auth-hint">{t('auth.signupPhoneHint')}</p>
