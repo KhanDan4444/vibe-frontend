@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-10 (platform SUPPORT_PHONE for owners) |
+| **Standing section last updated** | 2026-10-10 (Sentry on web + mobile) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -39,7 +39,7 @@
 | Mobile list UI persist | Members filter/sort/search; revenue list UI; team tab/search | 2026-10-08 |
 | Mobile autofill | `Field` forwards `textContentType` / `autoComplete`; login remembers last identifier | 2026-10-08 |
 | Web form drafts / list UI | localStorage drafts (TTL **5 min**); enroll + renew + admin register-gym + public signup; short modals in-memory | 2026-10-08 |
-| Error monitoring | **Sentry** on API when `SENTRY_DSN` set; uptime via external ping of `/api/health` | 2026-10-09 |
+| Error monitoring | **Sentry** on API (`SENTRY_DSN`), web (`VITE_SENTRY_DSN`), mobile (`EXPO_PUBLIC_SENTRY_DSN`); separate projects; uptime = `/api/health` ping | 2026-10-10 |
 | Ethiopian phone input (web + mobile) | Split `+251` + national digits; mobile must start with **9** or **7**; no phone placeholders | 2026-10-10 |
 | Product brand (user-facing) | **Niku** (SMS Amharic still **ንቁ**); no Vibe / VibeSaaS in UI or email | 2026-10-10 |
 | Password reset | **SMS OTP only** (email link reset removed) | 2026-10-10 |
@@ -69,6 +69,7 @@
 - Do **not** reintroduce email password-reset links; owner reset is SMS OTP only.
 - Do **not** use Vibe / VibeSaaS in user-facing UI or email copy — brand is **Niku** (SMS: ንቁ).
 - Do **not** hardcode the platform support phone in clients — use `SUPPORT_PHONE` / `/api/public/support`.
+- Do **not** reuse one Sentry DSN across API/web/mobile — separate projects; leave DSNs unset in local/dev.
 
 ---
 
@@ -79,7 +80,7 @@
 | **Mobile UI / layout / FAB / sheets** | `vibe-mobile/src/hooks/useResponsiveLayout.ts`, `vibe-mobile/src/theme/tokens.ts` → match §Standing mobile |
 | **Web UI / theme / chips / surfaces** | `vibe-frontend/src/index.css`, `src/utils/surfaceClasses.js` |
 | **Outbound SMS / Telegram / email copy** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md), `vibe/utils/notificationSms.js`, `phoneOtp.js`, `notificationEmail.js` |
-| **Monitoring / Sentry** | [`vibe/docs/MONITORING.md`](../../vibe/docs/MONITORING.md), `vibe/instrument.js`, `SENTRY_DSN` |
+| **Monitoring / Sentry** | [`vibe/docs/MONITORING.md`](../../vibe/docs/MONITORING.md); API `instrument.js`; web `src/sentry.js`; mobile `src/sentry.ts` |
 | **Signup / enroll / trial** | `vibe/utils/registerGymCore.js`, `GYM_SIGNUP_*` env, SRS §7.5 |
 | **Auth / roles / license gate** | API middleware + SRS roles; mobile must reject Platform Admin |
 | **Check-in / QR / station / trainers** | `docs/CHECKIN_AND_TRAINERS_PLAN.md` + SRS (prefer SRS if plan stale) |
@@ -510,6 +511,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** none
 - **Do-not-regress:** no hardcoded support number in clients.
 - **Follow-ups:** set `SUPPORT_PHONE` on Railway/production.
+
+### 2026-10-10 — Sentry on web + mobile
+
+- **Asked:** Wire crash/error reporting for web and mobile (API already had Sentry).
+- **Decided / why:** Same optional-DSN pattern as API; separate Sentry projects per surface; errors only (no replay/PII).
+- **Shipped:** web `@sentry/react` + `VITE_SENTRY_DSN`; mobile `@sentry/react-native` + `EXPO_PUBLIC_SENTRY_DSN`; `MONITORING.md` updated.
+- **Styles / customs:** none
+- **Do-not-regress:** no shared DSN across API/web/mobile; DSN unset = off locally.
+- **Follow-ups:** create Web + RN projects in Sentry; set Vercel `VITE_SENTRY_DSN` and EAS `EXPO_PUBLIC_SENTRY_DSN`; optional `SENTRY_AUTH_TOKEN` for mobile source maps.
 
 ---
 
