@@ -620,6 +620,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Do-not-regress:** admin member chart fills the panel; bars sit on the drawn baseline.
 - **Follow-ups:** visible on niku-saas after the frontend deploy.
 
+### 2026-10-11 — Thicker admin member bars
+
+- **Asked:** The member bars look right on the baseline, but they are too thin.
+- **Decided / why:** Category gap is removed from both sides of each column, so 28% left a narrow bar. 8% with a 56px cap fills the column without the bars touching.
+- **Shipped:** `AdminMembersChart` `barCategoryGap` 8%, `maxBarSize` 56, corner radius 6.
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** visible on niku-saas after the frontend deploy.
+
 ---
 
 *Append new sessions below. Do not edit older entries except factual typo fixes.*

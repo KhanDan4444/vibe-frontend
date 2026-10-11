@@ -42,7 +42,7 @@ export default function AdminMembersChart({ chartData }) {
   return (
     <div className="h-full w-full min-h-0 min-w-0">
       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-        <BarChart data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="28%">
+        <BarChart data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap="8%">
           <CartesianGrid
             strokeDasharray="3 3"
             vertical={false}
@@ -79,8 +79,8 @@ export default function AdminMembersChart({ chartData }) {
           <Bar
             dataKey="members"
             fill="#0f766e"
-            radius={[4, 4, 0, 0]}
-            maxBarSize={48}
+            radius={[6, 6, 0, 0]}
+            maxBarSize={56}
             isAnimationActive={false}
             name={t('admin.activeMembers')}
           />
