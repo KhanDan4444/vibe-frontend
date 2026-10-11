@@ -1040,7 +1040,7 @@
       "telegramLinkRefresh": "Generate new link",
       "telegramLinkExpires": "Link expires in {{minutes}} min",
       "telegramWaitingForMember": "Waiting for member to tap Start in Telegram…",
-      "telegramLinkCopied": "Link copied.",
+      "telegramLinkCopied": "Link Copied",
       "telegramLinkCopyFailed": "Could not copy the link.",
       "telegramLinkFailed": "Could not create Telegram link."
     },

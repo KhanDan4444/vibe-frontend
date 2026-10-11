@@ -1,19 +1,39 @@
-import { Copy, Share } from 'lucide-react';
-import { useCallback } from 'react';
+import { Copy, Share2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useFlash } from '../context/FlashContext';
 
+function canShareLink(link) {
+  if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') return false;
+  if (typeof navigator.canShare !== 'function') return true;
+  try {
+    return navigator.canShare({ url: link });
+  } catch {
+    return false;
+  }
+}
+
 /**
- * Desk handoff row — tap URL to copy, share action on the right (matches mobile).
+ * Desk handoff row — tap URL to copy. The share control opens the system share sheet
+ * and is hidden when this browser cannot share.
  */
 export default function TelegramLinkShareRow({ link }) {
   const { t } = useTranslation();
   const { showFlash } = useFlash();
+  const showShare = canShareLink(link);
+  const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef(null);
+
+  useEffect(() => () => {
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
+  }, []);
 
   const handleCopy = useCallback(async () => {
     try {
       await navigator.clipboard.writeText(link);
-      showFlash({ title: t('pages.checkIn.telegramLinkCopied'), variant: 'success' });
+      setCopied(true);
+      if (copiedTimer.current) clearTimeout(copiedTimer.current);
+      copiedTimer.current = setTimeout(() => setCopied(false), 2000);
     } catch {
       showFlash({ title: t('pages.checkIn.telegramLinkCopyFailed'), variant: 'danger' });
     }
@@ -21,17 +41,11 @@ export default function TelegramLinkShareRow({ link }) {
 
   const handleShare = useCallback(async () => {
     try {
-      if (navigator.share) {
-        await navigator.share({ url: link, text: link });
-        return;
-      }
-      await navigator.clipboard.writeText(link);
-      showFlash({ title: t('pages.checkIn.telegramLinkCopied'), variant: 'success' });
+      await navigator.share({ url: link });
     } catch (err) {
       if (err?.name === 'AbortError') return;
-      showFlash({ title: t('pages.checkIn.telegramLinkCopyFailed'), variant: 'danger' });
     }
-  }, [link, showFlash, t]);
+  }, [link]);
 
   return (
     <div className="mt-2.5 flex h-12 items-stretch overflow-hidden rounded-[10px] border border-sky-500/25 bg-sky-500/[0.04] dark:border-sky-400/20 dark:bg-sky-400/[0.06]">
@@ -41,19 +55,35 @@ export default function TelegramLinkShareRow({ link }) {
         onClick={() => void handleCopy()}
         aria-label={t('pages.checkIn.telegramLinkCopy')}
       >
-        <Copy className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden />
-        <span className="min-w-0 flex-1 truncate text-[13px] font-medium leading-[18px] text-app-text-strong">
-          {link}
-        </span>
+        {copied ? (
+          <>
+            <span
+              className="inline-block h-[22px] w-[22px] shrink-0 rounded-full border-[3px] border-sky-600 dark:border-sky-400"
+              aria-hidden
+            />
+            <span className="min-w-0 flex-1 truncate text-[13px] font-semibold leading-[18px] text-sky-700 dark:text-sky-300">
+              {t('pages.checkIn.telegramLinkCopied')}
+            </span>
+          </>
+        ) : (
+          <>
+            <Copy className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden />
+            <span className="min-w-0 flex-1 truncate text-[13px] font-medium leading-[18px] text-app-text-strong">
+              {link}
+            </span>
+          </>
+        )}
       </button>
-      <button
-        type="button"
-        className="flex w-12 shrink-0 items-center justify-center border-l border-sky-500/20 bg-sky-500/[0.08] text-sky-600 transition-opacity hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-400/60 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-400"
-        onClick={() => void handleShare()}
-        aria-label={t('pages.checkIn.telegramLinkShare')}
-      >
-        <Share className="h-[18px] w-[18px]" aria-hidden />
-      </button>
+      {showShare ? (
+        <button
+          type="button"
+          className="flex w-12 shrink-0 items-center justify-center border-l border-sky-500/20 bg-sky-500/[0.08] text-sky-600 transition-opacity hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-400/60 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-400"
+          onClick={() => void handleShare()}
+          aria-label={t('pages.checkIn.telegramLinkShare')}
+        >
+          <Share2 className="h-[18px] w-[18px]" aria-hidden />
+        </button>
+      ) : null}
     </div>
   );
 }

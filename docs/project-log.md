@@ -82,6 +82,10 @@
 - Do **not** place the Privacy Policy as a peer of Register on login — muted footer only (web and mobile). Signup keeps the “By continuing…” line.
 - Do **not** point the mobile privacy link at `vibe-frontend-coral.vercel.app`. Use `niku-saas.vercel.app`.
 - Do **not** show the member phone on dashboard Needs attention when a branch exists. Middle line is branch · plan; phone · plan only when there is no branch.
+- Do **not** put Telegram, support, or Privacy Policy between Gym profile fields and Save. Mobile email and username sit under **Login**. Web **Sign-in** sits directly under **Gym details**, with username and login email each on their own row, and extra space above the footer.
+- Web Telegram link **share** opens the system share sheet and does not copy. Copy stays on the link. Hide share when the browser has no share sheet.
+- A successful Telegram link copy shows a thick circle and **Link Copied**. Web: on the row. Mobile: bottom center, circle and text in active green (`statusActive`). Do not use the toast for that.
+- Mobile dashboard and Reports revenue lines share one monotone curve through every day, same as the web chart. Do not use a curve that misses the points.
 
 ---
 
@@ -693,6 +697,96 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Shipped:** Alert row meta is branch · plan, or phone · plan when `branch_name` is empty.
 - **Styles / customs:** Needs attention order updated in Do not regress.
 - **Do-not-regress:** branch before plan; phone only when there is no branch.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Lighter revenue payment chips
+
+- **Asked:** Payment method chips on Revenue should match the lighter shade, not the darker inset.
+- **Decided / why:** The chip used `inputBg`, which is darker than the card. The earlier screen used a lighter gray.
+- **Shipped:** Method chips use `cardEdge` for fill and border.
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Gym profile form stays together
+
+- **Asked:** Reorder Gym profile so the fields that save are not split by Telegram and support.
+- **Decided / why:** Name, phone, email, and username belong next to Save. Telegram, then support and Privacy Policy, come after.
+- **Shipped:** Mobile Gym profile order is the form and Save, then license alerts, then support and Privacy Policy.
+- **Styles / customs:** none
+- **Do-not-regress:** don’t put Telegram or support between the gym fields and Save.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Gym profile Login heading
+
+- **Asked:** Stop the Gym label from covering email and username.
+- **Decided / why:** Those two fields are the sign-in account. They stay in the same form, directly above Save, under their own Login heading.
+- **Shipped:** `vibe-mobile/app/profile.tsx` — Login section before email and username.
+- **Styles / customs:** Gym profile section split updated in Do not regress.
+- **Do-not-regress:** email and username stay under Login; Save still follows the form.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Web Gym profile Sign-in under Gym details
+
+- **Asked:** Move web Gym profile Sign-in up so it is not below Telegram, support, and Privacy Policy.
+- **Decided / why:** Username and login email save with the gym fields. Alerts and support come after both groups. Discard, Cancel, and Save stay in the footer.
+- **Shipped:** `vibe-frontend/src/components/account/AccountPanels.jsx` — Sign-in follows Gym details.
+- **Styles / customs:** Web profile order added to Do not regress.
+- **Do-not-regress:** Sign-in stays directly under Gym details.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-11 — Web Gym profile field room
+
+- **Asked:** Give the Gym profile inputs room so they do not sit cramped if a section lands on the footer again.
+- **Decided / why:** Username and login email were sharing one row in a narrow dialog, and the last block sat on Discard / Cancel / Save. Each sign-in field gets the full row, and the form keeps extra space above the footer.
+- **Shipped:** `vibe-frontend/src/components/account/AccountPanels.jsx` — stacked Sign-in fields and taller bottom padding.
+- **Styles / customs:** Web profile field room added to Do not regress.
+- **Do-not-regress:** username and login email stay full width; keep the extra space above the footer.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-11 — Telegram link share does not copy
+
+- **Asked:** The share icon on the Telegram link looks wrong, and clicking it copies the link.
+- **Decided / why:** That button was a share control with a copy fallback. Desktop Firefox has no share sheet, so it copied. Copy stays on the link. Share only opens the system share sheet, and the control is hidden when the browser cannot share.
+- **Shipped:** `vibe-frontend/src/components/TelegramLinkShareRow.jsx`
+- **Styles / customs:** Web share behavior added to Do not regress.
+- **Do-not-regress:** share does not copy; hide it when there is no share sheet.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-11 — Link Copied on the row
+
+- **Asked:** When the Telegram link copies, show a thick circle and “Link Copied” instead of the popup, on phone and web.
+- **Decided / why:** The corner toast was the confirmation. The row itself should show it, then return to the link.
+- **Shipped:** `TelegramLinkShareRow` on web and mobile. English label is “Link Copied”.
+- **Styles / customs:** Copy confirmation added to Do not regress.
+- **Do-not-regress:** no success toast for this copy.
+- **Follow-ups:** needs a web deploy and a new mobile build.
+
+### 2026-10-11 — Mobile Link Copied at the bottom
+
+- **Asked:** On mobile, show Link Copied at the bottom center, with the text and icon in active green.
+- **Decided / why:** The row confirmation sat on the link. On the phone it belongs at the bottom center, in the Active status green.
+- **Shipped:** `vibe-mobile/src/components/TelegramLinkShareRow.tsx` — bottom-center circle and label use `statusActive`. The link stays on the row.
+- **Styles / customs:** Mobile copy confirmation updated in Do not regress.
+- **Do-not-regress:** mobile confirmation stays bottom center in active green; web stays on the row.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Mobile revenue line matches the web
+
+- **Asked:** The phone revenue line breaks at a tapped day. The web line stays smooth.
+- **Decided / why:** The phone curve used each day as a bend handle and did not pass through it. The web chart uses a monotone curve through every point. The phone line should do the same, so the marker sits on the stroke.
+- **Shipped:** `vibe-mobile/src/components/MiniBarChart.tsx` — monotone cubic through each day.
+- **Styles / customs:** Revenue line rule added to Do not regress.
+- **Do-not-regress:** the line passes through every day.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Reports uses the same revenue line
+
+- **Asked:** Use the smooth revenue line on mobile Reports too.
+- **Decided / why:** Reports already renders `MiniBarChart`, the same component as the dashboard. The monotone curve applies there with no second chart.
+- **Shipped:** no separate report chart. Do not regress now names Reports.
+- **Styles / customs:** shared revenue line noted in Do not regress.
+- **Do-not-regress:** Reports keeps using `MiniBarChart`.
 - **Follow-ups:** needs a new mobile build.
 
 ---

@@ -334,7 +334,7 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
         </div>
       ) : showGymProfile ? (
         <form onSubmit={handleSubmit} onChangeCapture={markTouched} className="flex min-h-0 flex-1 flex-col">
-          <div className={`${modalBody} space-y-5`}>
+          <div className={`${modalBody} space-y-5 !pb-10 sm:!pb-12`}>
             {error && !Object.keys(fieldErrors).length ? <Alert>{error}</Alert> : null}
 
             <section className="space-y-4">
@@ -389,6 +389,49 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
                     }}
                   />
                   <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-4 border-t border-app-border-subtle pt-5">
+              <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionSignIn')}</h3>
+              <div className="space-y-4">
+                <div>
+                  <FieldLabel htmlFor="modal-login-username" required>
+                    {t('account.username')}
+                  </FieldLabel>
+                  <input
+                    id="modal-login-username"
+                    type="text"
+                    required
+                    autoComplete="username"
+                    pattern="[a-z0-9._]{3,30}"
+                    title={t('account.usernamePattern')}
+                    value={username}
+                    onChange={(e) => {
+                      setUsername(e.target.value.toLowerCase());
+                      clearFieldError(setFieldErrors, 'username');
+                    }}
+                    className={fc('username')}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
+                </div>
+                <div>
+                  <FieldLabel htmlFor="modal-login-email" hint={t('account.loginEmailHint')}>
+                    {t('account.loginEmail')}
+                  </FieldLabel>
+                  <input
+                    id="modal-login-email"
+                    type="email"
+                    autoComplete="email"
+                    value={accountEmail}
+                    onChange={(e) => {
+                      setAccountEmail(e.target.value);
+                      clearFieldError(setFieldErrors, 'email');
+                    }}
+                    className={fc('email')}
+                  />
+                  <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
                 </div>
               </div>
             </section>
@@ -472,49 +515,6 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
                 {t('account.privacyPolicy')}
               </Link>
             </p>
-
-            <section className="space-y-4 border-t border-app-border-subtle pt-5">
-              <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionSignIn')}</h3>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <FieldLabel htmlFor="modal-login-username" required>
-                    {t('account.username')}
-                  </FieldLabel>
-                  <input
-                    id="modal-login-username"
-                    type="text"
-                    required
-                    autoComplete="username"
-                    pattern="[a-z0-9._]{3,30}"
-                    title={t('account.usernamePattern')}
-                    value={username}
-                    onChange={(e) => {
-                      setUsername(e.target.value.toLowerCase());
-                      clearFieldError(setFieldErrors, 'username');
-                    }}
-                    className={fc('username')}
-                  />
-                  <FieldError message={fieldErrorMessage(fieldErrors, 'username')} />
-                </div>
-                <div>
-                  <FieldLabel htmlFor="modal-login-email" hint={t('account.loginEmailHint')}>
-                    {t('account.loginEmail')}
-                  </FieldLabel>
-                  <input
-                    id="modal-login-email"
-                    type="email"
-                    autoComplete="email"
-                    value={accountEmail}
-                    onChange={(e) => {
-                      setAccountEmail(e.target.value);
-                      clearFieldError(setFieldErrors, 'email');
-                    }}
-                    className={fc('email')}
-                  />
-                  <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
-                </div>
-              </div>
-            </section>
           </div>
 
           <div className={modalFooter}>
