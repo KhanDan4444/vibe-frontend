@@ -31,10 +31,13 @@ export function canRenewMember(member) {
   return endDay <= todayString();
 }
 
-/** Active members — switch plan mid-term (paid) or before first payment (unpaid). */
+/** Active members, or unpaid members still inside the due-soon window. */
 export function canChangePlan(member) {
   if (!member) return false;
-  return member.status === DISPLAY_STATUS.ACTIVE;
+  if (member.status === DISPLAY_STATUS.ACTIVE) return true;
+  const unpaid = Boolean(member.isUnpaid || member.is_unpaid);
+  const status = String(member.status || '').trim().toLowerCase();
+  return unpaid && (member.status === DISPLAY_STATUS.DUE_SOON || status === 'due soon');
 }
 
 function daysBetween(from, to) {

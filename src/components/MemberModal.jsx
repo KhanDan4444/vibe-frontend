@@ -750,8 +750,15 @@ export default function MemberModal({
       }
       clearFieldError(setLocalFieldErrors, 'phone');
       return true;
-    } catch {
-      setValidationError(t('auth.connectionFailed'));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '';
+      if (
+        err?.name === 'TypeError' ||
+        /Cannot reach the server|Cannot reach the API|Failed to fetch|timed out|Could not connect/i.test(message)
+      ) {
+        return true;
+      }
+      setValidationError(message || t('auth.connectionFailed'));
       return false;
     } finally {
       setPhoneChecking(false);

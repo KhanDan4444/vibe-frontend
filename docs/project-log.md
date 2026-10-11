@@ -48,6 +48,7 @@
 | OTP in message log | **Not stored**; admin SMS log has no code column | 2026-10-11 |
 | Telegram webhook | Production **requires** `TELEGRAM_WEBHOOK_SECRET` or API refuses to start | 2026-10-11 |
 | Member / station QR secret | Production **requires** `MEMBER_PASS_SECRET` (not `JWT_SECRET`) | 2026-10-11 |
+| Unpaid Change plan | Unpaid **Active** or **Due Soon** can change plan before paying. Expired unpaid pays or renews. | 2026-10-11 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 
 ---
@@ -86,6 +87,10 @@
 - Web Telegram link **share** opens the system share sheet and does not copy. Copy stays on the link. Hide share when the browser has no share sheet.
 - A successful Telegram link copy shows a thick circle and **Link Copied**. Web: on the row. Mobile: bottom center, circle and text in active green (`statusActive`). Do not use the toast for that.
 - Mobile dashboard and Reports revenue lines share one monotone curve through every day, same as the web chart. Do not use a curve that misses the points.
+- Offline member enroll must not stop on the phone-availability check. Skip that request on web and mobile when the server cannot be reached; the queue syncs later.
+- Revenue payment-method chips use the transaction card fill (`card`) and the card edge for the outline. Do not fill them with `cardEdge` or `inputBg`.
+- Unpaid members who are **Active** or **Due Soon** can change plan before paying, from **Manage** only. Collect payment stays the profile button. Expired unpaid does not get a mid-term plan switch.
+- Success and delete toasts stay up until their timer bar reaches the end. Do not dismiss them on a separate clock.
 
 ---
 
@@ -788,6 +793,60 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** shared revenue line noted in Do not regress.
 - **Do-not-regress:** Reports keeps using `MiniBarChart`.
 - **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Offline enroll skips phone check
+
+- **Asked:** Offline member registration used to work, and now Continue shows “Could not connect to the server.”
+- **Decided / why:** Step 1 always calls the phone-availability API. Offline, that request fails and blocks the wizard before the enroll can be queued.
+- **Shipped:** `vibe-mobile/app/enroll.tsx` — skip the phone check when offline or the request cannot reach the server.
+- **Styles / customs:** Offline enroll rule added to Do not regress.
+- **Do-not-regress:** do not require the phone-availability request to leave the Member step while offline.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Web enroll skips phone check offline
+
+- **Asked:** Skip the phone-uniqueness check on the web too, so offline enroll can continue.
+- **Decided / why:** Web Continue always called the phone check. A connection failure stopped the wizard before the enroll could be queued. Online, a real “already used” result still blocks.
+- **Shipped:** `vibe-frontend/src/components/MemberModal.jsx` — if the phone check cannot reach the server, Continue proceeds.
+- **Styles / customs:** Offline enroll rule now names web and mobile.
+- **Do-not-regress:** do not require the phone-availability request to leave the Member step while offline.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-11 — Revenue method chips use the card fill
+
+- **Asked:** On Revenue, both themes, the payment-method chip should use the card background instead of a white or gray fill.
+- **Decided / why:** The chip fill was `cardEdge`, a gray that sits on top of the card. The row is already `card`, so the chip should use that fill and keep `cardEdge` only as the outline.
+- **Shipped:** `vibe-mobile/src/constants/payments.ts` — `paymentMethodBadgeStyle` fill is `card`.
+- **Styles / customs:** Chip fill rule added to Do not regress.
+- **Do-not-regress:** do not fill method chips with `cardEdge` or `inputBg`.
+- **Follow-ups:** needs a new mobile build. Member payment history uses the same chip.
+
+### 2026-10-11 — Unpaid Due Soon can change plan
+
+- **Asked:** An unpaid Due Soon member’s Manage sheet only had Edit and Remove. They need to change plan before paying.
+- **Decided / why:** Due Soon still means the term is open. Unpaid Active and Due Soon can switch plan first. Expired unpaid still pays or renews.
+- **Shipped:** `vibe-mobile/src/utils/memberRenew.ts`, `MemberActionsBar.tsx` (Change plan beside Collect and in Manage); `vibe-frontend/src/utils/memberRenew.js`; `vibe/routes/members.js` allows the same unpaid Due Soon switch.
+- **Styles / customs:** Unpaid Change plan added to Decision index and Do not regress.
+- **Do-not-regress:** do not hide Change plan on unpaid Active or Due Soon; do not offer it for expired unpaid.
+- **Follow-ups:** needs a new mobile build and an API deploy. The current app will still hide the action until then.
+
+### 2026-10-12 — Change plan stays in Manage
+
+- **Asked:** Do not put Collect payment and Change plan side by side. Keep Change plan inside Manage, as before.
+- **Decided / why:** Unpaid Due Soon still needs the action, but the profile button stays Collect payment only.
+- **Shipped:** `vibe-mobile/src/components/MemberActionsBar.tsx` — Change plan is a Manage item when Collect or Renew is already the profile button.
+- **Styles / customs:** Do not regress line now says Manage only.
+- **Do-not-regress:** do not place Change plan beside Collect payment.
+- **Follow-ups:** needs a new mobile build and an API deploy.
+
+### 2026-10-12 — Toast stays until the bar ends
+
+- **Asked:** On register, delete, and renew, the success popup disappears before its timer bar finishes.
+- **Decided / why:** The popup and the bar used two timers, so the popup could close while the bar was still moving. The popup should leave when the bar reaches the end.
+- **Shipped:** `vibe-mobile/src/components/FlashBanner.tsx` and `vibe-frontend/src/components/FlashBanner.jsx` — dismiss follows the bar animation.
+- **Styles / customs:** Do not regress line added.
+- **Do-not-regress:** do not close these toasts on a timer that can finish before the bar.
+- **Follow-ups:** needs a new mobile build and a web deploy.
 
 ---
 

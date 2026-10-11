@@ -93,9 +93,10 @@ function FlashToastItem({ toast, onDismiss }) {
   const { t } = useTranslation();
   const reducedMotion = usePrefersReducedMotion();
   const [exiting, setExiting] = useState(false);
-  const [paused, setPaused] = useState(false);
   const dismissTimerRef = useRef(null);
   const exitTimerRef = useRef(null);
+  const progressAnimRef = useRef(null);
+  const progressRef = useRef(null);
   const dismissingRef = useRef(false);
   const onDismissRef = useRef(onDismiss);
   const bodyId = `flash-body-${toast.id}`;
@@ -127,6 +128,9 @@ function FlashToastItem({ toast, onDismiss }) {
       if (dismissingRef.current) return;
       dismissingRef.current = true;
       clearTimers();
+      const anim = progressAnimRef.current;
+      progressAnimRef.current = null;
+      if (anim && anim.playState !== 'finished') anim.cancel();
       if (immediate || reducedMotion) {
         finishDismiss();
         return;
@@ -144,11 +148,33 @@ function FlashToastItem({ toast, onDismiss }) {
   useEffect(() => {
     dismissingRef.current = false;
     setExiting(false);
-    setPaused(false);
     clearTimers();
-    dismissTimerRef.current = setTimeout(() => dismiss(false), durationMs);
-    return clearTimers;
-  }, [toast.id, dismiss, clearTimers, durationMs]);
+    progressAnimRef.current?.cancel();
+    progressAnimRef.current = null;
+
+    if (reducedMotion) {
+      dismissTimerRef.current = setTimeout(() => dismiss(false), durationMs);
+      return clearTimers;
+    }
+
+    const el = progressRef.current;
+    if (!el || typeof el.animate !== 'function') {
+      dismissTimerRef.current = setTimeout(() => dismiss(false), durationMs);
+      return clearTimers;
+    }
+
+    const anim = el.animate(
+      [{ transform: 'scaleX(1)' }, { transform: 'scaleX(0)' }],
+      { duration: durationMs, easing: 'linear', fill: 'forwards' }
+    );
+    progressAnimRef.current = anim;
+    anim.onfinish = () => dismiss(false);
+
+    return () => {
+      anim.cancel();
+      clearTimers();
+    };
+  }, [toast.id, dismiss, clearTimers, durationMs, reducedMotion]);
 
   const variant = VARIANTS[toast.variant] ?? VARIANTS.success;
   const { Icon } = variant;
@@ -169,8 +195,8 @@ function FlashToastItem({ toast, onDismiss }) {
         variant.surface,
         reducedMotion ? '' : exiting ? 'flash-toast-out' : 'flash-toast-in',
       ].join(' ')}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => progressAnimRef.current?.pause()}
+      onMouseLeave={() => progressAnimRef.current?.play()}
     >
       <span className={`absolute inset-y-2.5 left-0 w-1 rounded-r-full ${variant.accent}`} aria-hidden />
 
@@ -218,11 +244,9 @@ function FlashToastItem({ toast, onDismiss }) {
 
       {!reducedMotion ? (
         <span
-          className={`flash-toast-progress pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left ${variant.progress}`}
-          style={{
-            animationDuration: `${durationMs}ms`,
-            animationPlayState: paused ? 'paused' : 'running',
-          }}
+          ref={progressRef}
+          className={`pointer-events-none absolute inset-x-0 bottom-0 h-0.5 origin-left ${variant.progress}`}
+          style={{ transform: 'scaleX(1)' }}
           aria-hidden
         />
       ) : null}
