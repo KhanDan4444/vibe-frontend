@@ -44,7 +44,7 @@
 | Product brand (user-facing) | **Niku** (SMS Amharic still **ንቁ**); no Vibe / VibeSaaS in UI or email | 2026-10-10 |
 | Password reset | **SMS OTP only** (email link reset removed) | 2026-10-10 |
 | Owner support contact | Env `SUPPORT_PHONE` (+ optional `SUPPORT_TELEGRAM`); public `/api/public/support` | 2026-10-10 |
-| Privacy Policy | Public web `/privacy`; linked from auth, account, mobile profile | 2026-10-11 |
+| Privacy Policy | Public `/privacy`. Web + mobile signup: “By continuing…”. Auth screens: muted footer. Account + mobile Profile | 2026-10-11 |
 | OTP in message log | **Not stored**; admin SMS log has no code column | 2026-10-11 |
 | Telegram webhook | Production **requires** `TELEGRAM_WEBHOOK_SECRET` or API refuses to start | 2026-10-11 |
 | Member / station QR secret | Production **requires** `MEMBER_PASS_SECRET` (not `JWT_SECRET`) | 2026-10-11 |
@@ -79,6 +79,7 @@
 - Do **not** accept Telegram webhooks in production without `TELEGRAM_WEBHOOK_SECRET`.
 - Do **not** sign member or station QR tokens with `JWT_SECRET` in production — use `MEMBER_PASS_SECRET`.
 - Do **not** return the phone number or member photo on the public check-in pass.
+- Do **not** place the Privacy Policy as a peer of Register on login — muted footer only (web and mobile). Signup keeps the “By continuing…” line.
 
 ---
 
@@ -628,6 +629,24 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** none
 - **Do-not-regress:** none
 - **Follow-ups:** visible on niku-saas after the frontend deploy.
+
+### 2026-10-11 — Quiet privacy link on login
+
+- **Asked:** Show the privacy policy the standard way.
+- **Decided / why:** The policy stays public. Signup keeps the “By continuing…” line. Login should not stack Privacy Policy under Register as another action.
+- **Shipped:** Muted footer link on every auth screen (`AuthHeroBackground`). Removed the login line under Register.
+- **Styles / customs:** Privacy Policy placement updated in the decision index.
+- **Do-not-regress:** login privacy link is a muted footer, not a peer of Register.
+- **Follow-ups:** visible on niku-saas after the frontend deploy.
+
+### 2026-10-11 — Mobile privacy matches the web pattern
+
+- **Asked:** Put the privacy policy on mobile the same way as the web login.
+- **Decided / why:** Profile already had the signed-in link. Sign-in needed a muted footer, and signup needed the “By continuing…” line.
+- **Shipped:** `AuthPrivacyFooter` on mobile auth screens. `AuthPrivacyConsent` under signup actions. Profile link unchanged.
+- **Styles / customs:** Privacy Policy decision index covers web and mobile.
+- **Do-not-regress:** mobile login privacy link is a muted footer, not a peer of Register.
+- **Follow-ups:** needs a new mobile build to show on phones.
 
 ---
 

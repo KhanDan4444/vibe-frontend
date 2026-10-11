@@ -225,11 +225,6 @@ export default function Login() {
               {t('auth.registerGymLink')}
             </Link>
           </p>
-          <p className="mt-3 text-center text-sm text-white/55">
-            <Link to="/privacy" className="auth-link">
-              {t('auth.privacyPolicy')}
-            </Link>
-          </p>
 
           {import.meta.env.DEV && (
             <div className="mt-8 space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 text-xs text-white/55">
