@@ -1,29 +1,19 @@
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Rectangle } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useChartTheme } from '../utils/chartTheme';
 
-/** Pin bar bottom to category baseline — avoids Recharts 3 “floating” bars above y=0. */
-function BaselineBar(props) {
-  const { x, y, width, height, fill, background, radius } = props;
-  if (width <= 0 || height <= 0) return null;
-  const baseY =
-    background && Number.isFinite(background.y) && Number.isFinite(background.height)
-      ? background.y + background.height
-      : y + height;
-  const top = Math.min(y, baseY);
-  const barHeight = Math.max(0, baseY - top);
-  return (
-    <Rectangle
-      x={x}
-      y={top}
-      width={width}
-      height={barHeight}
-      fill={fill}
-      radius={radius}
-      stroke="none"
-    />
-  );
+/**
+ * Round up so the axis stays at 0. Recharts treats domain [0, 'auto'] as stretchable,
+ * and nice ticks then extend below 0 — bars grow from that zero line in the middle.
+ */
+function axisMax(value) {
+  if (value <= 0) return 1;
+  const padded = value * 1.15;
+  const magnitude = 10 ** Math.floor(Math.log10(padded));
+  const fraction = padded / magnitude;
+  const nice = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
+  return nice * magnitude;
 }
 
 /** Lazy-loaded so recharts stays out of the initial admin dashboard chunk. */
@@ -39,6 +29,7 @@ export default function AdminMembersChart({ chartData }) {
       })),
     [chartData]
   );
+  const yMax = useMemo(() => axisMax(Math.max(0, ...rows.map((row) => row.members))), [rows]);
 
   if (!rows.length || !rows.some((c) => c.members > 0)) {
     return (
@@ -71,8 +62,9 @@ export default function AdminMembersChart({ chartData }) {
           <YAxis
             type="number"
             width={36}
-            domain={[0, 'auto']}
+            domain={[0, yMax]}
             allowDecimals={false}
+            allowDataOverflow={false}
             padding={{ top: 0, bottom: 0 }}
             axisLine={false}
             tickLine={false}
@@ -89,8 +81,6 @@ export default function AdminMembersChart({ chartData }) {
             radius={[4, 4, 0, 0]}
             maxBarSize={48}
             isAnimationActive={false}
-            background={{ fill: 'transparent' }}
-            shape={(props) => <BaselineBar {...props} />}
             name={t('admin.activeMembers')}
           />
         </BarChart>

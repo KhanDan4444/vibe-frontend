@@ -115,7 +115,14 @@
     "verifying": "Mirkaneessaa jira…",
     "saving": "Olkaa'amaa jira…",
     "checkEmailReset": "Liiinkii haaromsaaf imeelii keessan sakatta'aa.",
-    "email": "Imeelii"
+    "email": "Imeelii",
+    "privacyPolicy": "Imaammata Dhuunfaa",
+    "privacyAgreePrefix": "Itti fufuun keessan waliigaltee"
+  },
+  "privacy": {
+    "title": "Imaammata Dhuunfaa",
+    "effectiveDate": "Guyyaa eegalee: {{date}}",
+    "backToSignIn": "Gara seensaatti deebi'i"
   },
   "profile": {
     "platformAdmin": "Bulchaa Platformii",
@@ -1656,7 +1663,8 @@
     "telegramGetLink": "Linkii Telegram argadhu",
     "telegramLinkFailed": "Linkii Telegram uumuu hin dandeenye.",
     "telegramUnlinkFailed": "Telegram addaan baasuu hin dandeenye.",
-    "telegramNotConfigured": "Telegram server kana irratti hin qindaa'amne."
+    "telegramNotConfigured": "Telegram server kana irratti hin qindaa'amne.",
+    "privacyPolicy": "Imaammata Dhuunfaa"
   },
   "paymentSource": {
     "enroll": "Galmee",
@@ -2040,7 +2048,8 @@
     "telegramBody": "Liinkii paasii fi yaadachiisa haaromsaa Telegram irratti argachuuf miseensummaa kee wal qabsiisi.",
     "telegramLinked": "Telegram irratti wal qabsiifamee jirta. Yaadachiisni achi ni dhufa.",
     "telegramOpen": "Bot Telegram bani",
-    "telegramLoading": "Liinkii qopheessaa jira…"
+    "telegramLoading": "Liinkii qopheessaa jira…",
+    "downloadQr": "QR buusi"
   },
   "publicStationCheckIn": {
     "title": "Galchi",

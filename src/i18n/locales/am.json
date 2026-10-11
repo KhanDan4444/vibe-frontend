@@ -40,7 +40,8 @@
     "telegramGetLink": "የTelegram አገናኝ ያግኙ",
     "telegramLinkFailed": "የTelegram አገናኝ መፍጠር አልተቻለም።",
     "telegramUnlinkFailed": "Telegramን ማ቉ረጥ አልተቻለም።",
-    "telegramNotConfigured": "Telegram በዚህ አገልጋይ ላይ አልተዋቀረም።"
+    "telegramNotConfigured": "Telegram በዚህ አገልጋይ ላይ አልተዋቀረም።",
+    "privacyPolicy": "የግላዊነት ፖሊሲ"
   },
   "actions": {
     "activate": "አንቃ",
@@ -390,7 +391,14 @@
     "brandDescription": "አባላት፣ እድሳት እና ክፍያዎችዎን በአንድ መተግበሪያ ያስቀምጡ።",
     "signInSubtitle": "የስራ ቦታዎን ለማስተዳደር ይግቡ",
     "signInTitle": "Niku Gyms",
-    "updatePassword": "የይለፍ ቃል ያዘምኑ"
+    "updatePassword": "የይለፍ ቃል ያዘምኑ",
+    "privacyPolicy": "የግላዊነት ፖሊሲ",
+    "privacyAgreePrefix": "በመቀጠል የእኛን"
+  },
+  "privacy": {
+    "title": "የግላዊነት ፖሊሲ",
+    "effectiveDate": "የተግባራዊ ቀን፦ {{date}}",
+    "backToSignIn": "ወደ መግቢያ ተመለስ"
   },
   "branch": {
     "allBranches": "ሁሉም ቅርንጫፎች",
@@ -2029,7 +2037,8 @@
     "telegramBody": "የፓስ አገናኞችን እና የማደስ ማስታወሻዎችን በቴሌግራም ለመקבል አባልነትዎን ያገናኙ።",
     "telegramLinked": "በቴሌግራም ተገናኝተዋል። ማስታወሻዎች እዚያ ይደርሳሉ።",
     "telegramOpen": "የቴሌግራም ቦት ይክፈቱ",
-    "telegramLoading": "አገናኝ እየተዘጋጀ…"
+    "telegramLoading": "አገናኝ እየተዘጋጀ…",
+    "downloadQr": "QR አውርድ"
   },
   "publicStationCheckIn": {
     "title": "መግቢያ",

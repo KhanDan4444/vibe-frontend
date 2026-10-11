@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-10 (Sentry on web + mobile) |
+| **Standing section last updated** | 2026-10-11 (pass secret + public pass trim) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -44,6 +44,11 @@
 | Product brand (user-facing) | **Niku** (SMS Amharic still **ንቁ**); no Vibe / VibeSaaS in UI or email | 2026-10-10 |
 | Password reset | **SMS OTP only** (email link reset removed) | 2026-10-10 |
 | Owner support contact | Env `SUPPORT_PHONE` (+ optional `SUPPORT_TELEGRAM`); public `/api/public/support` | 2026-10-10 |
+| Privacy Policy | Public web `/privacy`; linked from auth, account, mobile profile | 2026-10-11 |
+| OTP in message log | **Not stored**; admin SMS log has no code column | 2026-10-11 |
+| Telegram webhook | Production **requires** `TELEGRAM_WEBHOOK_SECRET` or API refuses to start | 2026-10-11 |
+| Member / station QR secret | Production **requires** `MEMBER_PASS_SECRET` (not `JWT_SECRET`) | 2026-10-11 |
+| Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 
 ---
 
@@ -70,6 +75,10 @@
 - Do **not** use Vibe / VibeSaaS in user-facing UI or email copy — brand is **Niku** (SMS: ንቁ).
 - Do **not** hardcode the platform support phone in clients — use `SUPPORT_PHONE` / `/api/public/support`.
 - Do **not** reuse one Sentry DSN across API/web/mobile — separate projects; leave DSNs unset in local/dev.
+- Do **not** persist OTP codes in `SmsLog` or show them in the admin message log.
+- Do **not** accept Telegram webhooks in production without `TELEGRAM_WEBHOOK_SECRET`.
+- Do **not** sign member or station QR tokens with `JWT_SECRET` in production — use `MEMBER_PASS_SECRET`.
+- Do **not** return the phone number or member photo on the public check-in pass.
 
 ---
 
@@ -520,6 +529,87 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** none
 - **Do-not-regress:** no shared DSN across API/web/mobile; DSN unset = off locally.
 - **Follow-ups:** create Web + RN projects in Sentry; set Vercel `VITE_SENTRY_DSN` and EAS `EXPO_PUBLIC_SENTRY_DSN`; optional `SENTRY_AUTH_TOKEN` for mobile source maps.
+
+### 2026-10-10 — Session wrap (messages, chart, support polish, Sentry ops)
+
+- **Asked:** Log the session; finish support/Sentry polish; fix floating admin members chart; clarify env setup.
+- **Decided / why:** Skip Sentry wizard (SDK already wired); client DSNs via host env only; preview EAS build OK for APK + Sentry smoke.
+- **Shipped:**
+  - Member due-soon Telegram copy shortened (no “Renew at the front desk…”).
+  - Admin `AdminMembersChart` bars pinned to y=0 baseline.
+  - Mobile `GymBootError` shows support when license blocked.
+  - EAS env `EXPO_PUBLIC_SENTRY_DSN` set for preview + production (`mobile-react-native` project).
+- **Styles / customs:** none
+- **Do-not-regress:** none new
+- **Follow-ups:**
+  - Commit/push mobile (+ any unpushed web/API) before/with EAS preview build.
+  - Set Vercel `VITE_SENTRY_DSN` from **web-react** project (not the mobile DSN).
+  - Set Railway `SUPPORT_PHONE` (+ optional `SUPPORT_TELEGRAM`).
+  - Apply API migration `028_gym_telegram` if not already; keep `TELEGRAM_BOT_*` set.
+  - Optional: Sentry auth token for mobile source maps.
+
+### 2026-10-11 — Member pass QR download
+
+- **Asked:** Add a download button with arrow icon on the check-in pass so members can save their QR.
+- **Decided / why:** Place under the QR (before the hint) — closest to the asset, doesn’t compete with Telegram CTA.
+- **Shipped:** `MemberPassPage` Download control → PNG from `qr_data_url`; i18n en/am/om `publicPass.downloadQr`.
+- **Styles / customs:** Compact outline button under QR; lucide `Download`.
+- **Do-not-regress:** none
+- **Follow-ups:** none
+
+### 2026-10-11 — Public Privacy Policy
+
+- **Asked:** Add a standard privacy policy for Niku.
+- **Decided / why:** Needed for store listings and signup transparency; English legal body matched to actual product (SMS OTP-only, Telegram notices, Sentry, manual payments).
+- **Shipped:** web `/privacy`; links on login, register-gym, account; mobile Profile opens `PRIVACY_POLICY_URL` (`EXPO_PUBLIC_WEB_URL` or production Vercel default).
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** paste production `/privacy` URL into Play / App Store consents; optional counsel review for Proclamation 1321/2024.
+
+### 2026-10-11 — Dashboard alert expiry on second line
+
+- **Asked:** “Expired on …” truncated on dashboard alert rows; implement option 1 (two lines).
+- **Decided / why:** Separate plan + expiry would make 4 text rows with phone/branch; keep 3 — drop branch on alert rows; meta = phone · plan; full `endLabel` alone on the third.
+- **Shipped:** `vibe-mobile/app/(tabs)/index.tsx` AlertRow — meta = phone · plan; third line = expiry only (no branch).
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** none
+
+### 2026-10-11 — Drop stored OTP codes; require Telegram webhook secret
+
+- **Asked:** Security fixes 1 and 2 — stop saving verification codes in the SMS log; require the Telegram webhook secret in production.
+- **Decided / why:** A code in `SmsLog` is a reusable password for anyone with admin or a DB backup. An unset webhook secret lets anyone post bot updates.
+- **Shipped:** `vibe` migration `029_drop_sms_otp_code`; log insert no longer writes codes; admin SMS table drops the Code column. Production exits without `TELEGRAM_WEBHOOK_SECRET`; webhook compares the header with a hash. Local signup smoke reads `devCode` (non-production only).
+- **Styles / customs:** none
+- **Do-not-regress:** no OTP digits in `SmsLog` or admin UI; production webhook secret required.
+- **Follow-ups:** set `TELEGRAM_WEBHOOK_SECRET` on Railway before deploying this API, then restart so `setWebhook` sends `secret_token`. Apply migration `029`.
+
+### 2026-10-11 — Separate pass secret; trim public pass
+
+- **Asked:** Security items 3 and 6 — own secret for check-in QR codes; hide full phone and photo on the public pass.
+- **Decided / why:** A leaked login secret must not mint 10-year passes. The pass link only needs name and QR; last four phone digits are enough to recognize the member.
+- **Shipped:** `passSigningSecret` — production requires `MEMBER_PASS_SECRET` (member + station QR + device-token HMAC). Public pass payload drops photo and masks phone; pass page no longer renders a photo.
+- **Styles / customs:** none
+- **Do-not-regress:** production QR signing is `MEMBER_PASS_SECRET` only; public pass has no full phone or photo.
+- **Follow-ups:** set a new `MEMBER_PASS_SECRET` on Railway before this API deploy (do not copy `JWT_SECRET`). After deploy, regenerate station posters and member passes — old QR codes will not scan. Trusted check-in phones will need to verify again.
+
+### 2026-10-11 — Public pass drops phone
+
+- **Asked:** Drop the phone from the check-in pass.
+- **Decided / why:** Name and QR are enough; even a masked number does not need to be on the link.
+- **Shipped:** Public pass API and page no longer include phone.
+- **Styles / customs:** none
+- **Do-not-regress:** public pass has no phone and no photo.
+- **Follow-ups:** none
+
+### 2026-10-11 — Pin admin member bars to the axis
+
+- **Asked:** Top Gyms by Members bars still float in the middle of the chart.
+- **Decided / why:** `domain={[0, 'auto']}` lets Recharts nice-ticks extend below 0, so the zero line sits mid-plot. Use a fixed `[0, rounded max]` instead.
+- **Shipped:** `AdminMembersChart` Y axis domain is `[0, axisMax(tallest)]`.
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** none
 
 ---
 

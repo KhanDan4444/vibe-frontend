@@ -607,6 +607,13 @@ export default function RegisterGym() {
         )}
 
         <p className="text-center text-sm text-white/55">
+          {t('auth.privacyAgreePrefix')}{' '}
+          <Link to="/privacy" className="auth-link">
+            {t('auth.privacyPolicy')}
+          </Link>
+          .
+        </p>
+        <p className="text-center text-sm text-white/55">
           <Link to="/login" className="auth-link">
             {t('auth.backToSignIn')}
           </Link>

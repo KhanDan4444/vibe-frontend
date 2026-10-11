@@ -18,7 +18,7 @@ import ErrorRetryBanner from '../../components/ErrorRetryBanner';
 import { AdminGymMessageSkeleton, AdminTableRowsSkeleton } from '../../components/LoadingSkeletons';
 
 const PAGE_SIZE = DEFAULT_PAGE_SIZE;
-const COL_COUNT = 6;
+const COL_COUNT = 5;
 
 const CHIP_ACTIVE =
   'inline-flex rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-600/15 dark:text-teal-300';
@@ -208,11 +208,6 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                     {formatAdminSmsMessageType(t, row.message_type)}
                   </span>
                 </p>
-                {row.otp_code && (
-                  <p className="mt-1 font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
-                    {t('smsLog.code')}: {row.otp_code}
-                  </p>
-                )}
                 <p className="mt-1.5 text-xs text-app-muted">
                   {row.recipient_phone || row.gym_phone || '—'} · {formatDisplayDateTime(row.sent_at)}
                 </p>
@@ -235,7 +230,6 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                 <th>{t('table.owner')}</th>
                 <th>{t('table.phone')}</th>
                 <th>{t('smsLog.messageType')}</th>
-                <th>{t('smsLog.code')}</th>
                 <th>{t('smsLog.sentAt')}</th>
               </tr>
             </thead>
@@ -252,9 +246,6 @@ export default function AdminGymMessages({ gyms = [], onGymClick, onBootingChang
                       <span className={chipClass}>
                         {formatAdminSmsMessageType(t, row.message_type)}
                       </span>
-                    </td>
-                    <td className="font-mono text-sm font-semibold text-teal-700 dark:text-teal-300">
-                      {row.otp_code || '—'}
                     </td>
                     <td className="whitespace-nowrap text-app-muted">
                       {formatDisplayDateTime(row.sent_at)}

@@ -115,7 +115,14 @@
     "sending": "Sending…",
     "saving": "Saving…",
     "checkEmailReset": "Check your email for a reset link.",
-    "email": "Email"
+    "email": "Email",
+    "privacyPolicy": "Privacy Policy",
+    "privacyAgreePrefix": "By continuing you agree to our"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "effectiveDate": "Effective date: {{date}}",
+    "backToSignIn": "Back to sign in"
   },
   "profile": {
     "platformAdmin": "Platform admin",
@@ -1686,7 +1693,8 @@
     "telegramGetLink": "Get Telegram link",
     "telegramLinkFailed": "Could not create Telegram link.",
     "telegramUnlinkFailed": "Could not unlink Telegram.",
-    "telegramNotConfigured": "Telegram is not configured on this server yet."
+    "telegramNotConfigured": "Telegram is not configured on this server yet.",
+    "privacyPolicy": "Privacy Policy"
   },
   "paymentSource": {
     "enroll": "Enrollment",
@@ -2095,7 +2103,8 @@
     "telegramBody": "Link your membership to receive pass links and renewal reminders in Telegram.",
     "telegramLinked": "You're linked on Telegram. Reminders will arrive there.",
     "telegramOpen": "Open Telegram bot",
-    "telegramLoading": "Preparing link…"
+    "telegramLoading": "Preparing link…",
+    "downloadQr": "Download QR"
   },
   "publicStationCheckIn": {
     "title": "Check in",

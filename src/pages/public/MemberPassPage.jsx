@@ -1,8 +1,43 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Download } from 'lucide-react';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import { API_BASE_URL } from '../../config/api';
+
+function slugForFilename(name) {
+  const raw = String(name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return raw || 'member';
+}
+
+async function downloadQrImage(dataUrl, memberName) {
+  const filename = `niku-check-in-${slugForFilename(memberName)}.png`;
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+}
 
 function TelegramLinkButton({ code, token, t }) {
   const [loading, setLoading] = useState(false);
@@ -139,27 +174,28 @@ export default function MemberPassPage() {
                 {t('publicPass.title')}
               </p>
 
-              {pass.member?.photo_data_url ? (
-                <img
-                  src={pass.member.photo_data_url}
-                  alt=""
-                  className="mx-auto mt-5 h-16 w-16 rounded-2xl object-cover ring-2 ring-white/15"
-                />
-              ) : null}
-
               <p className="mt-4 text-center font-display text-2xl font-semibold tracking-tight text-white">
                 {pass.member?.name}
               </p>
-              {pass.member?.phone ? (
-                <p className="mt-1 text-center font-mono text-sm text-white/55">{pass.member.phone}</p>
-              ) : null}
 
               {pass.qr_data_url ? (
-                <img
-                  src={pass.qr_data_url}
-                  alt={t('publicPass.qrAlt', { name: pass.member?.name || '' })}
-                  className="mx-auto mt-6 h-[220px] w-[220px] rounded-2xl bg-white p-3"
-                />
+                <>
+                  <img
+                    src={pass.qr_data_url}
+                    alt={t('publicPass.qrAlt', { name: pass.member?.name || '' })}
+                    className="mx-auto mt-6 h-[220px] w-[220px] rounded-2xl bg-white p-3"
+                  />
+                  <div className="mt-3 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => void downloadQrImage(pass.qr_data_url, pass.member?.name)}
+                      className="inline-flex items-center gap-2 rounded-xl border border-white/14 bg-white/[0.06] px-3.5 py-2 text-sm font-semibold text-teal-100 transition hover:border-teal-300/35 hover:bg-white/[0.1] hover:text-white"
+                    >
+                      <Download className="h-4 w-4 shrink-0" aria-hidden />
+                      {t('publicPass.downloadQr')}
+                    </button>
+                  </div>
+                </>
               ) : null}
 
               <p className="mt-5 text-center text-sm leading-relaxed text-white/55">

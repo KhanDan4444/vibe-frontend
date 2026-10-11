@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { changePassword } from '../../services/authService';
@@ -462,6 +463,15 @@ export function ProfilePanel({ open, onClose, onSuccess }) {
             ) : null}
 
             <SupportContactLine withSection />
+
+            <p className="border-t border-app-border-subtle pt-4 text-sm">
+              <Link
+                to="/privacy"
+                className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+              >
+                {t('account.privacyPolicy')}
+              </Link>
+            </p>
 
             <section className="space-y-4 border-t border-app-border-subtle pt-5">
               <h3 className="text-sm font-semibold text-app-text-strong">{t('account.sectionSignIn')}</h3>
