@@ -44,7 +44,7 @@
 | Product brand (user-facing) | **Niku** (SMS Amharic still **ንቁ**); no Vibe / VibeSaaS in UI or email | 2026-10-10 |
 | Password reset | **SMS OTP only** (email link reset removed) | 2026-10-10 |
 | Owner support contact | Env `SUPPORT_PHONE` (+ optional `SUPPORT_TELEGRAM`); public `/api/public/support` | 2026-10-10 |
-| Privacy Policy | Public `/privacy`. Web + mobile signup: “By continuing…”. Auth screens: muted footer. Account + mobile Profile | 2026-10-11 |
+| Privacy Policy | Public `/privacy` on `niku-saas.vercel.app`. Web + mobile signup: “By continuing…”. Auth screens: muted footer. Account + mobile Profile | 2026-10-11 |
 | OTP in message log | **Not stored**; admin SMS log has no code column | 2026-10-11 |
 | Telegram webhook | Production **requires** `TELEGRAM_WEBHOOK_SECRET` or API refuses to start | 2026-10-11 |
 | Member / station QR secret | Production **requires** `MEMBER_PASS_SECRET` (not `JWT_SECRET`) | 2026-10-11 |
@@ -80,6 +80,8 @@
 - Do **not** sign member or station QR tokens with `JWT_SECRET` in production — use `MEMBER_PASS_SECRET`.
 - Do **not** return the phone number or member photo on the public check-in pass.
 - Do **not** place the Privacy Policy as a peer of Register on login — muted footer only (web and mobile). Signup keeps the “By continuing…” line.
+- Do **not** point the mobile privacy link at `vibe-frontend-coral.vercel.app`. Use `niku-saas.vercel.app`.
+- Do **not** show the member phone on dashboard Needs attention when a branch exists. Middle line is branch · plan; phone · plan only when there is no branch.
 
 ---
 
@@ -647,6 +649,51 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Privacy Policy decision index covers web and mobile.
 - **Do-not-regress:** mobile login privacy link is a muted footer, not a peer of Register.
 - **Follow-ups:** needs a new mobile build to show on phones.
+
+### 2026-10-11 — Larger Unpaid label on the member list
+
+- **Asked:** Make the Unpaid text two steps bigger.
+- **Decided / why:** The row label was 11. Two steps on this list’s type scale is 13, still under the 16 name.
+- **Shipped:** Members list `unpaid` font size 11 → 13.
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** needs a new mobile build to show on phones.
+
+### 2026-10-11 — Nudge Unpaid label left
+
+- **Asked:** Move the Unpaid text 1px from the right toward the left.
+- **Decided / why:** The label is right-aligned in the member row. A 1px right margin shifts it inward.
+- **Shipped:** Members list `unpaid` `marginRight: 1`.
+- **Styles / customs:** none
+- **Do-not-regress:** none
+- **Follow-ups:** needs a new mobile build to show on phones.
+
+### 2026-10-11 — Privacy link opens the live site
+
+- **Asked:** The mobile Privacy Policy link opened the old Vercel host and landed on sign-in.
+- **Decided / why:** `vibe-frontend-coral.vercel.app` has no deployment. `/privacy` is live on `niku-saas.vercel.app`.
+- **Shipped:** Mobile `WEB_APP_ORIGIN` and EAS `EXPO_PUBLIC_WEB_URL` point at `https://niku-saas.vercel.app`.
+- **Styles / customs:** none
+- **Do-not-regress:** mobile privacy link uses the live web host, not the retired coral URL.
+- **Follow-ups:** the APK already building will still open the old host. Rebuild after this change.
+
+### 2026-10-11 — Needs attention shows branch, not phone
+
+- **Asked:** Remove the phone from dashboard Needs attention and put the branch back.
+- **Decided / why:** The middle line was phone · plan. Plan already includes the gym tag (`Monthly · Gym`). Branch belongs there; the phone does not.
+- **Shipped:** Alert row meta is plan · branch. Expiry stays on its own line.
+- **Styles / customs:** none
+- **Do-not-regress:** Needs attention rows do not show the member phone.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-11 — Branch leads Needs attention
+
+- **Asked:** Put the branch before the plan. Gyms with no branch keep the phone.
+- **Decided / why:** The middle line was plan · branch. Branch is the locator, so it comes first. No branch name means fall back to the phone.
+- **Shipped:** Alert row meta is branch · plan, or phone · plan when `branch_name` is empty.
+- **Styles / customs:** Needs attention order updated in Do not regress.
+- **Do-not-regress:** branch before plan; phone only when there is no branch.
+- **Follow-ups:** needs a new mobile build.
 
 ---
 
