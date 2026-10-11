@@ -611,6 +611,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Do-not-regress:** none
 - **Follow-ups:** none
 
+### 2026-10-11 — Member bars fill the dashboard panel
+
+- **Asked:** Top Gyms by Members still looks like the bars are floating.
+- **Decided / why:** The zero tick was already at the bar bottoms. The chart box was a fixed height inside a taller card, so the axis sat above an empty band. Let the chart fill the card and draw the baseline.
+- **Shipped:** Admin dashboard chart area is `flex-1` (min height kept). Category axis draws a baseline; labels sit closer to it.
+- **Styles / customs:** none
+- **Do-not-regress:** admin member chart fills the panel; bars sit on the drawn baseline.
+- **Follow-ups:** visible on niku-saas after the frontend deploy.
+
 ---
 
 *Append new sessions below. Do not edit older entries except factual typo fixes.*

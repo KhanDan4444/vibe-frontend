@@ -872,11 +872,11 @@ export default function AdminDashboard() {
                   </div>
                 </Card>
 
-                <Card quiet className="app-chart-panel flex flex-col p-4 sm:p-5 md:col-span-2">
+                <Card quiet className="app-chart-panel flex h-full min-h-0 flex-col p-4 sm:p-5 md:col-span-2">
                   <h2 className={`mb-3 sm:mb-4 ${sectionTitle}`}>
                     {t('admin.topGymsByMembers')}
                   </h2>
-                  <div className="h-52 w-full min-w-0 sm:h-60 md:h-64">
+                  <div className="min-h-52 w-full min-w-0 flex-1 sm:min-h-60 md:min-h-64">
                     <Suspense
                       fallback={
                         <p className="flex h-full items-center justify-center text-sm text-app-muted">

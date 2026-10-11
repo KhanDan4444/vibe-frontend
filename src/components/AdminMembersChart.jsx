@@ -52,10 +52,11 @@ export default function AdminMembersChart({ chartData }) {
           <XAxis
             dataKey="name"
             type="category"
-            axisLine={false}
+            axisLine={{ stroke: chartTheme.grid }}
             tickLine={false}
             tick={{ fontSize: 11, fill: chartTheme.tick }}
-            tickMargin={8}
+            tickMargin={6}
+            height={28}
             interval={0}
             tickFormatter={(val) => (val.length > 10 ? `${val.substring(0, 8)}...` : val)}
           />
