@@ -2,12 +2,14 @@ import { ok, fail, firstFailure } from './result';
 import { validateRequiredName } from './names';
 import { validateUsername, validateOptionalEmail } from './auth';
 import { validatePassword, validatePasswordMatch } from './passwords';
+import { validateRequiredEthiopianPhone } from './phone';
 
 /**
  * @param {{
  *   name: string,
  *   username: string,
  *   email?: string,
+ *   phone: string,
  *   password: string,
  *   confirmPassword?: string,
  *   branchId: string|number|null|undefined,
@@ -18,6 +20,7 @@ export function validateStaffForm({
   name,
   username,
   email,
+  phone,
   password,
   confirmPassword = '',
   branchId,
@@ -34,6 +37,7 @@ export function validateStaffForm({
     branchId ? ok() : fail('validation.branchRequired', 'branchId'),
     validateUsername(username),
     validateOptionalEmail(email),
+    validateRequiredEthiopianPhone(phone),
     passwordCheck
   );
 }

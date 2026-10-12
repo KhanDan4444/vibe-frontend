@@ -18,6 +18,8 @@ import PasswordRule from './auth/PasswordRule';
 import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
+import EthiopianPhoneField from './EthiopianPhoneField';
+import { isValidEthiopianPhone } from '../utils/validation/phone';
 import SearchableSelect from './ui/SearchableSelect';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
@@ -37,6 +39,7 @@ export default function StaffModal({
 }) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [staffRole, setStaffRole] = useState(DEFAULT_STAFF_ROLE);
@@ -72,6 +75,7 @@ export default function StaffModal({
   const initDefaults = useCallback(() => {
     if (staff) {
       setName(staff.name || '');
+      setPhone(staff.phone || '');
       setEmail(staff.email || '');
       setUsername(staff.username || '');
       setStaffRole(normalizeStaffRole(staff.staff_role));
@@ -80,6 +84,7 @@ export default function StaffModal({
       setConfirmPassword('');
     } else {
       setName('');
+      setPhone('');
       setEmail('');
       setUsername('');
       setStaffRole(DEFAULT_STAFF_ROLE);
@@ -118,6 +123,7 @@ export default function StaffModal({
       name,
       username,
       email,
+      phone,
       password,
       confirmPassword,
       branchId: resolvedBranchId,
@@ -134,6 +140,7 @@ export default function StaffModal({
     };
     if (trimmedEmail) payload.email = trimmedEmail;
     else if (isEdit) payload.email = null;
+    payload.phone = phone.trim();
     if (!isEdit || password.trim()) {
       payload.password = password;
     }
@@ -145,6 +152,7 @@ export default function StaffModal({
 
   const canSubmit = Boolean(
     name.trim() &&
+      isValidEthiopianPhone(phone) &&
       username.trim() &&
       (branchId || defaultBranchId) &&
       (isEdit
@@ -269,6 +277,25 @@ export default function StaffModal({
                 />
                 <FieldError message={fieldErrorMessage(fieldErrors, 'email')} />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="staff-phone" className="form-label">
+                {t('modals.staff.phone')}
+                <RequiredMark />
+              </label>
+              <EthiopianPhoneField
+                id="staff-phone"
+                name="tel"
+                required
+                value={phone}
+                error={Boolean(fieldErrors.phone)}
+                onChange={(next) => {
+                  setPhone(next);
+                  clearFieldError(setLocalFieldErrors, 'phone');
+                }}
+              />
+              <FieldError message={fieldErrorMessage(fieldErrors, 'phone')} />
             </div>
           </div>
 

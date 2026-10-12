@@ -81,6 +81,7 @@ export default function MemberModal({
   const [trainerFee, setTrainerFee] = useState('');
   const [trainerFeeMethod, setTrainerFeeMethod] = useState('Cash');
   const [trainers, setTrainers] = useState([]);
+  const [trainersReady, setTrainersReady] = useState(false);
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const [validationError, setValidationError] = useState('');
@@ -244,19 +245,38 @@ export default function MemberModal({
   useEffect(() => {
     if (!isOpen || !apiFetch) return;
     let cancelled = false;
+    setTrainersReady(false);
     (async () => {
       try {
         const res = await listTrainers(apiFetch);
         const data = await parseApiResponse(res);
         if (!cancelled && res.ok) setTrainers(data.trainers || []);
+        else if (!cancelled) setTrainers([]);
       } catch {
         if (!cancelled) setTrainers([]);
+      } finally {
+        if (!cancelled) setTrainersReady(true);
       }
     })();
     return () => {
       cancelled = true;
     };
   }, [isOpen, apiFetch]);
+
+  const branchTrainers = useMemo(() => {
+    if (!showBranchPicker) return trainers;
+    if (!branchId) return [];
+    return trainers.filter((tr) => String(tr.branch_id) === String(branchId));
+  }, [trainers, showBranchPicker, branchId]);
+
+  useEffect(() => {
+    if (!trainersReady || !trainerId || !showBranchPicker || !branchId) return;
+    const selected = trainers.find((tr) => String(tr.id) === String(trainerId));
+    if (selected && String(selected.branch_id) !== String(branchId)) {
+      setTrainerId('');
+      setTrainerFee('');
+    }
+  }, [trainersReady, trainerId, trainers, showBranchPicker, branchId]);
 
   const markEnrollTouched = () => {
     if (!isEdit) markTouched();
@@ -576,7 +596,7 @@ export default function MemberModal({
   }));
   const trainerOptions = [
     { value: '', label: t('modals.member.noTrainer') },
-    ...trainers.map((tr) => ({
+    ...branchTrainers.map((tr) => ({
       value: String(tr.id),
       label: tr.specialty ? `${tr.name} · ${tr.specialty}` : tr.name,
     })),
@@ -632,7 +652,7 @@ export default function MemberModal({
     ) : null;
 
   const trainerSelect =
-    trainers.length === 0 ? (
+    branchTrainers.length === 0 ? (
       <p className="text-xs text-app-dim">{t('modals.member.noTrainersYet')}</p>
     ) : (
       <SearchableSelect

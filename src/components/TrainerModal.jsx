@@ -22,6 +22,7 @@ import ResponsiveModal from './ResponsiveModal';
 import Button from './ui/Button';
 import RequiredMark from './ui/RequiredMark';
 import SearchableSelect from './ui/SearchableSelect';
+import EthiopianPhoneField from './EthiopianPhoneField';
 import { modalBody, modalHeader, modalFooter } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
 
@@ -220,14 +221,14 @@ export default function TrainerModal({
               {t('modals.trainer.phone')}
               <RequiredMark />
             </label>
-            <input
-              type="tel"
+            <EthiopianPhoneField
+              id="trainer-phone"
+              name="tel"
               required
-              inputMode="tel"
-              className={fc('phone')}
               value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
+              error={Boolean(fieldErrors.phone)}
+              onChange={(next) => {
+                setPhone(next);
                 clearFieldError(setLocalFieldErrors, 'phone');
               }}
             />

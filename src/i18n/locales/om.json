@@ -320,7 +320,8 @@
       "expired": "Beeksisa dhumuu",
       "renewed": "Haaromsa mirkanaa'e",
       "enrolled": "Galmeessi mirkanaa'e",
-      "passLink": "Liinkii paasii miseensaa"
+      "passLink": "Liinkii paasii miseensaa",
+      "missedYou": "Si dhabne"
     },
     "previews": {
       "dueSoon": "Miseensa karoorri isaa akka dhihaatuuf yaadachiisa",
@@ -328,7 +329,8 @@
       "expired": "Miseensummaan akka darbe hima",
       "renewed": "Haaromsa milkaa'e mirkaneessa",
       "enrolled": "Galmeessuu mirkaneessaa fi baga nagaan dhufte jedha",
-      "passLink": "Liinkii QR galchuu erga"
+      "passLink": "Liinkii QR galchuu erga",
+      "missedYou": "Miseensa guyyaa 7 hin dhufneef akka isaan dhabne hima"
     },
     "gymTypes": {
       "dueSoon": "Hayyamni dhiyeenyatti dhumata (guyyaa 3)",
@@ -1373,6 +1375,7 @@
       "role": "Gahee",
       "roleFrontDeskHint": "Miseensota, haaromsaa, fi kaffaltii deskii fuulduraatti bulchi.",
       "name": "Maqaa guutuu",
+      "phone": "Bilbila",
       "email": "Imeelii",
       "emailOptional": "Filannoo — qunnamtii fi jechama siriitii deebisuuf.",
       "username": "Maqaa fayyadamaa",

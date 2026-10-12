@@ -31,6 +31,7 @@ const MEMBER_TYPE_KEYS = {
   member_renewed: 'smsLog.types.renewed',
   member_enrolled: 'smsLog.types.enrolled',
   member_pass_link: 'smsLog.types.passLink',
+  member_missed_you: 'smsLog.types.missedYou',
 };
 
 const MEMBER_TYPE_PREVIEW_KEYS = {
@@ -40,6 +41,7 @@ const MEMBER_TYPE_PREVIEW_KEYS = {
   member_renewed: 'smsLog.previews.renewed',
   member_enrolled: 'smsLog.previews.enrolled',
   member_pass_link: 'smsLog.previews.passLink',
+  member_missed_you: 'smsLog.previews.missedYou',
 };
 
 const GYM_LICENSE_TYPE_KEYS = {
@@ -91,6 +93,7 @@ export const SMS_TYPE_FILTER_OPTIONS = [
   { value: 'member_expired', labelKey: 'smsLog.types.expired' },
   { value: 'member_renewed', labelKey: 'smsLog.types.renewed' },
   { value: 'member_pass_link', labelKey: 'smsLog.types.passLink' },
+  { value: 'member_missed_you', labelKey: 'smsLog.types.missedYou' },
 ];
 
 export const GYM_SMS_TYPE_FILTER_OPTIONS = [
@@ -125,6 +128,8 @@ export function smsMessageTypeIcon(messageType) {
       return 'RefreshCw';
     case 'member_pass_link':
       return 'QrCode';
+    case 'member_missed_you':
+      return 'Heart';
     default:
       return 'MessageSquare';
   }

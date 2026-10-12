@@ -49,6 +49,8 @@
 | Telegram webhook | Production **requires** `TELEGRAM_WEBHOOK_SECRET` or API refuses to start | 2026-10-11 |
 | Member / station QR secret | Production **requires** `MEMBER_PASS_SECRET` (not `JWT_SECRET`) | 2026-10-11 |
 | Unpaid Change plan | Unpaid **Active** or **Due Soon** can change plan before paying. Expired unpaid pays or renews. | 2026-10-11 |
+| Trainer on member enroll | Only trainers registered on the member’s branch can be assigned | 2026-10-12 |
+| No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 
 ---
@@ -72,6 +74,7 @@
 - Do **not** count renewals as new members — use `created_at` / registration month only.
 - Do **not** treat Free Trial gyms as Unpaid or show Collect — trial → paid is Change plan.
 - Do **not** accept Ethiopian mobiles that do not start with 9 or 7 (Ethio Telecom / Safaricom).
+- Staff and trainer phone inputs use the split `+251` field, same as member phone. Staff phone is required and stored on the user. It is not a sign-in id. On mobile Add Staff and Edit staff, phone sits with name and email, before username.
 - Do **not** reintroduce email password-reset links; owner reset is SMS OTP only.
 - Do **not** use Vibe / VibeSaaS in user-facing UI or email copy — brand is **Niku** (SMS: ንቁ).
 - Do **not** hardcode the platform support phone in clients — use `SUPPORT_PHONE` / `/api/public/support`.
@@ -91,6 +94,9 @@
 - Revenue payment-method chips use the transaction card fill (`card`) and the card edge for the outline. Do not fill them with `cardEdge` or `inputBg`.
 - Unpaid members who are **Active** or **Due Soon** can change plan before paying, from **Manage** only. Collect payment stays the profile button. Expired unpaid does not get a mid-term plan switch.
 - Success and delete toasts stay up until their timer bar reaches the end. Do not dismiss them on a separate clock.
+- Mobile Revenue hero method totals match the 2026-10-08 card: a hairline above the row, then compact columns (12px icon, 11px amount, 9px name) with a hairline between methods. Four methods stay in that row. Do not wrap each method in its own tile.
+- A member can only be assigned a trainer registered on that member’s branch. Do not list trainers from other branches on enroll or edit.
+- The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
 
@@ -847,6 +853,87 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Do not regress line added.
 - **Do-not-regress:** do not close these toasts on a timer that can finish before the bar.
 - **Follow-ups:** needs a new mobile build and a web deploy.
+
+### 2026-10-12 — Revenue method tiles
+
+- **Asked:** Make the mobile Revenue card match the screenshot: period, total, payment count, then three method boxes.
+- **Decided / why:** Cash, Transfer, and Telebirr were one full-width strip with dividers. Each method should be its own rounded tile inside the card.
+- **Shipped:** `vibe-mobile/app/(tabs)/revenue.tsx` — inset tiles with icon, amount, and name.
+- **Styles / customs:** Do not regress line added.
+- **Do-not-regress:** do not replace the three tiles with an edge-to-edge method strip.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-12 — Revenue methods stay one row
+
+- **Asked:** Match the Revenue card screenshot. The boxed method tiles will not fit when a fourth payment method has money.
+- **Decided / why:** The screenshot is icon, amount, and name in one row, split by a thin vertical line. Separate tiles waste width, so four methods no longer fit.
+- **Shipped:** `vibe-mobile/app/(tabs)/revenue.tsx` — compact columns with a hairline divider. Amounts shrink to one line instead of wrapping.
+- **Styles / customs:** Do not regress line updated.
+- **Do-not-regress:** do not put each method in its own tile.
+- **Follow-ups:** needs a new mobile build. The preview build already running will not include this.
+
+### 2026-10-12 — Revenue card restored to October 8
+
+- **Asked:** Put the Revenue card back to how it was four or five days ago.
+- **Decided / why:** That card is the October 8 layout: a line under the payment count, then small method columns with a divider between them. Later tiles and larger type were not that card.
+- **Shipped:** `vibe-mobile/app/(tabs)/revenue.tsx` — method row restored to the October 8 sizes and dividers.
+- **Styles / customs:** Do not regress line updated to the October 8 card.
+- **Do-not-regress:** do not replace that row with method tiles or larger type.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-12 — Staff and trainer phone field
+
+- **Asked:** Add a phone field on staff registration, using the member `+251` input. Use that same field for trainers.
+- **Decided / why:** Members already use the split Ethiopian phone box. Staff had no phone. The website trainer form was a plain text box. The phone app trainer form already used the split field.
+- **Shipped:** `vibe/migrations/030_user_phone.sql`, `vibe/routes/gymTeam.js`, `vibe/validation/schemas.js`; web `StaffModal.jsx` and `TrainerModal.jsx`; mobile staff create and edit.
+- **Styles / customs:** Do not regress line added.
+- **Do-not-regress:** staff and trainer phones stay on the split `+251` field. Staff phone is not a login.
+- **Follow-ups:** run the migration on the API database before saving a staff phone. Needs a web deploy and a new mobile build.
+
+### 2026-10-12 — Mobile staff phone placement
+
+- **Asked:** Put the staff phone field on the phone app, in the right section of registration.
+- **Decided / why:** The split `+251` field was already on Add Staff, but it sat before the role and email was down with the login fields. It belongs with name and email, before username, same as the website form.
+- **Shipped:** `vibe-mobile/app/team/new.tsx`, `vibe-mobile/app/team/[id]/edit.tsx`.
+- **Styles / customs:** Do not regress line updated.
+- **Do-not-regress:** mobile staff phone stays with name and email, before the sign-in fields.
+- **Follow-ups:** needs a new mobile build. The preview build already running will not include this.
+
+### 2026-10-12 — Trainers listed by member branch
+
+- **Asked:** When a member is registered to a branch, the trainer list should include only trainers registered on that branch.
+- **Decided / why:** Trainers belong to one branch. Offering trainers from other branches assigns the member someone who does not work there.
+- **Shipped:** `vibe/utils/trainers.js` rejects a cross-branch assignment. Web `MemberModal.jsx` and mobile enroll and member edit filter the picker. Changing branch clears a trainer who is not on the new branch.
+- **Styles / customs:** Decision index + Do not regress updated.
+- **Do-not-regress:** do not list or save a trainer from a different branch than the member.
+- **Follow-ups:** needs an API deploy, a web deploy, and a new mobile build.
+
+### 2026-10-12 — We missed you on Telegram
+
+- **Asked:** Send a Telegram “we have missed you” message to members who did not come in the past 7 days.
+- **Decided / why:** No visit already finds those members, but nothing wrote to them. Member notices stay on Telegram. One message per quiet streak, so staying away does not send a new text every morning. A later visit starts a new streak.
+- **Shipped:** `vibe/jobs/expiryCheck.js`, `vibe/utils/notificationSms.js`; message log labels on web and mobile; `MESSAGE_CATALOG.md`.
+- **Styles / customs:** Decision index + Do not regress updated.
+- **Do-not-regress:** Telegram only, once per quiet streak. Copy is `Hi {name}, we have missed you at {gym}.`
+- **Follow-ups:** needs an API deploy. The first daily run after deploy messages everyone who already qualifies and has Telegram linked.
+
+### 2026-10-12 — Missed-you message includes the day count
+
+- **Asked:** Put the No visit day count in the Telegram message, and keep the “don’t lose your progress” line.
+- **Decided / why:** The list already counts days since the last check-in. The notice should use that same number, with clearer sentences than the first draft.
+- **Shipped:** `vibe/utils/notificationSms.js`, `vibe/jobs/expiryCheck.js`.
+- **Styles / customs:** Decision index and Do not regress copy updated.
+- **Do-not-regress:** the day count in the notice is the No visit count.
+- **Follow-ups:** needs an API deploy.
+
+### 2026-10-12 — Missed-you repeats each week away
+
+- **Asked:** On a second week of not coming, the Telegram notice should include the new day count.
+- **Decided / why:** One message per quiet stretch left the count stuck at the first week. Each further 7 days away gets the same notice again, with the No visit day count as it is that day.
+- **Shipped:** `vibe/jobs/expiryCheck.js`.
+- **Styles / customs:** Decision index and Do not regress updated.
+- **Do-not-regress:** repeat every 7 days away, not every day, and not only once.
+- **Follow-ups:** needs an API deploy.
 
 ---
 

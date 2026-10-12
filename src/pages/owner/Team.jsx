@@ -180,7 +180,7 @@ export default function Team() {
   const displayedStaff = useMemo(() => {
     if (!searchNeedle) return visibleStaff;
     return visibleStaff.filter((member) =>
-      [member.name, member.email, member.username, member.branch_name]
+      [member.name, member.email, member.phone, member.username, member.branch_name]
         .some((value) => String(value || '').toLowerCase().includes(searchNeedle))
     );
   }, [visibleStaff, searchNeedle]);
@@ -530,7 +530,7 @@ export default function Team() {
               <div className="overflow-x-auto">
                 <table className="admin-data-table">
                   <tbody>
-                    <AdminTableRowsSkeleton rows={5} cols={5} />
+                    <AdminTableRowsSkeleton rows={5} cols={6} />
                   </tbody>
                 </table>
               </div>
@@ -565,7 +565,10 @@ export default function Team() {
                       <InitialsAvatar name={member.name} size="sm" />
                       <div className="min-w-0">
                         <p className="font-medium text-app-text-strong">{member.name}</p>
-                        <p className="mt-0.5 text-sm text-app-muted">{member.email}</p>
+                        <p className="mt-0.5 text-sm text-app-muted">{member.phone || member.email || '—'}</p>
+                        {member.phone && member.email ? (
+                          <p className="mt-0.5 text-sm text-app-muted">{member.email}</p>
+                        ) : null}
                         {member.username && (
                           <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
                         )}
@@ -609,6 +612,7 @@ export default function Team() {
                 <tr>
                   <th>{t('table.name')}</th>
                   {multiBranch ? <th>{t('table.branch')}</th> : null}
+                  <th>{t('table.phone')}</th>
                   <th>{t('table.email')}</th>
                   <th>{t('account.username')}</th>
                   <th>{t('table.status')}</th>
@@ -627,7 +631,8 @@ export default function Team() {
                     {multiBranch ? (
                       <td className="truncate text-app-text">{branchLabel(member.branch_name)}</td>
                     ) : null}
-                    <td className="truncate text-app-text">{member.email}</td>
+                    <td className="truncate text-app-text">{member.phone || '—'}</td>
+                    <td className="truncate text-app-text">{member.email || '—'}</td>
                     <td className="truncate text-app-text">{member.username || '—'}</td>
                     <td>
                       <span

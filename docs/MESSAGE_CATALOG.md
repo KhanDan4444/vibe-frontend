@@ -24,6 +24,7 @@ Placeholders: `{name}` `{gym}` `{plan}` `{date}` `{code}` `{otp}`.
 | Type | Template |
 |---|---|
 | Due soon | `Hi {name}, your membership at {gym} ends on {date}.` |
+| We missed you | `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` `{days}` is the same count as No visit (since the last check-in, or since the term started if they never checked in). One day uses “the past day”. Sent to Telegram-linked members on the No visit list, then again every 7 days they still stay away, with the day count updated. |
 | Expires today | `Hi {name}, your membership at {gym} expires today. Renew at the front desk to stay active.` |
 | Expired | `Hi {name}, your membership at {gym} has expired. Contact the gym to renew.` |
 | Renewed | `Hi {name}, your membership at {gym} has been renewed. New term ends on {date}. Thank you!` (+ optional pass button) |
