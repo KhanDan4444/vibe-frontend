@@ -148,9 +148,9 @@ export default function Team() {
   const [toggleTarget, setToggleTarget] = useState(null);
 
   const [trainers, setTrainers] = useState([]);
+  const [liveTrainerRows, setLiveTrainerRows] = useState([]);
   const [trainersLoading, setTrainersLoading] = useState(true);
   const [archivedTrainerTotal, setArchivedTrainerTotal] = useState(0);
-  const [liveTrainerTotal, setLiveTrainerTotal] = useState(0);
   const [trainerModal, setTrainerModal] = useState({ isOpen: false, trainer: null });
   const [trainerSaving, setTrainerSaving] = useState(false);
   const [trainerModalError, setTrainerModalError] = useState('');
@@ -165,6 +165,12 @@ export default function Team() {
     if (selectedBranchId === 'all') return trainers;
     return trainers.filter((row) => String(row.branch_id) === String(selectedBranchId));
   }, [trainers, selectedBranchId]);
+
+  const trainerTabCount = useMemo(() => {
+    const source = showingFormerTrainers ? liveTrainerRows : trainers;
+    if (selectedBranchId === 'all') return source.length;
+    return source.filter((row) => String(row.branch_id) === String(selectedBranchId)).length;
+  }, [showingFormerTrainers, liveTrainerRows, trainers, selectedBranchId]);
 
   const defaultBranchName =
     branches.find((b) => b.is_default)?.name ||
@@ -217,16 +223,16 @@ export default function Team() {
       if (!res.ok) {
         setTrainers([]);
         setArchivedTrainerTotal(0);
-        if (!showingFormerTrainers) setLiveTrainerTotal(0);
+        if (!showingFormerTrainers) setLiveTrainerRows([]);
         return;
       }
       setTrainers(data.trainers || []);
       setArchivedTrainerTotal(data.archivedTotal ?? 0);
-      if (!showingFormerTrainers) setLiveTrainerTotal((data.trainers || []).length);
+      if (!showingFormerTrainers) setLiveTrainerRows(data.trainers || []);
     } catch {
       setTrainers([]);
       setArchivedTrainerTotal(0);
-      if (!showingFormerTrainers) setLiveTrainerTotal(0);
+      if (!showingFormerTrainers) setLiveTrainerRows([]);
     } finally {
       setTrainersLoading(false);
     }
@@ -456,7 +462,7 @@ export default function Team() {
             <TeamSegment>
               <ToolbarChip
                 label={t('pages.team.tabStaff')}
-                count={staff.length}
+                count={visibleStaff.length}
                 active={tab === 'staff'}
                 onClick={() => {
                   setTab('staff');
@@ -466,7 +472,7 @@ export default function Team() {
               />
               <ToolbarChip
                 label={t('pages.team.tabTrainers')}
-                count={liveTrainerTotal}
+                count={trainerTabCount}
                 active={tab === 'trainers' && !showingFormerTrainers}
                 onClick={() => {
                   setTab('trainers');

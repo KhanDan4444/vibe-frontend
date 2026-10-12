@@ -935,6 +935,24 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Do-not-regress:** repeat every 7 days away, not every day, and not only once.
 - **Follow-ups:** needs an API deploy.
 
+### 2026-10-12 — Team branch counts follow the selected branch
+
+- **Asked:** Staff and trainer filters should be specific to the selected branch. Every branch still showed the same count of three.
+- **Decided / why:** The table already hid other branches. The Staff and Trainers counts stayed on the whole gym, so the filter looked unchanged.
+- **Shipped:** `vibe-frontend/src/pages/owner/Team.jsx`.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-12 — Mobile team counts follow the branch
+
+- **Asked:** Make the phone app Team branch filter specific to the selected branch, same as the website.
+- **Decided / why:** Staff and trainer lists and their counts already used the selected branch. The Former trainer count was still the whole gym.
+- **Shipped:** `vibe-mobile/app/team/index.tsx`.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** needs a new mobile build. The preview build already running will not include this.
+
 ---
 
 *Append new sessions below. Do not edit older entries except factual typo fixes.*
