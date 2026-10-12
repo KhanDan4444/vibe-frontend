@@ -1060,6 +1060,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Do-not-regress:** one Trainer fee label, right-aligned amounts, quiet zero.
 - **Follow-ups:** needs a web deploy and a new mobile build.
 
+### 2026-10-13 — Trainer member modal is wider
+
+- **Asked:** Make the trainer member modal a bit wider.
+- **Decided / why:** The narrow dialog cut off phone and plan on each row. One step up to the 2xl dialog gives the name line room without making it a full-page panel.
+- **Shipped:** `TrainerMembersModal.jsx` size `lg` → `2xl`.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** needs a web deploy.
+
 ---
 
 *Append new sessions below. Do not edit older entries except factual typo fixes.*

@@ -55,7 +55,7 @@ export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
   );
 
   return (
-    <ResponsiveModal open={Boolean(trainer)} onClose={onClose} size="lg" labelledBy="trainer-members-title">
+    <ResponsiveModal open={Boolean(trainer)} onClose={onClose} size="2xl" labelledBy="trainer-members-title">
       <div className={`${modalHeader} flex items-start justify-between gap-3`}>
         <div className="min-w-0">
           <h2 id="trainer-members-title" className={modalTitle}>
