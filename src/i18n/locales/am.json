@@ -1516,7 +1516,8 @@
       "assignedMembers": "{{count}} አባላት",
       "assignedMembers_one": "1 አባል",
       "trainerMembersEmptyTitle": "የተመደቡ አባላት የሉም",
-      "trainerMembersEmptyBody": "ከዚህ አሰልጣኝ ጋር የሚሰሩ አባላት እዚህ ይታያሉ።"
+      "trainerMembersEmptyBody": "ከዚህ አሰልጣኝ ጋር የሚሰሩ አባላት እዚህ ይታያሉ።",
+      "trainerPaid": "የአሰልጣኝ ክፍያ"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",

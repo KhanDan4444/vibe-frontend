@@ -459,9 +459,9 @@ export default function Branches() {
               </div>
               <div className={`hidden overflow-hidden lg:block ${cardSurface}`}>
                 <div className="overflow-x-auto">
-                  <table className="admin-data-table">
+                  <table className="admin-data-table owner-branches-table min-w-[780px]">
                     <tbody>
-                      <AdminTableRowsSkeleton rows={4} cols={colCount} />
+                      <AdminTableRowsSkeleton rows={4} cols={colCount} even />
                     </tbody>
                   </table>
                 </div>

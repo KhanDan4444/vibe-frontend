@@ -1096,7 +1096,8 @@
       "assignedMembers": "{{count}} members",
       "assignedMembers_one": "1 member",
       "trainerMembersEmptyTitle": "No members assigned",
-      "trainerMembersEmptyBody": "Members training with this trainer show up here."
+      "trainerMembersEmptyBody": "Members training with this trainer show up here.",
+      "trainerPaid": "Trainer fee"
     },
     "activity": {
       "title": "Activity",

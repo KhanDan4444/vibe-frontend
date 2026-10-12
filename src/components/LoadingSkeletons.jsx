@@ -1,7 +1,7 @@
 import React from 'react';
 import { cardSurface } from '../utils/surfaceClasses';
 
-export function AdminTableRowsSkeleton({ rows = 6, cols = 5 }) {
+export function AdminTableRowsSkeleton({ rows = 6, cols = 5, even = false }) {
   return (
     <>
       {Array.from({ length: rows }).map((_, row) => (
@@ -9,9 +9,13 @@ export function AdminTableRowsSkeleton({ rows = 6, cols = 5 }) {
           {Array.from({ length: cols }).map((__, col) => (
             <td key={col}>
               <div
-                className={`app-skeleton h-4 ${
-                  col === 0 ? 'w-36' : col === cols - 1 ? 'ml-auto w-16' : 'w-24'
-                }`}
+                className={
+                  even
+                    ? `app-skeleton inline-block h-4 max-w-full ${col === 0 ? 'w-[70%]' : 'w-1/2'}`
+                    : `app-skeleton h-4 ${
+                        col === 0 ? 'w-36' : col === cols - 1 ? 'ml-auto w-16' : 'w-24'
+                      }`
+                }
               />
             </td>
           ))}

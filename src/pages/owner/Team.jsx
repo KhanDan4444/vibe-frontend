@@ -192,6 +192,7 @@ export default function Team() {
     'Main';
 
   const multiBranch = branches.filter((b) => b.is_active !== false).length > 1;
+  const teamColCount = (multiBranch ? 6 : 5) - (readOnly ? 1 : 0);
   const branchLabel = (name) => name || defaultBranchName;
 
   const searchNeedle = searchQuery.trim().toLowerCase();
@@ -547,9 +548,9 @@ export default function Team() {
             </div>
             <Card className="hidden overflow-hidden lg:block">
               <div className="overflow-x-auto">
-                <table className="admin-data-table">
+                <table className="admin-data-table owner-team-table min-w-[720px]">
                   <tbody>
-                    <AdminTableRowsSkeleton rows={5} cols={6} />
+                    <AdminTableRowsSkeleton rows={5} cols={teamColCount} even />
                   </tbody>
                 </table>
               </div>
@@ -700,9 +701,22 @@ export default function Team() {
               />
             </Card>
           ) : trainersLoading ? (
-            <Card className="overflow-hidden">
-              <TeamListSkeleton rows={5} />
-            </Card>
+            <>
+              <div className="lg:hidden">
+                <Card className="overflow-hidden">
+                  <TeamListSkeleton rows={5} />
+                </Card>
+              </div>
+              <Card className="hidden overflow-hidden lg:block">
+                <div className="overflow-x-auto">
+                  <table className="admin-data-table owner-team-table min-w-[640px]">
+                    <tbody>
+                      <AdminTableRowsSkeleton rows={5} cols={teamColCount} even />
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+            </>
           ) : displayedTrainers.length === 0 ? (
             <Card className="overflow-hidden">
               <EmptyState

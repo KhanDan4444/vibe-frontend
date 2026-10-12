@@ -1080,7 +1080,8 @@
       "assignedMembers": "Miseensota {{count}}",
       "assignedMembers_one": "Miseensa 1",
       "trainerMembersEmptyTitle": "Miseensonni ramadaman hin jiran",
-      "trainerMembersEmptyBody": "Miseensonni leenjisticha waliin hojjetan asitti mul'atu."
+      "trainerMembersEmptyBody": "Miseensonni leenjisticha waliin hojjetan asitti mul'atu.",
+      "trainerPaid": "Kaffaltii leenjistaa"
     },
     "activity": {
       "title": "Sosocho'iinsota",

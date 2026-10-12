@@ -12,6 +12,7 @@ import InitialsAvatar from './InitialsAvatar';
 import StatusBadge from './StatusBadge';
 import { modalBody, modalHeader } from '../utils/modalLayout';
 import { modalTitle } from '../utils/surfaceClasses';
+import { formatMoneyShort } from '../utils/formatMoney';
 
 export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
   const { t } = useTranslation();
@@ -106,6 +107,10 @@ export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-1">
                     <StatusBadge status={member.status} />
+                    <span className="text-sm font-semibold tabular-nums text-app-text-strong">
+                      {formatMoneyShort(member.trainer_paid)}
+                    </span>
+                    <span className="text-xs text-app-muted">{t('pages.team.trainerPaid')}</span>
                     {member.is_unpaid ? (
                       <span className="text-xs font-medium text-app-muted">{t('status.unpaid')}</span>
                     ) : null}
