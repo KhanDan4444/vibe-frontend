@@ -115,6 +115,8 @@
     "activeGyms": "ንቁ ጂሞች",
     "activeMembers": "ንቁ አባላት",
     "activeMembersCount": "{{count}} ንቁ አባላት",
+    "branchCount_one": "1 ቅርንጫፍ",
+    "branchCount_other": "{{count}} ቅርንጫፎች",
     "activeOnly": "ንቁ ብቻ",
     "activeStatus": "የንቁ ሁኔታ",
     "addGymFab": "አዲስ ጂም ይመዝግቡ",
@@ -845,6 +847,8 @@
       "statExpired": "ጊዜው ያለፈበት",
       "statPlans": "የአባልነት ዕቅዶች",
       "statBranches": "ቅርንጫፎች",
+      "branchMembers_one": "1 አባል",
+      "branchMembers_other": "{{count}} አባላት",
       "alertPaidRenew": "እስከ {{date}} ተከፍሏል። ፈቃዱ ሲያልቅ \"ያድሱ\" የሚለውን ይጠቀሙ።",
       "alertPaidChangeOrRenew": "እስከ {{date}} ተከፍሏል። በጊዜያት መካከል ለመቀየር \"ዕቅድ ቀይር\"ን ይጠቀሙ፣ ወይም ፈቃዱ ሲያልቅ ያድሱ።",
       "alertPaidThrough": "እስከ {{date}} ተከፍሏል።",
@@ -1510,7 +1514,9 @@
       "emptySearchTitle": "ምንም አልተገኘም",
       "emptySearchBody": "ሌላ ስም ይሞክሩ፣ ወይም ፍለጋውን ያጽዱ።",
       "assignedMembers": "{{count}} አባላት",
-      "assignedMembers_one": "1 አባል"
+      "assignedMembers_one": "1 አባል",
+      "trainerMembersEmptyTitle": "የተመደቡ አባላት የሉም",
+      "trainerMembersEmptyBody": "ከዚህ አሰልጣኝ ጋር የሚሰሩ አባላት እዚህ ይታያሉ።"
     },
     "dashboard": {
       "activePercent": "{{percent}}% ንቁ",
@@ -1792,6 +1798,7 @@
     "location": "ቦታ",
     "member": "አባል",
     "members": "አባላት",
+    "branches": "ቅርንጫፎች",
     "method": "ዘዴ",
     "name": "ሙሉ ስም",
     "owner": "ባለቤት",

@@ -25,3 +25,7 @@ export function archiveTrainer(apiFetch, trainerId) {
 export function restoreTrainer(apiFetch, trainerId) {
   return apiFetch(`/gym/trainers/${trainerId}/restore`, { method: 'POST' });
 }
+
+export function listTrainerMembers(apiFetch, trainerId) {
+  return apiFetch(`/gym/trainers/${trainerId}/members`);
+}

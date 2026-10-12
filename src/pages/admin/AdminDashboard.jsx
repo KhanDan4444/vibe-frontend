@@ -1075,6 +1075,8 @@ export default function AdminDashboard() {
                                   </div>
                                   <p className="mt-1 text-xs text-app-muted">
                                     {t('admin.activeMembersCount', { count: Number(gym.active_member_count ?? 0) })}
+                                    {' · '}
+                                    {t('admin.branchCount', { count: Number(gym.branch_count ?? 0) })}
                                   </p>
                                 </div>
                               </div>
@@ -1135,13 +1137,14 @@ export default function AdminDashboard() {
                           <th>{t('table.owner')}</th>
                           <th>{t('table.saasPlan')}</th>
                           <th>{t('table.members')}</th>
+                          <th>{t('table.branches')}</th>
                           <th>{t('table.status')}</th>
                           <th className="text-right">{t('table.actions')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {loading && gyms.length === 0 ? (
-                          <AdminTableRowsSkeleton rows={8} cols={6} />
+                          <AdminTableRowsSkeleton rows={8} cols={7} />
                         ) : displayedGyms.length > 0 ? (
                           displayedGyms.map((gym) => {
                             const isUnpaid = gym.isUnpaid;
@@ -1172,6 +1175,12 @@ export default function AdminDashboard() {
                                 </span>
                               </td>
                               <td>
+                                <span className="inline-flex items-center gap-1.5 text-sm text-app-text">
+                                  <Building2 className="h-3.5 w-3.5 shrink-0 text-app-muted" />
+                                  {Number(gym.branch_count ?? 0)}
+                                </span>
+                              </td>
+                              <td>
                                 <div className="flex flex-wrap items-center gap-1.5">
                                   <StatusBadge status={showingFormer ? 'Former' : gym.subscription_status} />
                                   {isUnpaid && !showingFormer && !isGymOnTrial(gym) && <UnpaidBadge />}
@@ -1195,7 +1204,7 @@ export default function AdminDashboard() {
                           })
                         ) : (
                           <tr>
-                            <td colSpan={6} className="p-0">
+                            <td colSpan={7} className="p-0">
                               <EmptyState
                                 icon={AlertCircle}
                                 compact

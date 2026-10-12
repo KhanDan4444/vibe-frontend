@@ -14,6 +14,7 @@ import {
 } from '../../services/trainerService';
 import StaffModal from '../../components/StaffModal';
 import TrainerModal from '../../components/TrainerModal';
+import TrainerMembersModal from '../../components/TrainerMembersModal';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import EmptyState from '../../components/EmptyState';
 import PageHeader from '../../components/PageHeader';
@@ -155,6 +156,7 @@ export default function Team() {
   const [trainerSaving, setTrainerSaving] = useState(false);
   const [trainerModalError, setTrainerModalError] = useState('');
   const [trainerToArchive, setTrainerToArchive] = useState(null);
+  const [membersTrainer, setMembersTrainer] = useState(null);
 
   const visibleStaff = useMemo(() => {
     if (selectedBranchId === 'all') return staff;
@@ -723,7 +725,11 @@ export default function Team() {
             <>
               <div className="lg:hidden space-y-3">
                 {displayedTrainers.map((trainer) => (
-                  <div key={trainer.id} className={`${cardSurface} p-4`}>
+                  <div
+                    key={trainer.id}
+                    onClick={() => setMembersTrainer(trainer)}
+                    className={`${cardSurface} cursor-pointer p-4`}
+                  >
                     <div className="flex items-start gap-3">
                       <InitialsAvatar name={trainer.name} size="sm" />
                       <div className="min-w-0 flex-1">
@@ -742,7 +748,7 @@ export default function Team() {
                         </p>
                       </div>
                     </div>
-                    <div className="mt-3">
+                    <div className="mt-3" onClick={(event) => event.stopPropagation()}>
                       <TrainerRowActions
                         trainer={trainer}
                         readOnly={readOnly}
@@ -774,7 +780,11 @@ export default function Team() {
                     </thead>
                     <tbody>
                       {displayedTrainers.map((trainer) => (
-                        <tr key={trainer.id} className={tableRowHover}>
+                        <tr
+                          key={trainer.id}
+                          className={`${tableRowHover} cursor-pointer`}
+                          onClick={() => setMembersTrainer(trainer)}
+                        >
                           <td>
                             <div className="flex min-w-0 items-center gap-3">
                               <InitialsAvatar name={trainer.name} size="sm" />
@@ -792,7 +802,7 @@ export default function Team() {
                             {t('pages.team.assignedMembers', { count: trainer.member_count ?? 0 })}
                           </td>
                           {!readOnly && (
-                            <td>
+                            <td onClick={(event) => event.stopPropagation()}>
                               <TrainerRowActions
                                 trainer={trainer}
                                 readOnly={readOnly}
@@ -826,6 +836,13 @@ export default function Team() {
         onSubmit={modalState.member ? handleUpdate : handleCreate}
         saving={saving}
         error={modalError}
+      />
+
+      <TrainerMembersModal
+        key={membersTrainer?.id ?? 'closed'}
+        trainer={membersTrainer}
+        showBranch={multiBranch}
+        onClose={() => setMembersTrainer(null)}
       />
 
       <TrainerModal

@@ -443,6 +443,29 @@ export default function GymDetailsModal({
                   </div>
                 ))}
               </div>
+              {Array.isArray(gymDetail.branches) && gymDetail.branches.length > 0 ? (
+                <SlidePanelList>
+                  {gymDetail.branches.map((branch) => {
+                    const notes = [
+                      branch.is_default ? t('pages.branches.defaultBranch') : null,
+                      branch.is_active ? null : t('common.inactive'),
+                    ].filter(Boolean);
+                    return (
+                      <SlidePanelListItem
+                        key={branch.id}
+                        icon={Building2}
+                        title={branch.name}
+                        subtitle={notes.join(' · ') || undefined}
+                        trailing={
+                          <span className="shrink-0 text-sm font-semibold tabular-nums text-app-text-strong">
+                            {t('modals.gymDetails.branchMembers', { count: Number(branch.member_count ?? 0) })}
+                          </span>
+                        }
+                      />
+                    );
+                  })}
+                </SlidePanelList>
+              ) : null}
             </SlidePanelSection>
 
             <SlidePanelSection title={t('modals.gymDetails.paymentHistory')}>

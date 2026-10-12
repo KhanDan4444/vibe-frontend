@@ -224,6 +224,8 @@
     "suspendedOnly": "Suspended only",
     "expiredOnly": "Expired only",
     "activeMembersCount": "{{count}} active members",
+    "branchCount_one": "1 branch",
+    "branchCount_other": "{{count}} branches",
     "collectPaymentActiveOnly": "Collect payment is only for active gyms registered without paying.",
     "useChangePlanForTrial": "Free Trial gyms have no payment to collect. Use Change plan to put them on a paid plan.",
     "useRenewForLicense": "Use Renew for license extensions. Renewal records the payment too.",
@@ -632,6 +634,7 @@
     "details": "Details",
     "licenseEnd": "License end",
     "members": "Members",
+    "branches": "Branches",
     "saasPlan": "SaaS plan",
     "duration": "Duration",
     "price": "Price",
@@ -1091,7 +1094,9 @@
       "emptySearchTitle": "No matches",
       "emptySearchBody": "Try a different name, or clear the search.",
       "assignedMembers": "{{count}} members",
-      "assignedMembers_one": "1 member"
+      "assignedMembers_one": "1 member",
+      "trainerMembersEmptyTitle": "No members assigned",
+      "trainerMembersEmptyBody": "Members training with this trainer show up here."
     },
     "activity": {
       "title": "Activity",
@@ -1549,6 +1554,8 @@
       "statExpired": "Expired",
       "statPlans": "Membership plans",
       "statBranches": "Branches",
+      "branchMembers_one": "1 member",
+      "branchMembers_other": "{{count}} members",
       "alertPaidRenew": "Paid through {{date}}. Use Renew when the license ends.",
       "alertPaidChangeOrRenew": "Paid through {{date}}. Use Change plan to switch mid-term, or Renew when the license ends.",
       "alertPaidThrough": "Paid through {{date}}.",

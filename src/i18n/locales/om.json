@@ -222,6 +222,8 @@
     "suspendedOnly": "Kan Dhaabbatan Qofa",
     "expiredOnly": "Kan Dhumatan Qofa",
     "activeMembersCount": "Miseensota si'aawaa {{count}}",
+    "branchCount_one": "Damee 1",
+    "branchCount_other": "Dameewwan {{count}}",
     "collectPaymentActiveOnly": "Kaffaltii sassaabuun jimiilee si'aawaa kan kaffaltii malee galmaa'aniif qofa.",
     "useChangePlanForTrial": "Jimiileen Free Trial kaffaltii sassaabamu hin qaban. Karoora kaffaltii qabuuf 'Karoora jijjiiri' fayyadamaa.",
     "useRenewForLicense": "Dheereffama hayyamaatiif 'Haaromsi' fayyadamaa. Haaromsuun kaffaltiis ni galmeessa.",
@@ -617,6 +619,7 @@
     "details": "Bal'ina",
     "licenseEnd": "Dhuma hayyamaa",
     "members": "Miseensota",
+    "branches": "Dameewwan",
     "saasPlan": "Kaffaltii SaaS",
     "duration": "Turtii",
     "price": "Gatii",
@@ -1075,7 +1078,9 @@
       "emptySearchTitle": "Wal qabsiisuun hin jiru",
       "emptySearchBody": "Maqaa biraa yaali, ykn barbaacha haqi.",
       "assignedMembers": "Miseensota {{count}}",
-      "assignedMembers_one": "Miseensa 1"
+      "assignedMembers_one": "Miseensa 1",
+      "trainerMembersEmptyTitle": "Miseensonni ramadaman hin jiran",
+      "trainerMembersEmptyBody": "Miseensonni leenjisticha waliin hojjetan asitti mul'atu."
     },
     "activity": {
       "title": "Sosocho'iinsota",
@@ -1519,6 +1524,8 @@
       "statExpired": "Kan darbe",
       "statPlans": "Karoora miseensummaa",
       "statBranches": "Dameewwan",
+      "branchMembers_one": "Miseensa 1",
+      "branchMembers_other": "Miseensota {{count}}",
       "alertPaidRenew": "{{date}} hanga kaffalameera. Yeroo eeyyamni dhumu Haaromsi fayyadami.",
       "alertPaidChangeOrRenew": "{{date}} hanga kaffalameera. Walakkaa yeroo jijjiiruuf Karoora Jijjiiri, ykn yeroo eeyyamni dhumu Haaromsi fayyadami.",
       "alertPaidThrough": "{{date}} hanga kaffalameera.",
