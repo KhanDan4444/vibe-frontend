@@ -88,37 +88,52 @@ export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
             body={t('pages.team.trainerMembersEmptyBody')}
           />
         ) : (
-          <ul className="divide-y divide-app-border-subtle">
-            {members.map((member) => (
-              <li key={member.id}>
-                <button
-                  type="button"
-                  onClick={() => openMember(member.id)}
-                  className="flex w-full items-center gap-3 rounded-xl px-1 py-3 text-left hover:bg-app-surface"
-                >
-                  <InitialsAvatar name={member.name} size="sm" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-app-text-strong">{member.name}</p>
-                    <p className="truncate text-sm text-app-muted">
-                      {member.phone || '—'}
-                      {member.plan_name ? ` · ${member.plan_name}` : ''}
-                      {showBranch && member.branch_name ? ` · ${member.branch_name}` : ''}
-                    </p>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-end gap-1">
-                    <StatusBadge status={member.status} />
-                    <span className="text-sm font-semibold tabular-nums text-app-text-strong">
-                      {formatMoneyShort(member.trainer_paid)}
-                    </span>
-                    <span className="text-xs text-app-muted">{t('pages.team.trainerPaid')}</span>
-                    {member.is_unpaid ? (
-                      <span className="text-xs font-medium text-app-muted">{t('status.unpaid')}</span>
-                    ) : null}
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <>
+            <div className="flex justify-end px-1 pb-1">
+              <span className="min-w-[6.75rem] text-right text-xs font-medium text-app-muted">
+                {t('pages.team.trainerPaid')}
+              </span>
+            </div>
+            <ul className="divide-y divide-app-border-subtle">
+              {members.map((member) => {
+                const paid = Number(member.trainer_paid) > 0;
+                return (
+                  <li key={member.id}>
+                    <button
+                      type="button"
+                      onClick={() => openMember(member.id)}
+                      className="flex w-full items-center gap-3 rounded-xl px-1 py-3 text-left hover:bg-app-surface"
+                    >
+                      <InitialsAvatar name={member.name} size="sm" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-app-text-strong">{member.name}</p>
+                        <p className="truncate text-sm text-app-muted">
+                          {member.phone || '—'}
+                          {member.plan_name ? ` · ${member.plan_name}` : ''}
+                          {showBranch && member.branch_name ? ` · ${member.branch_name}` : ''}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 flex-col items-end gap-1">
+                        <StatusBadge status={member.status} />
+                        {member.is_unpaid ? (
+                          <span className="text-xs font-medium text-app-muted">{t('status.unpaid')}</span>
+                        ) : null}
+                      </div>
+                      <span
+                        className={`min-w-[6.75rem] shrink-0 whitespace-nowrap text-right text-sm tabular-nums ${
+                          paid
+                            ? 'font-semibold text-app-text-strong'
+                            : 'font-medium text-app-muted'
+                        }`}
+                      >
+                        {formatMoneyShort(member.trainer_paid)}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </>
         )}
       </div>
     </ResponsiveModal>

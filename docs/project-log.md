@@ -107,7 +107,7 @@
 - Opening an admin gym lists each branch with its own live member count. A new branch starts at 0. The table Members number stays the gym-wide active total.
 - The gym Branches table shows a live trainer count beside Staff. Former trainers are left out of that count.
 - The Team staff list does not show an email column. Email stays on the staff form.
-- A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership.
+- A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
@@ -176,7 +176,7 @@
 - Admin Gyms table: branch count sits beside Members. Same active-branch count as the gym detail Branches stat. Opening a gym lists each branch with its own live member count.
 - Gym Branches table: live trainer count sits beside Staff. Former trainers are not included.
 - Team staff list does not show email. Email stays on the add and edit staff form.
-- Trainer member list: each row shows the sum of that member’s trainer-fee payments. Membership payments stay out of that figure.
+- Trainer member list: each row shows the sum of that member’s trainer-fee payments. Membership payments stay out of that figure. Trainer fee is labeled once, in a right-aligned column. 0 ETB stays quiet.
 - Roles: Platform Admin (web only), Gym Owner, Front Desk (legacy Help Desk / Gym Staff).
 - License: `active` → `suspended` (read-only) → `expired` (lockout).
 - v1 signup: OTP + city + optional address → **default SaaS plan**, no payment, **no trial**.
@@ -1050,6 +1050,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** none.
 - **Do-not-regress:** none.
 - **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Trainer fee column is easier to scan
+
+- **Asked:** Improve the trainer member list so the fees are easier to read.
+- **Decided / why:** Repeating “Trainer fee” on every row and letting amounts wrap made the money hard to scan. One header, one right-aligned column. Paid amounts stay bright. 0 ETB stays quiet.
+- **Shipped:** web `TrainerMembersModal.jsx`; mobile trainer members screen.
+- **Styles / customs:** Do not regress and Standing product updated.
+- **Do-not-regress:** one Trainer fee label, right-aligned amounts, quiet zero.
+- **Follow-ups:** needs a web deploy and a new mobile build.
 
 ---
 
