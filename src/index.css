@@ -907,64 +907,10 @@
     vertical-align: middle;
   }
 
-  .owner-team-table th:nth-child(1),
-  .owner-team-table td:nth-child(1) {
-    width: 18%;
-  }
-
-  .owner-team-table th:nth-child(2),
-  .owner-team-table td:nth-child(2) {
-    width: 14%;
-  }
-
-  .owner-team-table th:nth-child(3),
-  .owner-team-table td:nth-child(3) {
-    width: 22%;
-  }
-
-  .owner-team-table th:nth-child(4),
-  .owner-team-table td:nth-child(4) {
-    width: 14%;
-  }
-
-  .owner-team-table th:nth-child(5),
-  .owner-team-table td:nth-child(5) {
-    width: 12%;
-  }
-
-  .owner-team-table th:nth-child(6),
-  .owner-team-table td:nth-child(6) {
-    width: 20%;
-  }
-
-  .owner-branches-table th:nth-child(1),
-  .owner-branches-table td:nth-child(1) {
-    width: 26%;
-  }
-
-  .owner-branches-table th:nth-child(2),
-  .owner-branches-table td:nth-child(2) {
-    width: 12%;
-  }
-
-  .owner-branches-table th:nth-child(3),
-  .owner-branches-table td:nth-child(3) {
-    width: 12%;
-  }
-
-  .owner-branches-table th:nth-child(4),
-  .owner-branches-table td:nth-child(4) {
-    width: 12%;
-  }
-
-  .owner-branches-table th:nth-child(5),
-  .owner-branches-table td:nth-child(5) {
-    width: 14%;
-  }
-
-  .owner-branches-table th:nth-child(6),
-  .owner-branches-table td:nth-child(6) {
-    width: 24%;
+  /* Equal shares. table-fixed divides unspecified columns evenly. */
+  .owner-branches-table .admin-row-actions,
+  .owner-team-table .admin-row-actions {
+    justify-content: flex-start;
   }
 
   /* Members table: auto layout so Status/Duration never overlap under table-fixed squeeze. */

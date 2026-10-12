@@ -574,7 +574,7 @@ export default function Branches() {
                         <th>{t('pages.team.tabStaff')}</th>
                         <th>{t('pages.team.tabTrainers')}</th>
                         <th>{t('table.status')}</th>
-                        {!readOnly && <th className="text-right">{t('table.actions')}</th>}
+                        {!readOnly && <th>{t('table.actions')}</th>}
                       </tr>
                     </thead>
                     <tbody>

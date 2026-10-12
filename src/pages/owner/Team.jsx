@@ -584,10 +584,7 @@ export default function Team() {
                       <InitialsAvatar name={member.name} size="sm" />
                       <div className="min-w-0">
                         <p className="font-medium text-app-text-strong">{member.name}</p>
-                        <p className="mt-0.5 text-sm text-app-muted">{member.phone || member.email || '—'}</p>
-                        {member.phone && member.email ? (
-                          <p className="mt-0.5 text-sm text-app-muted">{member.email}</p>
-                        ) : null}
+                        <p className="mt-0.5 text-sm text-app-muted">{member.phone || '—'}</p>
                         {member.username && (
                           <p className="mt-0.5 text-xs text-app-muted">@{member.username}</p>
                         )}
@@ -632,10 +629,9 @@ export default function Team() {
                   <th>{t('table.name')}</th>
                   {multiBranch ? <th>{t('table.branch')}</th> : null}
                   <th>{t('table.phone')}</th>
-                  <th>{t('table.email')}</th>
                   <th>{t('account.username')}</th>
                   <th>{t('table.status')}</th>
-                  {!readOnly && <th className="text-right">{t('table.actions')}</th>}
+                  {!readOnly && <th>{t('table.actions')}</th>}
                 </tr>
               </thead>
               <tbody>
@@ -651,7 +647,6 @@ export default function Team() {
                       <td className="truncate text-app-text">{branchLabel(member.branch_name)}</td>
                     ) : null}
                     <td className="truncate text-app-text">{member.phone || '—'}</td>
-                    <td className="truncate text-app-text">{member.email || '—'}</td>
                     <td className="truncate text-app-text">{member.username || '—'}</td>
                     <td>
                       <span
@@ -778,7 +773,7 @@ export default function Team() {
               </div>
               <Card className="hidden overflow-hidden lg:block">
                 <div className="overflow-x-auto">
-                  <table className="admin-data-table min-w-[640px]">
+                  <table className="admin-data-table owner-team-table min-w-[640px]">
                     <thead>
                       <tr>
                         <th>{t('table.name')}</th>
@@ -786,7 +781,7 @@ export default function Team() {
                         <th>{t('table.phone')}</th>
                         <th>{t('table.specialty')}</th>
                         <th>{t('table.members')}</th>
-                        {!readOnly && <th className="text-right">{t('table.actions')}</th>}
+                        {!readOnly && <th>{t('table.actions')}</th>}
                       </tr>
                     </thead>
                     <tbody>

@@ -54,6 +54,7 @@
 | Admin gym list branches | The Gyms table shows each gym’s active branch count beside Members | 2026-10-13 |
 | Admin branch members | Opening a gym lists each branch with its own live member count | 2026-10-13 |
 | Branch trainer count | The gym Branches table counts live trainers on each location, beside Staff | 2026-10-13 |
+| Team staff email | The Team staff list does not show email. Email stays on the staff form | 2026-10-13 |
 | No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 
@@ -104,6 +105,7 @@
 - The admin Gyms table shows the active branch count beside Members. It uses the same count as the gym detail Branches stat.
 - Opening an admin gym lists each branch with its own live member count. A new branch starts at 0. The table Members number stays the gym-wide active total.
 - The gym Branches table shows a live trainer count beside Staff. Former trainers are left out of that count.
+- The Team staff list does not show an email column. Email stays on the staff form.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
@@ -171,6 +173,7 @@
 - Team: clicking a trainer card lists that trainer’s live members. Edit, archive, and restore stay on the card’s actions.
 - Admin Gyms table: branch count sits beside Members. Same active-branch count as the gym detail Branches stat. Opening a gym lists each branch with its own live member count.
 - Gym Branches table: live trainer count sits beside Staff. Former trainers are not included.
+- Team staff list does not show email. Email stays on the add and edit staff form.
 - Roles: Platform Admin (web only), Gym Owner, Front Desk (legacy Help Desk / Gym Staff).
 - License: `active` → `suspended` (read-only) → `expired` (lockout).
 - v1 signup: OTP + city + optional address → **default SaaS plan**, no payment, **no trial**.
@@ -999,6 +1002,33 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** keep the live trainer count beside Staff. Do not include former trainers.
 - **Follow-ups:** needs an API deploy, a web deploy, and a new mobile build.
+
+### 2026-10-13 — Team staff list hides email
+
+- **Asked:** Remove email from the Team staff table.
+- **Decided / why:** Phone and username are what that list needs. Email stays on the add and edit staff form, and search can still match it.
+- **Shipped:** `vibe-frontend/src/pages/owner/Team.jsx` staff table and the narrow staff cards.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** do not put email back on the Team staff list.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Branches columns share the row evenly
+
+- **Asked:** The Branches table columns should be spaced fairly and evenly.
+- **Decided / why:** The name column was wide and Actions sat on the far right, so Members, Staff, Trainers, and Status looked bunched. Each column now takes an equal share, and Actions lines up with the others.
+- **Shipped:** `vibe-frontend/src/index.css`, `src/pages/owner/Branches.jsx`.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Team columns share the row evenly
+
+- **Asked:** Space the Team table columns the same even way as Branches.
+- **Decided / why:** Staff and trainer columns used uneven widths, and Actions sat on the far right. Each column now takes an equal share, and Actions lines up with the others.
+- **Shipped:** `vibe-frontend/src/index.css`, `src/pages/owner/Team.jsx`.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** needs a web deploy.
 
 ---
 
