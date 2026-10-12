@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { usePersistedUiState } from '../../utils/usePersistedUiState';
 import { useAuth } from '../../context/AuthContext';
 import { useGym } from '../../context/GymContext';
@@ -101,6 +102,7 @@ function TrainerRowActions({ readOnly, showingFormer, t, onEdit, onArchive, onRe
 
 export default function Team() {
   const { t } = useTranslation();
+  const location = useLocation();
   const { apiFetch } = useAuth();
   const { showFlash, branches, readOnly, selectedBranchId, error: gymError } = useGym();
 
@@ -119,6 +121,15 @@ export default function Team() {
     }
   );
   const { tab, showingFormerTrainers, searchQuery } = teamUi;
+  useEffect(() => {
+    const nextTab = location.state?.tab;
+    if (nextTab !== 'staff' && nextTab !== 'trainers') return;
+    setTeamUi((prev) => ({
+      ...prev,
+      tab: nextTab,
+      showingFormerTrainers: nextTab === 'trainers' ? false : prev.showingFormerTrainers,
+    }));
+  }, [location.state, setTeamUi]);
   const setTab = useCallback(
     (next) =>
       setTeamUi((prev) => ({

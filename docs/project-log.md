@@ -53,6 +53,7 @@
 | Trainer roster | Clicking a trainer card lists the live members assigned to that trainer | 2026-10-12 |
 | Admin gym list branches | The Gyms table shows each gym’s active branch count beside Members | 2026-10-13 |
 | Admin branch members | Opening a gym lists each branch with its own live member count | 2026-10-13 |
+| Branch trainer count | The gym Branches table counts live trainers on each location, beside Staff | 2026-10-13 |
 | No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 
@@ -102,6 +103,7 @@
 - Clicking a trainer card lists the live members assigned to that trainer. Edit, archive, and restore stay on the card’s actions.
 - The admin Gyms table shows the active branch count beside Members. It uses the same count as the gym detail Branches stat.
 - Opening an admin gym lists each branch with its own live member count. A new branch starts at 0. The table Members number stays the gym-wide active total.
+- The gym Branches table shows a live trainer count beside Staff. Former trainers are left out of that count.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
@@ -168,6 +170,7 @@
 - Tenant = `gym_id`; staff = `branch_id`.
 - Team: clicking a trainer card lists that trainer’s live members. Edit, archive, and restore stay on the card’s actions.
 - Admin Gyms table: branch count sits beside Members. Same active-branch count as the gym detail Branches stat. Opening a gym lists each branch with its own live member count.
+- Gym Branches table: live trainer count sits beside Staff. Former trainers are not included.
 - Roles: Platform Admin (web only), Gym Owner, Front Desk (legacy Help Desk / Gym Staff).
 - License: `active` → `suspended` (read-only) → `expired` (lockout).
 - v1 signup: OTP + city + optional address → **default SaaS plan**, no payment, **no trial**.
@@ -987,6 +990,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** keep each branch’s live member count on the admin gym detail. Leave the table Members number as the gym-wide active total.
 - **Follow-ups:** needs an API deploy and a web deploy.
+
+### 2026-10-13 — Branches table shows trainers
+
+- **Asked:** Add a Trainers column on the gym Branches table, beside Members and Staff.
+- **Decided / why:** Each location already shows how many members and staff sit there. Trainers belong to a branch too, so the same row should show how many live trainers are on it. Former trainers stay off the count.
+- **Shipped:** `vibe/routes/branches.js`; web `Branches.jsx` (the number opens Team on the Trainers tab for that branch); mobile branch cards.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** keep the live trainer count beside Staff. Do not include former trainers.
+- **Follow-ups:** needs an API deploy, a web deploy, and a new mobile build.
 
 ---
 

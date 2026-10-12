@@ -939,27 +939,32 @@
 
   .owner-branches-table th:nth-child(1),
   .owner-branches-table td:nth-child(1) {
-    width: 28%;
+    width: 26%;
   }
 
   .owner-branches-table th:nth-child(2),
   .owner-branches-table td:nth-child(2) {
-    width: 14%;
+    width: 12%;
   }
 
   .owner-branches-table th:nth-child(3),
   .owner-branches-table td:nth-child(3) {
-    width: 14%;
+    width: 12%;
   }
 
   .owner-branches-table th:nth-child(4),
   .owner-branches-table td:nth-child(4) {
-    width: 14%;
+    width: 12%;
   }
 
   .owner-branches-table th:nth-child(5),
   .owner-branches-table td:nth-child(5) {
-    width: 30%;
+    width: 14%;
+  }
+
+  .owner-branches-table th:nth-child(6),
+  .owner-branches-table td:nth-child(6) {
+    width: 24%;
   }
 
   /* Members table: auto layout so Status/Duration never overlap under table-fixed squeeze. */

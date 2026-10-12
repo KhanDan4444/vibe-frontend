@@ -368,7 +368,12 @@ export default function Branches() {
 
   const openStaff = (branch) => {
     setSelectedBranchId(branch.id);
-    navigate('/dashboard/team');
+    navigate('/dashboard/team', { state: { tab: 'staff' } });
+  };
+
+  const openTrainers = (branch) => {
+    setSelectedBranchId(branch.id);
+    navigate('/dashboard/team', { state: { tab: 'trainers' } });
   };
 
   const noBranchesYet = !loading && branches.length === 0;
@@ -377,7 +382,7 @@ export default function Branches() {
     setModal({ open: true, branch: null });
   };
 
-  const colCount = readOnly ? 4 : 5;
+  const colCount = readOnly ? 5 : 6;
 
   return (
     <div className="space-y-4 sm:space-y-5">
@@ -527,6 +532,14 @@ export default function Branches() {
                             >
                               {branch.staff_count ?? 0} {t('pages.team.tabStaff')}
                             </button>
+                            {' · '}
+                            <button
+                              type="button"
+                              onClick={() => openTrainers(branch)}
+                              className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+                            >
+                              {branch.trainer_count ?? 0} {t('pages.team.tabTrainers')}
+                            </button>
                           </p>
                           <span className={`mt-2 ${branch.is_active ? STATUS_ACTIVE : STATUS_INACTIVE}`}>
                             {branch.is_active ? t('status.active') : t('common.inactive')}
@@ -559,6 +572,7 @@ export default function Branches() {
                         <th>{t('pages.branches.nameLabel')}</th>
                         <th>{t('table.members')}</th>
                         <th>{t('pages.team.tabStaff')}</th>
+                        <th>{t('pages.team.tabTrainers')}</th>
                         <th>{t('table.status')}</th>
                         {!readOnly && <th className="text-right">{t('table.actions')}</th>}
                       </tr>
@@ -597,6 +611,15 @@ export default function Branches() {
                                 className="font-medium text-teal-700 hover:underline dark:text-teal-300"
                               >
                                 {branch.staff_count ?? 0}
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                onClick={() => openTrainers(branch)}
+                                className="font-medium text-teal-700 hover:underline dark:text-teal-300"
+                              >
+                                {branch.trainer_count ?? 0}
                               </button>
                             </td>
                             <td>
