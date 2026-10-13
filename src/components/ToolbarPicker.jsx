@@ -148,7 +148,7 @@ export default function ToolbarPicker({
             left: menuPos.left,
             width: menuPos.width,
           }}
-          className={`z-50 max-h-72 overflow-y-auto py-1 animate-in fade-in zoom-in-95 duration-100 ${menuSurface}`}
+          className={`z-50 max-h-72 origin-top overflow-y-auto py-1 transition duration-200 ease-out motion-reduce:transition-none animate-in fade-in slide-in-from-top-1 ${menuSurface}`}
         >
           {ungrouped.map(renderItem)}
           {grouped.map((group) => (

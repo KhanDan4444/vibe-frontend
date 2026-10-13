@@ -59,7 +59,7 @@
 | No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 | Station check-in ring | After gym QR and OTP, the ring shows the thick check, then the visit count inside, such as 1/6. Same timing as desk check-in | 2026-10-13 |
-| Revenue custom range | Custom dates sit on one short row: start, to, end. Web: beside the period control, and Export wraps on its own. Phone: first section in Filters, as a bordered control | 2026-10-13 |
+| Revenue custom range | Custom dates sit on one short row: start, to, end. Web: beside the period control, and Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filters | 2026-10-13 |
 
 ---
 
@@ -92,7 +92,7 @@
 - Do **not** sign member or station QR tokens with `JWT_SECRET` in production — use `MEMBER_PASS_SECRET`.
 - Do **not** return the phone number or member photo on the public check-in pass.
 - After gym QR check-in, the success ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as the desk check-in ring.
-- Revenue custom range sits on one short row: start date, to, end date. On the web it stays with the period control, and Export wraps on its own. On the phone it is the first section in Filters, a bordered control, with the dates under it when it is on. Do not stretch those fields across the page, and do not bury the phone control under sort and payment method.
+- Revenue custom range sits on one short row: start date, to, end date. On the web it stays with the period control, and Export wraps on its own. The date row eases open and closed when Custom range is chosen or left. On the phone it is the first section in Filters. When it is on, that row uses the same fill as the other selected filter rows, with no bright outline. Do not stretch those fields across the page, and do not bury the phone control under sort and payment method.
 - Do **not** place the Privacy Policy as a peer of Register on login — muted footer only (web and mobile). Signup keeps the “By continuing…” line.
 - Do **not** point the mobile privacy link at `vibe-frontend-coral.vercel.app`. Use `niku-saas.vercel.app`.
 - Do **not** show the member phone on dashboard Needs attention when a branch exists. Middle line is branch · plan; phone · plan only when there is no branch.
@@ -111,6 +111,7 @@
 - Opening an admin gym lists each branch with its own live member count. A new branch starts at 0. The table Members number stays the gym-wide active total.
 - The gym Branches table shows a live trainer count beside Staff. Former trainers are left out of that count.
 - The Team staff list does not show an email column. Email stays on the staff form.
+- The phone trainers list does not show the “No login — assign to members.” line under search.
 - A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet. The list has a search field. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
@@ -176,7 +177,7 @@
 ### Product
 
 - Tenant = `gym_id`; staff = `branch_id`.
-- Team: clicking a trainer card lists that trainer’s live members. Edit, archive, and restore stay on the card’s actions.
+- Team: clicking a trainer card lists that trainer’s live members. Edit, archive, and restore stay on the card’s actions. The phone trainers list does not show the “No login” line under search.
 - Admin Gyms table: branch count sits beside Members. Same active-branch count as the gym detail Branches stat. Opening a gym lists each branch with its own live member count.
 - Gym Branches table: live trainer count sits beside Staff. Former trainers are not included.
 - Team staff list does not show email. Email stays on the add and edit staff form.
@@ -187,7 +188,7 @@
 - Admin enroll: same identity fields + plan + optional payment.
 - ETB; Ethiopian phones; members **do not** log in (pass / Telegram / station only).
 - Gym QR check-in success: the ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as desk check-in. The sentence under the name still says how many visits this week.
-- Revenue custom range: start date, to, and end date sit on one short row. Web: beside the period control; Export wraps on its own. Phone: first section in Filters, as a bordered control.
+- Revenue custom range: start date, to, and end date sit on one short row. Web: beside the period control; the date row eases open and closed; Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filter rows.
 
 ### Messaging
 
@@ -1146,6 +1147,33 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** phone custom range stays first in Filters and looks like a control when it is off. Web dates stay with the period control.
 - **Follow-ups:** needs a web deploy and a new mobile build.
+
+### 2026-10-13 — Revenue period menu eases the date row
+
+- **Asked:** Smooth the change between a month filter and Custom range.
+- **Decided / why:** The dates were appearing and disappearing in one frame, so the toolbar jumped next to the open menu. The period button keeps one width, and the date row eases open and closed.
+- **Shipped:** `Revenue.jsx`, `ToolbarPicker.jsx`.
+- **Styles / customs:** Do not regress updated.
+- **Do-not-regress:** the custom date row eases in and out. Do not pop it on or off.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Phone trainers list drops the login line
+
+- **Asked:** Remove the text under trainer search that starts with “No login.”
+- **Decided / why:** That line only restated that trainers have no login. The list is clearer without it.
+- **Shipped:** mobile `app/team/index.tsx`.
+- **Styles / customs:** Do not regress and Standing product updated.
+- **Do-not-regress:** do not put the “No login” line back under the phone trainers search.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-13 — Custom range row matches the other filters
+
+- **Asked:** Make the phone custom-range row the same color as Newest first and All methods.
+- **Decided / why:** The bright outline made that row louder than the other selected filters. It now uses the same soft fill, with no bright edge.
+- **Shipped:** `RevenueFiltersSheet.tsx`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** when custom range is on, the row matches the other selected filter rows.
+- **Follow-ups:** needs a new mobile build.
 
 ---
 

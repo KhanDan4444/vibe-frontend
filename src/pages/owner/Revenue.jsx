@@ -369,31 +369,43 @@ export default function Revenue() {
         subtitle={statusLine}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <ToolbarPicker
-                value={periodPreset}
-                onChange={setPeriodPreset}
-                options={PERIOD_PRESETS}
-                label={t('period.reportPeriod')}
-              />
-              {periodPreset === 'custom' ? (
-                <div className="flex shrink-0 items-center gap-2">
-                  <DateField
-                    compact
-                    value={customStart}
-                    onChange={setCustomStart}
-                    max={boundsForCustomRangeFrom(customEnd).max}
-                  />
-                  <span className="shrink-0 text-sm text-app-muted">{t('common.to')}</span>
-                  <DateField
-                    compact
-                    value={customEnd}
-                    onChange={setCustomEnd}
-                    min={boundsForCustomRangeTo(customStart).min}
-                    max={boundsForCustomRangeTo(customStart).max}
-                  />
+            <div className="flex items-center">
+              <div className="w-[10.75rem] shrink-0 [&_button]:w-full [&_button]:justify-between">
+                <ToolbarPicker
+                  value={periodPreset}
+                  onChange={setPeriodPreset}
+                  options={PERIOD_PRESETS}
+                  label={t('period.reportPeriod')}
+                />
+              </div>
+              <div
+                className={`grid transition-[grid-template-columns,opacity] duration-300 ease-out motion-reduce:transition-none ${
+                  periodPreset === 'custom'
+                    ? 'grid-cols-[1fr] opacity-100'
+                    : 'pointer-events-none grid-cols-[0fr] opacity-0'
+                }`}
+                inert={periodPreset === 'custom' ? undefined : true}
+                aria-hidden={periodPreset !== 'custom'}
+              >
+                <div className="min-w-0 overflow-hidden">
+                  <div className="flex items-center gap-2 pl-2">
+                    <DateField
+                      compact
+                      value={customStart}
+                      onChange={setCustomStart}
+                      max={boundsForCustomRangeFrom(customEnd).max}
+                    />
+                    <span className="shrink-0 text-sm text-app-muted">{t('common.to')}</span>
+                    <DateField
+                      compact
+                      value={customEnd}
+                      onChange={setCustomEnd}
+                      min={boundsForCustomRangeTo(customStart).min}
+                      max={boundsForCustomRangeTo(customStart).max}
+                    />
+                  </div>
                 </div>
-              ) : null}
+              </div>
             </div>
             <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
               <Download className="h-4 w-4" /> {t('common.exportCsv')}
