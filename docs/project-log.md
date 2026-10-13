@@ -55,7 +55,7 @@
 | Admin branch members | Opening a gym lists each branch with its own live member count | 2026-10-13 |
 | Branch trainer count | The gym Branches table counts live trainers on each location, beside Staff | 2026-10-13 |
 | Team staff email | The Team staff list does not show email. Email stays on the staff form | 2026-10-13 |
-| Trainer member fee | A trainer’s member list shows the total trainer-fee payments recorded for each member. The list can be searched. When the gym has more than one branch, the branch name appears once at the top left and covers the whole list | 2026-10-13 |
+| Trainer member fee | A trainer’s member list shows the total trainer-fee payments recorded for each member. The list can be searched. When the gym has more than one branch, the branch name appears once at the top left and covers the whole list. On the phone, the member’s phone stays on one line under the name | 2026-10-13 |
 | No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 | Station check-in ring | After gym QR and OTP, the ring shows the thick check, then the visit count inside, such as 1/6. Same timing as desk check-in | 2026-10-13 |
@@ -112,7 +112,7 @@
 - The gym Branches table shows a live trainer count beside Staff. Former trainers are left out of that count.
 - The Team staff list does not show an email column. Email stays on the staff form.
 - The phone trainers list does not show the “No login — assign to members.” line under search.
-- A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet. The list has a search field. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member.
+- A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet. The list has a search field. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member. On the phone, the member’s phone number stays on one line under the name. Do not let the status or the fee wrap it.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
@@ -181,7 +181,7 @@
 - Admin Gyms table: branch count sits beside Members. Same active-branch count as the gym detail Branches stat. Opening a gym lists each branch with its own live member count.
 - Gym Branches table: live trainer count sits beside Staff. Former trainers are not included.
 - Team staff list does not show email. Email stays on the add and edit staff form.
-- Trainer member list: each row shows the sum of that member’s trainer-fee payments. Membership payments stay out of that figure. Trainer fee is labeled once, in a right-aligned column. 0 ETB stays quiet. A search field filters the list. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member.
+- Trainer member list: each row shows the sum of that member’s trainer-fee payments. Membership payments stay out of that figure. Trainer fee is labeled once, in a right-aligned column. 0 ETB stays quiet. A search field filters the list. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member. On the phone, the phone number stays on one line under the name, and the plan is the line under that.
 - Roles: Platform Admin (web only), Gym Owner, Front Desk (legacy Help Desk / Gym Staff).
 - License: `active` → `suspended` (read-only) → `expired` (lockout).
 - v1 signup: OTP + city + optional address → **default SaaS plan**, no payment, **no trial**.
@@ -1174,6 +1174,24 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** when custom range is on, the row matches the other selected filter rows.
 - **Follow-ups:** needs a new mobile build.
+
+### 2026-10-13 — Trainer member phone stays on one line
+
+- **Asked:** Osiyas’s card on the phone trainer list broke the phone number in the middle.
+- **Decided / why:** Expired plus a wide fee squeezed the shared phone-and-plan line, so the number wrapped. The phone now sits on its own line under the name, and the plan is the line below it.
+- **Shipped:** mobile `app/team/trainers/[id]/members.tsx`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** on the phone trainer member list, do not let the status or the fee wrap the phone number.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-13 — Trials, one API, ZAP, station link
+
+- **Asked:** How to give free trials while contacting gym owners. Whether extra Railway copies prevent a crash. What to do for about 20 desks at once, then about 50. Where `DB_POOL_MAX` is set, and whether setting it to 40 now costs anything. What the OWASP ZAP alerts on `niku-saas.vercel.app` mean. Why station self check-in said Telegram was not linked after a desk QR check-in.
+- **Decided / why:** Enroll each trial from admin: Free Trial, and type the days for that gym. Leave public signup as it is. A trial gym is not unpaid; when they pay, use Change plan, and link the gym Telegram so the ending notice arrives. Stay on one small API on the $5 plan. Register as many gyms as you want. The API gets busy when about 20 desks are using it at the same moment. Morning and evening rushes line up, but a check-in only borrows a database connection for a moment, so the first gyms stay on this size. Railway already restarts that one copy on a crash (`ON_FAILURE`, up to 10). The health check only gates a new deploy. A short database blip does not restart the process. `DB_POOL_MAX` is unset, so the pool ceiling stays 20 (`vibe/config/db.js`). Setting 40 on Railway only raises that ceiling and restarts the API once. Leave it unset until a real rush feels slow. For about 50 desks at once, give the same service more memory, then set `DB_POOL_MAX` to 40 after checking Neon’s connection limit. Still one copy. A second copy waits until photos leave the attached disk and Neon’s connection pooler is in front. The $20 plan is not a step. The ZAP list is a loose Content Security Policy, not a break-in. Leave it for the trials. The only later cleanup is dropping `localhost` from the live policy. The station message means that member’s Telegram chat is not saved. Scanning his pass and copying the link do not link him. He has to open the link in Telegram and tap Start.
+- **Shipped:** none. The phone-number line on the trainer member list was already logged above.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** the trainer-list phone fix needs a new mobile build. The build that was running does not include it.
 
 ---
 
