@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dumbbell, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { listTrainerMembers } from '../services/trainerService';
 import { apiErrorFromResponse, parseApiResponse } from '../utils/api';
 import ResponsiveModal from './ResponsiveModal';
+import SearchField from './SearchField';
 import EmptyState from './EmptyState';
 import ErrorRetryBanner from './ErrorRetryBanner';
 import InitialsAvatar from './InitialsAvatar';
@@ -22,6 +23,21 @@ export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
   const [loading, setLoading] = useState(Boolean(trainer?.id));
   const [error, setError] = useState('');
   const [reloadKey, setReloadKey] = useState(0);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    setSearch('');
+  }, [trainer?.id]);
+
+  const needle = search.trim().toLowerCase();
+  const visibleMembers = useMemo(() => {
+    if (!needle) return members;
+    return members.filter((member) =>
+      [member.name, member.phone, member.plan_name, member.branch_name].some((value) =>
+        String(value || '').toLowerCase().includes(needle)
+      )
+    );
+  }, [members, needle]);
 
   useEffect(() => {
     if (!trainer?.id) return undefined;
@@ -64,6 +80,7 @@ export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
           {!loading && !error ? (
             <p className="mt-1 text-sm text-app-muted">
               {t('pages.team.assignedMembers', { count: members.length })}
+              {showBranch && trainer?.branch_name ? ` · ${trainer.branch_name}` : ''}
             </p>
           ) : null}
         </div>
@@ -89,50 +106,65 @@ export default function TrainerMembersModal({ trainer, showBranch, onClose }) {
           />
         ) : (
           <>
-            <div className="flex justify-end px-1 pb-1">
-              <span className="min-w-[6.75rem] text-right text-xs font-medium text-app-muted">
-                {t('pages.team.trainerPaid')}
-              </span>
-            </div>
-            <ul className="divide-y divide-app-border-subtle">
-              {members.map((member) => {
-                const paid = Number(member.trainer_paid) > 0;
-                return (
-                  <li key={member.id}>
-                    <button
-                      type="button"
-                      onClick={() => openMember(member.id)}
-                      className="flex w-full items-center gap-3 rounded-xl px-1 py-3 text-left hover:bg-app-surface"
-                    >
-                      <InitialsAvatar name={member.name} size="sm" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium text-app-text-strong">{member.name}</p>
-                        <p className="truncate text-sm text-app-muted">
-                          {member.phone || '—'}
-                          {member.plan_name ? ` · ${member.plan_name}` : ''}
-                          {showBranch && member.branch_name ? ` · ${member.branch_name}` : ''}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1">
-                        <StatusBadge status={member.status} />
-                        {member.is_unpaid ? (
-                          <span className="text-xs font-medium text-app-muted">{t('status.unpaid')}</span>
-                        ) : null}
-                      </div>
-                      <span
-                        className={`min-w-[6.75rem] shrink-0 whitespace-nowrap text-right text-sm tabular-nums ${
-                          paid
-                            ? 'font-semibold text-app-text-strong'
-                            : 'font-medium text-app-muted'
-                        }`}
-                      >
-                        {formatMoneyShort(member.trainer_paid)}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <SearchField
+              value={search}
+              onChange={setSearch}
+              placeholder={t('pages.members.searchPlaceholder')}
+              className="mb-3 sm:max-w-none"
+            />
+            {visibleMembers.length > 0 ? (
+              <div className="flex justify-end px-1 pb-1">
+                <span className="min-w-[6.75rem] text-right text-xs font-medium text-app-muted">
+                  {t('pages.team.trainerPaid')}
+                </span>
+              </div>
+            ) : null}
+            {visibleMembers.length === 0 ? (
+              <EmptyState
+                icon={Dumbbell}
+                title={t('pages.team.emptySearchTitle')}
+                body={t('pages.team.emptySearchBody')}
+              />
+            ) : (
+              <ul className="divide-y divide-app-border-subtle">
+                  {visibleMembers.map((member) => {
+                    const paid = Number(member.trainer_paid) > 0;
+                    return (
+                      <li key={member.id}>
+                        <button
+                          type="button"
+                          onClick={() => openMember(member.id)}
+                          className="flex w-full items-center gap-3 rounded-xl px-1 py-3 text-left hover:bg-app-surface"
+                        >
+                          <InitialsAvatar name={member.name} size="sm" />
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-medium text-app-text-strong">{member.name}</p>
+                            <p className="truncate text-sm text-app-muted">
+                              {member.phone || '—'}
+                              {member.plan_name ? ` · ${member.plan_name}` : ''}
+                            </p>
+                          </div>
+                          <div className="flex shrink-0 flex-col items-end gap-1">
+                            <StatusBadge status={member.status} />
+                            {member.is_unpaid ? (
+                              <span className="text-xs font-medium text-app-muted">{t('status.unpaid')}</span>
+                            ) : null}
+                          </div>
+                          <span
+                            className={`min-w-[6.75rem] shrink-0 whitespace-nowrap text-right text-sm tabular-nums ${
+                              paid
+                                ? 'font-semibold text-app-text-strong'
+                                : 'font-medium text-app-muted'
+                            }`}
+                          >
+                            {formatMoneyShort(member.trainer_paid)}
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+              </ul>
+            )}
           </>
         )}
       </div>

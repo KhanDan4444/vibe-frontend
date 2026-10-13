@@ -186,6 +186,7 @@ export function DateField({
   name,
   className = DEFAULT_CLASS,
   rangeInvalidMessage,
+  compact = false,
 }) {
   const anchorRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -221,7 +222,7 @@ export function DateField({
   };
 
   return (
-    <div ref={anchorRef} className="date-field relative w-full">
+    <div ref={anchorRef} className={compact ? 'date-field relative w-[9rem] shrink-0' : 'date-field relative w-full'}>
       <button
         type="button"
         id={id}
@@ -233,11 +234,11 @@ export function DateField({
           if (!pickerDisabled) setOpen((current) => !current);
         }}
         className={[
-          'flex w-full min-h-[42px] items-center justify-between gap-2 text-left',
-          DEFAULT_CLASS,
+          'flex w-full min-h-10 items-center justify-between gap-2 text-left',
+          compact ? 'app-field' : DEFAULT_CLASS,
           FOCUS_CLASS,
           pickerDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-          className,
+          compact ? '' : className,
           open && rangeValid ? OPEN_CLASS : '',
         ]
           .filter(Boolean)

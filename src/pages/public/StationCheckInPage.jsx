@@ -40,6 +40,7 @@ export default function StationCheckInPage() {
   const [sessionId, setSessionId] = useState('');
   const [busy, setBusy] = useState(false);
   const [successData, setSuccessData] = useState(null);
+  const [showTick, setShowTick] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [genericNotice, setGenericNotice] = useState('');
   const { cooldown, startCooldown, canResend } = useOtpResendCooldown();
@@ -79,6 +80,16 @@ export default function StationCheckInPage() {
   useEffect(() => {
     void loadSession();
   }, [loadSession]);
+
+  useEffect(() => {
+    if (step !== STEPS.SUCCESS) {
+      setShowTick(false);
+      return undefined;
+    }
+    setShowTick(true);
+    const id = window.setTimeout(() => setShowTick(false), 900);
+    return () => window.clearTimeout(id);
+  }, [step]);
 
   const handleRequestOtp = async (e) => {
     if (e) e.preventDefault();
@@ -359,7 +370,7 @@ export default function StationCheckInPage() {
                   <StationVisitRing
                     visits={successData?.visits_this_week ?? 0}
                     limit={successData?.visits_limit ?? null}
-                    celebrate
+                    celebrate={showTick}
                     size={104}
                     stroke={7}
                   />

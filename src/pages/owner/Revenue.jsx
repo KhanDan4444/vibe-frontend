@@ -369,37 +369,38 @@ export default function Revenue() {
         subtitle={statusLine}
         actions={
           <div className="flex flex-wrap items-center gap-2">
-            <ToolbarPicker
-              value={periodPreset}
-              onChange={setPeriodPreset}
-              options={PERIOD_PRESETS}
-              label={t('period.reportPeriod')}
-            />
+            <div className="flex flex-wrap items-center gap-2">
+              <ToolbarPicker
+                value={periodPreset}
+                onChange={setPeriodPreset}
+                options={PERIOD_PRESETS}
+                label={t('period.reportPeriod')}
+              />
+              {periodPreset === 'custom' ? (
+                <div className="flex shrink-0 items-center gap-2">
+                  <DateField
+                    compact
+                    value={customStart}
+                    onChange={setCustomStart}
+                    max={boundsForCustomRangeFrom(customEnd).max}
+                  />
+                  <span className="shrink-0 text-sm text-app-muted">{t('common.to')}</span>
+                  <DateField
+                    compact
+                    value={customEnd}
+                    onChange={setCustomEnd}
+                    min={boundsForCustomRangeTo(customStart).min}
+                    max={boundsForCustomRangeTo(customStart).max}
+                  />
+                </div>
+              ) : null}
+            </div>
             <Button variant="secondary" onClick={handleExportCsv} disabled={transactionCount === 0}>
               <Download className="h-4 w-4" /> {t('common.exportCsv')}
             </Button>
           </div>
         }
       />
-
-      {periodPreset === 'custom' && (
-        <div className="flex flex-wrap items-center gap-2">
-          <DateField
-            className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
-            value={customStart}
-            onChange={setCustomStart}
-            max={boundsForCustomRangeFrom(customEnd).max}
-          />
-          <span className="text-app-muted">{t('common.to')}</span>
-          <DateField
-            className="rounded-lg border border-app-border-subtle px-3 py-2 text-sm"
-            value={customEnd}
-            onChange={setCustomEnd}
-            min={boundsForCustomRangeTo(customStart).min}
-            max={boundsForCustomRangeTo(customStart).max}
-          />
-        </div>
-      )}
 
       {error && !gymError ? <ErrorRetryBanner message={error} onRetry={() => fetchPayments()} /> : null}
 

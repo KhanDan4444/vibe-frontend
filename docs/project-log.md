@@ -55,9 +55,11 @@
 | Admin branch members | Opening a gym lists each branch with its own live member count | 2026-10-13 |
 | Branch trainer count | The gym Branches table counts live trainers on each location, beside Staff | 2026-10-13 |
 | Team staff email | The Team staff list does not show email. Email stays on the staff form | 2026-10-13 |
-| Trainer member fee | A trainer’s member list shows the total trainer-fee payments recorded for each member | 2026-10-13 |
+| Trainer member fee | A trainer’s member list shows the total trainer-fee payments recorded for each member. The list can be searched. When the gym has more than one branch, the branch name appears once at the top left and covers the whole list | 2026-10-13 |
 | No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
+| Station check-in ring | After gym QR and OTP, the ring shows the thick check, then the visit count inside, such as 1/6. Same timing as desk check-in | 2026-10-13 |
+| Revenue custom range | Custom dates sit on one short row: start, to, end. Web: beside the period control, and Export wraps on its own. Phone: first section in Filters, as a bordered control | 2026-10-13 |
 
 ---
 
@@ -89,6 +91,8 @@
 - Do **not** accept Telegram webhooks in production without `TELEGRAM_WEBHOOK_SECRET`.
 - Do **not** sign member or station QR tokens with `JWT_SECRET` in production — use `MEMBER_PASS_SECRET`.
 - Do **not** return the phone number or member photo on the public check-in pass.
+- After gym QR check-in, the success ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as the desk check-in ring.
+- Revenue custom range sits on one short row: start date, to, end date. On the web it stays with the period control, and Export wraps on its own. On the phone it is the first section in Filters, a bordered control, with the dates under it when it is on. Do not stretch those fields across the page, and do not bury the phone control under sort and payment method.
 - Do **not** place the Privacy Policy as a peer of Register on login — muted footer only (web and mobile). Signup keeps the “By continuing…” line.
 - Do **not** point the mobile privacy link at `vibe-frontend-coral.vercel.app`. Use `niku-saas.vercel.app`.
 - Do **not** show the member phone on dashboard Needs attention when a branch exists. Middle line is branch · plan; phone · plan only when there is no branch.
@@ -107,7 +111,7 @@
 - Opening an admin gym lists each branch with its own live member count. A new branch starts at 0. The table Members number stays the gym-wide active total.
 - The gym Branches table shows a live trainer count beside Staff. Former trainers are left out of that count.
 - The Team staff list does not show an email column. Email stays on the staff form.
-- A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet.
+- A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet. The list has a search field. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
@@ -176,12 +180,14 @@
 - Admin Gyms table: branch count sits beside Members. Same active-branch count as the gym detail Branches stat. Opening a gym lists each branch with its own live member count.
 - Gym Branches table: live trainer count sits beside Staff. Former trainers are not included.
 - Team staff list does not show email. Email stays on the add and edit staff form.
-- Trainer member list: each row shows the sum of that member’s trainer-fee payments. Membership payments stay out of that figure. Trainer fee is labeled once, in a right-aligned column. 0 ETB stays quiet.
+- Trainer member list: each row shows the sum of that member’s trainer-fee payments. Membership payments stay out of that figure. Trainer fee is labeled once, in a right-aligned column. 0 ETB stays quiet. A search field filters the list. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member.
 - Roles: Platform Admin (web only), Gym Owner, Front Desk (legacy Help Desk / Gym Staff).
 - License: `active` → `suspended` (read-only) → `expired` (lockout).
 - v1 signup: OTP + city + optional address → **default SaaS plan**, no payment, **no trial**.
 - Admin enroll: same identity fields + plan + optional payment.
 - ETB; Ethiopian phones; members **do not** log in (pass / Telegram / station only).
+- Gym QR check-in success: the ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as desk check-in. The sentence under the name still says how many visits this week.
+- Revenue custom range: start date, to, and end date sit on one short row. Web: beside the period control; Export wraps on its own. Phone: first section in Filters, as a bordered control.
 
 ### Messaging
 
@@ -1068,6 +1074,78 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** none.
 - **Do-not-regress:** none.
 - **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Trainer member list search and branch column
+
+- **Asked:** Add a search field on the trainer member list, and a column on the right for the branch name.
+- **Decided / why:** The branch was buried in the phone line. A Branch column beside Trainer fee makes Main and the other locations scannable. Search filters the list already loaded, by name, phone, plan, or branch.
+- **Shipped:** web `TrainerMembersModal.jsx`; mobile trainer members screen.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** search stays on the list. Branch is its own column only when the gym has more than one branch.
+- **Follow-ups:** needs a web deploy and a new mobile build.
+
+### 2026-10-13 — Trainer list shows the branch once
+
+- **Asked:** Put the branch on the left top of the trainer member list, not beside Trainer fee, and take it off each member.
+- **Decided / why:** Everyone on a trainer’s list shares that trainer’s branch, so one name covers the list. It sits with the member count. Trainer fee stays the only right-hand column.
+- **Shipped:** web `TrainerMembersModal.jsx`; mobile trainer members screen; API returns the trainer’s branch name with the member list.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** one branch name at the top left when the gym has more than one branch. Do not repeat it on each member.
+- **Follow-ups:** needs an API deploy, a web deploy, and a new mobile build.
+
+### 2026-10-13 — Phone trainer list uses the same branch line
+
+- **Asked:** Do the same branch line on mobile.
+- **Decided / why:** The phone list had the branch as its own heading. It now matches the web line: the member count and the branch name together at the top left.
+- **Shipped:** mobile trainer members screen.
+- **Styles / customs:** none.
+- **Do-not-regress:** none.
+- **Follow-ups:** needs an API deploy and a new mobile build.
+
+### 2026-10-13 — Gym QR success ring shows the visit count
+
+- **Asked:** After the gym QR and OTP, show the visit count inside the ring, like check-in, such as 1/6.
+- **Decided / why:** The success screen was swapping the count for a check. The count is what the member needs to see. The sentence under the name stays.
+- **Shipped:** `StationCheckInPage.jsx` no longer passes `celebrate` to the ring.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** the public success ring keeps the visit count inside. Do not cover it with a check.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Gym QR ring shows the check, then the count
+
+- **Asked:** Show the thick check inside the ring first, then the number, the way desk check-in does.
+- **Decided / why:** The count should stay, but the check comes first so the success moment matches the desk. The check holds for the same short beat, then 1/6 appears.
+- **Shipped:** `StationCheckInPage.jsx`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** check first, then the visit count. Same timing as desk check-in.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Revenue custom range is one short row
+
+- **Asked:** Improve the custom range filter on Revenue.
+- **Decided / why:** The two dates were full width, so “to” sat on its own line and left a tall empty band under the title. They belong beside Custom range, the same height as the other toolbar controls.
+- **Shipped:** `Revenue.jsx`, compact `DateField`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** one short row: start, to, end. Do not stretch the fields across the page.
+- **Follow-ups:** needs a web deploy.
+
+### 2026-10-13 — Phone revenue custom range is one short row
+
+- **Asked:** Do the same custom range row on mobile.
+- **Decided / why:** The phone filters already opened two dates, but they stretched across the sheet with nothing between them. They now read start, to, end, in one short row under Custom range on.
+- **Shipped:** `RevenueFiltersSheet.tsx`; `common.to` in en, am, and om.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** phone dates stay a short row with “to” between them.
+- **Follow-ups:** needs a new mobile build.
+
+### 2026-10-13 — Custom range stays visible
+
+- **Asked:** Improve the remaining custom-range layout on web and mobile.
+- **Decided / why:** On the phone the control sat under every payment method and looked like a caption until it was on. It is now the first section in Filters, with a border and a calendar icon. On the web, Export wraps by itself so it does not split the date row.
+- **Shipped:** `RevenueFiltersSheet.tsx`, `Revenue.jsx`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** phone custom range stays first in Filters and looks like a control when it is off. Web dates stay with the period control.
+- **Follow-ups:** needs a web deploy and a new mobile build.
 
 ---
 
