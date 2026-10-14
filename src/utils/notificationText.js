@@ -178,7 +178,7 @@ export function localizeNotification(notification, t) {
       kind,
       section,
       memberName,
-      eyebrow: t('notifications.kind.paymentRecorded'),
+      eyebrow: '',
       title: memberName,
       message: t('notifications.items.paymentRecorded.message', {
         amount: formatMoney(amount, { minimumFractionDigits: 0, maximumFractionDigits: 0 }),

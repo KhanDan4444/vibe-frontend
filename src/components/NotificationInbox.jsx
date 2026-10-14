@@ -32,21 +32,7 @@ function kindIcon(kind, type) {
   return CheckCircle2;
 }
 
-function kindTone(kind, type) {
-  if (kind === 'unpaid') {
-    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400';
-  }
-  if (kind === 'due_soon') {
-    return 'bg-sky-500/10 text-sky-600 dark:text-sky-400';
-  }
-  if (kind === 'expired' || type === 'danger') {
-    return 'bg-rose-500/10 text-rose-500 dark:text-rose-400';
-  }
-  if (type === 'warning') {
-    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400';
-  }
-  return 'bg-teal-600/10 text-teal-700 dark:text-teal-300';
-}
+const ICON_TONE = 'bg-app-muted/10 text-app-muted';
 
 function actionClass(action) {
   if (action === 'payment') {
@@ -64,6 +50,7 @@ function NotificationRow({
   readOnly,
   showBranchBadge,
   nested,
+  highlightUnread,
   onOpen,
   onAction,
   onDismiss,
@@ -77,6 +64,7 @@ function NotificationRow({
       ? item.suggestedAction
       : null;
   const ActionIcon = action === 'payment' ? CreditCard : RefreshCw;
+  const showUnread = highlightUnread && !isRead;
 
   return (
     <div
@@ -89,9 +77,9 @@ function NotificationRow({
       }}
       className={`group relative flex gap-2.5 outline-none focus-visible:ring-1 focus-visible:ring-teal-500/40 ${
         nested ? 'px-4 py-2 pl-14 sm:px-6 sm:pl-16' : 'px-4 py-3.5 sm:px-6'
-      } ${!isRead ? 'bg-teal-600/5' : ''}`}
+      } ${showUnread ? 'bg-teal-600/5' : ''}`}
     >
-      {!isRead ? (
+      {showUnread ? (
         <span
           className={`absolute left-0 w-0.5 rounded-full bg-teal-600 ${nested ? 'bottom-2 top-2' : 'bottom-3.5 top-3.5'}`}
           aria-hidden
@@ -100,7 +88,7 @@ function NotificationRow({
 
       {nested ? null : (
         <span
-          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${kindTone(kind, item.type)}`}
+          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${ICON_TONE}`}
         >
           <Icon className="h-4 w-4" strokeWidth={2} />
         </span>
@@ -181,6 +169,7 @@ function KindStack({
   isRead,
   readOnly,
   showBranchBadge,
+  highlightUnread,
   onOpen,
   onAction,
   onDismiss,
@@ -195,6 +184,7 @@ function KindStack({
         isRead={isRead(item.id)}
         readOnly={readOnly}
         showBranchBadge={showBranchBadge}
+        highlightUnread={highlightUnread}
         onOpen={onOpen}
         onAction={onAction}
         onDismiss={onDismiss}
@@ -203,7 +193,7 @@ function KindStack({
   }
 
   const Icon = kindIcon(group.kind, group.items[0].type);
-  const anyUnread = group.items.some((item) => !isRead(item.id));
+  const anyUnread = highlightUnread && group.items.some((item) => !isRead(item.id));
 
   return (
     <div>
@@ -212,7 +202,7 @@ function KindStack({
           <span className="absolute bottom-3.5 left-0 top-3.5 w-0.5 rounded-full bg-teal-600" aria-hidden />
         ) : null}
         <span
-          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${kindTone(group.kind, group.items[0].type)}`}
+          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${ICON_TONE}`}
         >
           <Icon className="h-4 w-4" strokeWidth={2} />
         </span>
@@ -246,6 +236,7 @@ function KindStack({
               isRead={isRead(item.id)}
               readOnly={readOnly}
               showBranchBadge={showBranchBadge}
+              highlightUnread={highlightUnread}
               onOpen={onOpen}
               onAction={onAction}
               onDismiss={onDismiss}
@@ -318,6 +309,7 @@ export default function NotificationInbox({
                 isRead={isRead}
                 readOnly={readOnly}
                 showBranchBadge={showBadges}
+                highlightUnread={section.key === 'attention'}
                 onOpen={onOpen}
                 onAction={onAction}
                 onDismiss={onDismiss}
