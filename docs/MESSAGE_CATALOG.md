@@ -29,7 +29,7 @@ Placeholders: `{name}` `{gym}` `{plan}` `{date}` `{code}` `{otp}`.
 | Expired | `Hi {name}, your membership at {gym} has expired. Contact the gym to renew.` |
 | Renewed | `Hi {name}, your membership at {gym} has been renewed. New term ends on {date}. Thank you!` (+ optional pass button) |
 | Enrolled | `Hi {name}, welcome to {gym}. Your {plan} membership plan is active until {date}. We are glad to have you!` (+ optional pass) |
-| Telegram linked | `Hi {name}, Welcome! You are linked to {gym}. You will get your pass links and renewal reminders here. Your {plan} membership plan is active until {date}. We are glad to have you!` (+ optional pass) |
+| Telegram linked | `Hi {name}, Welcome! You are linked to {gym}. You will get your pass links and renewal reminders here. Your {plan} membership plan is active until {date}. We are glad to have you!` (+ optional pass). Stored as `member_telegram_linked`. The member message log lists it under Enrollment, with the older SMS enrollment rows. |
 | Pass link | `Hi {name},\n\nHere is your check-in pass:` (+ Open check-in pass) |
 | Station OTP | `Your {gym} check-in code: {otp}\n\nValid for 10 minutes.` |
 | Bot `/start` (no token) | Welcome + open personal link / scan QR |

@@ -30,6 +30,7 @@ const MEMBER_TYPE_KEYS = {
   member_expired: 'smsLog.types.expired',
   member_renewed: 'smsLog.types.renewed',
   member_enrolled: 'smsLog.types.enrolled',
+  member_telegram_linked: 'smsLog.types.enrolled',
   member_pass_link: 'smsLog.types.passLink',
   member_missed_you: 'smsLog.types.missedYou',
 };
@@ -40,6 +41,7 @@ const MEMBER_TYPE_PREVIEW_KEYS = {
   member_expired: 'smsLog.previews.expired',
   member_renewed: 'smsLog.previews.renewed',
   member_enrolled: 'smsLog.previews.enrolled',
+  member_telegram_linked: 'smsLog.previews.enrolled',
   member_pass_link: 'smsLog.previews.passLink',
   member_missed_you: 'smsLog.previews.missedYou',
 };
@@ -117,6 +119,7 @@ export const ADMIN_SMS_TYPE_FILTER_OPTIONS = [
 export function smsMessageTypeIcon(messageType) {
   switch (messageType) {
     case 'member_enrolled':
+    case 'member_telegram_linked':
       return 'UserPlus';
     case 'member_due_soon':
       return 'Clock';
@@ -149,6 +152,7 @@ export function smsMessageTypeChipClass(messageType, muted = false) {
     case 'member_expired':
       return `${CHIP_BASE} bg-[color:var(--color-status-expired)]/10 text-[color:var(--color-status-expired)] border-[color:var(--color-status-expired)]/20`;
     case 'member_enrolled':
+    case 'member_telegram_linked':
     case 'member_renewed':
     case 'member_pass_link':
       return `${CHIP_BASE} bg-[color:var(--color-status-active)]/10 text-[color:var(--color-status-active)] border-[color:var(--color-status-active)]/20`;

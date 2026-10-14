@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-11 (pass secret + public pass trim) |
+| **Standing section last updated** | 2026-10-14 (Telegram link welcome counts as Enrollment) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -61,6 +61,7 @@
 | Station check-in ring | After gym QR and OTP, the ring shows the thick check, then the visit count inside, such as 1/6. Same timing as desk check-in | 2026-10-13 |
 | Revenue custom range | Custom dates sit on one short row: start, to, end. Web: beside the period control, and Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filters | 2026-10-13 |
 | Notification inbox | Activity payments do not repeat “Recorded.” Unread Needs attention uses a small dot, not a bar. Icon circles keep their status colors. Show all names activity. On the phone and the web, the activity chevron opens that member’s profile | 2026-10-14 |
+| Enrollment in the message log | The Telegram link welcome counts as Enrollment, including messages already stored. No separate type chip | 2026-10-14 |
 
 ---
 
@@ -116,6 +117,7 @@
 - A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet. The list has a search field. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member. On the phone, the member’s phone number stays on one line under the name. Do not let the status or the fee wrap it.
 - Notification activity does not show a “Recorded” eyebrow. Unread Needs attention uses a small dot beside the title. Do not bring back the left bar. Icon circles keep their status colors. The activity control says it opens activity. On the phone and the web, the activity chevron opens that member’s profile. Marking notifications read is stored on the account, so the phone and the web share it.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
+- The Telegram link welcome counts as Enrollment in the member message log. Do not hide it, and do not give it its own type chip.
 
 ---
 
@@ -203,7 +205,7 @@
 | Station check-in OTP | Telegram |
 | Admin trial digest | Email |
 
-Code: `notificationSms.js`, `notificationEmail.js`, `phoneOtp.js`, `stationSelfCheckIn.js`, `telegramMemberBot.js`. SmsLog: `channel` `sms`|`telegram`, daily dedupe.
+Code: `notificationSms.js`, `notificationEmail.js`, `phoneOtp.js`, `stationSelfCheckIn.js`, `telegramMemberBot.js`. SmsLog: `channel` `sms`|`telegram`, daily dedupe. The Telegram link welcome stays stored as `member_telegram_linked` and shows under Enrollment in the member message log.
 
 ### Design — shared
 
@@ -1249,6 +1251,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** the web activity chevron opens that member’s profile.
 - **Follow-ups:** needs a web deploy.
+
+### 2026-10-14 — Telegram link welcome counts as Enrollment
+
+- **Asked:** Categorize the first Telegram welcome as an enrollment message.
+- **Decided / why:** That welcome is what the member receives when they tap Start. The log was looking only for the enroll-time confirmation, which never sends because the chat is not linked yet. Enrollment now includes the welcome already stored, and All includes it too. The wording of the welcome stays as it is.
+- **Shipped:** `vibe/routes/memberSms.js`; web `smsLogLabels.js`; mobile `smsLabels.ts`; `MESSAGE_CATALOG.md`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** the Telegram link welcome counts as Enrollment. Do not give it a separate type chip.
+- **Follow-ups:** needs an API deploy before Enrollment + Telegram shows those rows. The badge text needs a web deploy and a new mobile build.
 
 ---
 
