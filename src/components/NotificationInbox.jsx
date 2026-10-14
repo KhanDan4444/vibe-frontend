@@ -32,7 +32,21 @@ function kindIcon(kind, type) {
   return CheckCircle2;
 }
 
-const ICON_TONE = 'bg-app-muted/10 text-app-muted';
+function kindTone(kind, type) {
+  if (kind === 'unpaid') {
+    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400';
+  }
+  if (kind === 'due_soon') {
+    return 'bg-sky-500/10 text-sky-600 dark:text-sky-400';
+  }
+  if (kind === 'expired' || type === 'danger') {
+    return 'bg-rose-500/10 text-rose-500 dark:text-rose-400';
+  }
+  if (type === 'warning') {
+    return 'bg-amber-500/10 text-amber-600 dark:text-amber-400';
+  }
+  return 'bg-teal-600/10 text-teal-700 dark:text-teal-300';
+}
 
 function actionClass(action) {
   if (action === 'payment') {
@@ -77,18 +91,11 @@ function NotificationRow({
       }}
       className={`group relative flex gap-2.5 outline-none focus-visible:ring-1 focus-visible:ring-teal-500/40 ${
         nested ? 'px-4 py-2 pl-14 sm:px-6 sm:pl-16' : 'px-4 py-3.5 sm:px-6'
-      } ${showUnread ? 'bg-teal-600/5' : ''}`}
+      }`}
     >
-      {showUnread ? (
-        <span
-          className={`absolute left-0 w-0.5 rounded-full bg-teal-600 ${nested ? 'bottom-2 top-2' : 'bottom-3.5 top-3.5'}`}
-          aria-hidden
-        />
-      ) : null}
-
       {nested ? null : (
         <span
-          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${ICON_TONE}`}
+          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${kindTone(kind, item.type)}`}
         >
           <Icon className="h-4 w-4" strokeWidth={2} />
         </span>
@@ -101,7 +108,10 @@ function NotificationRow({
               {localized.eyebrow}
             </p>
           )}
-          <div className={`${nested || !localized.eyebrow ? '' : 'mt-0.5'} flex items-baseline gap-1.5`}>
+          <div className={`${nested || !localized.eyebrow ? '' : 'mt-0.5'} flex items-center gap-1.5`}>
+            {showUnread ? (
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" aria-hidden />
+            ) : null}
             <span
               className={`min-w-0 truncate text-[15px] tracking-tight text-app-text-strong ${
                 isRead ? 'font-semibold' : 'font-bold'
@@ -197,18 +207,18 @@ function KindStack({
 
   return (
     <div>
-      <div className={`group relative flex gap-3 px-4 py-3.5 sm:px-6 ${anyUnread ? 'bg-teal-600/5' : ''}`}>
-        {anyUnread ? (
-          <span className="absolute bottom-3.5 left-0 top-3.5 w-0.5 rounded-full bg-teal-600" aria-hidden />
-        ) : null}
+      <div className="group relative flex gap-3 px-4 py-3.5 sm:px-6">
         <span
-          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${ICON_TONE}`}
+          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${kindTone(group.kind, group.items[0].type)}`}
         >
           <Icon className="h-4 w-4" strokeWidth={2} />
         </span>
         <button type="button" onClick={onToggle} className="min-w-0 flex-1 text-left">
-          <p className={`truncate text-[15px] tracking-tight text-app-text-strong ${anyUnread ? 'font-bold' : 'font-semibold'}`}>
-            {stackTitle(group.kind, group.items.length, t)}
+          <p className="flex items-center gap-1.5">
+            {anyUnread ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" aria-hidden /> : null}
+            <span className={`min-w-0 truncate text-[15px] tracking-tight text-app-text-strong ${anyUnread ? 'font-bold' : 'font-semibold'}`}>
+              {stackTitle(group.kind, group.items.length, t)}
+            </span>
           </p>
           <p className="mt-0.5 truncate text-[13px] text-app-muted">{stackPreview(group.items, t)}</p>
         </button>
