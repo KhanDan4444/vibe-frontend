@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Standing section last updated** | 2026-10-14 (Telegram link welcome counts as Enrollment) |
+| **Standing section last updated** | 2026-10-14 (station phone stays trusted) |
 | **Canonical requirements** | [`SRS.md`](./SRS.md) (v1.2) |
 | **Message copy catalog** | [`MESSAGE_CATALOG.md`](./MESSAGE_CATALOG.md) |
 | **Repos** | `vibe` (API) · `vibe-frontend` (web) · `vibe-mobile` (Expo) |
@@ -59,6 +59,7 @@
 | No-visit Telegram | Every 7 days they stay away, with the day count updated. `Hi {name}, we haven't seen you for the past {days} days. We missed you at {gym}. Don't lose the progress you've already made!` Telegram-linked No visit members only | 2026-10-12 |
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 | Station check-in ring | After gym QR and OTP, the ring shows the thick check, then the visit count inside, such as 1/6. Same timing as desk check-in | 2026-10-13 |
+| Station return visit | After the first code, the same phone checks in with no new code. A relink still clears that phone | 2026-10-14 |
 | Revenue custom range | Custom dates sit on one short row: start, to, end. Web: beside the period control, and Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filters | 2026-10-13 |
 | Notification inbox | Activity payments do not repeat “Recorded.” Unread Needs attention uses a small dot, not a bar. Icon circles keep their status colors. Show all names activity. On the phone and the web, the activity chevron opens that member’s profile | 2026-10-14 |
 | Enrollment in the message log | The Telegram link welcome counts as Enrollment, including messages already stored. No separate type chip | 2026-10-14 |
@@ -94,6 +95,7 @@
 - Do **not** sign member or station QR tokens with `JWT_SECRET` in production — use `MEMBER_PASS_SECRET`.
 - Do **not** return the phone number or member photo on the public check-in pass.
 - After gym QR check-in, the success ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as the desk check-in ring.
+- After the first station code, that same phone checks in with no new code. Compare the Telegram link time at millisecond precision. Do not treat a stored phone as new because of a fraction of a second.
 - Revenue custom range sits on one short row: start date, to, end date. On the web it stays with the period control, and Export wraps on its own. The date row eases open and closed when Custom range is chosen or left. On the phone it is the first section in Filters. When it is on, that row uses the same fill as the other selected filter rows, with no bright outline. Do not stretch those fields across the page, and do not bury the phone control under sort and payment method.
 - Do **not** place the Privacy Policy as a peer of Register on login — muted footer only (web and mobile). Signup keeps the “By continuing…” line.
 - Do **not** point the mobile privacy link at `vibe-frontend-coral.vercel.app`. Use `niku-saas.vercel.app`.
@@ -191,7 +193,7 @@
 - v1 signup: OTP + city + optional address → **default SaaS plan**, no payment, **no trial**.
 - Admin enroll: same identity fields + plan + optional payment.
 - ETB; Ethiopian phones; members **do not** log in (pass / Telegram / station only).
-- Gym QR check-in success: the ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as desk check-in. The sentence under the name still says how many visits this week.
+- Gym QR check-in success: the ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as desk check-in. The sentence under the name still says how many visits this week. After the first code, the same phone checks in with no new code.
 - Revenue custom range: start date, to, and end date sit on one short row. Web: beside the period control; the date row eases open and closed; Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filter rows.
 - Notifications: a payment in Activity shows the member and the amount once. Unread Needs attention uses a small dot beside the title. Activity does not. Icon circles keep their status colors. The control under Activity says it opens activity. On the phone and the web, the activity chevron opens that member’s profile.
 
@@ -1260,6 +1262,15 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** the Telegram link welcome counts as Enrollment. Do not give it a separate type chip.
 - **Follow-ups:** needs an API deploy before Enrollment + Telegram shows those rows. The badge text needs a web deploy and a new mobile build.
+
+### 2026-10-14 — Station phone stays trusted after the first code
+
+- **Asked:** The same member scanned the gym QR today and was asked for a code again, after checking in with a code yesterday.
+- **Decided / why:** The first code is supposed to remember that phone. The saved link time lost a fraction of a second, so the next scan looked like a new link and asked for a code. The check now ignores that fraction. A real relink still clears the phone. The trust cookie can be sent from the check-in site back to the API.
+- **Shipped:** `vibe/utils/stationSelfCheckIn.js`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** after the first station code, that same phone checks in with no new code.
+- **Follow-ups:** needs an API deploy. The phone that checked in yesterday should then open to Check in, with no code, as long as it is the same browser.
 
 ---
 
