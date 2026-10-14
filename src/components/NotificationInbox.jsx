@@ -149,11 +149,20 @@ function NotificationRow({
 
       <div className="flex shrink-0 flex-col items-end gap-2 pt-0.5">
         {!nested && localized.date ? (
-          <span className="text-[11px] text-app-muted">{localized.date}</span>
+          <button type="button" onClick={() => onOpen(item)} className="text-[11px] text-app-muted">
+            {localized.date}
+          </button>
         ) : null}
         <div className="flex items-center gap-0.5">
           {!action && item.memberId ? (
-            <ChevronRight className="h-4 w-4 text-app-muted/50" aria-hidden />
+            <button
+              type="button"
+              onClick={() => onOpen(item)}
+              className="rounded-md p-1 text-app-muted/50 hover:bg-app-surface hover:text-app-text"
+              aria-label={t('notifications.viewMember')}
+            >
+              <ChevronRight className="h-4 w-4" aria-hidden />
+            </button>
           ) : null}
           <button
             type="button"

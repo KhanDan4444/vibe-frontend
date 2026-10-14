@@ -60,7 +60,7 @@
 | Public check-in pass | Name + QR only; no phone, no photo | 2026-10-11 |
 | Station check-in ring | After gym QR and OTP, the ring shows the thick check, then the visit count inside, such as 1/6. Same timing as desk check-in | 2026-10-13 |
 | Revenue custom range | Custom dates sit on one short row: start, to, end. Web: beside the period control, and Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filters | 2026-10-13 |
-| Notification inbox | Activity payments do not repeat “Recorded.” Unread Needs attention uses a small dot, not a bar. Icon circles keep their status colors. Show all names activity. On the phone, the activity chevron opens that member’s profile | 2026-10-14 |
+| Notification inbox | Activity payments do not repeat “Recorded.” Unread Needs attention uses a small dot, not a bar. Icon circles keep their status colors. Show all names activity. On the phone and the web, the activity chevron opens that member’s profile | 2026-10-14 |
 
 ---
 
@@ -114,7 +114,7 @@
 - The Team staff list does not show an email column. Email stays on the staff form.
 - The phone trainers list does not show the “No login — assign to members.” line under search.
 - A trainer’s member list shows each member’s trainer-fee total. That total is trainer-fee payments only, not the gym membership. The words Trainer fee appear once. Amounts sit in one right-aligned column. 0 ETB stays quiet. The list has a search field. When the gym has more than one branch, the branch name appears once at the top left and is not repeated on each member. On the phone, the member’s phone number stays on one line under the name. Do not let the status or the fee wrap it.
-- Notification activity does not show a “Recorded” eyebrow. Unread Needs attention uses a small dot beside the title. Do not bring back the left bar. Icon circles keep their status colors. The activity control says it opens activity. On the phone, the activity chevron opens that member’s profile.
+- Notification activity does not show a “Recorded” eyebrow. Unread Needs attention uses a small dot beside the title. Do not bring back the left bar. Icon circles keep their status colors. The activity control says it opens activity. On the phone and the web, the activity chevron opens that member’s profile. Marking notifications read is stored on the account, so the phone and the web share it.
 - The No visit notice is Telegram only. Send it again every 7 days they stay away, with the day count updated. Do not send it by SMS, and do not repeat it every day.
 
 ---
@@ -191,7 +191,7 @@
 - ETB; Ethiopian phones; members **do not** log in (pass / Telegram / station only).
 - Gym QR check-in success: the ring shows the thick check first, then the visit count inside, such as 1/6. Same timing as desk check-in. The sentence under the name still says how many visits this week.
 - Revenue custom range: start date, to, and end date sit on one short row. Web: beside the period control; the date row eases open and closed; Export wraps on its own. Phone: first section in Filters. When on, the row matches the other selected filter rows.
-- Notifications: a payment in Activity shows the member and the amount once. Unread Needs attention uses a small dot beside the title. Activity does not. Icon circles keep their status colors. The control under Activity says it opens activity. On the phone, the activity chevron opens that member’s profile.
+- Notifications: a payment in Activity shows the member and the amount once. Unread Needs attention uses a small dot beside the title. Activity does not. Icon circles keep their status colors. The control under Activity says it opens activity. On the phone and the web, the activity chevron opens that member’s profile.
 
 ### Messaging
 
@@ -1231,6 +1231,24 @@ Filter selected = soft or solid accent (green/teal OK). Sheets radius top 22. Of
 - **Styles / customs:** Decision index, Do not regress, and Standing product updated.
 - **Do-not-regress:** unread Needs attention is a dot, not a bar. Icon circles keep their status colors.
 - **Follow-ups:** needs a web deploy and a new mobile build.
+
+### 2026-10-14 — Notification read state is shared
+
+- **Asked:** Mark all read on the phone still left the red count on the web bell.
+- **Decided / why:** Read and dismissed ids lived only on that device. The phone keeps its own list, and the web kept another list in memory. They are now stored per user on the API, and each app sends and loads that list.
+- **Shipped:** `vibe` migration `031_notification_inbox.sql`, `utils/notificationInbox.js`, dashboard routes; web `OwnerLayout.jsx`; mobile `NotificationInboxContext.tsx`.
+- **Styles / customs:** Do not regress updated.
+- **Do-not-regress:** marking notifications read on one device clears the badge on the other.
+- **Follow-ups:** run migration 031, deploy the API and the web. The phone uploads its existing read list only after a new build is opened. The build that is running does not include this.
+
+### 2026-10-14 — Web activity arrow opens the profile
+
+- **Asked:** On the web, the activity arrow should open the member. Only the name did.
+- **Decided / why:** The arrow sat outside the name’s tap target, same as the phone. The date and arrow now open the profile.
+- **Shipped:** web `NotificationInbox.jsx`.
+- **Styles / customs:** Decision index, Do not regress, and Standing product updated.
+- **Do-not-regress:** the web activity chevron opens that member’s profile.
+- **Follow-ups:** needs a web deploy.
 
 ---
 

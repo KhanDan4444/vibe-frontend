@@ -3,6 +3,11 @@ import React, { Suspense, useState, useMemo, useRef, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import {
+  dismissNotifications,
+  getNotificationInbox,
+  markNotificationsRead,
+} from '../services/dashboardService';
 import { useGym } from '../context/GymContext';
 import { isGymOwner, isGymStaff } from '../utils/roles';
 import { shellHeader, shellPage, sidebarSurface, sidebarNavIdle, sidebarNavActive, sidebarIconIdle, overlayBackdrop } from '../utils/surfaceClasses';
@@ -51,7 +56,7 @@ function OwnerRouteFallback() {
 
 export default function OwnerLayout() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, apiFetch } = useAuth();
   const { summary, readOnly, branches, selectedBranchId, setSelectedBranchId, branchReadOnly, selectedBranch, gymBooting, error, fetchCoreData, loadSubscription } = useGym();
   const navigate = useNavigate();
   const location = useLocation();
@@ -154,18 +159,45 @@ export default function OwnerLayout() {
     ].filter((section) => section.items.length > 0);
   }, [showManagementNav, showTeamNav, showActivityNav, showMessagesNav]);
 
+  useEffect(() => {
+    if (Array.isArray(summary.notificationReadIds)) setReadIds(summary.notificationReadIds);
+    if (Array.isArray(summary.notificationDismissedIds)) setDismissedIds(summary.notificationDismissedIds);
+  }, [summary.notificationReadIds, summary.notificationDismissedIds]);
+
+  useEffect(() => {
+    const pullInbox = () => {
+      if (document.visibilityState !== 'visible') return;
+      getNotificationInbox(apiFetch)
+        .then((data) => {
+          if (Array.isArray(data?.readIds)) setReadIds(data.readIds);
+          if (Array.isArray(data?.dismissedIds)) setDismissedIds(data.dismissedIds);
+        })
+        .catch(() => {});
+    };
+    document.addEventListener('visibilitychange', pullInbox);
+    return () => document.removeEventListener('visibilitychange', pullInbox);
+  }, [apiFetch]);
+
+  const applyInbox = (data) => {
+    if (Array.isArray(data?.readIds)) setReadIds(data.readIds);
+    if (Array.isArray(data?.dismissedIds)) setDismissedIds(data.dismissedIds);
+  };
+
   const markAllAsRead = () => {
-    setReadIds([...new Set([...readIds, ...notifications.map((n) => n.id)])]);
+    const ids = notifications.map((n) => n.id);
+    setReadIds((prev) => [...new Set([...prev, ...ids])]);
+    markNotificationsRead(apiFetch, ids).then(applyInbox).catch(() => {});
   };
 
   const markAsRead = (id) => {
-    if (!readIds.includes(id)) {
-      setReadIds([...readIds, id]);
-    }
+    setReadIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    markNotificationsRead(apiFetch, [id]).then(applyInbox).catch(() => {});
   };
 
   const deleteNotification = (id) => {
     setDismissedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setReadIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    dismissNotifications(apiFetch, [id]).then(applyInbox).catch(() => {});
   };
 
   const openMemberFromNotification = (notification, action) => {
